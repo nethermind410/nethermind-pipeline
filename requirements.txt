@@ -1,0 +1,20 @@
+# Nnethermind pipeline — Python deps.
+# Split by what actually needs each one, so a CI job that only renders +
+# posts doesn't have to install the Gemini/ElevenLabs paths it doesn't use.
+
+# Core render pipeline (make_short.py)
+numpy
+pillow
+
+# Narration — Kokoro (tts_kokoro.py), the default, free/self-hosted
+kokoro-onnx
+soundfile
+
+# Publishing (buffer_post.py: R2 upload + Buffer GraphQL)
+requests
+boto3
+python-dotenv
+
+# Optional / not used by the default GitHub Actions workflow:
+# google-genai      — only for gen_visuals.py (hero configs' Gemini art)
+# elevenlabs        — only if tts_elevenlabs.py's fallback path is called

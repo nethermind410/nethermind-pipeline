@@ -2,6 +2,7 @@
 # fetch_assets.sh — download every public-domain asset the current configs need.
 # Safe to re-run: skips files that already exist. All sources are NASA/NOAA/ESA
 # (public domain) or SIL Open Font License. Nothing here is copyrighted stock.
+mkdir -p "$(dirname "$0")/assets"
 cd "$(dirname "$0")/assets" || exit 1
 get () { # get <filename> <url>
   if [ -s "$1" ]; then echo "  have  $1"; return; fi
