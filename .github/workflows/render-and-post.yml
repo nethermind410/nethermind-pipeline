@@ -83,12 +83,26 @@ jobs:
       - name: Render
         run: python3 make_short.py "cfg/${{ inputs.config }}.json"
 
+      - name: Resolve rendered MP4 filename from the config
+        id: cfgfile
+        # make_short.py names the .mp4 after the config's own "file" field
+        # (falls back to the config id/filename if "file" is absent), but
+        # always names the .srt after the config id -- two different
+        # conventions in the same script. Read the real one instead of
+        # assuming it matches the dropdown value (bit us on run #1: the
+        # greenland_shark config's "file" is "05_Greenland_Shark", so
+        # out/greenland_shark.mp4 never existed).
+        run: |
+          FILE=$(python3 -c "import json; print(json.load(open('cfg/${{ inputs.config }}.json')).get('file', '${{ inputs.config }}'))")
+          echo "Resolved mp4 basename: $FILE"
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
       - name: Upload rendered video + subtitles as a workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.config }}-render
           path: |
-            out/${{ inputs.config }}.mp4
+            out/${{ steps.cfgfile.outputs.file }}.mp4
             out/${{ inputs.config }}.srt
           retention-days: 14
 
@@ -114,7 +128,7 @@ jobs:
             DRY_RUN_FLAG=""
           fi
           python3 buffer_post.py \
-            --video "out/${{ inputs.config }}.mp4" \
+            --video "out/${{ steps.cfgfile.outputs.file }}.mp4" \
             --platforms "${{ inputs.platforms }}" \
             $PACKAGING_ARG \
             $DRY_RUN_FLAG
