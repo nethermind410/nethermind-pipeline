@@ -3,8 +3,8 @@ make_short.py — config-driven YouTube Shorts factory.
 
     python3 make_short.py config.json [--preview] [--no-tts]
 
-One JSON config in, one finished MP4 + SRT out. Handles narration (ElevenLabs
-TTS with word-level timings, see tts_elevenlabs.py), Ken Burns stills, video
+One JSON config in, one finished MP4 + SRT out. Handles narration (Kokoro
+TTS, free/self-hosted, see tts_kokoro.py), Ken Burns stills, video
 clips, procedural iceberg charts, kinetic captions, hero number overlays, a
 synthesized score, loudness normalisation and subtitles.
 
@@ -36,7 +36,7 @@ F_SM = os.path.join(A, "BebasNeue-Regular.ttf")
 
 # ---------------------------------------------------------------- TTS
 def tts_all():
-    import tts_elevenlabs
+    import tts_kokoro as tts_elevenlabs  # switched from ElevenLabs -> free, self-hosted Kokoro (am_liam), 2026-09-21
     timing = {}
     for s in CFG["segments"]:
         if not s.get("text"):

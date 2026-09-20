@@ -11,3 +11,7 @@ tts/
 out/
 render.log
 .DS_Store
+
+# Kokoro model files — ~200MB, downloaded fresh by setup/CI, not committed
+kokoro-v1.0.fp16.onnx
+voices-v1.0.bin

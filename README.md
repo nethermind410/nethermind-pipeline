@@ -1,6 +1,6 @@
 # Content Pipeline
 
-A factory for faceless, fact-checked YouTube Shorts. One JSON config in, one finished MP4 + SRT out. Narration is ElevenLabs TTS; visuals are either public-domain NASA/NOAA/ESA media or, for topics with no public-domain source (e.g. superhero trivia), original AI-generated art from Gemini. Fonts are open-licence, and the score is synthesised from scratch. Needs an ElevenLabs and a Gemini API key (see SETUP.md) — this is no longer a free pipeline.
+A factory for faceless, fact-checked YouTube Shorts. One JSON config in, one finished MP4 + SRT out. Narration is Kokoro TTS — free, self-hosted, no API key (voice: am_liam); visuals are either public-domain NASA/NOAA/ESA media or, for topics with no public-domain source (e.g. superhero trivia), original AI-generated art from Gemini. Fonts are open-licence, and the score is synthesised from scratch. Only cost is a Gemini API key for hero-config art (see SETUP.md) — otherwise free. `tts_elevenlabs.py` is kept as an optional fallback backend, not used by default.
 
 ## Make a video
 
@@ -21,7 +21,8 @@ Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice
 
 ```
 make_short.py      the factory — TTS, captions, visuals, score, mix, subtitles
-tts_elevenlabs.py  ElevenLabs narration backend (audio + word-level timings)
+tts_kokoro.py      Kokoro narration backend (free, self-hosted; audio + estimated word timings)
+tts_elevenlabs.py  ElevenLabs narration backend — optional fallback, not used by default
 gen_visuals.py     Gemini image generation for "kb" segments with a "prompt"
 fetch_real.py      Wikimedia Commons PD/CC0 photo fetch for "kb" segments with a "real"
 new_video.py       scaffolds a new config so you never start blank
