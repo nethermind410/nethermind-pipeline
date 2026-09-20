@@ -1,0 +1,24 @@
+{
+ "id": "hulk_color_origin",
+ "file": "hulk_color_origin_tiktok",
+ "palette": {"accent": [80, 210, 110], "accent2": [175, 180, 190]},
+ "credit": "ART: AI-GEN + WIKIMEDIA COMMONS (PD)",
+ "score": "deep",
+ "hook": {"lines": [["THE HULK", "w"], ["WASN'T ALWAYS", "w"], ["GREEN.", "a"]], "size": 140, "y": 600},
+ "end": {"at": 1.4, "lines": ["SUBSCRIBE FOR MORE", "NEXT:", "THE VILLAIN DRAWN TO SELL TOYS"]},
+ "segments": [
+  {"id": "s1", "text": "The Hulk wasn't always green.", "hook": true,
+   "vis": {"t": "kb", "src": "colorist_gray_v5.jpg",
+           "z0": 1.38, "z1": 1.14, "cx": 0.5, "cy": 0.42}, "gap": 0.18},
+  {"id": "s3", "text": "They picked gray.",
+   "vis": {"t": "kb", "src": "colorist_gray_v5.jpg", "z0": 1.3, "z1": 1.5, "cx": 0.45, "cy": 0.3},
+   "hero": {"at": 1, "lines": ["GRAY"], "col": "a2", "y": 390, "size": 150}, "gap": 0.2},
+  {"id": "s5", "text": "So for issue number two, the team switched him to green — a color the old presses could print the same way, every single time.",
+   "vis": {"t": "kb", "src": "colorist_green_v5.jpg",
+           "z0": 1.32, "z1": 1.06, "cx": 0.5, "cy": 0.42},
+   "hero": {"at": 8, "lines": ["GREEN"], "col": "a", "y": 390, "size": 150}, "gap": 0.15},
+  {"id": "s7", "text": "And that unplanned mistake became the version every fan, every toy, and every movie has used ever since — a color nobody originally wanted, now impossible to imagine him without.",
+   "vis": {"t": "kb", "src": "comic_shelf_v4.jpg",
+           "z0": 1.1, "z1": 1.28, "cx": 0.5, "cy": 0.48}, "gap": 0.3}
+ ]
+}

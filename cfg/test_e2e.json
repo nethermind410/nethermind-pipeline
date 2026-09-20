@@ -1,0 +1,17 @@
+{
+ "id": "test_e2e",
+ "file": "test_e2e",
+ "palette": {"accent": [255, 60, 70], "accent2": [60, 140, 255]},
+ "credit": "ART: ORIGINAL, AI-GENERATED",
+ "score": "deep",
+ "hook": {"lines": [["PIPELINE", "w"], ["TEST", "a"]], "size": 146, "y": 600},
+ "end": {"at": 1.0, "lines": ["NEXT:", "A REAL VIDEO"]},
+ "segments": [
+  {"id": "s1", "text": "This is a short test of the new narration and art pipeline.", "hook": true,
+   "vis": {"t": "kb", "src": "test_hero.jpg",
+           "prompt": "a lone caped figure standing on a rooftop at night, city skyline silhouette, dramatic rim lighting, comic-book poster style",
+           "z0": 1.3, "z1": 1.1, "cx": 0.5, "cy": 0.45}, "gap": 0.2},
+  {"id": "s2", "text": "If you can hear this and see captions synced, it worked.",
+   "vis": {"t": "kb", "src": "test_hero.jpg", "z0": 1.1, "z1": 1.3, "cx": 0.5, "cy": 0.5}, "gap": 0.3}
+ ]
+}

@@ -1,0 +1,189 @@
+{
+ "id": "glass_rain",
+ "file": "02_Glass_Rain",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "rate": "+6%",
+ "palette": {
+  "accent": [
+   120,
+   190,
+   255
+  ],
+  "accent2": [
+   255,
+   140,
+   40
+  ]
+ },
+ "credit": "ARTIST'S IMPRESSION: NASA, ESA, M. KORNMESSER",
+ "score": "space",
+ "hook": {
+  "lines": [
+   [
+    "IT RAINS GLASS",
+    "w"
+   ],
+   [
+    "SIDEWAYS",
+    "a"
+   ],
+   [
+    "ON THIS PLANET.",
+    "w"
+   ]
+  ],
+  "size": 132,
+  "y": 610
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "NEXT:",
+   "THE DEEP SEA ICEBERG"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "There is a planet where it rains glass, sideways.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.42,
+    "z1": 1.16,
+    "cx": 0.5,
+    "cy": 0.46
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "It is a gas giant, sixty three light years from here.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.12,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "hero": {
+    "at": 5,
+    "lines": [
+     "HD 189733 b"
+    ],
+    "col": "a",
+    "y": 400,
+    "size": 118
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "It looks blue. But not because of water.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.5,
+    "z1": 1.28,
+    "cx": 0.44,
+    "cy": 0.42
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "That blue is a haze of silicate particles. Glass.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.25,
+    "z1": 1.55,
+    "cx": 0.56,
+    "cy": 0.5
+   },
+   "hero": {
+    "at": 6,
+    "lines": [
+     "GLASS",
+     "CLOUDS"
+    ],
+    "col": "a",
+    "y": 380,
+    "size": 140
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s5",
+   "text": "It is over a thousand degrees Celsius up there.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.6,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.55
+   },
+   "hero": {
+    "at": 3,
+    "lines": [
+     "1,000\u00b0C"
+    ],
+    "col": "a2",
+    "y": 400,
+    "size": 170
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6",
+   "text": "And the winds reach five thousand four hundred miles an hour. Seven times the speed of sound.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.18,
+    "z1": 1.48,
+    "cx": 0.5,
+    "cy": 0.4
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "5,400 MPH"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s7",
+   "text": "So the glass never falls. NASA says it probably flies sideways.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.34,
+    "z1": 1.1,
+    "cx": 0.5,
+    "cy": 0.47
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s8",
+   "text": "We have never seen the rain. We only measured the wind.",
+   "vis": {
+    "t": "kb",
+    "src": "hd189_art.jpg",
+    "z0": 1.08,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.3
+  }
+ ]
+}

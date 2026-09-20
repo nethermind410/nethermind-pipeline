@@ -1,0 +1,25 @@
+{
+ "id": "marvel_near_miss",
+ "file": "marvel_near_miss_tiktok",
+ "palette": {"accent": [230, 80, 60], "accent2": [212, 175, 55]},
+ "credit": "HINDENBURG DISASTER PHOTO: WIKIMEDIA COMMONS (PD)  ·  STAN LEE PHOTO: ALAN LIGHT (CC BY 2.0)  ·  ILLUSTRATIONS: AI",
+ "score": "deep",
+ "hook": {"lines": [["MARVEL ALMOST", "w"], ["NEVER HAPPENED.", "a"]], "size": 122, "y": 560},
+ "end": {"at": 1.4, "lines": ["SUBSCRIBE FOR MORE", "NEXT:", "THE WORD MARVEL ISN'T ALLOWED TO PUT ON A COVER"]},
+ "segments": [
+  {"id": "s1", "text": "Marvel almost didn't happen. Its founder was two seats away from dying in 1937.", "hook": true,
+   "vis": {"t": "kb", "src": "hindenburg_flight_gen.jpg",
+           "z0": 1.1, "z1": 1.26, "cx": 0.5, "cy": 0.45}, "gap": 0.18},
+  {"id": "s3", "text": "But he waits too long. Only two tickets left, and they're not together — three days apart from his own wife, crossing the Atlantic. No thanks.",
+   "vis": {"t": "kb", "src": "ticket_ledger.jpg",
+           "z0": 1.1, "z1": 1.3, "cx": 0.45, "cy": 0.5},
+   "hero": {"at": 6, "lines": ["SOLD OUT"], "col": "a2", "y": 390, "size": 140}, "gap": 0.2},
+  {"id": "s5", "text": "May sixth, nineteen thirty-seven. The Hindenburg goes up in flames while landing in New Jersey. Thirty-six people don't walk away.",
+   "vis": {"t": "kb", "src": "hindenburg_burning_real.jpg",
+           "z0": 1.15, "z1": 1.3, "cx": 0.5, "cy": 0.42},
+   "hero": {"at": 6, "lines": ["36 DEAD"], "col": "a", "y": 390, "size": 150}, "gap": 0.2},
+  {"id": "s7b", "text": "Two years later, Goodman hires his wife's seventeen-year-old cousin — Stanley Lieber. You know him as Stan Lee. One sold-out airship, and there's no Marvel at all.",
+   "vis": {"t": "kb", "src": "stan_lee_real.jpg",
+           "z0": 1.15, "z1": 1.3, "cx": 0.72, "cy": 0.32}, "gap": 0.3}
+ ]
+}

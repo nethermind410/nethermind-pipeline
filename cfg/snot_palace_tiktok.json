@@ -1,0 +1,24 @@
+{
+ "id": "snot_palace",
+ "file": "snot_palace_tiktok",
+ "palette": {"accent": [70, 220, 200], "accent2": [255, 200, 80]},
+ "credit": "PHOTO: NOAA OCEAN EXPLORATION, SEASCAPE ALASKA  ·  RESEARCH: MBARI (BATHOCHORDAEUS)  ·  ILLUSTRATIONS: AI",
+ "score": "deep",
+ "hook": {"lines": [["IT BUILDS A HOUSE", "w"], ["OUT OF SNOT.", "w"], ["THEN WALKS AWAY.", "a"]], "size": 116, "y": 560},
+ "end": {"at": 1.4, "lines": ["SUBSCRIBE FOR MORE", "NEXT:", "THE WORD MARVEL ISN'T ALLOWED TO PUT ON A COVER"]},
+ "segments": [
+  {"id": "s1", "text": "There's a deep-sea animal that builds an entire house out of its own snot. Then it just walks away.", "hook": true,
+   "vis": {"t": "kb", "src": "larvacean_real_noaa.jpg",
+           "z0": 1.05, "z1": 1.2, "cx": 0.5, "cy": 0.48}, "gap": 0.18},
+  {"id": "s3", "text": "But the house — pure mucus, up to three feet wide — is bigger than the room you're sitting in.",
+   "vis": {"t": "kb", "src": "larvacean_scale.jpg",
+           "z0": 1.05, "z1": 1.2, "cx": 0.5, "cy": 0.5}, "gap": 0.2},
+  {"id": "s5", "text": "And it clogs — every single day — so the animal abandons the whole house and builds a brand new one from scratch.",
+   "vis": {"t": "kb", "src": "larvacean_moving_house.jpg",
+           "z0": 1.0, "z1": 1.1, "cx": 0.5, "cy": 0.5},
+   "hero": {"at": 6, "lines": ["EVERY DAY"], "col": "a", "y": 390, "size": 140}, "gap": 0.15},
+  {"id": "s7", "text": "Multiply that by every larvacean in the ocean, and you've got one of the planet's biggest carbon pumps — built entirely out of snot nobody wanted.",
+   "vis": {"t": "kb", "src": "larvacean_field_wide.jpg",
+           "z0": 1.15, "z1": 1.0, "cx": 0.5, "cy": 0.5}, "gap": 0.3}
+ ]
+}

@@ -1,0 +1,174 @@
+{
+ "id": "deepsea_iceberg",
+ "file": "03_Deep_Sea_Iceberg",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "rate": "+5%",
+ "palette": {
+  "accent": [
+   110,
+   220,
+   255
+  ],
+  "accent2": [
+   255,
+   140,
+   40
+  ]
+ },
+ "credit": "DEPTHS: NOAA  \u00b7  FACTS: NOAA / MBARI",
+ "score": "deep",
+ "cap_y": 1130,
+ "hook": {
+  "lines": [
+   [
+    "THE DEEP SEA",
+    "w"
+   ],
+   [
+    "ICEBERG",
+    "a"
+   ]
+  ],
+  "size": 150,
+  "y": 700
+ },
+ "iceberg": {
+  "tiers": [
+   {
+    "label": "Sunlight Zone",
+    "depth": "0 \u2013 200 M",
+    "col": "a"
+   },
+   {
+    "label": "Twilight Zone",
+    "depth": "200 \u2013 1,000 M",
+    "col": "a"
+   },
+   {
+    "label": "Midnight Zone",
+    "depth": "1,000 \u2013 4,000 M",
+    "col": "a"
+   },
+   {
+    "label": "The Abyss",
+    "depth": "4,000 \u2013 6,000 M",
+    "col": "a2"
+   },
+   {
+    "label": "The Trench",
+    "depth": "6,000 \u2013 11,000 M",
+    "col": "a2"
+   }
+  ]
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "NEXT:",
+   "THE 400 YEAR OLD SHARK"
+  ]
+ },
+ "segments": [
+  {
+   "id": "h",
+   "text": "The deep sea, in five layers.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "reef_sunlight.jpg",
+    "z0": 1.15,
+    "z1": 1.35,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t1",
+   "text": "Zero to two hundred metres. Below this line, there is not enough light for anything to grow.",
+   "vis": {
+    "t": "kb",
+    "src": "reef_sunlight.jpg",
+    "z0": 1.35,
+    "z1": 1.12,
+    "cx": 0.45,
+    "cy": 0.55
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t2",
+   "text": "Two hundred to a thousand metres. Down here, almost every fish is black. In near-total dark, colour is a liability.",
+   "vis": {
+    "t": "kb",
+    "src": "barreleye.jpg",
+    "z0": 1.05,
+    "z1": 1.18,
+    "cx": 0.32,
+    "cy": 0.5
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t3",
+   "text": "One thousand to four thousand. Three quarters of the animals make their own light.",
+   "vis": {
+    "t": "kb",
+    "src": "siphonophore.jpg",
+    "z0": 1.1,
+    "z1": 1.38,
+    "cx": 0.5,
+    "cy": 0.48
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "75% GLOW"
+    ],
+    "col": "a",
+    "y": 1470,
+    "size": 120
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t4",
+   "text": "Four to six thousand. Worms with no mouth dissolve whale skeletons using acid.",
+   "vis": {
+    "t": "kb",
+    "src": "tubeworms.jpg",
+    "z0": 1.32,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t5",
+   "text": "Six thousand and below. At the deepest point on Earth, the animals already have plastic inside them.",
+   "vis": {
+    "t": "kb",
+    "src": "tubeworms.jpg",
+    "z0": 1.45,
+    "z1": 1.2,
+    "cx": 0.55,
+    "cy": 0.5
+   },
+   "gap": 0.25
+  },
+  {
+   "id": "e",
+   "text": "Eleven kilometres down. And our rubbish got there first.",
+   "vis": {
+    "t": "kb",
+    "src": "tubeworms.jpg",
+    "z0": 1.1,
+    "z1": 1.32,
+    "cx": 0.42,
+    "cy": 0.42
+   },
+   "gap": 0.3
+  }
+ ]
+}
