@@ -1,0 +1,84 @@
+{
+ "id": "ocean_species_iceberg",
+ "file": "08_Ocean_Species_Iceberg",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "rate": "+5%",
+ "palette": {
+  "accent": [80, 200, 220],
+  "accent2": [255, 120, 90]
+ },
+ "credit": "SOURCE: OCEAN CENSUS 2026 / NIPPON FOUNDATION-NEKTON",
+ "score": "deep",
+ "cap_y": 1130,
+ "hook": {
+  "lines": [
+   ["THE OCEAN SPECIES", "w"],
+   ["ICEBERG", "a"]
+  ],
+  "size": 140,
+  "y": 700
+ },
+ "iceberg": {
+  "tiers": [
+   {"label": "Hiding in Plain Sight", "depth": "1-5 M DEEP", "col": "a"},
+   {"label": "The Ghost Shark", "depth": "~800 M DEEP", "col": "a"},
+   {"label": "Inside a Glass Sponge", "depth": "~790 M DEEP", "col": "a2"},
+   {"label": "A Cave Off Marseille", "depth": "MEDITERRANEAN", "col": "a2"},
+   {"label": "The Undiscovered 90%", "depth": "STILL UNKNOWN", "col": "a2"}
+  ]
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "NEXT:",
+   "THE ANTARCTICA ICEBERG"
+  ]
+ },
+ "segments": [
+  {
+   "id": "h",
+   "text": "In the last year alone, scientists found more than a thousand new ocean species. It's still just the tip of the iceberg.",
+   "hook": true,
+   "vis": {"t": "ice", "tier": 0},
+   "gap": 0.2
+  },
+  {
+   "id": "t1",
+   "text": "One turned up in Timor-Leste, in water only one to five metres deep. You don't need a submarine. You just need to look.",
+   "vis": {"t": "ice", "tier": 0},
+   "hero": {"at": 4, "lines": ["1,121 NEW", "SPECIES"], "col": "a", "y": 1440, "size": 100},
+   "gap": 0.2
+  },
+  {
+   "id": "t2",
+   "text": "Another was a shark. A brand new species of ghost shark, living eight hundred metres down in Australia's Coral Sea.",
+   "vis": {"t": "ice", "tier": 1},
+   "gap": 0.2
+  },
+  {
+   "id": "t3",
+   "text": "Off Japan, this worm turned out to be an entirely new species, found living inside a glass sponge, seven hundred and ninety metres down.",
+   "vis": {"t": "ice", "tier": 2},
+   "gap": 0.2
+  },
+  {
+   "id": "t4",
+   "text": "And in a sea cave off Marseille, on one of the most-studied coastlines on Earth, a new shrimp species had been hiding the whole time.",
+   "vis": {"t": "ice", "tier": 3},
+   "gap": 0.2
+  },
+  {
+   "id": "t5",
+   "text": "Here's the part that actually matters. Marine biologists estimate up to ninety percent of ocean species haven't been discovered yet.",
+   "vis": {"t": "ice", "tier": 4},
+   "hero": {"at": 4, "lines": ["90% STILL", "UNKNOWN"], "col": "a2", "y": 1440, "size": 100},
+   "gap": 0.25
+  },
+  {
+   "id": "e",
+   "text": "One thousand, one hundred and twenty one new species, in one year. And we've still only seen the tip of the iceberg.",
+   "vis": {"t": "ice", "tier": 4},
+   "gap": 0.3
+  }
+ ]
+}
