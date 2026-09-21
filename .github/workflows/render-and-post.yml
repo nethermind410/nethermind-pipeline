@@ -17,7 +17,7 @@ on:
           art / Wikimedia photos) needs gen_visuals.py / fetch_real.py run
           first, not yet wired into this workflow.
         required: true
-        default: antarctica_iceberg
+        default: ocean_species_iceberg
         type: choice
         options:
           - deepsea_iceberg
@@ -27,6 +27,7 @@ on:
           - greenland_shark
           - anglerfish
           - antarctica_iceberg
+          - ocean_species_iceberg
       publish:
         description: >-
           Actually post to Buffer for real (uploads to R2, creates a live
