@@ -48,6 +48,11 @@ window.NeuralBrain = (() => {
       const band = Math.exp(-((fold(x, y) / 0.16) ** 2));   // near a contour = on a fold
       if (inside(x, y) && r() < 0.08 + 0.92 * band) nodes.push({x, y, g: region(x, y), n: []});
     }
+    const rim = p => [[0.012, 0], [-0.012, 0], [0, 0.012], [0, -0.012]].some(([dx, dy]) => !inside(p[0] + dx, p[1] + dy));
+    for (let k = 0; k < 9000 && nodes.length < 2350; k++) {             // denser band along the edge
+      const x = 0.12 + r() * 0.8, y = 0.15 + r() * 0.65;
+      if (inside(x, y) && rim([x, y]) && r() < 0.6) nodes.push({x, y, g: region(x, y), n: [], rim: true});
+    }
     const edges = [];
     nodes.forEach((a, i) => {
       nodes.map((b, j) => [j, (a.x - b.x) ** 2 + (a.y - b.y) ** 2])
@@ -80,15 +85,6 @@ window.NeuralBrain = (() => {
         const [x1, y1] = P(NET.nodes[i]), [x2, y2] = P(NET.nodes[j]);
         f.strokeStyle = `rgba(${VIOLET},.26)`; f.lineWidth = 0.5; f.beginPath(); f.moveTo(x1, y1); f.lineTo(x2, y2); f.stroke();
       });
-      // the outline: a deeper crimson edge, the cerebellum behind, the lateral fissure as a finer line
-      const poly = pts => { f.beginPath(); pts.forEach(([x, y], i) => i ? f.lineTo(ox + x * size, oy + y * size) : f.moveTo(ox + x * size, oy + y * size)); f.closePath(); };
-      f.lineJoin = "round"; f.shadowColor = "rgba(200,20,55,.65)"; f.shadowBlur = 12;
-      f.strokeStyle = "rgba(168,16,44,.9)"; f.lineWidth = 1.8; poly(CEREBELLUM); f.stroke();
-      f.fillStyle = "rgba(0,0,0,.55)"; poly(CEREBRUM); f.fill();                      // tucks the cerebellum behind
-      f.strokeStyle = "rgba(176,18,48,.95)"; f.lineWidth = 2.2; poly(CEREBRUM); f.stroke();
-      f.shadowBlur = 0; f.strokeStyle = "rgba(168,16,44,.55)"; f.lineWidth = 1.1; f.beginPath();
-      for (let x = 0.28; x <= 0.63; x += 0.004) { const y = sylvian(x); x === 0.28 ? f.moveTo(ox + x * size, oy + y * size) : f.lineTo(ox + x * size, oy + y * size); }
-      f.stroke();
       f.globalCompositeOperation = "lighter";
       NET.nodes.forEach(n => {                               // small, soft nodes
         const [x, y] = P(n), s = 0.35 + n.n.length * 0.16;
