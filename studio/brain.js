@@ -3,15 +3,14 @@
    Da Vinci construction lines; hovering draws the line, clicking fires a signal along it and
    zooms into that region before opening the section. Every caption is live data. */
 const NEURONS = [
-  // anchor on the brain (unit square), where the label floats (angle in degrees, distance as a share of
-  // the stage), and which way its text aligns. Deliberately uneven, so it feels placed by hand.
-  {key: "today", label: "Today", ax: 0.52, ay: 0.21, ang: -84, dist: 0.44, side: "top"},
-  {key: "ideas", label: "Ideas", ax: 0.34, ay: 0.3, ang: -148, dist: 0.43, side: "left"},
-  {key: "videos", label: "Videos", ax: 0.235, ay: 0.52, ang: 176, dist: 0.5, side: "left"},
-  {key: "comments", label: "Comments", ax: 0.36, ay: 0.72, ang: 134, dist: 0.4, side: "left"},
-  {key: "calendar", label: "Calendar", ax: 0.66, ay: 0.29, ang: -38, dist: 0.47, side: "right"},
-  {key: "performance", label: "Performance", ax: 0.77, ay: 0.47, ang: 4, dist: 0.53, side: "right"},
-  {key: "settings", label: "Settings", ax: 0.64, ay: 0.75, ang: 52, dist: 0.41, side: "right"},
+  // each section sits on the part of the brain that does that job (side profile: front is left)
+  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, ang: -92, dist: 0.47, side: "top"},
+  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.26, ay: 0.36, ang: -155, dist: 0.5, side: "left"},
+  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.4, ay: 0.63, ang: 162, dist: 0.5, side: "left"},
+  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.54, ay: 0.6, ang: 122, dist: 0.46, side: "left"},
+  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.68, ay: 0.3, ang: -32, dist: 0.5, side: "right"},
+  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.845, ay: 0.47, ang: 6, dist: 0.52, side: "right"},
+  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.71, ang: 52, dist: 0.46, side: "right"},
 ];
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -54,7 +53,7 @@ async function pageBrain() {
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
     return `<button class="neuron ${n.side} ${hot ? "hot" : ""}" data-neuron="${n.key}">
-      <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span></button>`;
+      <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(n.lobe)}</span></button>`;
   }).join("");
   const c = data.ch;
   $("#core").innerHTML = c?.ready ? `<button class="core-btn" data-neuron="home-core" title="Open your channel numbers">
@@ -69,8 +68,8 @@ async function pageBrain() {
 /* lay out neurons around the brain and draw the construction lines */
 function wire() {
   const stage = $("#stage"), svg = $("#syn"); if (!stage || !$("#bnet")) return;
-  const S = stage.getBoundingClientRect(), side = Math.min(S.width, S.height);
-  const I = {left: S.left + (S.width - side) / 2, top: S.top + (S.height - side) / 2, width: side, height: side};
+  const S = stage.getBoundingClientRect(), side = Math.min(S.width * 0.88, S.height * 1.22);   // same box neural.js draws in
+  const I = {left: S.left + S.width / 2 - side * 0.5, top: S.top + S.height * 0.47 - side * 0.46, width: side, height: side};
   I.right = I.left + side;
   svg.setAttribute("viewBox", `0 0 ${S.width} ${S.height}`);
   const pt = n => [I.left - S.left + n.ax * I.width, I.top - S.top + n.ay * I.height];

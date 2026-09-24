@@ -154,3 +154,12 @@ body.on-brain main{padding:0;overflow:hidden}
 .synapses .spark{fill:#fff;filter:drop-shadow(0 0 6px rgba(150,115,255,1)) drop-shadow(0 0 14px rgba(128,81,255,.8))}
 .neuron:hover .nw,.neuron:focus-visible .nw{color:#fff;text-shadow:0 0 18px rgba(128,81,255,.7)}
 .core-btn:hover .big{text-shadow:0 0 22px rgba(128,81,255,.6)}
+
+/* v2.5: crimson brain (user's pick), side profile, bigger */
+.synapses .halo{fill:#E0294B}.synapses .trail{stroke:#FF8FA3;filter:drop-shadow(0 0 5px rgba(235,45,75,.95))}
+.synapses .spark{filter:drop-shadow(0 0 6px rgba(255,120,140,1)) drop-shadow(0 0 14px rgba(235,45,75,.85))}
+.neuron:hover .nw,.neuron:focus-visible .nw{color:#fff;text-shadow:0 0 18px rgba(235,45,75,.75)}
+.core-btn:hover .big{text-shadow:0 0 22px rgba(235,45,75,.6)}
+.neuron .lobe{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,143,163,.55);opacity:0;transition:opacity .25s}
+.neuron:hover .lobe,.neuron:focus-visible .lobe{opacity:1}
+.core{bottom:2.2vh}

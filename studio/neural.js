@@ -1,44 +1,49 @@
 "use strict";
-/* The brain: a fine violet neural network seen from above (two hemispheres), tuned to be subtle.
+/* The brain: a fine crimson neural network in side profile (frontal lobe left, cerebellum back-right,
+   no brain stem), tuned to be subtle.
    Nodes cluster along fold contours; hairline fibres join near neighbours. At rest small sparks run
    along fibres; hovering a section glows its region; clicking fires a bright wave through the graph.
    API: NeuralBrain.mount(canvas) -> {glow(ax,ay,on), fire(ax,ay) -> Promise, destroy()} */
 window.NeuralBrain = (() => {
-  const VIOLET = [150, 115, 255], WHITE = [246, 242, 255];
+  const VIOLET = [235, 45, 75], WHITE = [255, 232, 236];   // crimson fibres, pink-white light
 
-  function inside(x, y) {                                   // top-view silhouette with a thin midline fissure
-    const dx = x - 0.5, dy = y - 0.5;
-    if (Math.abs(dx) < 0.012 + 0.009 * Math.abs(dy) * 4) return false;
-    const rx = 0.285 * (1 - 0.13 * Math.max(0, -dy) * 3) * (1 + 0.025 * Math.sin(y * 40)), ry = 0.325;
-    const notch = Math.abs(dx) < 0.05 && Math.abs(dy) > 0.29 ? 0.4 : 0;
-    return (dx / rx) ** 2 + (dy / ry) ** 2 < 1 - notch;
+  // side profile. Regions: cerebrum (0), temporal lobe (1), cerebellum (2); -1 = outside or in a fissure
+  const sylvian = x => 0.585 - 0.19 * (x - 0.3) + 0.22 * (x - 0.3) ** 2;       // lateral sulcus curve
+  function region(x, y) {
+    const cb = ((x - 0.73) / 0.13) ** 2 + ((y - 0.705) / 0.075) ** 2;             // cerebellum
+    if (cb < 1 && y > 0.64) return 2;
+    const top = ((x - 0.52) / 0.355) ** 2 + ((y - 0.47) / 0.285) ** 2;            // main cerebral dome
+    const front = ((x - 0.3) / 0.19) ** 2 + ((y - 0.46) / 0.21) ** 2;             // fuller frontal pole
+    const temp = ((x - 0.47) / 0.21) ** 2 + ((y - 0.61) / 0.1) ** 2;              // temporal lobe
+    const inCere = (top < 1 || front < 1) && y < 0.66;
+    if (!inCere && !(temp < 1)) return -1;
+    if (y > 0.62 && x > 0.66 && cb >= 1) return -1;                              // notch above the cerebellum
+    const sy = sylvian(x);
+    if (x > 0.24 && x < 0.66 && Math.abs(y - sy) < 0.011) return -1;             // the fissure itself
+    if (temp < 1 && y > sy && x < 0.68) return 1;
+    return inCere ? 0 : -1;
   }
-  function fold(x, y) {                                     // gyri contours, mirrored across the midline
-    const m = Math.abs(x - 0.5);
-    return Math.sin(m * 46 + Math.sin(y * 19) * 2.2) * 0.55 + Math.sin(y * 34 + Math.cos(m * 21) * 2.4) * 0.45;
+  const inside = (x, y) => region(x, y) >= 0;
+  function fold(x, y) {
+    if (region(x, y) === 2) return Math.sin(y * 150 + Math.sin(x * 30) * 1.4);    // cerebellum: fine ridges
+    return Math.sin(x * 38 + Math.sin(y * 17) * 2.6) * 0.55 + Math.sin(y * 31 + Math.cos(x * 19) * 2.3) * 0.45;
   }
   function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 
   function build() {
     const r = rng(42), nodes = [];
-    while (nodes.length < 1500) {
-      const x = 0.2 + r() * 0.6, y = 0.16 + r() * 0.68;
+    while (nodes.length < 1900) {
+      const x = 0.1 + r() * 0.8, y = 0.16 + r() * 0.66;
       const band = Math.exp(-((fold(x, y) / 0.16) ** 2));   // near a contour = on a fold
-      if (inside(x, y) && r() < 0.08 + 0.92 * band) nodes.push({x, y, n: []});
+      if (inside(x, y) && r() < 0.08 + 0.92 * band) nodes.push({x, y, g: region(x, y), n: []});
     }
     const edges = [];
     nodes.forEach((a, i) => {
       nodes.map((b, j) => [j, (a.x - b.x) ** 2 + (a.y - b.y) ** 2])
-        .filter(([j, d]) => j !== i && d < 0.0009 && (a.x < 0.5) === (nodes[j].x < 0.5))
+        .filter(([j, d]) => j !== i && d < 0.0008 && a.g === nodes[j].g)
         .sort((p, q) => p[1] - q[1]).slice(0, 3)
         .forEach(([j]) => { if (j > i) { edges.push([i, j]); a.n.push(j); nodes[j].n.push(i); } });
     });
-    for (let k = 0; k < 40; k++) {                           // corpus callosum: a few fibres across the midline
-      const i = Math.floor(r() * nodes.length), j = Math.floor(r() * nodes.length), a = nodes[i], b = nodes[j];
-      if (Math.abs(a.y - b.y) < 0.1 && Math.abs(a.x - 0.5) < 0.1 && Math.abs(b.x - 0.5) < 0.1 && (a.x < 0.5) !== (b.x < 0.5)) {
-        edges.push([i, j]); a.n.push(j); b.n.push(i);
-      }
-    }
     return {nodes, edges};
   }
   const NET = build();
@@ -52,11 +57,11 @@ window.NeuralBrain = (() => {
     function layout() {
       const rect = canvas.getBoundingClientRect();
       W = rect.width; H = rect.height; canvas.width = W * dpr; canvas.height = H * dpr;
-      size = Math.min(W, H); ox = (W - size) / 2; oy = (H - size) / 2;
+      size = Math.min(W * 0.88, H * 1.22); ox = W / 2 - size * 0.5; oy = H * 0.47 - size * 0.46;
       fibres = document.createElement("canvas"); fibres.width = canvas.width; fibres.height = canvas.height;
       const f = fibres.getContext("2d"); f.scale(dpr, dpr); f.lineCap = "round";
-      const aura = f.createRadialGradient(ox + size / 2, oy + size / 2, size * 0.05, ox + size / 2, oy + size / 2, size * 0.42);
-      aura.addColorStop(0, "rgba(128,81,255,.09)"); aura.addColorStop(.6, "rgba(128,81,255,.035)"); aura.addColorStop(1, "rgba(0,0,0,0)");
+      const aura = f.createRadialGradient(ox + size * 0.5, oy + size * 0.47, size * 0.05, ox + size * 0.5, oy + size * 0.47, size * 0.42);
+      aura.addColorStop(0, "rgba(210,30,60,.10)"); aura.addColorStop(.6, "rgba(210,30,60,.04)"); aura.addColorStop(1, "rgba(0,0,0,0)");
       f.fillStyle = aura; f.fillRect(0, 0, W, H);
       NET.edges.forEach(([i, j]) => {                        // hairline fibres
         const [x1, y1] = P(NET.nodes[i]), [x2, y2] = P(NET.nodes[j]);
@@ -124,5 +129,5 @@ window.NeuralBrain = (() => {
       destroy() { alive = false; cancelAnimationFrame(raf); removeEventListener("resize", onResize); },
     };
   }
-  return {mount};
+  return {mount, geometry: size => size};
 })();
