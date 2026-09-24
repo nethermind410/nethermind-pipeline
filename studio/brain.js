@@ -6,10 +6,10 @@ const NEURONS = [
   // each section sits on the part of the brain that does that job (side profile: front is left).
   // Placed by hand, deliberately uneven: gap = distance outside the brain, nudge = px offset,
   // scale = type size, tilt = degrees.
-  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0.02, nudge: [-150, -6], scale: 1.3, tilt: -3},
+  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0, nudge: [0, 0], scale: 1.3, tilt: -3, at: [0.12, 0.34]},
   {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.2, nudge: [-10, -80], scale: 0.95, tilt: 2.5},
   {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.015, nudge: [-110, 36], scale: 1.12, tilt: -1.5},
-  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0.2, nudge: [150, 10], scale: 0.78, tilt: 1.5},
+  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0, nudge: [0, 0], scale: 0.82, tilt: 1.5, at: [0.07, 0.9]},
   {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.15, nudge: [70, -40], scale: 1.0, tilt: 3.5},
   {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.05, nudge: [-6, 110], scale: 1.4, tilt: -2},
   {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.24, nudge: [110, -30], scale: 0.74, tilt: 2},
@@ -85,14 +85,15 @@ function wire() {
     let t = L; while (t < 0.9 && NeuralBrain.inside(cxu + ux * t, cyu + uy * t)) t += 0.004;   // reach the edge
     t += n.gap;
     let fx = I.left - S.left + (cxu + ux * t) * I.width + n.nudge[0], fy = I.top - S.top + (cyu + uy * t) * I.height + n.nudge[1];
-    const right = ux > 0.25, left = ux < -0.25;                                                   // which way the text hangs
+    let right = ux > 0.25, left = ux < -0.25;                                                     // which way the text hangs
+    if (n.at) { fx = S.width * n.at[0]; fy = S.height * n.at[1]; right = true; left = false; }   // hand-placed where the brain leaves no room
     el.classList.toggle("hang-left", left); el.classList.toggle("hang-right", right);
     let lx = left ? fx - el.offsetWidth : right ? fx : fx - el.offsetWidth / 2;
-    let ly = uy < -0.5 ? fy - el.offsetHeight : uy > 0.5 ? fy : fy - el.offsetHeight / 2;
-    lx = Math.max(24, Math.min(S.width - el.offsetWidth - 24, lx)); ly = Math.max(96, Math.min(S.height - el.offsetHeight - 120, ly));
+    let ly = n.at ? fy - el.offsetHeight / 2 : uy < -0.5 ? fy - el.offsetHeight : uy > 0.5 ? fy : fy - el.offsetHeight / 2;
+    lx = Math.max(24, Math.min(S.width - el.offsetWidth - 24, lx)); ly = Math.max(96, Math.min(S.height - el.offsetHeight - (n.at ? 24 : 120), ly));
     el.style.left = lx + "px"; el.style.top = ly + "px";
     const ex = left ? lx + el.offsetWidth + 10 : right ? lx - 10 : lx + el.offsetWidth / 2;
-    const ey = uy < -0.5 ? ly + el.offsetHeight + 6 : uy > 0.5 ? ly - 6 : ly + el.querySelector(".nw").offsetHeight / 2;
+    const ey = n.at ? ly + el.querySelector(".nw").offsetHeight / 2 : uy < -0.5 ? ly + el.offsetHeight + 6 : uy > 0.5 ? ly - 6 : ly + el.querySelector(".nw").offsetHeight / 2;
     const qx = (ex + ax) / 2 + (ay - ey) * 0.15, qy = (ey + ay) / 2 - (ax - ex) * 0.1;
     const d = `M${ex},${ey} Q${qx},${qy} ${ax},${ay}`;
     paths += `<path class="guide" id="g-${n.key}" d="${d}"/><path class="line" id="l-${n.key}" d="${d}"/>
