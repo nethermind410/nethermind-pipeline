@@ -74,6 +74,43 @@ window.NeuralBrain = (() => {
       });
       near.sort((p, q) => p[1] - q[1]).slice(0, 3).forEach(([j]) => { if (j > i) { edges.push([i, j]); a.n.push(j); nodes[j].n.push(i); } });
     });
+    // between the hemispheres: the corpus callosum (an arched bridge), the thalamus, and fibres crossing over
+    const first = nodes.length, arc = t => [0.35 + 0.34 * t, 0.47 - 0.13 * Math.sin(Math.PI * t) + 0.03 * t];
+    for (let k = 0; k < 420; k++) {
+      const t = r(), [x, y] = arc(t), thick = 0.018 + 0.014 * Math.sin(Math.PI * t) + (t > 0.85 ? 0.012 : 0);   // thicker at the back (splenium)
+      nodes.push({x: x + (r() - 0.5) * 0.02, y: y + (r() - 0.5) * thick, z: (r() - 0.5) * 0.09, g: 3, side: 0, n: [], mid: true});
+    }
+    for (let k = 0; k < 140; k++) {                                            // thalamus: two small eggs either side of the midline
+      const a = r() * 6.283, d = Math.sqrt(r()), sd = r() < 0.5 ? -1 : 1;
+      nodes.push({x: 0.555 + Math.cos(a) * d * 0.045, y: 0.505 + Math.sin(a) * d * 0.028, z: sd * (0.03 + r() * 0.03), g: 3, side: 0, n: [], mid: true});
+    }
+    const link = (i, j) => { edges.push([i, j]); nodes[i].n.push(j); nodes[j].n.push(i); };
+    for (let i = first; i < nodes.length; i++) {                               // the bridge's own fine mesh
+      const a = nodes[i], near = [];
+      for (let j = first; j < nodes.length; j++) { if (j === i) continue;
+        const d = (a.x - nodes[j].x) ** 2 + (a.y - nodes[j].y) ** 2 + (a.z - nodes[j].z) ** 2; if (d < 0.0006) near.push([j, d]); }
+      near.sort((p, q) => p[1] - q[1]).slice(0, 3).forEach(([j]) => { if (j > i) link(i, j); });
+    }
+    const wall = nodes.length;                                                 // each hemisphere's inner (medial) wall, facing the other
+    for (let k = 0; k < 9000 && nodes.length < wall + 900; k++) {
+      const x = 0.2 + r() * 0.66, y = 0.2 + r() * 0.5, band = Math.exp(-((fold(x * 0.9, y * 1.1) / 0.2) ** 2));
+      if (region(x, y, true) !== 0 || y > arc(Math.max(0, Math.min(1, (x - 0.35) / 0.34)))[1] + 0.05 || r() > 0.05 + 0.9 * band) continue;
+      const sd = r() < 0.5 ? -1 : 1;
+      nodes.push({x, y, z: sd * (0.05 + r() * 0.015), g: 4, side: sd, n: [], mid: true, wall: true});
+    }
+    for (let i = first; i < nodes.length; i++) {                               // short fibres: bridge <-> walls, wall <-> wall (same side)
+      const a = nodes[i], near = [];
+      for (let j = first; j < nodes.length; j++) { const b = nodes[j];
+        if (j === i || (a.wall && b.wall && a.side !== b.side)) continue;
+        const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2; if (d < 0.0009) near.push([j, d]); }
+      near.sort((p, q) => p[1] - q[1]).slice(0, a.wall ? 3 : 2).forEach(([j]) => { if (j > i && !(nodes[j].n.includes(i))) link(i, j); });
+    }
+    for (let i = wall; i < nodes.length; i++) {                                // where the inner wall folds over into the outer surface
+      const a = nodes[i]; let best = -1, bd = 0.0012;
+      for (let j = 0; j < first; j++) { const b = nodes[j]; if (b.side !== a.side || b.g !== 0) continue;
+        const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2; if (d < bd) { bd = d; best = j; } }
+      if (best >= 0) link(i, best);
+    }
     return {nodes, edges};
   }
   const NET = build();
@@ -125,8 +162,11 @@ window.NeuralBrain = (() => {
         f.stroke();
       });
       f.globalCompositeOperation = "lighter";
+      f.strokeStyle = `rgba(${WHITE},.07)`; f.beginPath();                          // the bridge, faint pink-white
+      NET.edges.forEach(([i, j]) => { if (NET.nodes[i].g === 3 && NET.nodes[j].g === 3) { f.moveTo(proj[i * 3], proj[i * 3 + 1]); f.lineTo(proj[j * 3], proj[j * 3 + 1]); } });
+      f.stroke();
       NET.nodes.forEach((n, i) => {
-        const k = shade(i), s = (0.35 + n.n.length * 0.16) * 2.8 * Math.sqrt(view.zoom) * (0.7 + 0.4 * k);
+        const k = n.wall ? shade(i) * 0.7 : n.mid ? 0.8 : shade(i), s = (0.35 + n.n.length * 0.16) * 2.8 * Math.sqrt(view.zoom) * (0.7 + 0.4 * k);
         f.globalAlpha = k; f.drawImage(sprite, proj[i * 3] - s, proj[i * 3 + 1] - s, s * 2, s * 2);
       });
       f.globalAlpha = 1; f.globalCompositeOperation = "source-over";

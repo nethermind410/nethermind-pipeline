@@ -97,8 +97,9 @@ function wire() {
     let ly = n.at ? fy - el.offsetHeight / 2 : uy < -0.5 ? fy - el.offsetHeight : uy > 0.5 ? fy : fy - el.offsetHeight / 2;
     lx = Math.max(24, Math.min(S.width - el.offsetWidth - 24, lx)); ly = Math.max(96, Math.min(S.height - el.offsetHeight - (n.at ? 24 : 120), ly));
     el.style.left = lx + "px"; el.style.top = ly + "px";
-    const ex = left ? lx + el.offsetWidth + 10 : right ? lx - 10 : lx + el.offsetWidth / 2;
-    const ey = n.at ? ly + el.querySelector(".nw").offsetHeight / 2 : uy < -0.5 ? ly + el.offsetHeight + 6 : uy > 0.5 ? ly - 6 : ly + el.querySelector(".nw").offsetHeight / 2;
+    const w = el.offsetWidth, h = el.offsetHeight;                              // lines leave the frame on the side facing the brain
+    const ex = n.at ? lx + w + 8 : left ? lx + w + 8 : right ? lx - 8 : lx + w / 2;
+    const ey = n.at || left || right ? ly + h / 2 : uy < -0.5 ? ly + h + 6 : ly - 6;
     ends[n.key] = {ex, ey, n, bow: 0.15};
   });
   const core = $("#core .core-btn");                                        // the monetisation number is wired in like the rest
