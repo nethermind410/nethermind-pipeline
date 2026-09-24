@@ -6,10 +6,10 @@ const NEURONS = [
   // each section sits on the part of the brain that does that job (side profile: front is left).
   // Placed by hand, deliberately uneven: gap = distance outside the brain, nudge = px offset,
   // scale = type size, tilt = degrees.
-  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0, nudge: [0, 0], scale: 1.3, tilt: -3, at: [0.12, 0.34]},
+  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0, nudge: [0, 0], scale: 1.3, tilt: -3, at: [0.035, 0.37]},
   {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.2, nudge: [-10, -80], scale: 0.95, tilt: 2.5},
   {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.015, nudge: [-110, 36], scale: 1.12, tilt: -1.5},
-  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0, nudge: [0, 0], scale: 0.82, tilt: 1.5, at: [0.07, 0.9]},
+  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0, nudge: [0, 0], scale: 0.82, tilt: 1.5, at: [0.025, 0.6]},
   {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.15, nudge: [70, -40], scale: 1.0, tilt: 3.5},
   {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.05, nudge: [-6, 110], scale: 1.4, tilt: -2},
   {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.24, nudge: [110, -30], scale: 0.74, tilt: 2},
@@ -67,6 +67,9 @@ async function pageBrain() {
   window.onresize = () => document.body.classList.contains("on-brain") && wire(data);
 }
 
+const CORE = {key: "home-core", ax: 0.47, ay: 0.64};
+const findN = key => key === CORE.key ? CORE : NEURONS.find(x => x.key === key);
+
 /* lay out neurons around the brain and draw the construction lines */
 function wire() {
   const stage = $("#stage"), svg = $("#syn"); if (!stage || !$("#bnet")) return;
@@ -99,6 +102,14 @@ function wire() {
     paths += `<path class="guide" id="g-${n.key}" d="${d}"/><path class="line" id="l-${n.key}" d="${d}"/>
       <circle class="node" id="n-${n.key}" cx="${ax}" cy="${ay}" r="3.5"/><circle class="halo" id="h-${n.key}" cx="${ax}" cy="${ay}" r="4"/>`;
   });
+  const core = $("#core .core-btn");                                        // the monetisation number is wired in like the rest
+  if (core && !narrow) {
+    const [ax, ay] = pt(CORE), r = core.getBoundingClientRect();
+    const ex = r.left - S.left + r.width / 2, ey = r.top - S.top - 6;
+    const d = `M${ex},${ey} Q${ex + (ax - ex) * 0.3},${(ey + ay) / 2} ${ax},${ay}`;
+    paths += `<path class="guide" id="g-home-core" d="${d}"/><path class="line" id="l-home-core" d="${d}"/>
+      <circle class="node" id="n-home-core" cx="${ax}" cy="${ay}" r="3.5"/><circle class="halo" id="h-home-core" cx="${ax}" cy="${ay}" r="4"/>`;
+  }
   // faint construction axes, Da Vinci-style: through the brain's centre and across the page
   const cx = I.left - S.left + I.width * 0.5, cy = I.top - S.top + I.height * 0.5;
   svg.innerHTML = `${paths}<g id="sparks"></g>`;
@@ -143,16 +154,16 @@ function spark(d, ms, cls = "") {
 
 /* hover: draw the construction line; click: fire the synapse, flash the region, zoom in, open */
 document.addEventListener("pointerover", e => {
-  const n = e.target.closest && e.target.closest(".neuron"); if (!n) return;
+  const n = e.target.closest && e.target.closest(".neuron,.core-btn"); if (!n) return;
   const l = $("#l-" + n.dataset.neuron); if (l) l.style.strokeDashoffset = 0;
   $("#h-" + n.dataset.neuron)?.classList.add("lit");
-  const nn = NEURONS.find(x => x.key === n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, true);
+  const nn = findN(n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, true);
 });
 document.addEventListener("pointerout", e => {
-  const n = e.target.closest && e.target.closest(".neuron"); if (!n || n.contains(e.relatedTarget)) return;
+  const n = e.target.closest && e.target.closest(".neuron,.core-btn"); if (!n || n.contains(e.relatedTarget)) return;
   const l = $("#l-" + n.dataset.neuron); if (l) l.style.strokeDashoffset = l.getTotalLength();
   $("#h-" + n.dataset.neuron)?.classList.remove("lit");
-  const nn = NEURONS.find(x => x.key === n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, false);
+  const nn = findN(n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, false);
 });
 document.addEventListener("click", async e => {
   const n = e.target.closest && e.target.closest("[data-neuron]"); if (!n) return;
@@ -161,7 +172,7 @@ document.addEventListener("click", async e => {
   if (REDUCED) return go(target);
   const l = $("#l-" + key);
   if (l) { l.style.strokeDashoffset = 0; await spark(l.getAttribute("d"), 480); }
-  const nn = NEURONS.find(x => x.key === key);
+  const nn = findN(key);
   if (nn && window.brainNet) await brainNet.fire(nn.ax, nn.ay);      // the wave spreads through the network
   const node = $("#n-" + key), stage = $("#stage");
   if (node) {

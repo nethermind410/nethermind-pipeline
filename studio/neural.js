@@ -64,7 +64,7 @@ window.NeuralBrain = (() => {
   }
   const NET = build();
 
-  const box = (W, H) => { const size = Math.min(W * 0.76, H * 1.32); return {size, ox: W / 2 - size * 0.52, oy: H * 0.5 - size * 0.48}; };
+  const box = (W, H) => { const size = Math.min(W * 0.9, H * 1.42); return {size, ox: W / 2 - size * 0.525, oy: H * 0.47 - size * 0.4685}; };   // brain spans x .165–.885, y .185–.752
 
   function mount(canvas) {
     const ctx = canvas.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
