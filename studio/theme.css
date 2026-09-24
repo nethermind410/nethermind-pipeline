@@ -177,3 +177,8 @@ body.on-brain main{padding:0;overflow:hidden}
 :root, :root:not([data-x]){--accent:#E0294B;--sel:rgba(224,41,75,.18);--on-accent:#FFF4F5}
 @media (prefers-color-scheme:light){:root{--accent:#E0294B;--sel:rgba(224,41,75,.18)}}
 .btn.primary:hover{background:var(--accent);border-color:var(--accent);color:#FFF4F5}
+
+/* v2.8: hand-placed labels — each its own size and tilt */
+.neuron{transform:rotate(var(--tilt,0deg));transform-origin:center}
+.neuron .nw,.neuron.hot .nw{font-size:calc(clamp(20px,1.9vw,28px) * var(--s,1))}
+.neuron .nc{font-size:calc(13px * (0.85 + 0.15 * var(--s,1)))}

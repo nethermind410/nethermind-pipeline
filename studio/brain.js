@@ -4,14 +4,15 @@
    zooms into that region before opening the section. Every caption is live data. */
 const NEURONS = [
   // each section sits on the part of the brain that does that job (side profile: front is left).
-  // gap = how far outside the outline the label floats; nudge = hand-placed offsets so nothing lines up.
-  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0.07, nudge: [-40, 0]},
-  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.12, nudge: [0, -30]},
-  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.05, nudge: [-20, 10]},
-  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0.1, nudge: [30, 0]},
-  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.09, nudge: [10, -20]},
-  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.04, nudge: [0, 26]},
-  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.13, nudge: [0, 0]},
+  // Placed by hand, deliberately uneven: gap = distance outside the brain, nudge = px offset,
+  // scale = type size, tilt = degrees.
+  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0.02, nudge: [-150, -6], scale: 1.3, tilt: -3},
+  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.2, nudge: [-10, -80], scale: 0.95, tilt: 2.5},
+  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.015, nudge: [-110, 36], scale: 1.12, tilt: -1.5},
+  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0.2, nudge: [150, 10], scale: 0.78, tilt: 1.5},
+  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.15, nudge: [70, -40], scale: 1.0, tilt: 3.5},
+  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.05, nudge: [-6, 110], scale: 1.4, tilt: -2},
+  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.24, nudge: [110, -30], scale: 0.74, tilt: 2},
 ];
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -53,7 +54,7 @@ async function pageBrain() {
   const data = await brainData();
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
-    return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}">
+    return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}" style="--s:${n.scale};--tilt:${n.tilt}deg">
       <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(n.lobe)}</span></button>`;
   }).join("");
   const c = data.ch;
