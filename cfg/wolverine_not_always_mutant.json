@@ -1,0 +1,122 @@
+{
+ "id": "wolverine_not_always_mutant",
+ "file": "wolverine_not_always_mutant",
+ "palette": {
+  "accent": [
+   255,
+   205,
+   0
+  ],
+  "accent2": [
+   40,
+   90,
+   190
+  ]
+ },
+ "credit": "ART: AI-GENERATED (ORIGINAL)",
+ "score": "deep",
+ "hook": {
+  "lines": [],
+  "size": 140,
+  "y": 600
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "SUBSCRIBE FOR MORE",
+   "NEXT:",
+   "MARVEL'S OTHER BURIED ORIGIN STORY"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "Everyone thinks Wolverine was born a mutant, with claws made of bone. Marvel almost made him something completely different.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_animal_vs_mutant_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "1974. The Incredible Hulk issue 180. His first appearance doesn't even call him a mutant, just a secret agent for the Canadian government. A year later, writer Len Wein and artist Dave Cockrum rewrote him from scratch and recruited him into a brand new X-Men.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_new_recruit_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "Here's what almost nobody knows. Those claws weren't even part of him. Artist John Romita Senior's original design had them built into his gloves, retractable metal blades in a gauntlet, not something that grew out of his own skin.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_glove_claws_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "It gets stranger. After Wein left, Cockrum and writer Chris Claremont wanted to go further, and make Wolverine an actual mutated wolverine, engineered by the same Marvel scientist who splices animals into people: the High Evolutionary. Stan Lee killed it. He called the idea disgusting.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_high_evolutionary_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s5",
+   "text": "So the bone claws under an adamantium coating, the version everyone assumes he was always drawn with? Marvel didn't actually reveal that until the Weapon X story in 1991, and didn't confirm the bone underneath until 1993. Nineteen years after his first appearance, to become the Wolverine you think you know.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_adamantium_skeleton_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "hero": {
+    "at": 8,
+    "lines": [
+     "19",
+     "YEARS"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 140
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6",
+   "text": "A secret agent. Then a mutant. Then almost an actual animal. Marvel spent nineteen years rewriting Wolverine before landing on the version everyone quotes as fact.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_planned_vs_real_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.3
+  }
+ ]
+}

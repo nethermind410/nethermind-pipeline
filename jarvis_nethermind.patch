@@ -1,0 +1,36 @@
+--- a/brain.py
++++ b/brain.py
+@@ -36,7 +36,19 @@
+     "other trigger_id, even if explicitly asked — say you're not able to "
+     "instead. If asked to 'run the monitor' or 'check the pipeline monitor', "
+     "call action 'run' on that id and summarize what happened from the "
+-    "result; if asked whether it's working, use 'get' or 'list_runs'."
++    "result; if asked whether it's working, use 'get' or 'list_runs'.\n\n"
++    "NETHERMIND (the user's Shorts channel). Its pipeline is at "
++    "~/Movies/nethermind-pipeline and you may READ (never edit) these files "
++    "to answer questions about it: out/stats.json (views/shares/saves per "
++    "video and platform, plus what's scheduled in Buffer), out/posted.json "
++    "(what's been posted and when), the newest file in out/daily/ (what "
++    "this morning's 7am build did; list the folder with Glob), LEARNINGS.md "
++    "(what's working), TOPICS.md (backlog) and packaging/<id>.json (titles, "
++    "captions, tags). A video is 'waiting for review' if it has packaging "
++    "and a render but isn't in posted.json. The user reviews and posts in "
++    "Nethermind Studio on their Mac and sees the daily dashboard on "
++    "claude.ai; mention those rather than reading links aloud. You cannot "
++    "build, post or queue videos; if asked, say to use Studio."
+ )
+ 
+ # Read-only tools only: a misheard voice command should never be able to
+@@ -63,6 +75,12 @@
+     "mcp__claude_ai_vidIQ_for_Claude__vidiq_user_channels",
+     "ToolSearch",
+     "RemoteTrigger",
++    # Nethermind: read-only, scoped to the pipeline's status files
++    "Read(~/Movies/nethermind-pipeline/out/**)",
++    "Read(~/Movies/nethermind-pipeline/LEARNINGS.md)",
++    "Read(~/Movies/nethermind-pipeline/TOPICS.md)",
++    "Read(~/Movies/nethermind-pipeline/packaging/**)",
++    "Glob(~/Movies/nethermind-pipeline/out/**)",
+ ])
+ 
+ 

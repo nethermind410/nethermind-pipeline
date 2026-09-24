@@ -1,5 +1,31 @@
 # Content Pipeline
 
+## Day-to-day: the Nethermind app
+
+Open **Nethermind** from Applications or the Dock (`./make_app.sh` rebuilds it). It opens on
+**Today**: everything that needs you, each with a tick circle. Ticking clears it, with Undo.
+It also starts Studio's server (:8766) and Jarvis's brain (:8765) behind the scenes, and sends a
+notification when a new video is ready. Screens: Today · Videos (review, Schedule…, Needs changes…)
+· Performance · Ideas · Settings. Press ⌘K to ask Jarvis or jump anywhere.
+`.venv/bin/python studio.py` still serves the same UI in a browser.
+
+| Command | What it does |
+|---|---|
+| `./build.sh <id>` | fetch/generate images → render main + TikTok cut → QA both → thumbnail → upload asset bundle |
+| `./build.sh <id> --no-fetch` | re-render only, using the images already in assets/ |
+| `./post.sh <id>` | dry run: shows exactly what would go to YouTube, Instagram, TikTok |
+| `./post.sh <id> --live` | uploads to R2 and queues on Buffer (YouTube tags + pinned comment still manual) |
+| `.venv/bin/python stats.py` | pulls views/shares/saves for Buffer-posted videos into out/stats.json |
+
+**Daily at 7:00** (Claude app → Scheduled → "Nethermind daily build"): refreshes stats, updates
+LEARNINGS.md from the numbers, builds + packages the next video for your review (never posts), and
+publishes the phone-friendly dashboard: https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B
+(`dashboard.py` builds it; daily notes land in out/daily/).
+
+The GitHub "Render and post" workflow now takes any video id: it restores the asset bundle
+`build.sh` uploaded, runs `build.sh`, and posts only if you tick "publish".
+
+
 A factory for faceless, fact-checked YouTube Shorts. One JSON config in, one finished MP4 + SRT out. Narration is Kokoro TTS — free, self-hosted, no API key (voice: am_liam); visuals are either public-domain NASA/NOAA/ESA media or, for topics with no public-domain source (e.g. superhero trivia), original AI-generated art from Gemini. Fonts are open-licence, and the score is synthesised from scratch. Only cost is a Gemini API key for hero-config art (see SETUP.md) — otherwise free. `tts_elevenlabs.py` is kept as an optional fallback backend, not used by default.
 
 ## Make a video
@@ -7,13 +33,27 @@ A factory for faceless, fact-checked YouTube Shorts. One JSON config in, one fin
 ```bash
 cd ~/Movies/Content-Pipeline
 
+source .venv/bin/activate                 # deps live here (Homebrew python3 lacks soundfile/kokoro-onnx as of 2026-09-24)
 python3 new_video.py fact my_topic        # scaffold a config
 #   ... edit cfg/my_topic.json: the text, the image names/prompts, the hook ...
-python3 gen_visuals.py cfg/my_topic.json  # only needed for "kb" images with a "prompt"
+python3 fetch_real.py cfg/my_topic.json   # real photos first — see "Visuals" below
+python3 gen_visuals.py cfg/my_topic.json  # only for "kb" images with a "prompt" (no real photo exists)
 python3 make_short.py cfg/my_topic.json
+python3 qa_render.py cfg/my_topic.json    # ALWAYS run this before it goes near Buffer — see below
+#   ... write packaging/my_topic.json (title, description, tags, captions, pinned comment, "thumbnail" block) ...
+python3 make_thumb.py packaging/my_topic.json  # out/my_topic_thumb.jpg (1280×720) + out/my_topic_cover.jpg (1080×1920)
 ```
 
 Out comes `out/my_topic.mp4` (1080×1920, ~30–45s) and `out/my_topic.srt`. Takes about 2–3 minutes plus generation time. `./runall.sh` rebuilds every config in `cfg/`.
+
+**`qa_render.py` is not optional.** Two silent-failure incidents (2026-09-21) shipped because nothing
+actually looked at the output before it was trusted: hook/credit text overflowing both edges of the
+frame (caught only by manually screenshotting), and Buffer posts running a crushed ~200kbps remux or
+the wrong-length video while Buffer itself reported no error. `qa_render.py` runs the automated checks a
+script actually can (dimensions, bitrate floor, duration sanity, srt exists) and builds a contact sheet
+of 8 evenly-spaced frames at `out/<id>_qa_contact.jpg` — a 5-second glance that catches what the checks
+can't (text overflow, a wrong or ugly image, a caption that doesn't fit). Look at the contact sheet
+every time, not just when the exit code is non-zero.
 
 Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice` (iceberg chart — needs no media at all, the chart is drawn in code), `creature` (animal reveal), `hero` (superhero trivia — Gemini-generated art only, see "Visuals" below).
 
@@ -26,6 +66,7 @@ tts_elevenlabs.py  ElevenLabs narration backend — optional fallback, not used 
 gen_visuals.py     Gemini image generation for "kb" segments with a "prompt"
 fetch_real.py      Wikimedia Commons PD/CC0 photo fetch for "kb" segments with a "real"
 new_video.py       scaffolds a new config so you never start blank
+make_thumb.py      thumbnail + vertical cover from the packaging file's "thumbnail" block
 fetch_assets.sh    re-downloads every public-domain asset (safe to re-run)
 runall.sh          renders every config in cfg/
 cfg/               one JSON per video — this is the only file you edit

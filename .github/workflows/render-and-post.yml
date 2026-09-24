@@ -10,24 +10,12 @@ on:
     inputs:
       config:
         description: >-
-          Which cfg/*.json to render. Defaults are limited to the 6 configs
-          whose assets are covered by fetch_assets.sh (NASA/NOAA/ESA public
-          domain, no key needed): deepsea_iceberg, space_iceberg, dead_star,
-          glass_rain, greenland_shark, anglerfish. Any other config (Gemini
-          art / Wikimedia photos) needs gen_visuals.py / fetch_real.py run
-          first, not yet wired into this workflow.
+          Video id (the cfg/<id>.json name), e.g. regrow_body. Newer videos render
+          from the asset bundle ./build.sh uploads to R2 (bundles/<id>.tar.gz);
+          the old NASA/NOAA configs still work from fetch_assets.sh alone.
         required: true
-        default: ocean_species_iceberg
-        type: choice
-        options:
-          - deepsea_iceberg
-          - space_iceberg
-          - dead_star
-          - glass_rain
-          - greenland_shark
-          - anglerfish
-          - antarctica_iceberg
-          - ocean_species_iceberg
+        default: regrow_body
+        type: string
       publish:
         description: >-
           Actually post to Buffer for real (uploads to R2, creates a live
@@ -39,9 +27,9 @@ on:
         default: false
         type: boolean
       platforms:
-        description: 'Comma-separated platforms for buffer_post.py (instagram,tiktok,youtube — youtube stays manual by default per buffer_post.py itself)'
+        description: 'Comma-separated platforms for buffer_post.py (youtube,instagram,tiktok)'
         required: true
-        default: instagram,tiktok
+        default: youtube,instagram,tiktok
 
 jobs:
   render-and-post:
@@ -82,8 +70,26 @@ jobs:
       - name: Fetch public-domain assets (NASA/NOAA/ESA, safe to re-run)
         run: ./fetch_assets.sh
 
-      - name: Render
-        run: python3 make_short.py "cfg/${{ inputs.config }}.json"
+      - name: Validate video id
+        run: |
+          [[ "${{ inputs.config }}" =~ ^[a-z0-9_]+$ && -f "cfg/${{ inputs.config }}.json" ]] \
+            || { echo "no cfg/${{ inputs.config }}.json"; exit 1; }
+
+      - name: Pull this video's asset bundle from R2 (skipped if none uploaded)
+        env:
+          BASE: ${{ secrets.R2_PUBLIC_BASE_URL }}
+        run: |
+          mkdir -p assets
+          if curl -fsSL -o /tmp/bundle.tgz "${BASE%/}/bundles/${{ inputs.config }}.tar.gz"; then
+            tar xzf /tmp/bundle.tgz -C assets && echo "bundle restored"
+          else
+            echo "no bundle for ${{ inputs.config }} (fine for public-domain configs)"
+          fi
+
+      - name: Render main + TikTok cut, QA, thumbnail
+        env:
+          PY: python3
+        run: ./build.sh "${{ inputs.config }}" --no-fetch
 
       - name: Resolve rendered MP4 filename from the config
         id: cfgfile
@@ -105,7 +111,11 @@ jobs:
           name: ${{ inputs.config }}-render
           path: |
             out/${{ steps.cfgfile.outputs.file }}.mp4
-            out/${{ inputs.config }}.srt
+            out/${{ inputs.config }}_tiktok.mp4
+            out/${{ inputs.config }}*.srt
+            out/${{ inputs.config }}_qa_contact.jpg
+            out/${{ inputs.config }}_thumb.jpg
+            out/${{ inputs.config }}_cover.jpg
           retention-days: 14
 
       - name: Write .env for buffer_post.py from repo secrets
@@ -131,6 +141,7 @@ jobs:
           fi
           python3 buffer_post.py \
             --video "out/${{ steps.cfgfile.outputs.file }}.mp4" \
+            --tiktok-video "out/${{ inputs.config }}_tiktok.mp4" \
             --platforms "${{ inputs.platforms }}" \
             $PACKAGING_ARG \
             $DRY_RUN_FLAG

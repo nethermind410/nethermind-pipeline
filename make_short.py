@@ -44,11 +44,17 @@ def tts_all():
             continue
         mp3 = os.path.join(TTS_DIR, s["id"] + ".mp3")
         jsn = os.path.join(TTS_DIR, s["id"] + ".json")
-        if os.path.exists(mp3) and os.path.exists(jsn) and "--no-tts" not in sys.argv:
+        txt = os.path.join(TTS_DIR, s["id"] + ".txt")  # the text that audio was made from
+        same_text = os.path.exists(txt) and open(txt).read() == s["text"]
+        if not os.path.exists(txt) and os.path.exists(jsn):
+            same_text = True  # cache made before .txt sidecars existed: trust it once, record it
+            open(txt, "w").write(s["text"])
+        if os.path.exists(mp3) and os.path.exists(jsn) and same_text and "--no-tts" not in sys.argv:
             timing[s["id"]] = json.load(open(jsn))
         else:
             timing[s["id"]] = tts_elevenlabs.synthesize(s["text"], mp3, CFG.get("voice_id"))
             json.dump(timing[s["id"]], open(jsn, "w"))
+            open(txt, "w").write(s["text"])
     return timing
 
 TIMING = tts_all()
@@ -83,7 +89,8 @@ def img(name):
 def vframes(src, ss=0.0, length=8.0):
     key = (src, ss)
     if key not in _vf:
-        d = os.path.join(A, f".fr_{os.path.splitext(src)[0]}_{int(ss*10)}")
+        stamp = int(os.path.getmtime(os.path.join(A, src)))  # replaced clip -> new cache dir
+        d = os.path.join(A, f".fr_{os.path.splitext(src)[0]}_{int(ss*10)}_{stamp}")
         if not os.path.isdir(d):
             os.makedirs(d)
             subprocess.check_call(["ffmpeg", "-v", "error", "-y", "-ss", str(ss), "-i", os.path.join(A, src),
@@ -237,11 +244,21 @@ def chunks(ws, maxn=3):
     return out
 
 def draw_hook(d):
-    f = font(F_CAP, CFG["hook"].get("size", 150))
+    size = CFG["hook"].get("size", 150)
     y = CFG["hook"].get("y", 620)
-    for txt, c in CFG["hook"]["lines"]:
+    lines = CFG["hook"]["lines"]
+    max_w = W - 80  # keep clear of both edges
+    # shrink uniformly (never per-line) until every hook line fits the frame
+    s = size
+    while s > 40:
+        f = font(F_CAP, s)
+        if all((f.getbbox(txt)[2] - f.getbbox(txt)[0]) <= max_w for txt, _ in lines):
+            break
+        s -= 2
+    f = font(F_CAP, s)
+    for txt, c in lines:
         h = centre(d, txt, f, y, COL[c], 8)
-        y += CFG["hook"].get("size", 150) * 1.17
+        y += s * 1.17
 
 def draw_hero(d, hero, sc):
     lines = hero["lines"]
@@ -320,7 +337,14 @@ def draw_end(d, seg, tl):
         centre(d, txt, f, 1370 + i * 70, COL["a2"] if i else WHITE, 5)
 
 def draw_credit(d):
-    f = font(F_SM, 34)
+    max_w = W - 80  # keep clear of both edges
+    s = 34
+    while s > 16:
+        f = font(F_SM, s)
+        if (f.getbbox(CFG["credit"])[2] - f.getbbox(CFG["credit"])[0]) <= max_w:
+            break
+        s -= 1
+    f = font(F_SM, s)
     bb = d.textbbox((0, 0), CFG["credit"], font=f)
     d.text(((W - bb[2]) / 2, 215), CFG["credit"], font=f, fill=(150, 150, 150))
 

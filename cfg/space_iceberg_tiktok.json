@@ -1,0 +1,147 @@
+{
+ "id": "space_iceberg_tiktok",
+ "file": "space_iceberg_tiktok",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "rate": "+5%",
+ "palette": {
+  "accent": [
+   200,
+   120,
+   255
+  ],
+  "accent2": [
+   255,
+   140,
+   40
+  ]
+ },
+ "credit": "EACH TIER LABELLED BY HOW CERTAIN IT IS",
+ "score": "space",
+ "cap_y": 1130,
+ "hook": {
+  "lines": [
+   [
+    "THE SPACE",
+    "w"
+   ],
+   [
+    "ICEBERG",
+    "a"
+   ]
+  ],
+  "size": 152,
+  "y": 700
+ },
+ "iceberg": {
+  "tiers": [
+   {
+    "label": "The Observable Edge",
+    "depth": "MEASURED",
+    "col": "a"
+   },
+   {
+    "label": "Kessler Syndrome",
+    "depth": "MODELLED",
+    "col": "a"
+   },
+   {
+    "label": "The Great Filter",
+    "depth": "HYPOTHESIS",
+    "col": "a2"
+   },
+   {
+    "label": "Heat Death",
+    "depth": "PROJECTION",
+    "col": "a2"
+   },
+   {
+    "label": "Boltzmann Brains",
+    "depth": "THOUGHT EXPERIMENT",
+    "col": "a2"
+   }
+  ]
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "NEXT:",
+   "THE FISH THAT FUSE TOGETHER"
+  ]
+ },
+ "segments": [
+  {
+   "id": "h",
+   "text": "Five ideas about space, getting worse as we go down.",
+   "hook": true,
+   "vis": {
+    "t": "ice",
+    "tier": 0
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t1",
+   "text": "The observable universe is ninety three billion light years across. It is only thirteen point eight billion years old.",
+   "vis": {
+    "t": "ice",
+    "tier": 0
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "93 BILLION",
+     "LIGHT YEARS"
+    ],
+    "col": "a",
+    "y": 1440,
+    "size": 104
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t2",
+   "text": "Kessler syndrome. One satellite collision could cascade into debris that seals us on this planet.",
+   "vis": {
+    "t": "ice",
+    "tier": 1
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t3",
+   "text": "The Great Filter. Something may stop civilisations before they spread. Nobody knows if it is behind us, or ahead.",
+   "vis": {
+    "t": "ice",
+    "tier": 2
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t4",
+   "text": "Heat death. If physics holds, energy spreads out evenly until nothing can ever happen again.",
+   "vis": {
+    "t": "ice",
+    "tier": 3
+   },
+   "gap": 0.2
+  },
+  {
+   "id": "t5",
+   "text": "And Boltzmann brains. The idea that random noise makes lone conscious minds more likely than whole universes.",
+   "vis": {
+    "t": "ice",
+    "tier": 4
+   },
+   "gap": 0.25
+  },
+  {
+   "id": "e",
+   "text": "Most physicists think that last one just means our maths is wrong.",
+   "vis": {
+    "t": "ice",
+    "tier": 4
+   },
+   "gap": 0.3
+  }
+ ]
+}

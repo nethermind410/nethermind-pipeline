@@ -24,7 +24,7 @@ Other real-content sources considered and dropped for this script:
     Vertigo comic sitting right next to genuinely PD titles). Comic scans
     are a manual, per-issue, human-verified job — see README.md.
 """
-import html, json, os, re, sys
+import html, json, os, re, sys, time
 import requests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +75,12 @@ def fetch(query, out_path):
     for cand in search(query):
         if not _license_ok(cand["license"]):
             continue
-        img = requests.get(cand["url"], headers={"User-Agent": UA}, timeout=30)
+        for wait in (0, 10, 30, 60):  # Wikimedia rate-limits bursts with 429
+            time.sleep(wait)
+            img = requests.get(cand["url"], headers={"User-Agent": UA}, timeout=30)
+            if img.status_code != 429:
+                break
+            print(f"  rate-limited by Wikimedia, retrying in {wait or 10}s ...")
         img.raise_for_status()
         with open(out_path, "wb") as f:
             f.write(img.content)

@@ -1,0 +1,179 @@
+{
+ "id": "regrow_body_tiktok",
+ "file": "regrow_body_tiktok",
+ "palette": {
+  "accent": [
+   74,
+   222,
+   128
+  ],
+  "accent2": [
+   250,
+   204,
+   21
+  ]
+ },
+ "credit": "ART: AI-GEN (ORIGINAL) · REAL FOOTAGE & IMAGES: CC BY / PD — SEE DESCRIPTION",
+ "score": "deep",
+ "hook": {
+  "lines": [],
+  "size": 140,
+  "y": 600
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "FOLLOW FOR MORE",
+   "NEXT:",
+   "MARVEL'S OTHER BURIED ORIGIN STORY"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "Marvel burned a mutant down to his bare skeleton, then let him grow back. Fans called it the most ridiculous healing ever drawn.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "regrow_skeleton2.jpg",
+    "z0": 1.1,
+    "z1": 1.26,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "2006. Wolverine issue 43. A villain called Nitro detonates at full power, and strips every ounce of flesh off Logan's bones.",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_blast.jpg",
+    "z0": 1.24,
+    "z1": 1.1,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "A few pages later, he's back. Muscle, skin, the lot. The usual explanation? His healing lives in his bone marrow, sealed inside metal nothing can break.",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_halfhealed2.jpg",
+    "z0": 1.0,
+    "z1": 1.12,
+    "cx": 0.42,
+    "cy": 0.4
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "Except nature already does something wilder. This is a planarian. A flatworm about the length of a fingernail.",
+   "vis": {
+    "t": "vid",
+    "src": "regrow_clip_glide.mp4",
+    "ss": 0,
+    "fit": "square"
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s5a",
+   "text": "In 1898, biologist Thomas Hunt Morgan cut them into pieces.",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_morgan_fig4.jpg",
+    "z0": 1.0,
+    "z1": 1.12,
+    "cx": 0.5,
+    "cy": 0.52
+   },
+   "gap": 0.1
+  },
+  {
+   "id": "s5b",
+   "text": "A fragment just one two hundred and seventy ninth of the worm grew back into a whole new animal.",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_morgan_fig41.jpg",
+    "z0": 1.0,
+    "z1": 1.1,
+    "cx": 0.5,
+    "cy": 0.52
+   },
+   "hero": {
+    "at": 3,
+    "lines": [
+     "1/279",
+     "OF A WORM"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 140
+   },
+   "gap": 0.1
+  },
+  {
+   "id": "s5c",
+   "text": "Head, brain, gut, everything.",
+   "vis": {
+    "t": "vid",
+    "src": "regrow_clip_head.mp4",
+    "ss": 0,
+    "fit": "square"
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6a",
+   "text": "In 2011, scientists went further. They took a worm whose own stem cells had been wiped out by radiation,",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_wild.jpg",
+    "z0": 1.05,
+    "z1": 1.3,
+    "cx": 0.62,
+    "cy": 0.55
+   },
+   "gap": 0.05
+  },
+  {
+   "id": "s6b",
+   "text": "and gave it one single cell from another worm. That one cell rebuilt the entire body.",
+   "vis": {
+    "t": "vid",
+    "src": "regrow_clip_regrown.mp4",
+    "ss": 0,
+    "fit": "square"
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s7a",
+   "text": "Wolverine needed his whole skeleton to come back.",
+   "vis": {
+    "t": "kb",
+    "src": "regrow_skeleton2.jpg",
+    "z0": 1.36,
+    "z1": 1.16,
+    "cx": 0.5,
+    "cy": 0.4
+   },
+   "gap": 0.1
+  },
+  {
+   "id": "s7b",
+   "text": "The flatworm needs one cell.",
+   "vis": {
+    "t": "vid",
+    "src": "regrow_clip_glide.mp4",
+    "ss": 0,
+    "fit": "square"
+   },
+   "gap": 0.3
+  }
+ ]
+}

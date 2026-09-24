@@ -1,0 +1,161 @@
+{
+ "id": "mantis_shrimp_punch_tiktok",
+ "file": "mantis_shrimp_punch_tiktok",
+ "palette": {
+  "accent": [
+   60,
+   230,
+   190
+  ],
+  "accent2": [
+   255,
+   90,
+   130
+  ]
+ },
+ "credit": "PHOTOS: L. SAWITRI, C. GLOOR, J. PETERSEN, C. ROBERTSON (CC BY), WIKIMEDIA COMMONS \u00b7 ILLUSTRATIONS: AI, PHYSICS CONCEPTS \u00b7 SOURCE: ALDERETE ET AL., SCIENCE, FEB 2025 (NORTHWESTERN / INST. OF LIGHT AND MATTER)",
+ "score": "deep",
+ "hook": {
+  "lines": [
+   [
+    "THIS SHRIMP PUNCHES",
+    "w"
+   ],
+   [
+    "LIKE A BULLET LEAVING A GUN.",
+    "w"
+   ],
+   [
+    "IT DOESN'T EVEN HAVE TO HIT YOU.",
+    "a"
+   ]
+  ],
+  "size": 108,
+  "y": 560
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "SUBSCRIBE FOR MORE",
+   "NEXT:",
+   "THE FISH WITH A TRANSPARENT HEAD"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "This shrimp punches like a bullet leaving a gun \u2014 and it doesn't even have to hit you to hurt you.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "mantis_colorful.jpg",
+    "z0": 1.1,
+    "z1": 1.25,
+    "cx": 0.5,
+    "cy": 0.4
+   },
+   "gap": 0.12
+  },
+  {
+   "id": "s2",
+   "text": "Its claw doesn't swing. It fires \u2014 hitting with about 1,500 newtons of force.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_mechanism.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.72,
+    "cy": 0.3
+   },
+   "hero": {
+    "at": 9,
+    "lines": [
+     "1,500 N"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.12
+  },
+  {
+   "id": "s3",
+   "text": "That's roughly ten thousand times the pull of gravity \u2014 faster than a bullet, underwater.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_bullet.jpg",
+    "z0": 1.0,
+    "z1": 1.15,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "hero": {
+    "at": 2,
+    "lines": [
+     "10,000 g"
+    ],
+    "col": "a",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.12
+  },
+  {
+   "id": "s4",
+   "text": "The claw moves so fast it boils water behind it \u2014 a second, invisible punch, even if it misses.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_aquarium.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.68,
+    "cy": 0.58
+   },
+   "hero": {
+    "at": 11,
+    "lines": [
+     "A SECOND PUNCH"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 122
+   },
+   "gap": 0.12
+  },
+  {
+   "id": "s5",
+   "text": "That collapse flashes as hot as the sun's surface \u2014 sonoluminescence.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_closeup.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.55
+   },
+   "hero": {
+    "at": 3,
+    "lines": [
+     "~5,800 K"
+    ],
+    "col": "a",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6",
+   "text": "Confirmed by Northwestern scientists, February 2025.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_reef.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.3
+  }
+ ]
+}

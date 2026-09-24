@@ -1,0 +1,96 @@
+{
+ "id": "wolverine_not_always_mutant_tiktok",
+ "file": "wolverine_not_always_mutant_tiktok",
+ "palette": {
+  "accent": [
+   255,
+   205,
+   0
+  ],
+  "accent2": [
+   40,
+   90,
+   190
+  ]
+ },
+ "credit": "ART: AI-GENERATED (ORIGINAL)",
+ "score": "deep",
+ "hook": {
+  "lines": [],
+  "size": 140,
+  "y": 600
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "FOLLOW FOR MORE",
+   "NEXT:",
+   "MARVEL'S OTHER BURIED ORIGIN STORY"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "Everyone thinks Wolverine was born a mutant with claws made of bone. Marvel almost made him something completely different.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_animal_vs_mutant_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s2",
+   "text": "1974, his first appearance doesn't even call him a mutant. And his claws weren't even part of him, the original design had them built into his gloves.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_glove_claws_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "Marvel almost went further, turning him into an actual mutated wolverine engineered by the High Evolutionary. Stan Lee called it disgusting and killed it.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_high_evolutionary_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "The bone-claws mutant everyone assumes he always was wasn't confirmed until 1993. Nineteen years after his first appearance.",
+   "vis": {
+    "t": "kb",
+    "src": "wolverine_adamantium_skeleton_padded.png",
+    "z0": 1.0,
+    "z1": 1.08,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "hero": {
+    "at": 5,
+    "lines": [
+     "19",
+     "YEARS"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 140
+   },
+   "gap": 0.3
+  }
+ ]
+}

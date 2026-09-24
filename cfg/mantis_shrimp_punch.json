@@ -1,0 +1,180 @@
+{
+ "id": "mantis_shrimp_punch",
+ "file": "mantis_shrimp_punch",
+ "palette": {
+  "accent": [
+   60,
+   230,
+   190
+  ],
+  "accent2": [
+   255,
+   90,
+   130
+  ]
+ },
+ "credit": "PHOTOS: L. SAWITRI, C. GLOOR, J. PETERSEN, C. ROBERTSON (CC BY), WIKIMEDIA COMMONS \u00b7 ILLUSTRATIONS: AI, PHYSICS CONCEPTS \u00b7 SOURCE: ALDERETE ET AL., SCIENCE, FEB 2025 (NORTHWESTERN / INST. OF LIGHT AND MATTER)",
+ "score": "deep",
+ "hook": {
+  "lines": [
+   [
+    "THIS SHRIMP PUNCHES",
+    "w"
+   ],
+   [
+    "LIKE A BULLET LEAVING A GUN.",
+    "w"
+   ],
+   [
+    "IT DOESN'T EVEN HAVE TO HIT YOU.",
+    "a"
+   ]
+  ],
+  "size": 108,
+  "y": 560
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "SUBSCRIBE FOR MORE",
+   "NEXT:",
+   "THE FISH WITH A TRANSPARENT HEAD"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "This shrimp punches like a bullet leaving a gun \u2014 and it doesn't even have to hit you to hurt you.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "mantis_colorful.jpg",
+    "z0": 1.1,
+    "z1": 1.25,
+    "cx": 0.5,
+    "cy": 0.4
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "Meet the peacock mantis shrimp. Four inches long, and its front claws don't swing \u2014 they're cocked like a loaded spring, then released.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_strike_ready.jpg",
+    "z0": 1.1,
+    "z1": 1.25,
+    "cx": 0.35,
+    "cy": 0.45
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "That release hits with about 1,500 newtons of force \u2014 accelerating faster than a bullet leaving a rifle barrel.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_mechanism.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.72,
+    "cy": 0.3,
+    "real": {
+     "query": "pistol muzzle flash firing"
+    }
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "1,500 N"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "Around ten thousand times the pull of gravity \u2014 fast enough to reach roughly fifty miles an hour, underwater.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_bullet.jpg",
+    "z0": 1.0,
+    "z1": 1.15,
+    "cx": 0.5,
+    "cy": 0.45,
+    "prompt": "Extreme macro close-up underwater photograph of a mantis shrimp's raptorial claw at the exact instant it strikes downward into water: the claw is a mottled reddish-tan, hard-shelled, segmented club-shaped limb (like a hammer-fist made of armor plates), only the claw and forearm are in frame, driving down with visible motion-blur streaking behind it. Directly at the point where the claw meets the water, a sharp cavitation bubble trail and an explosive white splash crown burst upward and outward, water droplets flying in every direction, dark blue water below the impact point. Dramatic side lighting emphasizing speed and force. This is an extreme macro crop showing only the striking claw and the water impact - no eyes, no antennae, no full body, no other legs, no face. Hyper-detailed high-speed underwater photography realism, documentary science-photography style. No text, no numbers, no diagram overlays, no boxing glove, no human hand, no human fist.",
+    "style": "science",
+    "_note": "Real mantis shrimp claw (not a costume/glove) striking the water's surface, splash bursting from the exact point of impact. Photorealistic style matching mantis_colorful.jpg, tight macro crop on just the claw + tail (no full-body pose) so the model isn't asked to combine anatomy + pose + water contact all at once - same recipe that worked for s3's bullet-leaving-gun shot. Fits the script's \"ten thousand g / fifty miles an hour, underwater\" line directly. Generated via Cloudflare Workers AI (free), style preset: science (see gen_visuals.py STYLE_PRESETS). Approved after the boxing-glove-costume concept (8 iterations) and a creature-free cavitation-vortex concept both fell short."
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "10,000 g"
+    ],
+    "col": "a",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s5",
+   "text": "The claw moves so fast it boils a pocket of water behind it. When that bubble collapses, it delivers a second, invisible punch \u2014 even if the claw itself misses.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_aquarium.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.68,
+    "cy": 0.58
+   },
+   "hero": {
+    "at": 6,
+    "lines": [
+     "A SECOND PUNCH"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 122
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6",
+   "text": "For a fraction of a millisecond, that collapse reaches temperatures in the same range as the surface of the sun \u2014 in a flash of light called sonoluminescence.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_closeup.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.55
+   },
+   "hero": {
+    "at": 5,
+    "lines": [
+     "~5,800 K"
+    ],
+    "col": "a",
+    "y": 390,
+    "size": 150
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s7",
+   "text": "Scientists only measured this directly for the first time in February 2025 \u2014 a laser experiment at Northwestern confirmed what researchers had predicted a decade earlier.",
+   "vis": {
+    "t": "kb",
+    "src": "mantis_reef.jpg",
+    "z0": 1.05,
+    "z1": 1.2,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.3
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "id": "maggott",
+ "file": "maggott",
+ "palette": {
+  "accent": [
+   167,
+   139,
+   250
+  ],
+  "accent2": [
+   232,
+   121,
+   249
+  ]
+ },
+ "credit": "ART: AI-GEN (ORIGINAL) \u00b7 STARFISH: J. KIRKHART / CC BY",
+ "score": "deep",
+ "hook": {
+  "lines": [],
+  "size": 140,
+  "y": 600
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "SUBSCRIBE FOR MORE",
+   "NEXT:",
+   "THE MUTANT WHO REGROWS HIS BODY"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "Marvel made a superhero whose stomach lived outside his body. And everyone said it was the dumbest power ever created.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "s1.jpg",
+    "z0": 1.1,
+    "z1": 1.26,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "1997. Uncanny X-Men issue 345. Meet Maggott, a mutant with a hollow gut and two giant slugs living inside it, named Eany and Meany.",
+   "vis": {
+    "t": "kb",
+    "src": "s2.jpg",
+    "z0": 1.24,
+    "z1": 1.1,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "They would crawl out, eat through almost anything, metal, stone, flesh, then crawl back in and turn that meal into raw superhuman strength. Fans called him the worst X-Man ever made.",
+   "vis": {
+    "t": "kb",
+    "src": "s3.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s4",
+   "text": "Except nature already built him. This is a starfish. It does not swallow its food. It pushes its stomach out through its own mouth, and digests its prey alive, on the outside.",
+   "vis": {
+    "t": "kb",
+    "src": "starfish_evert_real.jpg",
+    "real": {
+     "query": "Pisaster ochraceus"
+    },
+    "z0": 1.05,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s5",
+   "text": "To get inside a sealed clam, that stomach squeezes through a gap thinner than a single millimetre, a crack narrower than the edge of a coin, floods it with enzymes, and drinks the animal from the inside out. Then it pulls the stomach back in.",
+   "vis": {
+    "t": "kb",
+    "src": "starfish_clam_real.jpg",
+    "real": {
+     "query": "ochre sea star"
+    },
+    "z0": 1.3,
+    "z1": 1.5,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "hero": {
+    "at": 6,
+    "lines": [
+     "UNDER",
+     "1 MM"
+    ],
+    "col": "a2",
+    "y": 390,
+    "size": 140
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s6",
+   "text": "So the dumbest mutant power ever written is just real biology, running in every tide pool on Earth. And the joke did not age well. In 2025, Marvel made Maggott an Omega-level mutant. One of the most powerful beings alive.",
+   "vis": {
+    "t": "kb",
+    "src": "s6.jpg",
+    "z0": 1.28,
+    "z1": 1.12,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s7",
+   "text": "Marvel's worst mutant. Nature's most efficient killer. The exact same trick.",
+   "vis": {
+    "t": "kb",
+    "src": "s7.jpg",
+    "z0": 1.16,
+    "z1": 1.36,
+    "cx": 0.5,
+    "cy": 0.4
+   },
+   "gap": 0.3
+  }
+ ]
+}

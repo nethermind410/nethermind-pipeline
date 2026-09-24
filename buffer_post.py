@@ -36,9 +36,8 @@ Packaging JSON shape (matches claude/content-packaging-format.md):
 The pinned comment is NOT auto-posted — Buffer's Free plan doesn't support
 first-comment automation. It's printed at the end as a manual to-do.
 
-This does NOT post to YouTube by default (per current workflow, YouTube is
-uploaded manually) — pass --platforms youtube explicitly if that changes,
-and supply --youtube-title / --youtube-category (defaults to "24" = Entertainment).
+YouTube is opt-in here (--platforms youtube); ./post.sh <id> includes it. Buffer's
+YouTube input has no tags field, so youtube_tags still go in by hand in Studio.
 """
 
 import argparse
@@ -64,8 +63,10 @@ CHANNELS = {
 BUFFER_GRAPHQL_URL = "https://api.buffer.com/graphql"
 
 
-def load_env():
+def load_env(strict=True):
     env = {}
+    if not ENV_PATH.exists() and not strict:
+        return env
     if not ENV_PATH.exists():
         print(f"ERROR: {ENV_PATH} not found.", file=sys.stderr)
         sys.exit(1)
@@ -78,7 +79,7 @@ def load_env():
     required = ["BUFFER_API_KEY", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY",
                 "R2_ENDPOINT", "R2_BUCKET", "R2_PUBLIC_BASE_URL"]
     missing = [k for k in required if not env.get(k)]
-    if missing:
+    if missing and strict:
         print(f"ERROR: missing from .env: {', '.join(missing)}", file=sys.stderr)
         sys.exit(1)
     return env
@@ -147,6 +148,26 @@ def buffer_create_post(env, channel_id: str, text: str, video_url: str,
     return result["post"]
 
 
+POSTED = HERE / "out" / "posted.json"
+
+
+def posted_record(vid):
+    """out/posted.json: {video_id: {"at": iso, "posts": {platform: buffer_post_id}}}."""
+    d = json.loads(POSTED.read_text()) if POSTED.exists() else {}
+    rec = d.get(vid) or {}
+    return rec if isinstance(rec, dict) else {"at": rec, "posts": {}}  # old format was a bare timestamp
+
+
+def save_posted(vid, platform, post_id):
+    import datetime
+    d = json.loads(POSTED.read_text()) if POSTED.exists() else {}
+    rec = posted_record(vid)
+    rec.setdefault("posts", {})[platform] = post_id
+    rec["at"] = datetime.datetime.now().isoformat(timespec="minutes")
+    d[vid] = rec
+    POSTED.write_text(json.dumps(d, indent=1))
+
+
 def main():
     ap = argparse.ArgumentParser(description="Post a Nethermind video to Buffer via R2 hosting.")
     ap.add_argument("--video", required=True, help="Path to the main video file (used for Instagram/YouTube).")
@@ -160,10 +181,14 @@ def main():
     ap.add_argument("--youtube-category", default="24", help="YouTube category ID (default 24 = Entertainment).")
     ap.add_argument("--mode", default="addToQueue", choices=["addToQueue", "shareNow"],
                      help="addToQueue = Buffer's own recommended next slot (default). shareNow = publish immediately.")
+    ap.add_argument("--record", metavar="VIDEO_ID",
+                     help="Track per-platform post ids in out/posted.json and skip platforms already posted "
+                          "(makes a re-run after a partial failure safe).")
+    ap.add_argument("--force", action="store_true", help="With --record: post even to platforms already recorded.")
     ap.add_argument("--dry-run", action="store_true", help="Upload to R2 and print what would be posted, without calling Buffer.")
     args = ap.parse_args()
 
-    env = load_env()
+    env = load_env(strict=not args.dry_run)
 
     packaging = {}
     if args.packaging:
@@ -189,7 +214,11 @@ def main():
     tiktok_url = None
     results = []
 
+    done = posted_record(args.record).get("posts", {}) if args.record else {}
     for platform in platforms:
+        if platform in done and not args.force:
+            print(f"Skipping {platform}: already posted as {done[platform]} (use --force to post again).")
+            continue
         if platform not in CHANNELS:
             print(f"Skipping unknown platform: {platform}", file=sys.stderr)
             continue
@@ -233,6 +262,8 @@ def main():
         post = buffer_create_post(env, CHANNELS[platform], text, video_url, args.mode, metadata)
         print(f"  -> post id {post['id']}, due {post.get('dueAt')}")
         results.append((platform, post))
+        if args.record:
+            save_posted(args.record, platform, post["id"])
 
     if pinned and not args.dry_run and results:
         print(f"\nDon't forget — pinned comment to post manually once each video is live:\n  \"{pinned}\"")

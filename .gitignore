@@ -15,3 +15,12 @@ render.log
 # Kokoro model files — ~200MB, downloaded fresh by setup/CI, not committed
 kokoro-v1.0.fp16.onnx
 voices-v1.0.bin
+.venv/
+
+# local tooling / scratch — not part of the pipeline
+.claude-flow/
+.claude/
+.tmp_render/
+_hyperframes_eval/
+_qa/
+studio/brain_cands*/
