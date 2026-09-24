@@ -188,3 +188,8 @@ body.on-brain main{padding:0;overflow:hidden}
 .core-btn .nc{text-shadow:0 0 8px #000}
 .core-btn:hover .big,.core-btn:focus-visible .big{color:#fff;text-shadow:0 0 22px rgba(235,45,75,.75)}
 .core-btn:hover .nc{color:var(--ink)}
+/* v3.0 — every section label the same size, in a thin crimson-edged frame so it reads over the brain */
+.neuron .nw,.neuron.hot .nw{font-size:clamp(20px,1.9vw,28px)}
+.neuron .nc{font-size:13px}
+.neuron,.core-btn{padding:10px 16px 11px;border:1px solid rgba(224,41,75,.38);border-radius:14px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .25s,box-shadow .25s,transform .25s}
+.neuron:hover,.neuron:focus-visible,.core-btn:hover,.core-btn:focus-visible{border-color:rgba(224,41,75,.9);box-shadow:0 0 22px rgba(224,41,75,.28)}
