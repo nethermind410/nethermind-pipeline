@@ -97,6 +97,7 @@ def video(vid):
         "tiktok": f"{vid}_tiktok.mp4" if (OUT / f"{vid}_tiktok.mp4").exists() else None,
         "qa": f"{vid}_qa_contact.jpg" if qa else None,
         "packaging": pkg, "script": [s.get("text", "") for s in cfg.get("segments", [])],
+        "script_ids": [s.get("id") for s in cfg.get("segments", [])],
         "posted": rec, "scheduled": sched, "posts": posts,
         "views": int(sum(p.get("views") or 0 for p in posts)),
         "youtube_url": yt, "youtube_edit": yt_edit,

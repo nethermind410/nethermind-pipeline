@@ -14,6 +14,7 @@ from urllib.parse import unquote
 
 import studio_api as api
 import studio_channel as chan
+import studio_create as create
 
 HERE = Path(__file__).resolve().parent
 OUT, CFG = HERE / "out", HERE / "cfg"
@@ -43,7 +44,7 @@ JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True,
 LOCK = threading.Lock()
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"), "/app.css": ("app.css", "text/css"),
           "/app.js": ("app.js", "text/javascript"), "/app2.js": ("app2.js", "text/javascript"),
-          "/brain.js": ("brain.js", "text/javascript"), "/neural.js": ("neural.js", "text/javascript"), "/theme.css": ("theme.css", "text/css"), "/brain.jpg": ("brain.jpg", "image/jpeg"), "/icon.png": ("icon.png", "image/png")}
+          "/brain.js": ("brain.js", "text/javascript"), "/neural.js": ("neural.js", "text/javascript"), "/app3.js": ("app3.js", "text/javascript"), "/theme.css": ("theme.css", "text/css"), "/brain.jpg": ("brain.jpg", "image/jpeg"), "/icon.png": ("icon.png", "image/png")}
 MEDIA = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".srt": "text/plain"}
 JARVIS = "http://127.0.0.1:8765/ask"
 
@@ -134,7 +135,8 @@ class H(BaseHTTPRequestHandler):
         routes = {"/api/today": api.today, "/api/videos": api.videos, "/api/performance": api.performance,
                   "/api/ideas": api.ideas, "/api/health": api.health, "/api/channel": chan.channel,
                   "/api/calendar": chan.calendar, "/api/comments": lambda: chan.comments(api.done_map()),
-                  "/api/demand": lambda: api.jload(OUT / "idea_demand.json", {})}
+                  "/api/demand": lambda: api.jload(OUT / "idea_demand.json", {}),
+                  "/api/inspiration": create.inspiration, "/api/series": create.series}
         if path in routes:
             return self.send(200, routes[path]())
         m = re.fullmatch(r"/api/video/([a-z0-9_]+)", path)
@@ -142,6 +144,12 @@ class H(BaseHTTPRequestHandler):
             v = api.video(m[1])
             v["precheck"] = chan.precheck(v["packaging"]) if v["packaging"] else None
             return self.send(200, v)
+        m = re.fullmatch(r"/api/hooks/([a-z0-9_]+)", path)
+        if m and (CFG / f"{m[1]}.json").exists():
+            return self.send(200, create.hooks(m[1]))
+        m = re.fullmatch(r"/insp/([a-f0-9]{12}\.(?:png|jpg|webp|gif))", path)
+        if m and (create.INSP_DIR / m[1]).is_file():
+            return self.send_file(create.INSP_DIR / m[1], {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "gif": "image/gif"}[m[1].rsplit(".", 1)[1]])
         if path == "/api/job":
             with LOCK:
                 return self.send(200, dict(JOB))
@@ -187,6 +195,19 @@ class H(BaseHTTPRequestHandler):
             pkg["title"] = title
             pkg_path.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
             return self.send(200, {"ok": True})
+        try:
+            if self.path == "/api/inspiration":
+                return self.send(200, create.add_inspiration(b.get("image"), b.get("note"), b.get("url", "")))
+            if self.path == "/api/inspiration/remove":
+                return self.send(200, create.remove_inspiration(str(b.get("id", ""))))
+            if self.path == "/api/script":
+                return self.send(200, create.save_script(str(b.get("id", "")), b.get("lines") or {}))
+            if self.path == "/api/hook":
+                return self.send(200, create.choose_hook(str(b.get("id", "")), str(b.get("text", ""))))
+            if self.path == "/api/series":
+                return self.send(200, create.save_series(b.get("series") or []))
+        except ValueError as e:
+            return self.send(400, {"error": str(e)})
         if self.path == "/api/idea":
             try:
                 return self.send(200, api.add_idea(str(b.get("section", "")), b.get("hook", ""), b.get("format", ""), b.get("source", "")))

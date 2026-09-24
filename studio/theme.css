@@ -121,3 +121,24 @@ body.on-brain main{padding:0;overflow:hidden}
 .synapses .spark{fill:#fff;filter:drop-shadow(0 0 6px rgba(255,245,220,1)) drop-shadow(0 0 14px rgba(255,235,200,.8))}
 .neuron:hover .nw,.neuron:focus-visible .nw{color:#fff;text-shadow:0 0 18px rgba(255,245,220,.55)}
 .core-btn:hover .big{color:#fff;text-shadow:0 0 22px rgba(255,245,220,.5)}
+
+/* create tools */
+.tabs3{margin-top:-6px}
+.drop{display:grid;place-items:center;gap:4px;padding:34px;border:1.5px dashed var(--line);cursor:pointer;text-align:center}
+.drop span{color:var(--muted);font-size:13px}.drop.over{border-color:var(--ink);background:var(--hover)}
+.insp-link{display:grid;grid-template-columns:2fr 2fr auto;gap:8px}
+.insp-link input,.sname,.phook,.script-edit textarea{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit}
+.masonry{columns:3 260px;column-gap:14px}
+.insp{break-inside:avoid;margin:0 0 14px;display:block}.insp img{width:100%;display:block}
+.insp figcaption{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-size:13px}
+.insp-url{display:block;padding:18px 12px;word-break:break-all}
+.series{padding:16px;display:grid;gap:10px}.series.active{border-color:var(--ink)}
+.series-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.sname{font-weight:700;font-size:18px;flex:1;min-width:200px}
+.switch{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.parts{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.parts li{display:grid;grid-template-columns:62px 1fr auto auto auto auto;gap:8px;align-items:center}
+.parts li.made .phook{color:var(--muted)}.pn{font-size:12px;color:var(--muted);font-weight:600}
+.icon{border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;width:30px;height:30px;cursor:pointer}.icon:disabled{opacity:.3}
+.script-edit{padding:14px;display:grid;gap:10px}.script-edit label{display:grid;gap:4px}.script-edit span{font-size:12px;color:var(--muted);font-weight:600}
+.script-edit textarea{resize:vertical;line-height:1.45}
+@media (max-width:760px){.insp-link{grid-template-columns:1fr}.parts li{grid-template-columns:1fr auto auto auto}.pn{display:none}}

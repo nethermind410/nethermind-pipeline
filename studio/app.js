@@ -296,6 +296,7 @@ async function pageIdeas() {
         : `<button class="link small" data-demand="${esc(i.slug)}">Check demand on YouTube</button>`}
       <div class="idea-actions">
         ${d.next && d.next.slug === i.slug ? `<span class="pill scheduled">Up next</span>` : `<button class="btn small primary" data-next="${esc(i.slug)}" data-hook="${esc(i.hook)}">Make this next</button>`}
+        <button class="btn small" data-toseries="${esc(i.hook)}">+ Series</button>
         <button class="btn small" data-ask="${esc(`Is this a strong next Nethermind video, and what's the surprising true version? "${i.hook}" (${i.source})`)}">Ask Jarvis</button>
       </div></article>`;
   main.innerHTML = `<div class="page">
@@ -303,6 +304,7 @@ async function pageIdeas() {
       <button class="btn primary" data-addidea>+ Add idea</button></div>
     ${d.next ? `<div class="card upnext"><div><span class="k">Up next</span><div class="t">${esc(d.next.hook)}</div>
         <div class="s">The next 7:00 build will make this.</div></div><button class="btn small" data-next="">Clear</button></div>` : ""}
+    ${typeof ideasTabs === "function" ? ideasTabs("ideas") : ""}
     <div class="toolbar"><input id="iq" type="search" placeholder="Search ideas" value="${esc(ideaQuery)}" aria-label="Search ideas">
       <div class="chips">${cats.map(c => `<button class="chip ${c === ideaFilter ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}
         <span class="chip-gap"></span><button class="chip ${ideaSort === "mixed" ? "on" : ""}" data-sort="mixed">Mixed</button>
