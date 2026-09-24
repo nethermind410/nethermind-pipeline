@@ -344,9 +344,6 @@ async function pageSettings() {
   main.innerHTML = `<div class="page"><div class="head"><h1>Settings</h1><p>Everything Nethermind depends on, at a glance.</p></div>
     <h2>Connections</h2><div class="card list">${hs.map(h => `<div class="row"><span class="dot ${h.ok ? "ok" : ""}" aria-label="${h.ok ? "Working" : "Needs attention"}"></span>
       <div class="body"><div class="t">${esc(h.name)}</div><div class="s">${esc(h.detail)}</div></div></div>`).join("")}</div>
-    <h2>Look</h2><div class="card list"><div class="row"><div class="body"><div class="t">Brain look</div><div class="s">How the brain on the home screen glows. Try each, then go back to the brain.</div></div>
-      <div class="seg" role="radiogroup">${[["1", "Glowing folds"], ["2", "Synapses"], ["3", "Light sweep"]].map(([k, l]) => { let cur = "1"; try { cur = localStorage.getItem("brainLook") || "1"; } catch (e) {}
-        return `<button class="${cur === k ? "on" : ""}" data-look="${k}" role="radio" aria-checked="${cur === k}">${l}</button>`; }).join("")}</div></div></div>
     <h2>Handy</h2><div class="card list">
       <div class="row"><div class="body"><div class="t">Daily dashboard</div><div class="s">The same summary, on your phone or any browser.</div></div>
         <a class="btn small" href="https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B" target="_blank" rel="noopener">Open</a></div>

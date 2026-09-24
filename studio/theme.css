@@ -147,3 +147,10 @@ body.on-brain main{padding:0;overflow:hidden}
 .synapses .halo{fill:#FFD6CC}.synapses .trail{stroke:#FFECE6;filter:drop-shadow(0 0 5px rgba(255,214,204,.95))}
 .synapses .spark{filter:drop-shadow(0 0 6px rgba(255,214,204,1)) drop-shadow(0 0 14px rgba(255,200,190,.8))}
 .neuron:hover .nw,.neuron:focus-visible .nw{text-shadow:0 0 18px rgba(255,214,204,.6)}
+
+/* v2.4: the purple network is back (user's pick) — violet accents on the brain page, kept subtle */
+.synapses .halo{fill:#8051FF}.synapses .halo.lit{opacity:.4;r:7}.synapses .halo.fire{opacity:.9;r:18}
+.synapses .trail{stroke:#B9A2FF;stroke-width:1.4;filter:drop-shadow(0 0 5px rgba(128,81,255,.9))}
+.synapses .spark{fill:#fff;filter:drop-shadow(0 0 6px rgba(150,115,255,1)) drop-shadow(0 0 14px rgba(128,81,255,.8))}
+.neuron:hover .nw,.neuron:focus-visible .nw{color:#fff;text-shadow:0 0 18px rgba(128,81,255,.7)}
+.core-btn:hover .big{text-shadow:0 0 22px rgba(128,81,255,.6)}
