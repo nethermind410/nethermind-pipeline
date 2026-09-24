@@ -44,6 +44,7 @@ async function pageBrain() {
   document.body.classList.add("on-brain");
   main.innerHTML = `<div class="brain-stage" id="stage">
     <header class="brain-top"><span class="wm">NETHERMIND</span><span class="ed">The brain · ${esc(new Date().toLocaleDateString(undefined, {weekday: "long", day: "numeric", month: "long"}))}</span>
+      <span class="hint">Drag to turn · scroll to zoom · shift-drag to move · double-click to reset</span>
       <button class="ask" id="brain-ask">Ask the brain <kbd>⌘K</kbd></button></header>
     <canvas class="brain-net" id="bnet" role="img" aria-label="Nethermind's brain: a living network of glowing neurons"></canvas>
     <svg class="synapses" id="syn" aria-hidden="true"></svg>
@@ -63,6 +64,7 @@ async function pageBrain() {
       <span class="nc">of the way to monetisation · ${fmt(c.goals[0].value)} of 1,000 subscribers · ${fmt(c.goals[1].value)} of 10M Shorts views (estimate)</span></button>` : "";
   window.brainNet && window.brainNet.destroy();
   window.brainNet = NeuralBrain.mount($("#bnet"));
+  brainNet.onView(lines);
   wire(data);
   window.onresize = () => document.body.classList.contains("on-brain") && wire(data);
 }
@@ -80,7 +82,7 @@ function wire() {
   const pt = n => [I.left - S.left + n.ax * I.width, I.top - S.top + n.ay * I.height];
   const els = Object.fromEntries([...document.querySelectorAll(".neuron")].map(e => [e.dataset.neuron, e]));
   const narrow = S.width < 820;
-  let paths = "";
+  let paths = ""; const ends = {};
   NEURONS.forEach(n => {
     const el = els[n.key], [ax, ay] = pt(n);
     if (narrow) { el.style.cssText = ""; return; }
@@ -97,23 +99,35 @@ function wire() {
     el.style.left = lx + "px"; el.style.top = ly + "px";
     const ex = left ? lx + el.offsetWidth + 10 : right ? lx - 10 : lx + el.offsetWidth / 2;
     const ey = n.at ? ly + el.querySelector(".nw").offsetHeight / 2 : uy < -0.5 ? ly + el.offsetHeight + 6 : uy > 0.5 ? ly - 6 : ly + el.querySelector(".nw").offsetHeight / 2;
-    const qx = (ex + ax) / 2 + (ay - ey) * 0.15, qy = (ey + ay) / 2 - (ax - ex) * 0.1;
-    const d = `M${ex},${ey} Q${qx},${qy} ${ax},${ay}`;
-    paths += `<path class="guide" id="g-${n.key}" d="${d}"/><path class="line" id="l-${n.key}" d="${d}"/>
-      <circle class="node" id="n-${n.key}" cx="${ax}" cy="${ay}" r="3.5"/><circle class="halo" id="h-${n.key}" cx="${ax}" cy="${ay}" r="4"/>`;
+    ends[n.key] = {ex, ey, n, bow: 0.15};
   });
   const core = $("#core .core-btn");                                        // the monetisation number is wired in like the rest
   if (core && !narrow) {
-    const [ax, ay] = pt(CORE), r = core.getBoundingClientRect();
-    const ex = r.left - S.left + r.width / 2, ey = r.top - S.top - 6;
-    const d = `M${ex},${ey} Q${ex + (ax - ex) * 0.3},${(ey + ay) / 2} ${ax},${ay}`;
-    paths += `<path class="guide" id="g-home-core" d="${d}"/><path class="line" id="l-home-core" d="${d}"/>
-      <circle class="node" id="n-home-core" cx="${ax}" cy="${ay}" r="3.5"/><circle class="halo" id="h-home-core" cx="${ax}" cy="${ay}" r="4"/>`;
+    const r = core.getBoundingClientRect();
+    ends[CORE.key] = {ex: r.left - S.left + r.width / 2, ey: r.top - S.top - 6, n: CORE, bow: 0};
   }
+  Object.keys(ends).forEach(k => paths += `<path class="guide" id="g-${k}"/><path class="line" id="l-${k}"/>
+      <circle class="node" id="n-${k}" r="3.5"/><circle class="halo" id="h-${k}" r="4"/>`);
   // faint construction axes, Da Vinci-style: through the brain's centre and across the page
   const cx = I.left - S.left + I.width * 0.5, cy = I.top - S.top + I.height * 0.5;
   svg.innerHTML = `${paths}<g id="sparks"></g>`;
-  svg.querySelectorAll(".line").forEach(p => { const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+  wireEnds = ends; lines();
+}
+
+/* the construction lines follow the brain as it's turned, zoomed or moved */
+let wireEnds = {};
+function lines() {
+  if (!window.brainNet) return;
+  Object.entries(wireEnds).forEach(([k, {ex, ey, n, bow}]) => {
+    const [ax, ay] = brainNet.anchor(n.ax, n.ay), l = $("#l-" + k); if (!l) return;
+    const d = bow ? `M${ex},${ey} Q${(ex + ax) / 2 + (ay - ey) * bow},${(ey + ay) / 2 - (ax - ex) * 0.1} ${ax},${ay}`
+                  : `M${ex},${ey} Q${ex + (ax - ex) * 0.3},${(ey + ay) / 2} ${ax},${ay}`;
+    $("#g-" + k).setAttribute("d", d); l.setAttribute("d", d);
+    ["n-", "h-"].forEach(p => { const c = $("#" + p + k); c.setAttribute("cx", ax); c.setAttribute("cy", ay); });
+    const L = l.getTotalLength(), on = l.dataset.on === "1";
+    l.style.transition = "none"; l.style.strokeDasharray = L; l.style.strokeDashoffset = on ? 0 : L;
+    l.getBoundingClientRect(); l.style.transition = "";
+  });
 
 }
 
@@ -155,13 +169,13 @@ function spark(d, ms, cls = "") {
 /* hover: draw the construction line; click: fire the synapse, flash the region, zoom in, open */
 document.addEventListener("pointerover", e => {
   const n = e.target.closest && e.target.closest(".neuron,.core-btn"); if (!n) return;
-  const l = $("#l-" + n.dataset.neuron); if (l) l.style.strokeDashoffset = 0;
+  const l = $("#l-" + n.dataset.neuron); if (l) { l.dataset.on = "1"; l.style.strokeDashoffset = 0; }
   $("#h-" + n.dataset.neuron)?.classList.add("lit");
   const nn = findN(n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, true);
 });
 document.addEventListener("pointerout", e => {
   const n = e.target.closest && e.target.closest(".neuron,.core-btn"); if (!n || n.contains(e.relatedTarget)) return;
-  const l = $("#l-" + n.dataset.neuron); if (l) l.style.strokeDashoffset = l.getTotalLength();
+  const l = $("#l-" + n.dataset.neuron); if (l) { l.dataset.on = ""; l.style.strokeDashoffset = l.getTotalLength(); }
   $("#h-" + n.dataset.neuron)?.classList.remove("lit");
   const nn = findN(n.dataset.neuron); if (nn && window.brainNet) brainNet.glow(nn.ax, nn.ay, false);
 });

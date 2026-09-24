@@ -193,3 +193,11 @@ body.on-brain main{padding:0;overflow:hidden}
 .neuron .nc{font-size:13px}
 .neuron,.core-btn{padding:10px 16px 11px;border:1px solid rgba(224,41,75,.38);border-radius:14px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .25s,box-shadow .25s,transform .25s}
 .neuron:hover,.neuron:focus-visible,.core-btn:hover,.core-btn:focus-visible{border-color:rgba(224,41,75,.9);box-shadow:0 0 22px rgba(224,41,75,.28)}
+/* v3.1 — bigger section text; the brain can be turned */
+.neuron .nw,.neuron.hot .nw{font-size:clamp(26px,2.5vw,38px)}
+.neuron .nc{font-size:14px}
+.neuron{max-width:280px;padding:12px 18px 13px}
+.brain-top .hint{font:400 12px var(--grotesk);color:rgba(247,247,238,.38);margin-left:auto}
+.brain-top .hint+.ask{margin-left:14px}
+.brain-net:active{cursor:grabbing}
+@media (max-width:820px){.brain-top .hint{display:none}.brain-top .hint+.ask{margin-left:auto}}
