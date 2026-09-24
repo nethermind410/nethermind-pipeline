@@ -3,14 +3,15 @@
    Da Vinci construction lines; hovering draws the line, clicking fires a signal along it and
    zooms into that region before opening the section. Every caption is live data. */
 const NEURONS = [
-  // each section sits on the part of the brain that does that job (side profile: front is left)
-  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, ang: -92, dist: 0.47, side: "top"},
-  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.26, ay: 0.36, ang: -155, dist: 0.5, side: "left"},
-  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.4, ay: 0.63, ang: 162, dist: 0.5, side: "left"},
-  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.54, ay: 0.6, ang: 122, dist: 0.46, side: "left"},
-  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.68, ay: 0.3, ang: -32, dist: 0.5, side: "right"},
-  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.845, ay: 0.47, ang: 6, dist: 0.52, side: "right"},
-  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.71, ang: 52, dist: 0.46, side: "right"},
+  // each section sits on the part of the brain that does that job (side profile: front is left).
+  // gap = how far outside the outline the label floats; nudge = hand-placed offsets so nothing lines up.
+  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0.07, nudge: [-40, 0]},
+  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.12, nudge: [0, -30]},
+  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.05, nudge: [-20, 10]},
+  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0.1, nudge: [30, 0]},
+  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.09, nudge: [10, -20]},
+  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.04, nudge: [0, 26]},
+  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.13, nudge: [0, 0]},
 ];
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -52,7 +53,7 @@ async function pageBrain() {
   const data = await brainData();
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
-    return `<button class="neuron ${n.side} ${hot ? "hot" : ""}" data-neuron="${n.key}">
+    return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}">
       <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(n.lobe)}</span></button>`;
   }).join("");
   const c = data.ch;
@@ -68,28 +69,30 @@ async function pageBrain() {
 /* lay out neurons around the brain and draw the construction lines */
 function wire() {
   const stage = $("#stage"), svg = $("#syn"); if (!stage || !$("#bnet")) return;
-  const S = stage.getBoundingClientRect(), side = Math.min(S.width * 0.88, S.height * 1.22);   // same box neural.js draws in
-  const I = {left: S.left + S.width / 2 - side * 0.5, top: S.top + S.height * 0.47 - side * 0.46, width: side, height: side};
+  const S = stage.getBoundingClientRect(), bx = NeuralBrain.box(S.width, S.height);   // same box neural.js draws in
+  const side = bx.size, I = {left: S.left + bx.ox, top: S.top + bx.oy, width: side, height: side};
   I.right = I.left + side;
   svg.setAttribute("viewBox", `0 0 ${S.width} ${S.height}`);
   const pt = n => [I.left - S.left + n.ax * I.width, I.top - S.top + n.ay * I.height];
-  const rows = {left: [], right: [], top: []};
-  NEURONS.forEach(n => rows[n.side].push(n));
   const els = Object.fromEntries([...document.querySelectorAll(".neuron")].map(e => [e.dataset.neuron, e]));
   const narrow = S.width < 820;
   let paths = "";
   NEURONS.forEach(n => {
     const el = els[n.key], [ax, ay] = pt(n);
     if (narrow) { el.style.cssText = ""; return; }
-    const cx0 = S.width / 2, cy0 = S.height / 2, rad = n.ang * Math.PI / 180, R = Math.min(S.width * 0.5, S.height * 0.95) * n.dist;
-    const fx = cx0 + Math.cos(rad) * R * (S.width / S.height > 1.3 ? 1.35 : 1), fy = cy0 + Math.sin(rad) * R;
-    let lx = n.side === "left" ? fx - el.offsetWidth : n.side === "right" ? fx : fx - el.offsetWidth / 2;
-    let ly = fy - el.offsetHeight / 2;
-    lx = Math.max(28, Math.min(S.width - el.offsetWidth - 28, lx)); ly = Math.max(64, Math.min(S.height - el.offsetHeight - 110, ly));
+    const cxu = 0.53, cyu = 0.48, dx = n.ax - cxu, dy = n.ay - cyu, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    let t = L; while (t < 0.9 && NeuralBrain.inside(cxu + ux * t, cyu + uy * t)) t += 0.004;   // reach the edge
+    t += n.gap;
+    let fx = I.left - S.left + (cxu + ux * t) * I.width + n.nudge[0], fy = I.top - S.top + (cyu + uy * t) * I.height + n.nudge[1];
+    const right = ux > 0.25, left = ux < -0.25;                                                   // which way the text hangs
+    el.classList.toggle("hang-left", left); el.classList.toggle("hang-right", right);
+    let lx = left ? fx - el.offsetWidth : right ? fx : fx - el.offsetWidth / 2;
+    let ly = uy < -0.5 ? fy - el.offsetHeight : uy > 0.5 ? fy : fy - el.offsetHeight / 2;
+    lx = Math.max(24, Math.min(S.width - el.offsetWidth - 24, lx)); ly = Math.max(96, Math.min(S.height - el.offsetHeight - 120, ly));
     el.style.left = lx + "px"; el.style.top = ly + "px";
-    const ex = n.side === "left" ? lx + el.offsetWidth + 12 : n.side === "right" ? lx - 12 : lx + el.offsetWidth / 2;
-    const ey = n.side === "top" ? ly + el.offsetHeight + 10 : ly + el.querySelector(".nw").offsetHeight / 2;
-    const qx = (ex + ax) / 2 + (ay - ey) * 0.18, qy = (ey + ay) / 2 - (ax - ex) * 0.12;   // a soft, hand-drawn curve
+    const ex = left ? lx + el.offsetWidth + 10 : right ? lx - 10 : lx + el.offsetWidth / 2;
+    const ey = uy < -0.5 ? ly + el.offsetHeight + 6 : uy > 0.5 ? ly - 6 : ly + el.querySelector(".nw").offsetHeight / 2;
+    const qx = (ex + ax) / 2 + (ay - ey) * 0.15, qy = (ey + ay) / 2 - (ax - ex) * 0.1;
     const d = `M${ex},${ey} Q${qx},${qy} ${ax},${ay}`;
     paths += `<path class="guide" id="g-${n.key}" d="${d}"/><path class="line" id="l-${n.key}" d="${d}"/>
       <circle class="node" id="n-${n.key}" cx="${ax}" cy="${ay}" r="3.5"/><circle class="halo" id="h-${n.key}" cx="${ax}" cy="${ay}" r="4"/>`;

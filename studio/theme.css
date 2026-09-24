@@ -163,3 +163,17 @@ body.on-brain main{padding:0;overflow:hidden}
 .neuron .lobe{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,143,163,.55);opacity:0;transition:opacity .25s}
 .neuron:hover .lobe,.neuron:focus-visible .lobe{opacity:1}
 .core{bottom:2.2vh}
+
+/* v2.6: big wordmark, labels hang outside the outline, uneven sizes */
+.brain-top{padding:22px 32px;align-items:flex-start}
+.brain-top .wm{font:800 clamp(34px,4.2vw,64px)/.9 var(--grotesk);letter-spacing:-.045em}
+.brain-top .ed{padding-top:.55em}
+.neuron.hang-left{text-align:right;justify-items:end}.neuron.hang-right{text-align:left;justify-items:start}
+.neuron:not(.hang-left):not(.hang-right){text-align:center;justify-items:center}
+.neuron.hot .nw{font-size:clamp(24px,2.3vw,34px)}
+.neuron .nw{text-shadow:0 0 12px #000,0 0 3px #000}.neuron .nc,.neuron .lobe{text-shadow:0 0 8px #000}
+
+/* v2.7: crimson everywhere (user's choice) — replaces violet as the one accent */
+:root, :root:not([data-x]){--accent:#E0294B;--sel:rgba(224,41,75,.18);--on-accent:#FFF4F5}
+@media (prefers-color-scheme:light){:root{--accent:#E0294B;--sel:rgba(224,41,75,.18)}}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:#FFF4F5}

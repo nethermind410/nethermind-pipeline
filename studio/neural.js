@@ -7,21 +7,32 @@
 window.NeuralBrain = (() => {
   const VIOLET = [235, 45, 75], WHITE = [255, 232, 236];   // crimson fibres, pink-white light
 
-  // side profile. Regions: cerebrum (0), temporal lobe (1), cerebellum (2); -1 = outside or in a fissure
-  const sylvian = x => 0.585 - 0.19 * (x - 0.3) + 0.22 * (x - 0.3) ** 2;       // lateral sulcus curve
-  function region(x, y) {
-    const cb = ((x - 0.73) / 0.13) ** 2 + ((y - 0.705) / 0.075) ** 2;             // cerebellum
-    if (cb < 1 && y > 0.64) return 2;
-    const top = ((x - 0.52) / 0.355) ** 2 + ((y - 0.47) / 0.285) ** 2;            // main cerebral dome
-    const front = ((x - 0.3) / 0.19) ** 2 + ((y - 0.46) / 0.21) ** 2;             // fuller frontal pole
-    const temp = ((x - 0.47) / 0.21) ** 2 + ((y - 0.61) / 0.1) ** 2;              // temporal lobe
-    const inCere = (top < 1 || front < 1) && y < 0.66;
-    if (!inCere && !(temp < 1)) return -1;
-    if (y > 0.62 && x > 0.66 && cb >= 1) return -1;                              // notch above the cerebellum
+  // side profile traced from a lateral view of a real brain (front = left), smoothed with Catmull-Rom.
+  const smooth = (pts, steps = 10) => {
+    const out = [], n = pts.length;
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      for (let k = 0; k < steps; k++) {
+        const t = k / steps, t2 = t * t, t3 = t2 * t;
+        out.push([0, 1].map(c => 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * t3)));
+      }
+    }
+    return out;
+  };
+  const CEREBRUM = smooth([[0.21, 0.575], [0.165, 0.49], [0.17, 0.38], [0.23, 0.285], [0.33, 0.215], [0.46, 0.185], [0.59, 0.19],
+    [0.705, 0.225], [0.795, 0.295], [0.855, 0.39], [0.875, 0.485], [0.85, 0.565], [0.78, 0.605], [0.69, 0.625], [0.6, 0.66],
+    [0.5, 0.69], [0.41, 0.685], [0.345, 0.655], [0.31, 0.61], [0.275, 0.588]]);
+  const CEREBELLUM = smooth([[0.655, 0.655], [0.71, 0.615], [0.79, 0.603], [0.855, 0.625], [0.885, 0.672], [0.855, 0.728],
+    [0.775, 0.752], [0.7, 0.735]]);
+  const sylvian = x => 0.588 - 0.36 * (x - 0.275) + 0.32 * (x - 0.275) ** 2;          // lateral fissure
+  const inPoly = (poly, x, y) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; };
+  function region(x, y, whole = false) {
+    const cere = inPoly(CEREBRUM, x, y);
+    if (!cere) return inPoly(CEREBELLUM, x, y) ? 2 : -1;
     const sy = sylvian(x);
-    if (x > 0.24 && x < 0.66 && Math.abs(y - sy) < 0.011) return -1;             // the fissure itself
-    if (temp < 1 && y > sy && x < 0.68) return 1;
-    return inCere ? 0 : -1;
+    if (!whole && x > 0.28 && x < 0.63 && Math.abs(y - sy) < 0.01) return -1;        // keep the fissure open
+    return x < 0.66 && y > sy ? 1 : 0;                                              // temporal lobe below the fissure
   }
   const inside = (x, y) => region(x, y) >= 0;
   function fold(x, y) {
@@ -48,6 +59,8 @@ window.NeuralBrain = (() => {
   }
   const NET = build();
 
+  const box = (W, H) => { const size = Math.min(W * 0.62, H * 1.12); return {size, ox: W / 2 - size * 0.52, oy: H * 0.5 - size * 0.47}; };
+
   function mount(canvas) {
     const ctx = canvas.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
     let W = 0, H = 0, size = 0, ox = 0, oy = 0, fibres = null, raf = 0, alive = true;
@@ -57,7 +70,7 @@ window.NeuralBrain = (() => {
     function layout() {
       const rect = canvas.getBoundingClientRect();
       W = rect.width; H = rect.height; canvas.width = W * dpr; canvas.height = H * dpr;
-      size = Math.min(W * 0.88, H * 1.22); ox = W / 2 - size * 0.5; oy = H * 0.47 - size * 0.46;
+      ({size, ox, oy} = box(W, H));
       fibres = document.createElement("canvas"); fibres.width = canvas.width; fibres.height = canvas.height;
       const f = fibres.getContext("2d"); f.scale(dpr, dpr); f.lineCap = "round";
       const aura = f.createRadialGradient(ox + size * 0.5, oy + size * 0.47, size * 0.05, ox + size * 0.5, oy + size * 0.47, size * 0.42);
@@ -67,6 +80,15 @@ window.NeuralBrain = (() => {
         const [x1, y1] = P(NET.nodes[i]), [x2, y2] = P(NET.nodes[j]);
         f.strokeStyle = `rgba(${VIOLET},.26)`; f.lineWidth = 0.5; f.beginPath(); f.moveTo(x1, y1); f.lineTo(x2, y2); f.stroke();
       });
+      // the outline: a deeper crimson edge, the cerebellum behind, the lateral fissure as a finer line
+      const poly = pts => { f.beginPath(); pts.forEach(([x, y], i) => i ? f.lineTo(ox + x * size, oy + y * size) : f.moveTo(ox + x * size, oy + y * size)); f.closePath(); };
+      f.lineJoin = "round"; f.shadowColor = "rgba(200,20,55,.65)"; f.shadowBlur = 12;
+      f.strokeStyle = "rgba(168,16,44,.9)"; f.lineWidth = 1.8; poly(CEREBELLUM); f.stroke();
+      f.fillStyle = "rgba(0,0,0,.55)"; poly(CEREBRUM); f.fill();                      // tucks the cerebellum behind
+      f.strokeStyle = "rgba(176,18,48,.95)"; f.lineWidth = 2.2; poly(CEREBRUM); f.stroke();
+      f.shadowBlur = 0; f.strokeStyle = "rgba(168,16,44,.55)"; f.lineWidth = 1.1; f.beginPath();
+      for (let x = 0.28; x <= 0.63; x += 0.004) { const y = sylvian(x); x === 0.28 ? f.moveTo(ox + x * size, oy + y * size) : f.lineTo(ox + x * size, oy + y * size); }
+      f.stroke();
       f.globalCompositeOperation = "lighter";
       NET.nodes.forEach(n => {                               // small, soft nodes
         const [x, y] = P(n), s = 0.35 + n.n.length * 0.16;
@@ -129,5 +151,5 @@ window.NeuralBrain = (() => {
       destroy() { alive = false; cancelAnimationFrame(raf); removeEventListener("resize", onResize); },
     };
   }
-  return {mount, geometry: size => size};
+  return {mount, box, inside: (x, y) => region(x, y, true) >= 0};
 })();
