@@ -142,3 +142,8 @@ body.on-brain main{padding:0;overflow:hidden}
 .script-edit{padding:14px;display:grid;gap:10px}.script-edit label{display:grid;gap:4px}.script-edit span{font-size:12px;color:var(--muted);font-weight:600}
 .script-edit textarea{resize:vertical;line-height:1.45}
 @media (max-width:760px){.insp-link{grid-template-columns:1fr}.parts li{grid-template-columns:1fr auto auto auto}.pn{display:none}}
+
+/* v2.3: blush-bone light on the brain page */
+.synapses .halo{fill:#FFD6CC}.synapses .trail{stroke:#FFECE6;filter:drop-shadow(0 0 5px rgba(255,214,204,.95))}
+.synapses .spark{filter:drop-shadow(0 0 6px rgba(255,214,204,1)) drop-shadow(0 0 14px rgba(255,200,190,.8))}
+.neuron:hover .nw,.neuron:focus-visible .nw{text-shadow:0 0 18px rgba(255,214,204,.6)}

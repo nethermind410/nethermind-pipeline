@@ -103,7 +103,7 @@ def main():
     webview.create_window("Nethermind", "http://127.0.0.1:8766/", width=1240, height=820,
                           min_size=(760, 520), background_color="#1C1C1E", text_select=True)
     try:
-        webview.start(set_dock_icon)
+        webview.start(set_dock_icon, private_mode=False, storage_path=str(HERE / "out" / "webview"))  # keep settings like the brain look
     finally:
         for p in children:
             p.terminate()

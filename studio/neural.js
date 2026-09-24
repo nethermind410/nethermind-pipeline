@@ -4,7 +4,9 @@
    a section fires; a faint glint now and then travels one fold at rest.
    API: NeuralBrain.mount(canvas) -> {glow(ax,ay,on), fire(ax,ay) -> Promise, destroy()} */
 window.NeuralBrain = (() => {
-  const BONE = "247,247,238";
+  const BONE = "247,247,238", BLUSH = "255,214,204", PINKWHITE = "255,236,230";
+  // look 1 = glowing folds · 2 = synapses on folds · 3 = light sweep (chosen in Settings; ?look=N to preview)
+  const LOOK = +(new URLSearchParams(location.search).get("look") || (() => { try { return localStorage.getItem("brainLook"); } catch (e) { return null; } })() || 1);
 
   function inside(x, y) {                                  // top-view silhouette with a midline fissure
     const dx = x - 0.5, dy = y - 0.5;
@@ -55,30 +57,53 @@ window.NeuralBrain = (() => {
       size = Math.min(W, H); ox = (W - size) / 2; oy = (H - size) / 2;
       base = document.createElement("canvas"); base.width = canvas.width; base.height = canvas.height;
       const b = base.getContext("2d"); b.scale(dpr, dpr); b.lineCap = b.lineJoin = "round";
-      STROKES.forEach((s, i) => { b.strokeStyle = `rgba(${BONE},${0.1 + (i % 5) * 0.022})`; b.lineWidth = 0.8; path(b, s); b.stroke(); });
+      if (LOOK === 1) {                                   // soft blush glow on every fold
+        b.shadowColor = `rgba(${BLUSH},.55)`; b.shadowBlur = 9;
+        STROKES.forEach((s, i) => { b.strokeStyle = `rgba(${BLUSH},${0.22 + (i % 5) * 0.04})`; b.lineWidth = 0.9; path(b, s); b.stroke(); });
+        b.shadowBlur = 0;
+      } else if (LOOK === 2) {                            // faint folds with glowing nodes along them
+        STROKES.forEach(s => { b.strokeStyle = `rgba(${BONE},.07)`; b.lineWidth = 0.7; path(b, s); b.stroke(); });
+        b.globalCompositeOperation = "lighter";
+        STROKES.forEach(s => s.forEach((p, j) => { if (j % 7) return; const [x, y] = P(p), r = 2.6 + (j % 3);
+          const g = b.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${PINKWHITE},.75)`); g.addColorStop(1, "rgba(0,0,0,0)");
+          b.fillStyle = g; b.beginPath(); b.arc(x, y, r, 0, 7); b.fill(); }));
+        b.globalCompositeOperation = "source-over";
+      } else {                                            // dark folds; the sweep lights them each frame
+        STROKES.forEach(s => { b.strokeStyle = `rgba(${BONE},.06)`; b.lineWidth = 0.8; path(b, s); b.stroke(); });
+        const core = b.createRadialGradient(ox + size / 2, oy + size / 2, 0, ox + size / 2, oy + size / 2, size * 0.34);
+        core.addColorStop(0, `rgba(${BLUSH},.10)`); core.addColorStop(1, "rgba(0,0,0,0)"); b.fillStyle = core; b.fillRect(0, 0, W, H);
+      }
     }
     const distTo = (s, ax, ay) => Math.min(...s.map(([x, y]) => Math.hypot(x - ax, y - ay)));
 
     function frame(t) {
       if (!alive) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      ctx.drawImage(base, 0, 0, W, H);
+      ctx.globalAlpha = LOOK === 1 ? 0.78 + 0.22 * Math.sin(t / 1900) : 1;
+      ctx.drawImage(base, 0, 0, W, H); ctx.globalAlpha = 1;
       ctx.lineCap = ctx.lineJoin = "round";
-      glows.forEach(near => { ctx.strokeStyle = `rgba(${BONE},.45)`; ctx.lineWidth = 1; near.forEach(s => { path(ctx, s); ctx.stroke(); }); });
+      if (LOOK === 3) {                                   // a slow diagonal band of warm light
+        const k = ((t / 6500) % 1.6) - 0.3, x0 = ox + size * k, g = ctx.createLinearGradient(x0 - size * 0.18, oy, x0 + size * 0.18, oy + size * 0.4);
+        g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(.5, `rgba(${PINKWHITE},.75)`); g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.shadowColor = `rgba(${BLUSH},.8)`; ctx.shadowBlur = 8;
+        STROKES.forEach(s => { path(ctx, s); ctx.stroke(); }); ctx.shadowBlur = 0;
+      }
+      glows.forEach(near => { ctx.strokeStyle = `rgba(${PINKWHITE},.6)`; ctx.lineWidth = 1; ctx.shadowColor = `rgba(${BLUSH},.8)`; ctx.shadowBlur = 6; near.forEach(s => { path(ctx, s); ctx.stroke(); }); ctx.shadowBlur = 0; });
       for (let w = waves.length - 1; w >= 0; w--) {          // the fire: light races outward along the folds
         const wv = waves[w], front = (t - wv.t0) / 1100 * 0.75; let any = false;
         wv.d.forEach((d, i) => {
           const k = 1 - Math.abs(front - d) / 0.07; if (k <= 0) return; any = true;
-          ctx.strokeStyle = `rgba(255,252,240,${Math.min(1, k)})`; ctx.lineWidth = 0.8 + 1.4 * k;
-          ctx.shadowColor = "rgba(255,245,220,.9)"; ctx.shadowBlur = 10 * k; path(ctx, STROKES[i]); ctx.stroke(); ctx.shadowBlur = 0;
+          ctx.strokeStyle = `rgba(${PINKWHITE},${Math.min(1, k)})`; ctx.lineWidth = 0.8 + 1.4 * k;
+          ctx.shadowColor = `rgba(${BLUSH},.95)`; ctx.shadowBlur = 10 * k; path(ctx, STROKES[i]); ctx.stroke(); ctx.shadowBlur = 0;
         });
         if (!any && front > 0.12) { waves.splice(w, 1); wv.done(); }
       }
-      if (Math.random() < 0.012 && glints.length < 3) glints.push({s: STROKES[Math.floor(Math.random() * STROKES.length)], t0: t, ms: 2600});
+      if (Math.random() < (LOOK === 2 ? 0.09 : 0.012) && glints.length < (LOOK === 2 ? 9 : 3)) glints.push({s: STROKES[Math.floor(Math.random() * STROKES.length)], t0: t, ms: 2600});
       for (let g = glints.length - 1; g >= 0; g--) {          // idle glint along one fold
         const gl = glints[g], k = (t - gl.t0) / gl.ms; if (k >= 1) { glints.splice(g, 1); continue; }
         const n = gl.s.length, i = Math.floor(k * (n - 1)), seg = gl.s.slice(Math.max(0, i - 8), i + 1);
-        ctx.strokeStyle = `rgba(255,252,240,${0.55 * Math.sin(k * Math.PI)})`; ctx.lineWidth = 1.1; path(ctx, seg); ctx.stroke();
+        ctx.strokeStyle = `rgba(${PINKWHITE},${(LOOK === 2 ? 0.85 : 0.6) * Math.sin(k * Math.PI)})`; ctx.lineWidth = 1.2;
+        ctx.shadowColor = `rgba(${BLUSH},.9)`; ctx.shadowBlur = 8; path(ctx, seg); ctx.stroke(); ctx.shadowBlur = 0;
       }
       raf = requestAnimationFrame(frame);
     }
