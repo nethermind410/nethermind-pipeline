@@ -45,6 +45,14 @@ LOCK = threading.Lock()
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"), "/app.css": ("app.css", "text/css"),
           "/app.js": ("app.js", "text/javascript"), "/app2.js": ("app2.js", "text/javascript"),
           "/brain.js": ("brain.js", "text/javascript"), "/neural.js": ("neural.js", "text/javascript"), "/app3.js": ("app3.js", "text/javascript"), "/theme.css": ("theme.css", "text/css"), "/brain.jpg": ("brain.jpg", "image/jpeg"), "/icon.png": ("icon.png", "image/png")}
+# Extensions: any studio_ext_<name>.py may define GET = {"/api/x": fn} and POST = {"/api/x": fn(body) -> dict}
+# (raise ValueError for a 400). Any studio/ext_<name>.js / .css is served and loaded by the page via /ext.js.
+import importlib
+EXT = [importlib.import_module(p.stem) for p in sorted(HERE.glob("studio_ext_*.py"))]
+for f in sorted(UI.glob("ext_*.js")) + sorted(UI.glob("ext_*.css")):
+    STATIC["/" + f.name] = (f.name, "text/javascript" if f.suffix == ".js" else "text/css")
+EXT_GET = {k: v for m in EXT for k, v in getattr(m, "GET", {}).items()}
+EXT_POST = {k: v for m in EXT for k, v in getattr(m, "POST", {}).items()}
 MEDIA = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".srt": "text/plain"}
 JARVIS = "http://127.0.0.1:8765/ask"
 
@@ -137,6 +145,14 @@ class H(BaseHTTPRequestHandler):
                   "/api/calendar": chan.calendar, "/api/comments": lambda: chan.comments(api.done_map()),
                   "/api/demand": lambda: api.jload(OUT / "idea_demand.json", {}),
                   "/api/inspiration": create.inspiration, "/api/series": create.series}
+        if path == "/ext.js":                               # loads every extension's script and stylesheet
+            names = sorted(k[1:] for k in STATIC if k.startswith("/ext_"))
+            js = "".join(f'document.head.insertAdjacentHTML("beforeend",\'<link rel="stylesheet" href="/{n}">\');' if n.endswith(".css")
+                         else f'document.write(\'<script src="/{n}"><\\/script>\');' for n in names)
+            data = js.encode()
+            self.send_response(200); self.send_header("Content-Type", "text/javascript"); self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store"); self.end_headers(); return self.wfile.write(data)
+        routes.update(EXT_GET)
         if path in routes:
             return self.send(200, routes[path]())
         m = re.fullmatch(r"/api/video/([a-z0-9_]+)", path)
@@ -206,6 +222,8 @@ class H(BaseHTTPRequestHandler):
                 return self.send(200, create.choose_hook(str(b.get("id", "")), str(b.get("text", ""))))
             if self.path == "/api/series":
                 return self.send(200, create.save_series(b.get("series") or []))
+            if self.path in EXT_POST:
+                return self.send(200, EXT_POST[self.path](b))
         except ValueError as e:
             return self.send(400, {"error": str(e)})
         if self.path == "/api/idea":
