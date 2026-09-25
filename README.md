@@ -57,6 +57,19 @@ every time, not just when the exit code is non-zero.
 
 Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice` (iceberg chart — needs no media at all, the chart is drawn in code), `creature` (animal reveal), `hero` (superhero trivia — Gemini-generated art only, see "Visuals" below).
 
+## Long-form episode → Shorts → TikTok
+
+```bash
+cp episodes/_example.json episodes/buried_origins_02.json   # write the episode as chapters
+python3 episode.py episodes/buried_origins_02.json          # one Short + one TikTok cut per chapter,
+                                                            # plus episodes/<id>.plan.md (script + YouTube chapters)
+python3 retention.py check  cfg/<id>.json                   # hook/pacing checklist for any config
+python3 retention.py tiktok cfg/<id>.json                   # TikTok cut: number on frame 0, punch-in,
+                                                            # tight gaps, no still held over ~6s
+```
+
+Tag a segment `"in": ["long"]` for depth only the episode gets, or `["long", "short"]` to keep it out of the TikTok cut. The 16:9 long-form render isn't wired yet; the plan file is the script for it.
+
 ## What's in here
 
 ```

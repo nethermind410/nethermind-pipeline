@@ -64,6 +64,27 @@ Formats: `fact` = narrated story · `ice` = iceberg chart (no media needed) · `
 | The Mass Effect relays break one specific law of physics | fact | Codex + real physics |
 | A speedrun trick that took 15 years to find | fact | Speedrun.com history, developer confirmation |
 | The Lost Marvel Games Iceberg — cancelled Marvel video games | ice | Developer interviews and publisher announcements, not fan wikis |
+| Pac-Man was nearly called Puck-Man — renamed so vandals couldn't change one letter on arcade cabinets | hero | Namco history, Toru Iwatani interviews |
+| Mario is named after Nintendo of America's warehouse landlord | hero | Nintendo of America history, Mario Segale obituaries (2018) |
+| Minecraft's Creeper was a broken pig model | hero | Notch's own posts/interviews — dimensions typed the wrong way round |
+| Tails' real name, Miles Prower, is a pun on "miles per hour" | hero | Sega / Sonic Team history |
+
+## Anime — original AI art only, real production history
+
+Same rules as Marvel: no official art, stills or clips — Gemini art by archetype, pose and palette, never a named character or exact design. Same "comic power that's real biology" angle works here.
+
+| Hook | Format | Verify at |
+|---|---|---|
+| The Kamehameha is named after a Hawaiian king — Toriyama's wife picked it | hero | Akira Toriyama interviews (Dragon Ball guidebooks) |
+| One Pokémon episode sent hundreds of kids in Japan to hospital | hero | Dec 1997 "Dennō Senshi Porygon" — news reports, the ~685 figure varies by source, say so |
+| Pokémon exists because its creator collected bugs as a kid | hero | Satoshi Tajiri interviews |
+| Studio Ghibli is named after a WWII Italian plane — and they mispronounce it | hero | Ghibli's own history; Caproni Ca.309 "Ghibli", the Saharan wind |
+| Titans from Attack on Titan couldn't stand up — the square-cube law | fact | Real physics (Galileo's square-cube law); no show footage, AI art only |
+| The beetle that fires boiling chemicals — anime fire-types are real biology | creature | Bombardier beetle — Eisner, Aneshansley et al.; PD insect photos on Commons |
+
+## Nerdosphere mix — keep Marvel the lead lane
+
+Marvel/comics averages ~1,400 YouTube views per Short vs ~800 for space/ocean (Buffer, 8–24 Sep 2026). Suggested weekly mix while that holds: **3 Marvel/comics · 1 anime · 1 gaming · 1 science-crossover** ("the power that's real biology"). Re-check the split against `stats.py` monthly — move slots toward whatever lane wins.
 
 ## Made — already turned into videos
 
