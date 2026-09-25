@@ -76,13 +76,15 @@ def keyframe_parts(shot_src, refs_by_id, style, fmt, role, first_last=False):
         x for x in ((env or {}).get("description", ""), shot_src.get("environment", "")) if x))
     lens = f", {shot_src['lens']}" if shot_src.get("lens") else ""
     camera = _sentence(f"Camera: {human(shot_src['framing'])}, {human(shot_src['angle'])} angle{lens}")
-    lighting = _sentence("Lighting: " + (shot_src.get("lighting") or style["lighting"]))
+    # most specific wins: the shot, then its environment, then the film-wide style
+    lighting = _sentence("Lighting: " + (shot_src.get("lighting") or (env or {}).get("lighting") or style["lighting"]))
     composition = _sentence(f"Composition: vertical {fmt['aspect_ratio']} frame; {shot_src['composition']}; "
                             "keep the lower third free of key detail for captions")
     locked = [a for r in shot_src["refs"] for a in refs_by_id[r["id"]].get("locked_attributes", [])]
     continuity = _sentence("Continuity: must match the approved reference images"
                            + (" and keep " + "; ".join(locked) if locked else ""))
-    vis_style = _sentence(f"Style: {style['visual_style']}; palette: {style['color_palette']}"
+    palette = (env or {}).get("color_palette") or style["color_palette"]
+    vis_style = _sentence(f"Style: {(env or {}).get('visual_style') or style['visual_style']}; palette: {palette}"
                           + (f"; {style['lens_language']}" if style.get("lens_language") else ""))
     must = "" if first_last else _sentence("Clearly visible: " + "; ".join(shot_src["must_show"]))
     parts = {"subject": subject, "state": state, "action": action, "environment": environment,

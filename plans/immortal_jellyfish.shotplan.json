@@ -9,8 +9,8 @@
       "Natural History Museum, 'Immortal jellyfish: the secret to cheating death' (size ~4.5 mm; most are still eaten or die of disease)"
     ]
   },
-  "plan_version": 1,
-  "created_at": "2026-09-25T06:44:26Z",
+  "plan_version": 2,
+  "created_at": "2026-09-25T07:05:02Z",
   "planner": {
     "version": "0.2.0",
     "backend": "manual:beats/immortal_jellyfish.beats.json",
@@ -530,20 +530,12 @@
             "id": "S01.Q08",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S01.Q09",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S01.Q10",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_OPEN_WATER: open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view?",
@@ -551,7 +543,7 @@
             "method": "vlm"
           },
           {
-            "id": "S01.Q11",
+            "id": "S01.Q10",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -559,7 +551,7 @@
             "method": "auto"
           },
           {
-            "id": "S01.Q12",
+            "id": "S01.Q11",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -567,7 +559,7 @@
             "method": "vlm"
           },
           {
-            "id": "S01.Q13",
+            "id": "S01.Q12",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.43s long?",
@@ -575,7 +567,7 @@
             "method": "auto"
           },
           {
-            "id": "S01.Q14",
+            "id": "S01.Q13",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -747,20 +739,12 @@
             "id": "S02.Q07",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S02.Q08",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S02.Q09",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_OPEN_WATER: open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view?",
@@ -768,7 +752,7 @@
             "method": "vlm"
           },
           {
-            "id": "S02.Q10",
+            "id": "S02.Q09",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -776,7 +760,7 @@
             "method": "auto"
           },
           {
-            "id": "S02.Q11",
+            "id": "S02.Q10",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -784,7 +768,7 @@
             "method": "vlm"
           },
           {
-            "id": "S02.Q12",
+            "id": "S02.Q11",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 1.72s long?",
@@ -792,7 +776,7 @@
             "method": "auto"
           },
           {
-            "id": "S02.Q13",
+            "id": "S02.Q12",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -970,7 +954,7 @@
             "id": "S03.Q07",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -978,7 +962,7 @@
             "id": "S03.Q08",
             "type": "scale",
             "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
+            "description": "Compared with the other subjects in frame, is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
             "severity": "major",
             "method": "vlm"
           },
@@ -986,7 +970,7 @@
             "id": "S03.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the human pinky fingertip match its approved reference and keep: an adult human little-finger tip with a short, clean, unpainted fingernail?",
+            "description": "Does the human pinky fingertip match its approved reference and, where visible in frame, keep: an adult human little-finger tip with a short, clean, unpainted fingernail?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -1204,20 +1188,12 @@
             "id": "S04.Q08",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S04.Q09",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S04.Q10",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_OPEN_WATER: open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view?",
@@ -1225,7 +1201,7 @@
             "method": "vlm"
           },
           {
-            "id": "S04.Q11",
+            "id": "S04.Q10",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -1233,7 +1209,7 @@
             "method": "auto"
           },
           {
-            "id": "S04.Q12",
+            "id": "S04.Q11",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -1241,7 +1217,7 @@
             "method": "vlm"
           },
           {
-            "id": "S04.Q13",
+            "id": "S04.Q12",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.62s long?",
@@ -1249,7 +1225,7 @@
             "method": "auto"
           },
           {
-            "id": "S04.Q14",
+            "id": "S04.Q13",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -1445,7 +1421,7 @@
             "id": "S05.Q08",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -1459,14 +1435,6 @@
           },
           {
             "id": "S05.Q10",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S05.Q11",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_OPEN_WATER: open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view?",
@@ -1474,7 +1442,7 @@
             "method": "vlm"
           },
           {
-            "id": "S05.Q12",
+            "id": "S05.Q11",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -1482,7 +1450,7 @@
             "method": "auto"
           },
           {
-            "id": "S05.Q13",
+            "id": "S05.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -1490,7 +1458,7 @@
             "method": "vlm"
           },
           {
-            "id": "S05.Q14",
+            "id": "S05.Q13",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 2.69s long?",
@@ -1498,7 +1466,7 @@
             "method": "auto"
           },
           {
-            "id": "S05.Q15",
+            "id": "S05.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -1690,20 +1658,12 @@
             "id": "S06.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S06.Q10",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S06.Q11",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_SEABED: extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above?",
@@ -1711,7 +1671,7 @@
             "method": "vlm"
           },
           {
-            "id": "S06.Q12",
+            "id": "S06.Q11",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -1719,7 +1679,7 @@
             "method": "auto"
           },
           {
-            "id": "S06.Q13",
+            "id": "S06.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -1727,7 +1687,7 @@
             "method": "vlm"
           },
           {
-            "id": "S06.Q14",
+            "id": "S06.Q13",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.43s long?",
@@ -1735,7 +1695,7 @@
             "method": "auto"
           },
           {
-            "id": "S06.Q15",
+            "id": "S06.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -1917,7 +1877,7 @@
             "id": "S07.Q06",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -1931,14 +1891,6 @@
           },
           {
             "id": "S07.Q08",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S07.Q09",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_SEABED: extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above?",
@@ -1946,7 +1898,7 @@
             "method": "vlm"
           },
           {
-            "id": "S07.Q10",
+            "id": "S07.Q09",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -1954,7 +1906,7 @@
             "method": "auto"
           },
           {
-            "id": "S07.Q11",
+            "id": "S07.Q10",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -1962,7 +1914,7 @@
             "method": "vlm"
           },
           {
-            "id": "S07.Q12",
+            "id": "S07.Q11",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 2.67s long?",
@@ -1970,7 +1922,7 @@
             "method": "auto"
           },
           {
-            "id": "S07.Q13",
+            "id": "S07.Q12",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -2178,7 +2130,7 @@
             "id": "S08.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -2192,14 +2144,6 @@
           },
           {
             "id": "S08.Q11",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S08.Q12",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_SEABED: extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above?",
@@ -2207,7 +2151,7 @@
             "method": "vlm"
           },
           {
-            "id": "S08.Q13",
+            "id": "S08.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -2215,7 +2159,7 @@
             "method": "auto"
           },
           {
-            "id": "S08.Q14",
+            "id": "S08.Q13",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -2223,7 +2167,7 @@
             "method": "vlm"
           },
           {
-            "id": "S08.Q15",
+            "id": "S08.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 2.66s long?",
@@ -2231,7 +2175,7 @@
             "method": "auto"
           },
           {
-            "id": "S08.Q16",
+            "id": "S08.Q15",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -2440,7 +2384,7 @@
             "id": "S09.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -2454,14 +2398,6 @@
           },
           {
             "id": "S09.Q11",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S09.Q12",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_SEABED: extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above?",
@@ -2469,7 +2405,7 @@
             "method": "vlm"
           },
           {
-            "id": "S09.Q13",
+            "id": "S09.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -2477,7 +2413,7 @@
             "method": "auto"
           },
           {
-            "id": "S09.Q14",
+            "id": "S09.Q13",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -2485,7 +2421,7 @@
             "method": "vlm"
           },
           {
-            "id": "S09.Q15",
+            "id": "S09.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.82s long?",
@@ -2493,7 +2429,7 @@
             "method": "auto"
           },
           {
-            "id": "S09.Q16",
+            "id": "S09.Q15",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -2704,7 +2640,7 @@
             "id": "S10.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -2718,14 +2654,6 @@
           },
           {
             "id": "S10.Q11",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S10.Q12",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_SEABED: extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above?",
@@ -2733,7 +2661,7 @@
             "method": "vlm"
           },
           {
-            "id": "S10.Q13",
+            "id": "S10.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -2741,7 +2669,7 @@
             "method": "auto"
           },
           {
-            "id": "S10.Q14",
+            "id": "S10.Q13",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -2749,7 +2677,7 @@
             "method": "vlm"
           },
           {
-            "id": "S10.Q15",
+            "id": "S10.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.99s long?",
@@ -2757,7 +2685,7 @@
             "method": "auto"
           },
           {
-            "id": "S10.Q16",
+            "id": "S10.Q15",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -2925,20 +2853,12 @@
             "id": "S11.Q07",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S11.Q08",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S11.Q09",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_OPEN_WATER: open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view?",
@@ -2946,7 +2866,7 @@
             "method": "vlm"
           },
           {
-            "id": "S11.Q10",
+            "id": "S11.Q09",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -2954,7 +2874,7 @@
             "method": "auto"
           },
           {
-            "id": "S11.Q11",
+            "id": "S11.Q10",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -2962,7 +2882,7 @@
             "method": "vlm"
           },
           {
-            "id": "S11.Q12",
+            "id": "S11.Q11",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 2.66s long?",
@@ -2970,7 +2890,7 @@
             "method": "auto"
           },
           {
-            "id": "S11.Q13",
+            "id": "S11.Q12",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -3161,20 +3081,12 @@
             "id": "S12.Q09",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
           {
             "id": "S12.Q10",
-            "type": "scale",
-            "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
-            "severity": "major",
-            "method": "vlm"
-          },
-          {
-            "id": "S12.Q11",
             "type": "continuity",
             "stage": "both",
             "description": "Does the setting match ENV_LAB: a laboratory bench with shallow round glass culture dishes of clear seawater, lit from below by a microscope light, dark surroundings?",
@@ -3182,7 +3094,7 @@
             "method": "vlm"
           },
           {
-            "id": "S12.Q12",
+            "id": "S12.Q11",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
@@ -3190,7 +3102,7 @@
             "method": "auto"
           },
           {
-            "id": "S12.Q13",
+            "id": "S12.Q12",
             "type": "technical",
             "stage": "both",
             "description": "Is the frame free of generated text, watermarks and logos?",
@@ -3198,7 +3110,7 @@
             "method": "vlm"
           },
           {
-            "id": "S12.Q14",
+            "id": "S12.Q13",
             "type": "technical",
             "stage": "video",
             "description": "Is the clip at least 3.61s long?",
@@ -3206,7 +3118,7 @@
             "method": "auto"
           },
           {
-            "id": "S12.Q15",
+            "id": "S12.Q14",
             "type": "technical",
             "stage": "video",
             "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
@@ -3413,7 +3325,7 @@
             "id": "S13.Q10",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the Turritopsis dohrnii match its approved reference and keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
+            "description": "Does the Turritopsis dohrnii match its approved reference and, where visible in frame, keep: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles?",
             "severity": "blocker",
             "method": "vlm"
           },
@@ -3421,7 +3333,7 @@
             "id": "S13.Q11",
             "type": "scale",
             "stage": "both",
-            "description": "Is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
+            "description": "Compared with the other subjects in frame, is the Turritopsis dohrnii shown at a believable size (the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still)?",
             "severity": "major",
             "method": "vlm"
           },
@@ -3429,7 +3341,7 @@
             "id": "S13.Q12",
             "type": "continuity",
             "stage": "both",
-            "description": "Does the small coastal fish match its approved reference and keep: a small silver-grey coastal fish about 5 cm long with a plain body and large dark eye?",
+            "description": "Does the small coastal fish match its approved reference and, where visible in frame, keep: a small silver-grey coastal fish about 5 cm long with a plain body and large dark eye?",
             "severity": "blocker",
             "method": "vlm"
           },

@@ -1,0 +1,87 @@
+{
+  "project": {
+    "id": "greenland_shark",
+    "title": "The 400-year-old shark",
+    "fact_sources": [
+      "Nielsen et al. 2016, Science 353:702, eye-lens radiocarbon dating of Greenland sharks (392 +/- 120 yr; 95% range 272-512)"
+    ]
+  },
+  "script": "Scientists dated this shark to three hundred and ninety two years old. It is a Greenland shark. And that number came from its eye. The lens never changes after birth. So they radiocarbon dated it. But here is the part nobody repeats. The real range was two hundred and seventy two, to five hundred and twelve. We do not know how old it is, within two hundred and forty years. It grows less than a centimetre a year, and swims slower than you walk. And nearly all of them are going blind. A parasite clamps onto the eye, and feeds on it. It will keep going for another century. Blind, in the cold, two thousand metres down.",
+  "planner_notes": "Payoff is the honest range, not the headline number. Numbers go on screen as edit overlays.",
+  "style": {
+    "visual_style": "photographic deep-sea documentary footage, ROV camera look, natural textures",
+    "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+    "color_palette": "black-blue water, grey-brown shark skin, pale suspended particles",
+    "global_must_avoid": [
+      "scuba divers",
+      "tropical reef",
+      "sunlight shafts",
+      "generated text or numbers"
+    ]
+  },
+  "references": {
+    "characters": [
+      {
+        "id": "CHR_SHARK",
+        "name": "Greenland shark",
+        "description": "a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars",
+        "scale": "adult about 4-5 m long",
+        "states": {
+          "cruising": "swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+          "eye_parasite": "its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+          "receding": "swimming away from the camera, body shrinking into the darkness"
+        },
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ],
+        "must_avoid": [
+          "great white shark",
+          "pointed snout",
+          "tall triangular dorsal fin",
+          "open jaws with rows of teeth"
+        ]
+      },
+      {
+        "id": "PROP_LENS",
+        "name": "shark eye lens",
+        "description": "a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye",
+        "states": {
+          "in_dish": "resting whole in a shallow glass dish",
+          "sampled": "being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core"
+        },
+        "must_avoid": [
+          "marble",
+          "gemstone",
+          "contact lens"
+        ]
+      }
+    ],
+    "environments": [
+      {
+        "id": "ENV_DEEP",
+        "name": "deep Arctic water",
+        "description": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "states": {
+          "default": "still, cold water"
+        }
+      },
+      {
+        "id": "ENV_LAB",
+        "name": "research lab",
+        "description": "a laboratory bench under a microscope light, dark surroundings",
+        "states": {
+          "default": "bench lit from above"
+        },
+        "must_avoid": [
+          "legible labels",
+          "people's faces"
+        ],
+        "lighting": "bright even white light from a microscope lamp above the bench",
+        "color_palette": "neutral white and steel grey, clear glass, the pale lens",
+        "visual_style": "photographic laboratory close-up footage, natural textures"
+      }
+    ]
+  }
+}

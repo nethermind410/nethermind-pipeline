@@ -17,7 +17,7 @@ import re
 from . import SCHEMA_ID
 from .prompts import fluff_in
 from .text import tokens
-from .timing import HARD_MIN_SHOT_S, MIN_SHOT_S
+from .timing import HARD_MIN_SHOT_S, MAX_SHOT_S, MIN_SHOT_S, SOFT_MAX_SHOT_S
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCHEMAS = os.path.join(ROOT, "schemas")
@@ -194,9 +194,14 @@ def check_semantics(plan):
             errs.append(f"{sid}: start_s {s['timing']['start_s']} should be {round(t, 2)}")
         t += d
         if d < HARD_MIN_SHOT_S:
-            errs.append(f"{sid}: {d}s is too short to read; merge it with a neighbour")
+            errs.append(f"{sid}: {d}s is too short to read; merge it with a neighbour" if len(shots) > 1 else
+                        f"the whole script is only {d}s of narration; too short to plan")
         elif d < MIN_SHOT_S:
             warns.append(f"{sid}: {d}s is short (< {MIN_SHOT_S}s); check it reads on screen")
+        if d > MAX_SHOT_S and g["mode"] not in ("still_kenburns", "stock_footage"):
+            errs.append(f"{sid}: {d}s is longer than any common video-model clip ({MAX_SHOT_S}s); split the shot")
+        elif d > SOFT_MAX_SHOT_S:
+            warns.append(f"{sid}: {d}s holds one picture for a long time (> {SOFT_MAX_SHOT_S}s); consider splitting")
         if g["video"] and g["video"]["duration_s"] < d:
             errs.append(f"{sid}: requested clip {g['video']['duration_s']}s is shorter than narration {d}s")
         # prompt hygiene

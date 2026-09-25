@@ -14,7 +14,7 @@ import json
 import re
 
 from .compiler import PlanError, compile_plan
-from .text import sentences, tokens, word_count
+from .text import is_word, sentences, tokens, word_count
 from .validate import load_schema
 
 PLANNING_RULES = """You are the shot planner for NETHERMIND, which makes short vertical science videos.
@@ -102,43 +102,80 @@ def from_llm(brief, provider, max_repairs=2, log=print):
     raise PlanError(errs)
 
 
+def _chunk_ranges(toks, sent_ranges, lo, hi, prefer=7):
+    """Token ranges for draft shots, lo..hi spoken words each where the script allows.
+
+    1. break at clause punctuation and sentence ends;
+    2. split any piece longer than hi words into near-equal parts;
+    3. join pieces into shots, across sentence boundaries if needed, closing a
+       shot once it has at least lo words and either ends a sentence, has
+       reached `prefer` words, or the next piece would push it past hi;
+    4. fold a too-short final piece into the shot before it.
+    """
+    ends = {b for _, b in sent_ranges}
+    pieces, a = [], 0
+    for i, t in enumerate(toks):
+        if i + 1 in ends or re.search(r"[,;:\u2014\u2013]$", t) or t in ("\u2014", "\u2013", "-", "--"):
+            pieces.append((a, i + 1))
+            a = i + 1
+    if a < len(toks):
+        pieces.append((a, len(toks)))
+
+    def wc(r):
+        return word_count(toks[r[0]:r[1]])
+
+    split = []
+    for r in pieces:
+        n = -(-wc(r) // hi)  # ceil
+        if n <= 1:
+            split.append(r)
+            continue
+        word_idx = [i for i in range(*r) if is_word(toks[i])]
+        cuts = [word_idx[round(k * len(word_idx) / n)] for k in range(1, n)]
+        bounds = [r[0]] + cuts + [r[1]]
+        split += list(zip(bounds, bounds[1:]))
+
+    out = []
+    for r in split:
+        if out:
+            cur = out[-1]
+            full = wc(cur) >= lo and (cur[1] in ends or wc(cur) >= prefer or wc(cur) + wc(r) > hi)
+            if not full:
+                out[-1] = (cur[0], r[1])
+                continue
+        out.append(r)
+    if len(out) > 1 and wc(out[-1]) < lo and wc(out[-2]) + wc(out[-1]) <= hi + lo:
+        out[-2:] = [(out[-2][0], out[-1][1])]
+    return out
+
+
 def heuristic(brief, target_words=(4, 11)):
-    """Offline draft: splits into clauses, then merges or splits them to 4-11 words per shot."""
+    """Offline draft: clause-sized shots of 4-11 spoken words (about 1.5-4.5 s)."""
     lo, hi = target_words
     script = " ".join(brief["script"].split())
     toks = tokens(script)
+    sent_ranges = sentences(toks)
     chars = brief["references"].get("characters", [])
     envs = brief["references"].get("environments", [])
     ref = [{"id": chars[0]["id"], "start_state": next(iter(chars[0]["states"]))}] if chars else []
     info, shots = [], []
-    for si, (a, b) in enumerate(sentences(toks), 1):
-        # clause chunks inside the sentence
-        chunks, cur = [], []
-        for t in toks[a:b]:
-            cur.append(t)
-            if re.search(r"[,;:—–]$", t) or t in ("—", "–"):
-                chunks.append(cur)
-                cur = []
-        if cur:
-            chunks.append(cur)
-        merged = []
-        for c in chunks:
-            if merged and (word_count(merged[-1]) < lo or word_count(c) < lo) and word_count(merged[-1]) + word_count(c) <= hi:
-                merged[-1] = merged[-1] + c
-            else:
-                merged.append(c)
-        for c in merged:
-            vid = f"V{len(info) + 1:02d}"
-            text = " ".join(c)
-            info.append({"id": vid, "sentence_id": f"N{si:02d}", "fact": f"REVIEW: what must be seen for {text!r}"})
-            shots.append({
-                "narration": text, "communicates": [vid],
-                "goal": f"REVIEW: show literally what is said in {text!r}",
-                "refs": ref, "environment_ref": envs[0]["id"] if envs else None,
-                **({} if envs else {"environment": "REVIEW: environment"}),
-                "action": "REVIEW: describe the physical action that matches the narration",
-                "framing": "medium", "angle": "eye_level", "movement": "slow_push_in",
-                "composition": "subject centred in the upper two-thirds",
-                "must_show": [f"REVIEW: visible evidence of {text!r}"],
-            })
+    for a, b in _chunk_ranges(toks, sent_ranges, lo, hi):
+        text = " ".join(toks[a:b])
+        vids = []
+        for si, (sa, sb) in enumerate(sent_ranges, 1):
+            if sa < b and sb > a:  # this shot touches sentence si
+                vid = f"V{len(info) + 1:02d}"
+                part = " ".join(toks[max(a, sa):min(b, sb)])
+                info.append({"id": vid, "sentence_id": f"N{si:02d}", "fact": f"REVIEW: what must be seen for {part!r}"})
+                vids.append(vid)
+        shots.append({
+            "narration": text, "communicates": vids,
+            "goal": f"REVIEW: show literally what is said in {text!r}",
+            "refs": ref, "environment_ref": envs[0]["id"] if envs else None,
+            **({} if envs else {"environment": "REVIEW: environment"}),
+            "action": "REVIEW: describe the physical action that matches the narration",
+            "framing": "medium", "angle": "eye_level", "movement": "slow_push_in",
+            "composition": "subject centred in the upper two-thirds",
+            "must_show": [f"REVIEW: visible evidence of {text!r}"],
+        })
     return {"visual_information": info, "shots": shots}

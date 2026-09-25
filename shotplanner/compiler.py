@@ -39,8 +39,49 @@ class PlanError(Exception):
         self.errors = errors
 
 
-def _norm(v):
-    return re.sub(r"[\s\-]+", "_", str(v).strip().lower())
+# What LLMs and people actually write -> the allowed value. Anything not listed
+# here and not already valid is still reported as an error.
+ALIASES = {
+    "framing": {"ecu": "extreme_close_up", "extreme_closeup": "extreme_close_up", "cu": "close_up",
+                "closeup": "close_up", "mcu": "medium_close_up", "medium_closeup": "medium_close_up",
+                "ms": "medium", "mid": "medium", "full": "medium_wide", "mws": "medium_wide",
+                "ws": "wide", "long": "wide", "establishing": "wide", "ews": "extreme_wide",
+                "els": "extreme_wide", "extreme_long": "extreme_wide", "detail": "insert"},
+    "angle": {"overhead": "top_down", "birds_eye": "top_down", "bird_eye": "top_down", "aerial": "top_down",
+              "worms_eye": "bottom_up", "worm_eye": "bottom_up", "side": "profile", "side_view": "profile",
+              "straight_on": "eye_level", "eye": "eye_level", "canted": "dutch", "tilted": "dutch",
+              "high_down": "high", "looking_down": "high", "looking_up": "low"},
+    "movement": {"push_in": "slow_push_in", "dolly_in": "slow_push_in", "zoom_in": "slow_push_in",
+                 "slow_zoom_in": "slow_push_in", "slow_dolly_in": "slow_push_in", "creep_in": "slow_push_in",
+                 "pull_out": "slow_pull_out", "pull_back": "slow_pull_out", "dolly_out": "slow_pull_out",
+                 "zoom_out": "slow_pull_out", "slow_zoom_out": "slow_pull_out", "slow_pull_back": "slow_pull_out",
+                 "tracking": "track_follow", "track": "track_follow", "follow": "track_follow",
+                 "locked_off": "static", "locked": "static", "still": "static", "fixed": "static",
+                 "none": "static", "arc": "orbit", "orbit_left": "orbit", "orbit_right": "orbit",
+                 "focus_pull": "rack_focus", "pull_focus": "rack_focus", "rack": "rack_focus",
+                 "handheld": "handheld_drift", "drift": "handheld_drift", "boom_down": "crane_down",
+                 "pedestal_down": "crane_down", "boom_up": "crane_up", "pedestal_up": "crane_up"},
+    "transition_in": {"hard_cut": "cut", "straight_cut": "cut", "match": "match_cut",
+                      "continuation": "continuous", "continues": "continuous", "time_skip": "time_jump",
+                      "time_cut": "time_jump", "new_location": "location_change", "location": "location_change"},
+    "motion_intensity": {"subtle": "low", "gentle": "low", "minimal": "low", "slow": "low",
+                         "moderate": "medium", "fast": "high", "intense": "high", "dynamic": "high"},
+    "mode": {"i2v": "i2v_single_keyframe", "image_to_video": "i2v_single_keyframe",
+             "first_last": "i2v_first_last", "first_last_frame": "i2v_first_last",
+             "text_to_video": "t2v", "ken_burns": "still_kenburns", "kenburns": "still_kenburns",
+             "stock": "stock_footage"},
+}
+
+
+def _norm(v, key=None):
+    """Lowercase, spaces/hyphens/apostrophes -> underscores, drop a trailing
+    '_shot'/'_angle', then map known aliases. 'Close-Up shot' -> 'close_up'."""
+    v = re.sub(r"[\s\-]+", "_", str(v).strip().lower().replace("'", "").replace("\u2019", ""))
+    table = ALIASES.get(key, {})
+    for cand in (v, re.sub(r"_(shot|angle|camera|cam|move|movement)$", "", v)):
+        if cand in table:
+            return table[cand]
+    return re.sub(r"_(shot|angle)$", "", v) if v.endswith(("_shot", "_angle")) else v
 
 
 def _qc(sid):
@@ -90,13 +131,13 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
         b = dict(b)
         tag = f"shot {n}"
         for key, allowed in (("framing", FRAMINGS), ("angle", ANGLES), ("movement", MOVES)):
-            b[key] = _norm(b[key])
+            b[key] = _norm(b[key], key)
             if b[key] not in allowed:
                 errs.append(f"{tag}: {key} {b[key]!r} not one of {sorted(allowed)}")
         for key, allowed, default in (("transition_in", TRANSITIONS, None), ("mode", MODES, None),
                                       ("motion_intensity", INTENSITY, "low")):
             if b.get(key):
-                b[key] = _norm(b[key])
+                b[key] = _norm(b[key], key)
                 if b[key] not in allowed:
                     errs.append(f"{tag}: {key} {b[key]!r} not one of {sorted(allowed)}")
             elif default:
@@ -189,14 +230,14 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
         for r in b["refs"]:
             ref = refs_by_id[r["id"]]
             checks.append(q("continuity", "both",
-                            f"Does the {ref['name']} match its approved reference and keep: "
+                            f"Does the {ref['name']} match its approved reference and, where visible in frame, keep: "
                             + ("; ".join(ref.get("locked_attributes", [])) or ref["description"]) + "?"))
             if r["start_state"] != r["end_state"]:
                 checks.append(q("state_change", "video",
                                 f"Does the {ref['name']} begin {r['start_state']!r} ({ref['states'][r['start_state']]}) "
                                 f"and end {r['end_state']!r} ({ref['states'][r['end_state']]})?"))
-            if ref.get("scale"):
-                checks.append(q("scale", "both", f"Is the {ref['name']} shown at a believable size ({ref['scale']})?",
+            if ref.get("scale") and len(b["refs"]) > 1:  # needs a second subject in frame to compare against
+                checks.append(q("scale", "both", f"Compared with the other subjects in frame, is the {ref['name']} shown at a believable size ({ref['scale']})?",
                                 "major"))
         if env_ref:
             checks.append(q("continuity", "both", f"Does the setting match {env_ref['id']}: {env_ref['description']}?",
@@ -220,7 +261,8 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
                        "camera": {k: v for k, v in (("framing", b["framing"]), ("angle", b["angle"]),
                                                     ("lens", b.get("lens")), ("movement", b["movement"]),
                                                     ("movement_note", b.get("movement_note"))) if v},
-                       "lighting": b.get("lighting") or style["lighting"], "composition": b["composition"]},
+                       "lighting": b.get("lighting") or (env_ref or {}).get("lighting") or style["lighting"],
+                       "composition": b["composition"]},
             "continuity": {"refs": b["refs"], "environment_ref": env_ref["id"] if env_ref else None,
                            "previous_shot": None, "previous_shot_state": None,
                            "next_shot": None, "next_shot_state": None,

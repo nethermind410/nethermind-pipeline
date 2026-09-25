@@ -1,0 +1,412 @@
+{
+  "visual_information": [
+    {
+      "id": "V01",
+      "sentence_id": "N01",
+      "fact": "an old, scarred shark"
+    },
+    {
+      "id": "V02",
+      "sentence_id": "N02",
+      "fact": "what a Greenland shark looks like"
+    },
+    {
+      "id": "V03",
+      "sentence_id": "N03",
+      "fact": "the shark's eye"
+    },
+    {
+      "id": "V04",
+      "sentence_id": "N04",
+      "fact": "the eye lens itself"
+    },
+    {
+      "id": "V05",
+      "sentence_id": "N05",
+      "fact": "scientists sampling the lens in a lab"
+    },
+    {
+      "id": "V06",
+      "sentence_id": "N06",
+      "fact": "a reveal: something hidden coming into view"
+    },
+    {
+      "id": "V07",
+      "sentence_id": "N07",
+      "fact": "a range, not one number (overlay)"
+    },
+    {
+      "id": "V08",
+      "sentence_id": "N08",
+      "fact": "uncertainty: the shark only half visible"
+    },
+    {
+      "id": "V09",
+      "sentence_id": "N09",
+      "fact": "its huge body, grown very slowly"
+    },
+    {
+      "id": "V10",
+      "sentence_id": "N09",
+      "fact": "extremely slow swimming"
+    },
+    {
+      "id": "V11",
+      "sentence_id": "N10",
+      "fact": "a clouded, damaged eye"
+    },
+    {
+      "id": "V12",
+      "sentence_id": "N11",
+      "fact": "the parasite attached to the eye"
+    },
+    {
+      "id": "V13",
+      "sentence_id": "N12",
+      "fact": "the shark carrying on"
+    },
+    {
+      "id": "V14",
+      "sentence_id": "N13",
+      "fact": "blind, cold, very deep"
+    }
+  ],
+  "shots": [
+    {
+      "narration": "Scientists dated this shark to three hundred and ninety two years old.",
+      "communicates": [
+        "V01"
+      ],
+      "goal": "One old, heavily scarred shark gliding out of the dark.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light",
+      "framing": "Medium Close-Up",
+      "angle": "eye level",
+      "movement": "dolly in",
+      "composition": "head and front half of the body in the upper two-thirds",
+      "must_show": [
+        "pale scars on grey-brown skin",
+        "short rounded snout"
+      ],
+      "edit_notes": [
+        "Hook overlay: THIS SHARK / IS ALMOST / 400 YEARS OLD."
+      ]
+    },
+    {
+      "narration": "It is a Greenland shark.",
+      "communicates": [
+        "V02"
+      ],
+      "goal": "The whole animal, side-on, so its shape is recognisable.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark swims past the camera from left to right, its full body visible",
+      "framing": "wide shot",
+      "angle": "side",
+      "movement": "tracking shot",
+      "composition": "full body across the middle of the frame",
+      "must_show": [
+        "whole body in frame",
+        "small dorsal fins set far back"
+      ],
+      "transition_in": "hard cut"
+    },
+    {
+      "narration": "And that number came from its eye.",
+      "communicates": [
+        "V03"
+      ],
+      "goal": "The eye, in close-up.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The eye stays centred as the shark drifts slowly, the skin around it wrinkling",
+      "framing": "ECU",
+      "angle": "side",
+      "movement": "slow push-in",
+      "composition": "eye centred in the upper half",
+      "must_show": [
+        "the shark's eye filling much of the frame"
+      ]
+    },
+    {
+      "narration": "The lens never changes after birth.",
+      "communicates": [
+        "V04"
+      ],
+      "goal": "The removed lens: a clear hard sphere in a dish.",
+      "refs": [
+        {
+          "id": "PROP_LENS",
+          "start_state": "in_dish"
+        }
+      ],
+      "environment_ref": "ENV_LAB",
+      "action": "Light passes through the still lens, showing its clear layered inside",
+      "framing": "macro",
+      "angle": "high angle",
+      "movement": "locked off",
+      "composition": "lens centred in the upper half of the dish",
+      "must_show": [
+        "a clear glass-like sphere in a dish"
+      ],
+      "transition_in": "location change"
+    },
+    {
+      "narration": "So they radiocarbon dated it.",
+      "communicates": [
+        "V05"
+      ],
+      "goal": "Gloved hands cutting into the lens under a microscope.",
+      "refs": [
+        {
+          "id": "PROP_LENS",
+          "start_state": "sampled"
+        }
+      ],
+      "environment_ref": "ENV_LAB",
+      "action": "Fine tweezers hold the lens while a scalpel slices it to expose the dense core",
+      "framing": "Close-Up",
+      "angle": "overhead",
+      "movement": "static",
+      "composition": "lens centred, tools entering from the top edge",
+      "must_show": [
+        "tweezers and scalpel",
+        "the lens being cut"
+      ],
+      "accuracy_notes": [
+        "Dating used the lens nucleus, laid down before birth"
+      ]
+    },
+    {
+      "narration": "But here is the part nobody repeats.",
+      "communicates": [
+        "V06"
+      ],
+      "goal": "The shark emerging from total darkness: something hidden being revealed.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark's head slowly emerges from black water into the edge of the lamp light",
+      "framing": "medium",
+      "angle": "eye level",
+      "movement": "static",
+      "composition": "head entering from the lower left toward the centre",
+      "must_show": [
+        "the shark's head emerging from darkness"
+      ],
+      "transition_in": "location change"
+    },
+    {
+      "narration": "The real range was two hundred and seventy two, to five hundred and twelve.",
+      "communicates": [
+        "V07"
+      ],
+      "goal": "A calm shot of the shark that leaves space for the range overlay.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark swims slowly across the lower half of the frame",
+      "framing": "wide",
+      "angle": "eye level",
+      "movement": "pan right",
+      "composition": "shark in the lower third, open dark water above for the overlay",
+      "must_show": [
+        "the shark in the lower third",
+        "empty dark water above it"
+      ],
+      "edit_notes": [
+        "Overlay a range bar 272 -> 512 with 392 marked; never generated"
+      ]
+    },
+    {
+      "narration": "We do not know how old it is, within two hundred and forty years.",
+      "communicates": [
+        "V08"
+      ],
+      "goal": "The shark only half visible, fading in and out of the light.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark drifts at the edge of the lamp light, half its body lost in shadow",
+      "framing": "medium_wide",
+      "angle": "eye level",
+      "movement": "handheld",
+      "composition": "shark split by the edge of the light",
+      "must_show": [
+        "the shark partly in shadow"
+      ]
+    },
+    {
+      "narration": "It grows less than a centimetre a year,",
+      "communicates": [
+        "V09"
+      ],
+      "goal": "The sheer length of the body, revealed slowly.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The camera travels along the flank from head to tail",
+      "framing": "medium",
+      "angle": "side",
+      "movement": "track",
+      "composition": "the flank filling the frame side to side",
+      "must_show": [
+        "a long stretch of scarred flank"
+      ]
+    },
+    {
+      "narration": "and swims slower than you walk.",
+      "communicates": [
+        "V10"
+      ],
+      "goal": "Almost no motion: the shark barely moving while particles drift past.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark creeps forward with slow tail strokes while marine snow drifts past it",
+      "framing": "wide",
+      "angle": "eye level",
+      "movement": "static",
+      "composition": "shark across the middle, particles throughout",
+      "must_show": [
+        "the shark moving very slowly",
+        "drifting particles"
+      ],
+      "motion_intensity": "subtle"
+    },
+    {
+      "narration": "And nearly all of them are going blind.",
+      "communicates": [
+        "V11"
+      ],
+      "goal": "The eye now pale and clouded.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "eye_parasite"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The clouded eye stays still as the shark drifts",
+      "framing": "extreme close-up",
+      "angle": "side",
+      "movement": "slow push in",
+      "composition": "eye centred in the upper half",
+      "must_show": [
+        "a pale, clouded eye"
+      ],
+      "transition_in": "match cut"
+    },
+    {
+      "narration": "A parasite clamps onto the eye, and feeds on it.",
+      "communicates": [
+        "V12"
+      ],
+      "goal": "The parasite hanging from the eye, moving in the current.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "eye_parasite"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The ribbon-like parasite sways in the current, attached to the eye surface",
+      "framing": "macro",
+      "angle": "side",
+      "movement": "static",
+      "composition": "parasite hanging down from the eye at the centre",
+      "must_show": [
+        "a pale ribbon-like parasite attached to the eye"
+      ],
+      "must_avoid": [
+        "worms crawling out of the eye",
+        "blood"
+      ],
+      "transition_in": "continuous"
+    },
+    {
+      "narration": "It will keep going for another century.",
+      "communicates": [
+        "V13"
+      ],
+      "goal": "The shark swimming on and away.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "cruising",
+          "end_state": "receding"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The shark turns and swims away from the camera",
+      "framing": "medium",
+      "angle": "eye level",
+      "movement": "static",
+      "composition": "shark moving from the centre toward the top of the frame",
+      "must_show": [
+        "the shark swimming away"
+      ]
+    },
+    {
+      "narration": "Blind, in the cold, two thousand metres down.",
+      "communicates": [
+        "V14"
+      ],
+      "goal": "A tiny shape far below in deep, cold, dark water.",
+      "refs": [
+        {
+          "id": "CHR_SHARK",
+          "start_state": "receding"
+        }
+      ],
+      "environment_ref": "ENV_DEEP",
+      "action": "The camera tilts down toward a small shape moving over the muddy seafloor far below",
+      "framing": "extreme wide",
+      "angle": "high angle",
+      "movement": "tilt down",
+      "composition": "the shark small in the lower-middle of the frame, seafloor below",
+      "must_show": [
+        "the shark small and far away",
+        "muddy seafloor",
+        "drifting particles"
+      ],
+      "transition_in": "continuous"
+    }
+  ]
+}

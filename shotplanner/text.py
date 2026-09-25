@@ -30,11 +30,34 @@ def match_key(tok):
     return re.sub(r"^[^\w]+|[^\w]+$", "", t)
 
 
+# Titles are always followed by a name, so they never end a sentence.
+_TITLES = {"dr.", "mr.", "mrs.", "ms.", "prof.", "st.", "mt.", "jr.", "sr.", "vs.", "e.g.", "i.e.", "approx.", "fig."}
+_INITIALISM = re.compile(r"^(?:[A-Za-z]\.){2,}$")  # U.S., U.K., a.m.
+
+
+def _ends_sentence(tok, nxt):
+    if not _SENT_END.search(tok) or tok.lower() in _TITLES:
+        return False
+    if nxt is None:
+        return True
+    first = nxt.lstrip("\"'(\u201c\u2018")[:1]
+    if first.islower():  # "3 ft. long", "Wait... it gets"
+        return False
+    if _INITIALISM.match(tok) and first.isdigit():  # "the U.S. 1998 census"
+        return False
+    return True
+
+
 def sentences(toks):
-    """[(start, end_exclusive)] token ranges, one per sentence."""
+    """[(start, end_exclusive)] token ranges, one per sentence.
+
+    Ending punctuation only ends a sentence if the next word does not start in
+    lowercase and the token is not a title such as "Dr.", so abbreviations
+    like "U.S. in 1998" or "3 ft. long" stay inside their sentence.
+    """
     out, start = [], 0
     for i, t in enumerate(toks):
-        if _SENT_END.search(t):
+        if _ends_sentence(t, toks[i + 1] if i + 1 < len(toks) else None):
             out.append((start, i + 1))
             start = i + 1
     if start < len(toks):

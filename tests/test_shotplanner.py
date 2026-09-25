@@ -142,7 +142,120 @@ class Text(unittest.TestCase):
         self.assertEqual(ranges, [(0, 2), (2, 4)])
 
 
+class TextEdgeCases(unittest.TestCase):
+    """Regression tests from the first stress run (pass 1)."""
+
+    def split(self, text):
+        from shotplanner.text import sentences
+        t = tokens(text)
+        return [" ".join(t[a:b]) for a, b in sentences(t)]
+
+    def test_abbreviations_do_not_end_sentences(self):
+        self.assertEqual(self.split("Dr. Smith found it in the U.S. in 1998. It was 3 ft. long."),
+                         ["Dr. Smith found it in the U.S. in 1998.", "It was 3 ft. long."])
+
+    def test_lowercase_after_ellipsis_continues_sentence(self):
+        self.assertEqual(self.split("Wait... it gets stranger. Much stranger."),
+                         ["Wait... it gets stranger.", "Much stranger."])
+
+    def test_closing_quote_ends_sentence(self):
+        self.assertEqual(self.split("He said \u201cstop.\u201d Then he left."),
+                         ["He said \u201cstop.\u201d", "Then he left."])
+
+    def test_no_sentence_pause_after_abbreviation(self):
+        from shotplanner.timing import estimate
+        self.assertLess(estimate(tokens("It was 3 ft. long")), estimate(tokens("It was 3 ft. Long")))
+
+
+class CameraAliases(unittest.TestCase):
+    def test_common_terms_are_accepted(self):
+        from shotplanner.compiler import _norm
+        cases = {("framing", "Close-Up"): "close_up", ("framing", "wide shot"): "wide",
+                 ("framing", "ECU"): "extreme_close_up", ("angle", "overhead"): "top_down",
+                 ("angle", "low angle"): "low", ("angle", "bird's eye"): "top_down",
+                 ("movement", "dolly in"): "slow_push_in", ("movement", "tracking shot"): "track_follow",
+                 ("movement", "locked off"): "static", ("transition_in", "hard cut"): "cut",
+                 ("motion_intensity", "subtle"): "low"}
+        for (k, v), want in cases.items():
+            self.assertEqual(_norm(v, k), want, (k, v))
+
+    def test_unknown_term_is_still_an_error(self):
+        b = copy.deepcopy(BEATS)
+        b["shots"][0]["movement"] = "barrel roll"
+        with self.assertRaises(PlanError):
+            compile_plan(BRIEF, b)
+
+
+class ShotLength(unittest.TestCase):
+    def test_overlong_shot_is_an_error(self):
+        b = copy.deepcopy(BEATS)
+        # fold S02..S04 into S01's narration -> one ~12 s shot
+        merged = " ".join(s["narration"] for s in b["shots"][:4])
+        b["shots"][0]["narration"] = merged
+        b["shots"][0]["communicates"] = sorted({v for s in b["shots"][:4] for v in s["communicates"]})
+        del b["shots"][1:4]
+        with self.assertRaises(PlanError) as cm:
+            compile_plan(BRIEF, b)
+        self.assertTrue(any("split the shot" in e for e in cm.exception.errors), cm.exception.errors)
+
+
+class SecondTopic(unittest.TestCase):
+    """Regression tests from pass 2: the Greenland shark plan, written in LLM-style wording."""
+
+    def setUp(self):
+        self.plan = compile_plan(load("briefs/greenland_shark.json"), load("beats/greenland_shark.beats.json"))
+
+    def test_valid(self):
+        self.assertEqual(validate_plan(self.plan)[0], [])
+
+    def test_environment_overrides_film_style(self):
+        lab = self.plan["shots"][4]["generation"]["keyframes"][0]["prompt"]
+        for leak in ("ROV", "black-blue", "shark skin"):
+            self.assertNotIn(leak, lab)
+        self.assertIn("microscope lamp", lab)
+        self.assertIn("ROV", self.plan["shots"][0]["generation"]["keyframes"][0]["prompt"])
+
+    def test_scale_check_only_with_something_to_compare(self):
+        for s in self.plan["shots"]:  # the shark is always alone in frame
+            self.assertFalse(any(q["type"] == "scale" for q in s["qc"]["checks"]), s["id"])
+        jelly = compile_plan(BRIEF, BEATS)
+        with_scale = [s["id"] for s in jelly["shots"] if any(q["type"] == "scale" for q in s["qc"]["checks"])]
+        self.assertEqual(with_scale, ["S03", "S13"])  # fingertip, fish
+
+    def test_continuity_check_allows_features_out_of_frame(self):
+        eye = self.plan["shots"][11]
+        cont = [q["description"] for q in eye["qc"]["checks"] if q["type"] == "continuity"]
+        self.assertTrue(any("where visible in frame" in c for c in cont))
+
+
 class Heuristic(unittest.TestCase):
+    def brief(self, script):
+        b = copy.deepcopy(BRIEF)
+        b["script"] = script
+        return b
+
+    def test_short_sentences_are_merged_across_boundaries(self):
+        plan = compile_plan(self.brief("Why? Because it can! Really? Yes. It is true."),
+                            B.heuristic(self.brief("Why? Because it can! Really? Yes. It is true.")),
+                            backend="heuristic")
+        self.assertEqual(validate_plan(plan)[0], [])
+        self.assertTrue(all(s["timing"]["estimated_duration_s"] >= 1.2 for s in plan["shots"]))
+
+    def test_long_sentence_is_split(self):
+        script = " ".join(["word"] * 60) + "."
+        plan = compile_plan(self.brief(script), B.heuristic(self.brief(script)), backend="heuristic")
+        self.assertGreater(len(plan["shots"]), 4)
+        self.assertTrue(all(s["timing"]["estimated_duration_s"] <= 6 for s in plan["shots"]))
+
+    def test_every_repo_script_gets_a_valid_draft(self):
+        import glob
+        for p in sorted(glob.glob(os.path.join(ROOT, "cfg", "*.json"))):
+            cfg = load(os.path.relpath(p, ROOT))
+            script = " ".join(s["text"] for s in cfg["segments"] if s.get("text"))
+            with self.subTest(cfg=os.path.basename(p)):
+                plan = compile_plan(self.brief(script), B.heuristic(self.brief(script)), backend="heuristic")
+                self.assertEqual(validate_plan(plan)[0], [])
+
     def test_draft_is_valid_but_needs_review(self):
         plan = compile_plan(BRIEF, B.heuristic(BRIEF), backend="heuristic")
         self.assertEqual(validate_plan(plan)[0], [])

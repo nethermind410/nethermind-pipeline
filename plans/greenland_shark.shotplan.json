@@ -1,0 +1,2925 @@
+{
+  "schema": "nethermind.shotplan/0.2",
+  "project": {
+    "id": "greenland_shark",
+    "title": "The 400-year-old shark",
+    "fact_sources": [
+      "Nielsen et al. 2016, Science 353:702, eye-lens radiocarbon dating of Greenland sharks (392 +/- 120 yr; 95% range 272-512)"
+    ]
+  },
+  "plan_version": 3,
+  "created_at": "2026-09-25T07:05:14Z",
+  "planner": {
+    "version": "0.2.0",
+    "backend": "manual:beats/greenland_shark.beats.json",
+    "script_sha256": "56999e5da7014cbdd7738896dc2f1a3239bd14944f95d65d562811f775c90c93",
+    "words_per_second": 2.6
+  },
+  "format": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "target_duration_s": 35,
+    "max_duration_s": 60
+  },
+  "style": {
+    "visual_style": "photographic deep-sea documentary footage, ROV camera look, natural textures",
+    "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+    "color_palette": "black-blue water, grey-brown shark skin, pale suspended particles",
+    "global_must_avoid": [
+      "scuba divers",
+      "tropical reef",
+      "sunlight shafts",
+      "generated text or numbers"
+    ],
+    "global_negative": [
+      "text",
+      "captions",
+      "subtitles",
+      "watermark",
+      "logo",
+      "signature",
+      "frame border",
+      "split screen",
+      "collage",
+      "blurry subject",
+      "motion smearing",
+      "duplicated subject"
+    ]
+  },
+  "references": {
+    "characters": [
+      {
+        "reference_images": [],
+        "status": "NEEDS_REFERENCE",
+        "id": "CHR_SHARK",
+        "name": "Greenland shark",
+        "description": "a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars",
+        "scale": "adult about 4-5 m long",
+        "states": {
+          "cruising": "swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+          "eye_parasite": "its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+          "receding": "swimming away from the camera, body shrinking into the darkness"
+        },
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ],
+        "must_avoid": [
+          "great white shark",
+          "pointed snout",
+          "tall triangular dorsal fin",
+          "open jaws with rows of teeth"
+        ]
+      },
+      {
+        "reference_images": [],
+        "status": "NEEDS_REFERENCE",
+        "id": "PROP_LENS",
+        "name": "shark eye lens",
+        "description": "a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye",
+        "states": {
+          "in_dish": "resting whole in a shallow glass dish",
+          "sampled": "being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core"
+        },
+        "must_avoid": [
+          "marble",
+          "gemstone",
+          "contact lens"
+        ]
+      }
+    ],
+    "environments": [
+      {
+        "reference_images": [],
+        "status": "NEEDS_REFERENCE",
+        "id": "ENV_DEEP",
+        "name": "deep Arctic water",
+        "description": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "states": {
+          "default": "still, cold water"
+        }
+      },
+      {
+        "reference_images": [],
+        "status": "NEEDS_REFERENCE",
+        "id": "ENV_LAB",
+        "name": "research lab",
+        "description": "a laboratory bench under a microscope light, dark surroundings",
+        "states": {
+          "default": "bench lit from above"
+        },
+        "must_avoid": [
+          "legible labels",
+          "people's faces"
+        ],
+        "lighting": "bright even white light from a microscope lamp above the bench",
+        "color_palette": "neutral white and steel grey, clear glass, the pale lens",
+        "visual_style": "photographic laboratory close-up footage, natural textures"
+      }
+    ]
+  },
+  "script": {
+    "text": "Scientists dated this shark to three hundred and ninety two years old. It is a Greenland shark. And that number came from its eye. The lens never changes after birth. So they radiocarbon dated it. But here is the part nobody repeats. The real range was two hundred and seventy two, to five hundred and twelve. We do not know how old it is, within two hundred and forty years. It grows less than a centimetre a year, and swims slower than you walk. And nearly all of them are going blind. A parasite clamps onto the eye, and feeds on it. It will keep going for another century. Blind, in the cold, two thousand metres down.",
+    "sentences": [
+      {
+        "id": "N01",
+        "text": "Scientists dated this shark to three hundred and ninety two years old.",
+        "word_start": 0,
+        "word_end": 12
+      },
+      {
+        "id": "N02",
+        "text": "It is a Greenland shark.",
+        "word_start": 12,
+        "word_end": 17
+      },
+      {
+        "id": "N03",
+        "text": "And that number came from its eye.",
+        "word_start": 17,
+        "word_end": 24
+      },
+      {
+        "id": "N04",
+        "text": "The lens never changes after birth.",
+        "word_start": 24,
+        "word_end": 30
+      },
+      {
+        "id": "N05",
+        "text": "So they radiocarbon dated it.",
+        "word_start": 30,
+        "word_end": 35
+      },
+      {
+        "id": "N06",
+        "text": "But here is the part nobody repeats.",
+        "word_start": 35,
+        "word_end": 42
+      },
+      {
+        "id": "N07",
+        "text": "The real range was two hundred and seventy two, to five hundred and twelve.",
+        "word_start": 42,
+        "word_end": 56
+      },
+      {
+        "id": "N08",
+        "text": "We do not know how old it is, within two hundred and forty years.",
+        "word_start": 56,
+        "word_end": 70
+      },
+      {
+        "id": "N09",
+        "text": "It grows less than a centimetre a year, and swims slower than you walk.",
+        "word_start": 70,
+        "word_end": 84
+      },
+      {
+        "id": "N10",
+        "text": "And nearly all of them are going blind.",
+        "word_start": 84,
+        "word_end": 92
+      },
+      {
+        "id": "N11",
+        "text": "A parasite clamps onto the eye, and feeds on it.",
+        "word_start": 92,
+        "word_end": 102
+      },
+      {
+        "id": "N12",
+        "text": "It will keep going for another century.",
+        "word_start": 102,
+        "word_end": 109
+      },
+      {
+        "id": "N13",
+        "text": "Blind, in the cold, two thousand metres down.",
+        "word_start": 109,
+        "word_end": 117
+      }
+    ]
+  },
+  "visual_information": [
+    {
+      "id": "V01",
+      "sentence_id": "N01",
+      "fact": "an old, scarred shark",
+      "shown_in": [
+        "S01"
+      ]
+    },
+    {
+      "id": "V02",
+      "sentence_id": "N02",
+      "fact": "what a Greenland shark looks like",
+      "shown_in": [
+        "S02"
+      ]
+    },
+    {
+      "id": "V03",
+      "sentence_id": "N03",
+      "fact": "the shark's eye",
+      "shown_in": [
+        "S03"
+      ]
+    },
+    {
+      "id": "V04",
+      "sentence_id": "N04",
+      "fact": "the eye lens itself",
+      "shown_in": [
+        "S04"
+      ]
+    },
+    {
+      "id": "V05",
+      "sentence_id": "N05",
+      "fact": "scientists sampling the lens in a lab",
+      "shown_in": [
+        "S05"
+      ]
+    },
+    {
+      "id": "V06",
+      "sentence_id": "N06",
+      "fact": "a reveal: something hidden coming into view",
+      "shown_in": [
+        "S06"
+      ]
+    },
+    {
+      "id": "V07",
+      "sentence_id": "N07",
+      "fact": "a range, not one number (overlay)",
+      "shown_in": [
+        "S07"
+      ]
+    },
+    {
+      "id": "V08",
+      "sentence_id": "N08",
+      "fact": "uncertainty: the shark only half visible",
+      "shown_in": [
+        "S08"
+      ]
+    },
+    {
+      "id": "V09",
+      "sentence_id": "N09",
+      "fact": "its huge body, grown very slowly",
+      "shown_in": [
+        "S09"
+      ]
+    },
+    {
+      "id": "V10",
+      "sentence_id": "N09",
+      "fact": "extremely slow swimming",
+      "shown_in": [
+        "S10"
+      ]
+    },
+    {
+      "id": "V11",
+      "sentence_id": "N10",
+      "fact": "a clouded, damaged eye",
+      "shown_in": [
+        "S11"
+      ]
+    },
+    {
+      "id": "V12",
+      "sentence_id": "N11",
+      "fact": "the parasite attached to the eye",
+      "shown_in": [
+        "S12"
+      ]
+    },
+    {
+      "id": "V13",
+      "sentence_id": "N12",
+      "fact": "the shark carrying on",
+      "shown_in": [
+        "S13"
+      ]
+    },
+    {
+      "id": "V14",
+      "sentence_id": "N13",
+      "fact": "blind, cold, very deep",
+      "shown_in": [
+        "S14"
+      ]
+    }
+  ],
+  "shots": [
+    {
+      "id": "S01",
+      "order": 1,
+      "narration": {
+        "text": "Scientists dated this shark to three hundred and ninety two years old.",
+        "sentence_ids": [
+          "N01"
+        ],
+        "word_start": 0,
+        "word_end": 12
+      },
+      "timing": {
+        "words": 12,
+        "estimated_duration_s": 4.97,
+        "start_s": 0.0,
+        "generate_duration_s": 6.0
+      },
+      "visual": {
+        "goal": "One old, heavily scarred shark gliding out of the dark.",
+        "communicates": [
+          "V01"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "medium_close_up",
+          "angle": "eye_level",
+          "movement": "slow_push_in"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "head and front half of the body in the upper two-thirds"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": null,
+        "previous_shot_state": null,
+        "next_shot": "S02",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "open",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium close-up, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; head and front half of the body in the upper two-thirds; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: pale scars on grey-brown skin; short rounded snout.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium close-up, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; head and front half of the body in the upper two-thirds; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: pale scars on grey-brown skin; short rounded snout."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: slow push-in toward the subject. The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 6.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "pale scars on grey-brown skin",
+        "short rounded snout"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S01.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: One old, heavily scarred shark gliding out of the dark.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: pale scars on grey-brown skin?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: short rounded snout?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q04",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark glides toward the camera out of the darkness, scars on its skin catching the lamp light",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S01.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S01.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 4.97s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S01.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED",
+      "edit_notes": [
+        "Hook overlay: THIS SHARK / IS ALMOST / 400 YEARS OLD."
+      ]
+    },
+    {
+      "id": "S02",
+      "order": 2,
+      "narration": {
+        "text": "It is a Greenland shark.",
+        "sentence_ids": [
+          "N02"
+        ],
+        "word_start": 12,
+        "word_end": 17
+      },
+      "timing": {
+        "words": 5,
+        "estimated_duration_s": 2.27,
+        "start_s": 4.97,
+        "generate_duration_s": 3.0
+      },
+      "visual": {
+        "goal": "The whole animal, side-on, so its shape is recognisable.",
+        "communicates": [
+          "V02"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark swims past the camera from left to right, its full body visible",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "wide",
+          "angle": "profile",
+          "movement": "track_follow"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "full body across the middle of the frame"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S01",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S03",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark swims past the camera from left to right, its full body visible. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: wide, profile angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; full body across the middle of the frame; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: whole body in frame; small dorsal fins set far back.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark swims past the camera from left to right, its full body visible.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: wide, profile angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; full body across the middle of the frame; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: whole body in frame; small dorsal fins set far back."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: tracking to follow the subject. The shark swims past the camera from left to right, its full body visible. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 3.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "whole body in frame",
+        "small dorsal fins set far back"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S02.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The whole animal, side-on, so its shape is recognisable.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: whole body in frame?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q04",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark swims past the camera from left to right, its full body visible",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S02.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S02.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 2.27s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S02.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S03",
+      "order": 3,
+      "narration": {
+        "text": "And that number came from its eye.",
+        "sentence_ids": [
+          "N03"
+        ],
+        "word_start": 17,
+        "word_end": 24
+      },
+      "timing": {
+        "words": 7,
+        "estimated_duration_s": 3.04,
+        "start_s": 7.24,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The eye, in close-up.",
+        "communicates": [
+          "V03"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The eye stays centred as the shark drifts slowly, the skin around it wrinkling",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "extreme_close_up",
+          "angle": "profile",
+          "movement": "slow_push_in"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "eye centred in the upper half"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S02",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S04",
+        "next_shot_state": "PROP_LENS 'in_dish': resting whole in a shallow glass dish",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The eye stays centred as the shark drifts slowly, the skin around it wrinkling. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: extreme close-up, profile angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; eye centred in the upper half; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark's eye filling much of the frame.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The eye stays centred as the shark drifts slowly, the skin around it wrinkling.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: extreme close-up, profile angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; eye centred in the upper half; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark's eye filling much of the frame."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: slow push-in toward the subject. The eye stays centred as the shark drifts slowly, the skin around it wrinkling. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark's eye filling much of the frame"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S03.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The eye, in close-up.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark's eye filling much of the frame?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The eye stays centred as the shark drifts slowly, the skin around it wrinkling",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S03.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S03.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.04s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S03.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S04",
+      "order": 4,
+      "narration": {
+        "text": "The lens never changes after birth.",
+        "sentence_ids": [
+          "N04"
+        ],
+        "word_start": 24,
+        "word_end": 30
+      },
+      "timing": {
+        "words": 6,
+        "estimated_duration_s": 2.66,
+        "start_s": 10.28,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The removed lens: a clear hard sphere in a dish.",
+        "communicates": [
+          "V04"
+        ],
+        "subject": "shark eye lens",
+        "subject_state": "shark eye lens: in_dish",
+        "action": "Light passes through the still lens, showing its clear layered inside",
+        "environment": "a laboratory bench under a microscope light, dark surroundings",
+        "camera": {
+          "framing": "macro",
+          "angle": "high",
+          "movement": "static"
+        },
+        "lighting": "bright even white light from a microscope lamp above the bench",
+        "composition": "lens centred in the upper half of the dish"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "PROP_LENS",
+            "start_state": "in_dish",
+            "end_state": "in_dish"
+          }
+        ],
+        "environment_ref": "ENV_LAB",
+        "previous_shot": "S03",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S05",
+        "next_shot_state": "PROP_LENS 'sampled': being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core",
+        "transition_in": "location_change",
+        "locked_attributes": []
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "shark eye lens: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye. shark eye lens state: resting whole in a shallow glass dish. Frame shows the first moment of this action: Light passes through the still lens, showing its clear layered inside. Environment: a laboratory bench under a microscope light, dark surroundings. Camera: macro, high angle. Lighting: bright even white light from a microscope lamp above the bench. Composition: vertical 9:16 frame; lens centred in the upper half of the dish; keep the lower third free of key detail for captions. Continuity: must match the approved reference images. Style: photographic laboratory close-up footage, natural textures; palette: neutral white and steel grey, clear glass, the pale lens. Clearly visible: a clear glass-like sphere in a dish.",
+            "prompt_parts": {
+              "subject": "shark eye lens: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye.",
+              "state": "shark eye lens state: resting whole in a shallow glass dish.",
+              "action": "Frame shows the first moment of this action: Light passes through the still lens, showing its clear layered inside.",
+              "environment": "Environment: a laboratory bench under a microscope light, dark surroundings.",
+              "camera": "Camera: macro, high angle.",
+              "lighting": "Lighting: bright even white light from a microscope lamp above the bench.",
+              "composition": "Composition: vertical 9:16 frame; lens centred in the upper half of the dish; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images.",
+              "style": "Style: photographic laboratory close-up footage, natural textures; palette: neutral white and steel grey, clear glass, the pale lens.",
+              "must_show": "Clearly visible: a clear glass-like sphere in a dish."
+            },
+            "reference_ids": [
+              "PROP_LENS",
+              "ENV_LAB"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. Light passes through the still lens, showing its clear layered inside. Motion is slow, smooth and physically plausible. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, marble, gemstone, contact lens, legible labels, people's faces",
+        "reference_requirements": [
+          "PROP_LENS (in_dish) reference image approved",
+          "ENV_LAB reference image approved"
+        ]
+      },
+      "must_show": [
+        "a clear glass-like sphere in a dish"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S04.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The removed lens: a clear hard sphere in a dish.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: a clear glass-like sphere in a dish?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: Light passes through the still lens, showing its clear layered inside",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the shark eye lens match its approved reference and, where visible in frame, keep: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_LAB: a laboratory bench under a microscope light, dark surroundings?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S04.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S04.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 2.66s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S04.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S05",
+      "order": 5,
+      "narration": {
+        "text": "So they radiocarbon dated it.",
+        "sentence_ids": [
+          "N05"
+        ],
+        "word_start": 30,
+        "word_end": 35
+      },
+      "timing": {
+        "words": 5,
+        "estimated_duration_s": 2.27,
+        "start_s": 12.94,
+        "generate_duration_s": 3.0
+      },
+      "visual": {
+        "goal": "Gloved hands cutting into the lens under a microscope.",
+        "communicates": [
+          "V05"
+        ],
+        "subject": "shark eye lens",
+        "subject_state": "shark eye lens: sampled",
+        "action": "Fine tweezers hold the lens while a scalpel slices it to expose the dense core",
+        "environment": "a laboratory bench under a microscope light, dark surroundings",
+        "camera": {
+          "framing": "close_up",
+          "angle": "top_down",
+          "movement": "static"
+        },
+        "lighting": "bright even white light from a microscope lamp above the bench",
+        "composition": "lens centred, tools entering from the top edge"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "PROP_LENS",
+            "start_state": "sampled",
+            "end_state": "sampled"
+          }
+        ],
+        "environment_ref": "ENV_LAB",
+        "previous_shot": "S04",
+        "previous_shot_state": "PROP_LENS 'in_dish': resting whole in a shallow glass dish",
+        "next_shot": "S06",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "cut",
+        "locked_attributes": []
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "shark eye lens: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye. shark eye lens state: being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core. Frame shows the first moment of this action: Fine tweezers hold the lens while a scalpel slices it to expose the dense core. Environment: a laboratory bench under a microscope light, dark surroundings. Camera: close-up, top-down angle. Lighting: bright even white light from a microscope lamp above the bench. Composition: vertical 9:16 frame; lens centred, tools entering from the top edge; keep the lower third free of key detail for captions. Continuity: must match the approved reference images. Style: photographic laboratory close-up footage, natural textures; palette: neutral white and steel grey, clear glass, the pale lens. Clearly visible: tweezers and scalpel; the lens being cut.",
+            "prompt_parts": {
+              "subject": "shark eye lens: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye.",
+              "state": "shark eye lens state: being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core.",
+              "action": "Frame shows the first moment of this action: Fine tweezers hold the lens while a scalpel slices it to expose the dense core.",
+              "environment": "Environment: a laboratory bench under a microscope light, dark surroundings.",
+              "camera": "Camera: close-up, top-down angle.",
+              "lighting": "Lighting: bright even white light from a microscope lamp above the bench.",
+              "composition": "Composition: vertical 9:16 frame; lens centred, tools entering from the top edge; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images.",
+              "style": "Style: photographic laboratory close-up footage, natural textures; palette: neutral white and steel grey, clear glass, the pale lens.",
+              "must_show": "Clearly visible: tweezers and scalpel; the lens being cut."
+            },
+            "reference_ids": [
+              "PROP_LENS",
+              "ENV_LAB"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. Fine tweezers hold the lens while a scalpel slices it to expose the dense core. Motion is slow, smooth and physically plausible. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 3.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, marble, gemstone, contact lens, legible labels, people's faces",
+        "reference_requirements": [
+          "PROP_LENS (sampled) reference image approved",
+          "ENV_LAB reference image approved"
+        ]
+      },
+      "must_show": [
+        "tweezers and scalpel",
+        "the lens being cut"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S05.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: Gloved hands cutting into the lens under a microscope.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: tweezers and scalpel?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the lens being cut?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q04",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: Fine tweezers hold the lens while a scalpel slices it to expose the dense core",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the shark eye lens match its approved reference and, where visible in frame, keep: a clear, hard, glass-like sphere about 1-2 cm across, the lens removed from a shark's eye?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_LAB: a laboratory bench under a microscope light, dark surroundings?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S05.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S05.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 2.27s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S05.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED",
+      "accuracy_notes": [
+        "Dating used the lens nucleus, laid down before birth"
+      ]
+    },
+    {
+      "id": "S06",
+      "order": 6,
+      "narration": {
+        "text": "But here is the part nobody repeats.",
+        "sentence_ids": [
+          "N06"
+        ],
+        "word_start": 35,
+        "word_end": 42
+      },
+      "timing": {
+        "words": 7,
+        "estimated_duration_s": 3.04,
+        "start_s": 15.21,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The shark emerging from total darkness: something hidden being revealed.",
+        "communicates": [
+          "V06"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark's head slowly emerges from black water into the edge of the lamp light",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "medium",
+          "angle": "eye_level",
+          "movement": "static"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "head entering from the lower left toward the centre"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S05",
+        "previous_shot_state": "PROP_LENS 'sampled': being cut open by fine tweezers and a scalpel under a microscope, exposing its dense inner core",
+        "next_shot": "S07",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "location_change",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark's head slowly emerges from black water into the edge of the lamp light. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; head entering from the lower left toward the centre; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark's head emerging from darkness.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark's head slowly emerges from black water into the edge of the lamp light.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; head entering from the lower left toward the centre; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark's head emerging from darkness."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. The shark's head slowly emerges from black water into the edge of the lamp light. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark's head emerging from darkness"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S06.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The shark emerging from total darkness: something hidden being revealed.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark's head emerging from darkness?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark's head slowly emerges from black water into the edge of the lamp light",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S06.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S06.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.04s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S06.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S07",
+      "order": 7,
+      "narration": {
+        "text": "The real range was two hundred and seventy two, to five hundred and twelve.",
+        "sentence_ids": [
+          "N07"
+        ],
+        "word_start": 42,
+        "word_end": 56
+      },
+      "timing": {
+        "words": 14,
+        "estimated_duration_s": 5.91,
+        "start_s": 18.25,
+        "generate_duration_s": 8.0
+      },
+      "visual": {
+        "goal": "A calm shot of the shark that leaves space for the range overlay.",
+        "communicates": [
+          "V07"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark swims slowly across the lower half of the frame",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "wide",
+          "angle": "eye_level",
+          "movement": "pan_right"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "shark in the lower third, open dark water above for the overlay"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S06",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S08",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark swims slowly across the lower half of the frame. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: wide, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; shark in the lower third, open dark water above for the overlay; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark in the lower third; empty dark water above it.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark swims slowly across the lower half of the frame.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: wide, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; shark in the lower third, open dark water above for the overlay; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark in the lower third; empty dark water above it."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: slow pan right. The shark swims slowly across the lower half of the frame. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 8.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark in the lower third",
+        "empty dark water above it"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S07.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: A calm shot of the shark that leaves space for the range overlay.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark in the lower third?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: empty dark water above it?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q04",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark swims slowly across the lower half of the frame",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S07.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S07.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 5.91s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S07.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED",
+      "edit_notes": [
+        "Overlay a range bar 272 -> 512 with 392 marked; never generated"
+      ]
+    },
+    {
+      "id": "S08",
+      "order": 8,
+      "narration": {
+        "text": "We do not know how old it is, within two hundred and forty years.",
+        "sentence_ids": [
+          "N08"
+        ],
+        "word_start": 56,
+        "word_end": 70
+      },
+      "timing": {
+        "words": 14,
+        "estimated_duration_s": 5.91,
+        "start_s": 24.16,
+        "generate_duration_s": 8.0
+      },
+      "visual": {
+        "goal": "The shark only half visible, fading in and out of the light.",
+        "communicates": [
+          "V08"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark drifts at the edge of the lamp light, half its body lost in shadow",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "medium_wide",
+          "angle": "eye_level",
+          "movement": "handheld_drift"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "shark split by the edge of the light"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S07",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S09",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark drifts at the edge of the lamp light, half its body lost in shadow. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium-wide, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; shark split by the edge of the light; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark partly in shadow.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark drifts at the edge of the lamp light, half its body lost in shadow.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium-wide, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; shark split by the edge of the light; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark partly in shadow."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: subtle handheld drift. The shark drifts at the edge of the lamp light, half its body lost in shadow. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 8.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark partly in shadow"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S08.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The shark only half visible, fading in and out of the light.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark partly in shadow?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark drifts at the edge of the lamp light, half its body lost in shadow",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S08.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S08.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 5.91s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S08.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S09",
+      "order": 9,
+      "narration": {
+        "text": "It grows less than a centimetre a year,",
+        "sentence_ids": [
+          "N09"
+        ],
+        "word_start": 70,
+        "word_end": 78
+      },
+      "timing": {
+        "words": 8,
+        "estimated_duration_s": 3.26,
+        "start_s": 30.07,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The sheer length of the body, revealed slowly.",
+        "communicates": [
+          "V09"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The camera travels along the flank from head to tail",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "medium",
+          "angle": "profile",
+          "movement": "track_follow"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "the flank filling the frame side to side"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S08",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S10",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The camera travels along the flank from head to tail. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium, profile angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; the flank filling the frame side to side; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: a long stretch of scarred flank.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The camera travels along the flank from head to tail.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium, profile angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; the flank filling the frame side to side; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: a long stretch of scarred flank."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: tracking to follow the subject. The camera travels along the flank from head to tail. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "a long stretch of scarred flank"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S09.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The sheer length of the body, revealed slowly.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: a long stretch of scarred flank?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The camera travels along the flank from head to tail",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S09.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S09.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.26s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S09.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S10",
+      "order": 10,
+      "narration": {
+        "text": "and swims slower than you walk.",
+        "sentence_ids": [
+          "N09"
+        ],
+        "word_start": 78,
+        "word_end": 84
+      },
+      "timing": {
+        "words": 6,
+        "estimated_duration_s": 2.66,
+        "start_s": 33.33,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "Almost no motion: the shark barely moving while particles drift past.",
+        "communicates": [
+          "V10"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising",
+        "action": "The shark creeps forward with slow tail strokes while marine snow drifts past it",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "wide",
+          "angle": "eye_level",
+          "movement": "static"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "shark across the middle, particles throughout"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "cruising"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S09",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S11",
+        "next_shot_state": "CHR_SHARK 'eye_parasite': its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frame shows the first moment of this action: The shark creeps forward with slow tail strokes while marine snow drifts past it. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: wide, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; shark across the middle, particles throughout; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark moving very slowly; drifting particles.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frame shows the first moment of this action: The shark creeps forward with slow tail strokes while marine snow drifts past it.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: wide, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; shark across the middle, particles throughout; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark moving very slowly; drifting particles."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. The shark creeps forward with slow tail strokes while marine snow drifts past it. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark moving very slowly",
+        "drifting particles"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S10.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: Almost no motion: the shark barely moving while particles drift past.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark moving very slowly?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: drifting particles?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q04",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark creeps forward with slow tail strokes while marine snow drifts past it",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S10.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S10.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 2.66s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S10.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S11",
+      "order": 11,
+      "narration": {
+        "text": "And nearly all of them are going blind.",
+        "sentence_ids": [
+          "N10"
+        ],
+        "word_start": 84,
+        "word_end": 92
+      },
+      "timing": {
+        "words": 8,
+        "estimated_duration_s": 3.43,
+        "start_s": 35.99,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The eye now pale and clouded.",
+        "communicates": [
+          "V11"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: eye_parasite",
+        "action": "The clouded eye stays still as the shark drifts",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "extreme_close_up",
+          "angle": "profile",
+          "movement": "slow_push_in"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "eye centred in the upper half"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "eye_parasite",
+            "end_state": "eye_parasite"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S10",
+        "previous_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "next_shot": "S12",
+        "next_shot_state": "CHR_SHARK 'eye_parasite': its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+        "transition_in": "match_cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface. Frame shows the first moment of this action: The clouded eye stays still as the shark drifts. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: extreme close-up, profile angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; eye centred in the upper half; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: a pale, clouded eye.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface.",
+              "action": "Frame shows the first moment of this action: The clouded eye stays still as the shark drifts.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: extreme close-up, profile angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; eye centred in the upper half; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: a pale, clouded eye."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: slow push-in toward the subject. The clouded eye stays still as the shark drifts. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (eye_parasite) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "a pale, clouded eye"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S11.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The eye now pale and clouded.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: a pale, clouded eye?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The clouded eye stays still as the shark drifts",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q05",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q06",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S11.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S11.Q08",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.43s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S11.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S12",
+      "order": 12,
+      "narration": {
+        "text": "A parasite clamps onto the eye, and feeds on it.",
+        "sentence_ids": [
+          "N11"
+        ],
+        "word_start": 92,
+        "word_end": 102
+      },
+      "timing": {
+        "words": 10,
+        "estimated_duration_s": 4.38,
+        "start_s": 39.42,
+        "generate_duration_s": 5.0
+      },
+      "visual": {
+        "goal": "The parasite hanging from the eye, moving in the current.",
+        "communicates": [
+          "V12"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: eye_parasite",
+        "action": "The ribbon-like parasite sways in the current, attached to the eye surface",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "macro",
+          "angle": "profile",
+          "movement": "static"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "parasite hanging down from the eye at the centre"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "eye_parasite",
+            "end_state": "eye_parasite"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S11",
+        "previous_shot_state": "CHR_SHARK 'eye_parasite': its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+        "next_shot": "S13",
+        "next_shot_state": "CHR_SHARK 'cruising': swimming slowly and steadily, body almost straight, tail sweeping in slow strokes",
+        "transition_in": "continuous",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface. Frame shows the first moment of this action: The ribbon-like parasite sways in the current, attached to the eye surface. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: macro, profile angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; parasite hanging down from the eye at the centre; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: a pale ribbon-like parasite attached to the eye.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface.",
+              "action": "Frame shows the first moment of this action: The ribbon-like parasite sways in the current, attached to the eye surface.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: macro, profile angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; parasite hanging down from the eye at the centre; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: a pale ribbon-like parasite attached to the eye."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. The ribbon-like parasite sways in the current, attached to the eye surface. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 5.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth, worms crawling out of the eye, blood",
+        "reference_requirements": [
+          "CHR_SHARK (eye_parasite) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "a pale ribbon-like parasite attached to the eye"
+      ],
+      "must_happen": [],
+      "must_avoid": [
+        "worms crawling out of the eye",
+        "blood"
+      ],
+      "qc": {
+        "checks": [
+          {
+            "id": "S12.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The parasite hanging from the eye, moving in the current.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: a pale ribbon-like parasite attached to the eye?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q03",
+            "type": "absence",
+            "stage": "both",
+            "description": "Is this absent: worms crawling out of the eye?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q04",
+            "type": "absence",
+            "stage": "both",
+            "description": "Is this absent: blood?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q05",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The ribbon-like parasite sways in the current, attached to the eye surface",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q07",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S12.Q09",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S12.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 4.38s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S12.Q11",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S13",
+      "order": 13,
+      "narration": {
+        "text": "It will keep going for another century.",
+        "sentence_ids": [
+          "N12"
+        ],
+        "word_start": 102,
+        "word_end": 109
+      },
+      "timing": {
+        "words": 7,
+        "estimated_duration_s": 3.04,
+        "start_s": 43.8,
+        "generate_duration_s": 4.0
+      },
+      "visual": {
+        "goal": "The shark swimming on and away.",
+        "communicates": [
+          "V13"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: cruising -> receding",
+        "action": "The shark turns and swims away from the camera",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "medium",
+          "angle": "eye_level",
+          "movement": "static"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "shark moving from the centre toward the top of the frame"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "cruising",
+            "end_state": "receding"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S12",
+        "previous_shot_state": "CHR_SHARK 'eye_parasite': its eye clouded pale, with a small pale ribbon-like copepod parasite hanging from the eye surface",
+        "next_shot": "S14",
+        "next_shot_state": "CHR_SHARK 'receding': swimming away from the camera, body shrinking into the darkness",
+        "transition_in": "cut",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_first_last",
+        "mode_reason": "a subject changes state during the shot, so both the first and last frames are fixed",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes. Frozen moment at the start of the shot, before any change begins. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; shark moving from the centre toward the top of the frame; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming slowly and steadily, body almost straight, tail sweeping in slow strokes.",
+              "action": "Frozen moment at the start of the shot, before any change begins.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; shark moving from the centre toward the top of the frame; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          },
+          {
+            "role": "end",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming away from the camera, body shrinking into the darkness. Frozen moment at the end of the shot, after the change is complete. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: medium, eye-level angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; shark moving from the centre toward the top of the frame; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming away from the camera, body shrinking into the darkness.",
+              "action": "Frozen moment at the end of the shot, after the change is complete.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: medium, eye-level angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; shark moving from the centre toward the top of the frame; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: locked-off static camera. The shark turns and swims away from the camera. The change is gradual and continuous from the first keyframe to the last keyframe, with no jump, and the shot ends exactly on the last keyframe. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 4.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (cruising and receding) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark swimming away"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S13.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: The shark swimming on and away.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q02",
+            "type": "presence",
+            "stage": "video",
+            "description": "Is this clearly visible: the shark swimming away?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q03",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The shark turns and swims away from the camera",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q04",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q05",
+            "type": "state_change",
+            "stage": "video",
+            "description": "Does the Greenland shark begin 'cruising' (swimming slowly and steadily, body almost straight, tail sweeping in slow strokes) and end 'receding' (swimming away from the camera, body shrinking into the darkness)?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q07",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S13.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S13.Q09",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.04s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S13.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    },
+    {
+      "id": "S14",
+      "order": 14,
+      "narration": {
+        "text": "Blind, in the cold, two thousand metres down.",
+        "sentence_ids": [
+          "N13"
+        ],
+        "word_start": 109,
+        "word_end": 117
+      },
+      "timing": {
+        "words": 8,
+        "estimated_duration_s": 3.79,
+        "start_s": 46.84,
+        "generate_duration_s": 5.0
+      },
+      "visual": {
+        "goal": "A tiny shape far below in deep, cold, dark water.",
+        "communicates": [
+          "V14"
+        ],
+        "subject": "Greenland shark",
+        "subject_state": "Greenland shark: receding",
+        "action": "The camera tilts down toward a small shape moving over the muddy seafloor far below",
+        "environment": "cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below",
+        "camera": {
+          "framing": "extreme_wide",
+          "angle": "high",
+          "movement": "tilt_down"
+        },
+        "lighting": "single cold white ROV lamp from above-front, falling off to black within a few metres",
+        "composition": "the shark small in the lower-middle of the frame, seafloor below"
+      },
+      "continuity": {
+        "refs": [
+          {
+            "id": "CHR_SHARK",
+            "start_state": "receding",
+            "end_state": "receding"
+          }
+        ],
+        "environment_ref": "ENV_DEEP",
+        "previous_shot": "S13",
+        "previous_shot_state": "CHR_SHARK 'receding': swimming away from the camera, body shrinking into the darkness",
+        "next_shot": null,
+        "next_shot_state": null,
+        "transition_in": "continuous",
+        "locked_attributes": [
+          "mottled grey-brown skin with pale scars",
+          "short rounded snout",
+          "small dorsal fins set far back"
+        ]
+      },
+      "generation": {
+        "mode": "i2v_single_keyframe",
+        "mode_reason": "no change of state; one keyframe fixes the look and the video model adds the motion",
+        "keyframes": [
+          {
+            "role": "start",
+            "prompt": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long. Greenland shark state: swimming away from the camera, body shrinking into the darkness. Frame shows the first moment of this action: The camera tilts down toward a small shape moving over the muddy seafloor far below. Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below. Camera: extreme wide, high angle. Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres. Composition: vertical 9:16 frame; the shark small in the lower-middle of the frame, seafloor below; keep the lower third free of key detail for captions. Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles. Clearly visible: the shark small and far away; muddy seafloor; drifting particles.",
+            "prompt_parts": {
+              "subject": "Greenland shark: a large, heavy-bodied shark with a short rounded snout, small dorsal fins set far back, and thick mottled grey-brown skin with pale scars. Real size: adult about 4-5 m long.",
+              "state": "Greenland shark state: swimming away from the camera, body shrinking into the darkness.",
+              "action": "Frame shows the first moment of this action: The camera tilts down toward a small shape moving over the muddy seafloor far below.",
+              "environment": "Environment: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below.",
+              "camera": "Camera: extreme wide, high angle.",
+              "lighting": "Lighting: single cold white ROV lamp from above-front, falling off to black within a few metres.",
+              "composition": "Composition: vertical 9:16 frame; the shark small in the lower-middle of the frame, seafloor below; keep the lower third free of key detail for captions.",
+              "continuity": "Continuity: must match the approved reference images and keep mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back.",
+              "style": "Style: photographic deep-sea documentary footage, ROV camera look, natural textures; palette: black-blue water, grey-brown shark skin, pale suspended particles.",
+              "must_show": "Clearly visible: the shark small and far away; muddy seafloor; drifting particles."
+            },
+            "reference_ids": [
+              "CHR_SHARK",
+              "ENV_DEEP"
+            ],
+            "image": null
+          }
+        ],
+        "video": {
+          "prompt": "Camera: slow tilt down. The camera tilts down toward a small shape moving over the muddy seafloor far below. Motion is slow, smooth and physically plausible. Keep unchanged throughout: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back. One continuous take, no cuts, no morphing of anatomy between frames.",
+          "duration_s": 5.0,
+          "motion_intensity": "low",
+          "output": null
+        },
+        "negative_prompt": "text, captions, subtitles, watermark, logo, signature, frame border, split screen, collage, blurry subject, motion smearing, duplicated subject, scuba divers, tropical reef, sunlight shafts, generated text or numbers, great white shark, pointed snout, tall triangular dorsal fin, open jaws with rows of teeth",
+        "reference_requirements": [
+          "CHR_SHARK (receding) reference image approved",
+          "ENV_DEEP reference image approved"
+        ]
+      },
+      "must_show": [
+        "the shark small and far away",
+        "muddy seafloor",
+        "drifting particles"
+      ],
+      "must_happen": [],
+      "must_avoid": [],
+      "qc": {
+        "checks": [
+          {
+            "id": "S14.Q01",
+            "type": "comprehension",
+            "stage": "video",
+            "description": "With the sound off, would a viewer understand this: A tiny shape far below in deep, cold, dark water.",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q02",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: the shark small and far away?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q03",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: muddy seafloor?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q04",
+            "type": "presence",
+            "stage": "both",
+            "description": "Is this clearly visible: drifting particles?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q05",
+            "type": "action",
+            "stage": "video",
+            "description": "Does this action actually happen on screen: The camera tilts down toward a small shape moving over the muddy seafloor far below",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q06",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the Greenland shark match its approved reference and, where visible in frame, keep: mottled grey-brown skin with pale scars; short rounded snout; small dorsal fins set far back?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q07",
+            "type": "continuity",
+            "stage": "both",
+            "description": "Does the setting match ENV_DEEP: cold, dark deep sea: black-blue water with pale marine-snow particles drifting slowly, muddy grey seafloor sometimes visible below?",
+            "severity": "major",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q08",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame 9:16 vertical at 1080x1920 or larger?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S14.Q09",
+            "type": "technical",
+            "stage": "both",
+            "description": "Is the frame free of generated text, watermarks and logos?",
+            "severity": "blocker",
+            "method": "vlm"
+          },
+          {
+            "id": "S14.Q10",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the clip at least 3.79s long?",
+            "severity": "blocker",
+            "method": "auto"
+          },
+          {
+            "id": "S14.Q11",
+            "type": "technical",
+            "stage": "video",
+            "description": "Is the subject free of flicker, melting or anatomy that changes between frames?",
+            "severity": "blocker",
+            "method": "vlm"
+          }
+        ],
+        "pass_required": true,
+        "max_attempts": 3
+      },
+      "status": "PLANNED"
+    }
+  ],
+  "totals": {
+    "shots": 14,
+    "estimated_duration_s": 50.63,
+    "by_mode": {
+      "i2v_single_keyframe": 13,
+      "i2v_first_last": 1
+    }
+  },
+  "warnings": [
+    "CHR_SHARK: reference image not made yet; generate and approve it before any keyframe",
+    "PROP_LENS: reference image not made yet; generate and approve it before any keyframe",
+    "ENV_DEEP: reference image not made yet; generate and approve it before any keyframe",
+    "ENV_LAB: reference image not made yet; generate and approve it before any keyframe"
+  ]
+}

@@ -13,6 +13,10 @@ import os
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+class ProviderError(Exception):
+    """Setup problem (missing package or key): reported as one line, no traceback."""
+
+
 class GeminiProvider:
     # Set GEMINI_TEXT_MODEL to override. The default is the current stable Flash
     # model as listed in the Gemini API model docs (2026-09); check it there if a call fails.
@@ -21,16 +25,35 @@ class GeminiProvider:
         self.label = f"gemini:{self.model}"
 
     def generate_json(self, system, prompt):
-        from dotenv import load_dotenv
-        from google import genai
-        load_dotenv(os.path.join(HERE, ".env"))
-        client = genai.Client()
-        resp = client.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            config={"system_instruction": system, "response_mime_type": "application/json",
-                    "temperature": 0.4},
-        )
+        try:
+            from google import genai
+        except ImportError:
+            raise ProviderError("the Gemini provider needs google-genai: "
+                                "python3 -m pip install google-genai python-dotenv")
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(os.path.join(HERE, ".env"))
+        except ImportError:
+            pass  # .env support is optional; a key already in the environment still works
+        if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")):
+            raise ProviderError("GEMINI_API_KEY is not set (put it in .env; see .env.example)")
+        try:
+            client = genai.Client()
+            resp = client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config={"system_instruction": system, "response_mime_type": "application/json",
+                        "temperature": 0.4,
+                        # no tools are passed; turning this off also silences the SDK's AFC warning
+                        "automatic_function_calling": {"disable": True}},
+            )
+        except Exception as e:  # network, quota, auth, unknown model id
+            msg = str(e).splitlines()[0]
+            msg = msg[:240] + ("..." if len(msg) > 240 else "")
+            raise ProviderError(f"Gemini call failed with model {self.model!r}: {msg} "
+                                "If the model id is the problem, set GEMINI_TEXT_MODEL (or pass --model).")
+        if not resp.text:
+            raise ProviderError(f"Gemini returned no text (model {self.model!r}); the response may have been blocked")
         return resp.text
 
 

@@ -90,8 +90,8 @@ shotplanner/text.py, timing.py    tokens/sentences/alignment; duration estimates
 schemas/brief-0.2.schema.json     input
 schemas/beatsheet-0.2.schema.json creative layer
 schemas/shotplan-0.2.schema.json  output (every field documented in "description")
-briefs/ beats/ plans/             worked example: immortal_jellyfish
-tests/test_shotplanner.py         19 tests, offline
+briefs/ beats/ plans/             worked examples: immortal_jellyfish, greenland_shark
+tests/test_shotplanner.py         33 tests, offline
 ```
 
 ## Plan structure (summary; the schema is the full reference)
@@ -193,6 +193,31 @@ and Kling.
   the previous shot ended in, otherwise the plan is rejected.
 - `reference_requirements` lists the approved reference images a shot needs
   before any keyframe is made. References start as `NEEDS_REFERENCE`.
+- An environment can set its own `lighting`, `color_palette` and `visual_style`.
+  These replace the film-wide style for shots set there. Example: the lab
+  shots in the Greenland shark film don't inherit its deep-sea lamp and palette.
+
+## Beat sheet wording
+
+Camera and transition values accept common film terms as well as the exact
+values: `ECU`, `wide shot`, `overhead`, `low angle`, `dolly in`, `zoom in`,
+`tracking shot`, `locked off`, `hard cut`, `subtle`... (see `ALIASES` in
+`compiler.py`). Anything still unrecognised is an error that names the
+allowed values, so an LLM can correct it in the repair round.
+
+## Shot length limits
+
+| Estimated length | Result |
+|---|---|
+| < 0.8 s | error: merge with a neighbour |
+| 0.8–1.2 s | warning: may not read on screen |
+| 6–10 s | warning: one picture held too long (README rule 6) |
+| > 10 s | error: longer than common video-model clips; split it |
+
+The heuristic draft aims for 4–11 spoken words per shot. It merges across
+sentence boundaries when a sentence is too short ("Why?") and splits
+sentences that run long. Across the 22 scripts in `cfg/` its drafts come out
+at 1.9–5.7 s per shot.
 
 ## QC
 
@@ -231,9 +256,11 @@ same for every provider.
 
 ## Known limits (v0.2)
 
-- The Gemini provider is written but hasn't been run against the live API
-  here: no key in this environment. The repair loop is tested with a fake
-  provider.
+- The Gemini provider reached Google's API with google-genai 2.25.0 and was
+  rejected only for the test key (`API_KEY_INVALID`), so the request format is
+  accepted. A real planning answer and the default model id `gemini-3.8-flash`
+  still need a real key. If the model id is wrong, the error tells you to set
+  `GEMINI_TEXT_MODEL`. The repair loop is tested with a fake provider.
 - The heuristic backend only drafts structure; it makes no creative decisions.
 - The planner doesn't generate anything yet. The next components read
   `generation.*` and fill in `keyframes[].image`, `video.output` and `status`.

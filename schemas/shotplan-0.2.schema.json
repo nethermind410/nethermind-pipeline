@@ -128,6 +128,9 @@
           "additionalProperties": {"type": "string"},
           "description": "The named conditions this subject appears in (healthy, injured, cyst...), each with what it looks like. Shots refer to these by name."
         },
+        "lighting": {"type": "string", "description": "Environments only: replaces style.lighting for shots set here (e.g. a lab inside an otherwise deep-sea film)."},
+        "color_palette": {"type": "string", "description": "Environments only: replaces style.color_palette for shots set here."},
+        "visual_style": {"type": "string", "description": "Environments only: replaces style.visual_style for shots set here."},
         "locked_attributes": {"type": "array", "items": {"type": "string"}, "description": "Features that must never change between shots (colour, proportions, count). Copied into each shot's continuity block and QC checks."},
         "must_avoid": {"type": "array", "items": {"type": "string"}, "description": "Things commonly confused with this subject. Added to every shot that uses it."},
         "reference_images": {"type": "array", "items": {"type": "string"}, "description": "Paths or URLs of approved reference images. Empty until the reference stage runs."},
@@ -229,7 +232,10 @@
             "next_shot": {"type": ["string", "null"]},
             "next_shot_state": {"type": ["string", "null"], "description": "How the next shot starts."},
             "transition_in": {"enum": ["cut", "match_cut", "continuous", "time_jump", "location_change", "open"], "description": "continuous = the story picks up exactly where the previous shot ended, so the states must match."},
-            "locked_attributes": {"type": "array", "items": {"type": "string"}, "description": "Details that must look the same in every shot where this subject appears."}
+            "lighting": {"type": "string", "description": "Environments only: replaces style.lighting for shots set here (e.g. a lab inside an otherwise deep-sea film)."},
+        "color_palette": {"type": "string", "description": "Environments only: replaces style.color_palette for shots set here."},
+        "visual_style": {"type": "string", "description": "Environments only: replaces style.visual_style for shots set here."},
+        "locked_attributes": {"type": "array", "items": {"type": "string"}, "description": "Details that must look the same in every shot where this subject appears."}
           }
         },
         "generation": {

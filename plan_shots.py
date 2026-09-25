@@ -25,9 +25,18 @@ from shotplanner.validate import check_structure, load_schema, validate_plan
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+class InputError(Exception):
+    pass
+
+
 def _load(p):
-    with open(p) as f:
-        return json.load(f)
+    try:
+        with open(p) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise InputError(f"no such file: {p}")
+    except json.JSONDecodeError as e:
+        raise InputError(f"{p} is not valid JSON: {e}")
 
 
 def _dump(obj, p):
@@ -44,42 +53,51 @@ def cmd_plan(a):
         print("brief errors:\n  " + "\n  ".join(errs))
         return 1
     pid = brief["project"]["id"]
-    beats_out = os.path.join(HERE, "beats", f"{pid}.beats.json")
+    out = a.out or os.path.join(HERE, "plans", f"{pid}.shotplan.json")
+    # generated beats go next to the plan when --out points elsewhere
+    beats_out = (os.path.join(os.path.dirname(os.path.abspath(a.out)), f"{pid}.beats.json") if a.out
+                 else os.path.join(HERE, "beats", f"{pid}.beats.json"))
     try:
         if a.beats:
-            beats, backend = B.load(a.beats), f"manual:{os.path.relpath(a.beats, HERE)}"
+            beats, backend = _load(a.beats), f"manual:{os.path.relpath(a.beats, HERE)}"
         elif a.llm:
             prov = llm.get(a.llm, a.model)
             print(f"[{pid}] planning beats with {prov.label} ...")
             beats, backend = B.from_llm(brief, prov), prov.label
         else:
             beats, backend = B.heuristic(brief), "heuristic"
-        prev = a.out or os.path.join(HERE, "plans", f"{pid}.shotplan.json")
-        version = _load(prev)["plan_version"] + 1 if os.path.exists(prev) else 1
+        version = _load(out).get("plan_version", 0) + 1 if os.path.exists(out) else 1
         plan = compile_plan(brief, beats, backend=backend, plan_version=version)
     except PlanError as e:
         print(f"[{pid}] cannot build a plan:\n  " + "\n  ".join(e.errors))
+        return 1
+    except llm.ProviderError as e:
+        print(f"[{pid}] {e}")
         return 1
     if not a.beats:
         if os.path.exists(beats_out) and not a.force:
             beats_out = beats_out.replace(".beats.json", f".{backend.split(':')[0]}.beats.json")
         _dump(beats, beats_out)
-        print(f"   beats -> {os.path.relpath(beats_out, HERE)}")
-    out = a.out or os.path.join(HERE, "plans", f"{pid}.shotplan.json")
+        print(f"   beats -> {_rel(beats_out)}")
     _dump(plan, out)
     show(plan)
-    print(f"   plan  -> {os.path.relpath(out, HERE)}  (v{version})")
+    print(f"   plan  -> {_rel(out)}  (v{version})")
     return 0
+
+
+def _rel(p):
+    p = os.path.abspath(p)
+    return os.path.relpath(p, HERE) if p.startswith(HERE + os.sep) else p
 
 
 def show(plan, shot_id=None):
     if shot_id:
         s = next((s for s in plan["shots"] if s["id"] == shot_id), None)
         if not s:
-            print(f"no shot {shot_id}")
-            return
+            print(f"no shot {shot_id} (plan has {plan['shots'][0]['id']}-{plan['shots'][-1]['id']})")
+            return 1
         print(json.dumps(s, indent=2, ensure_ascii=False))
-        return
+        return 0
     t = plan["totals"]
     print(f"[{plan['project']['id']}] {t['shots']} shots, ~{t['estimated_duration_s']}s, modes {t['by_mode']}")
     for s in plan["shots"]:
@@ -104,8 +122,7 @@ def cmd_validate(a):
 
 
 def cmd_show(a):
-    show(_load(a.plan), a.shot)
-    return 0
+    return show(_load(a.plan), a.shot) or 0
 
 
 def main(argv=None):
@@ -129,7 +146,13 @@ def main(argv=None):
     s.add_argument("shot", nargs="?")
     s.set_defaults(fn=cmd_show)
     a = ap.parse_args(argv)
-    return a.fn(a)
+    try:
+        return a.fn(a)
+    except InputError as e:
+        print(f"error: {e}")
+        return 1
+    except BrokenPipeError:  # e.g. piped into head
+        return 0
 
 
 if __name__ == "__main__":
