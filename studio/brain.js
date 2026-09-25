@@ -237,17 +237,20 @@ document.addEventListener("click", async e => {
   e.stopPropagation();
   const key = n.dataset.neuron, target = key === "home-core" ? "money" : key;
   if (REDUCED) return go(target);
+  if (n.dataset.going) return; n.dataset.going = "1";               // one click is enough; a second doesn't restart it
+  n.classList.add("pressed");                                       // instant feedback, then a short flourish (~0.5s)
   const l = $("#l-" + key);
-  if (l) { l.style.strokeDashoffset = 0; await pulse(l.getAttribute("d"), 480); }
+  if (l) { l.style.strokeDashoffset = 0; pulse(l.getAttribute("d"), 300); }
   const nn = findN(key);
-  if (nn && window.brainNet) await brainNet.fire(nn.ax, nn.ay);      // the wave spreads through the network
+  if (nn && window.brainNet) brainNet.fire(nn.ax, nn.ay);             // the wave spreads while the view zooms
+  await new Promise(r => setTimeout(r, 180));
   const node = $("#n-" + key), stage = $("#stage");
   if (node) {
     $("#h-" + key).classList.add("fire");
     const S = stage.getBoundingClientRect(), x = +node.getAttribute("cx"), y = +node.getAttribute("cy");
     stage.style.transformOrigin = `${x}px ${y}px`; stage.classList.add("zoom");
   } else stage.classList.add("fade");
-  setTimeout(() => go(target), 420);
+  setTimeout(() => go(target), 300);
 }, true);
 
 /* the brain replaces Home; the old channel page lives on at #channel */

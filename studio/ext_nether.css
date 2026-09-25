@@ -392,3 +392,8 @@ h2{letter-spacing:.14em}
   .brain-top .ask{display:none}
   main .page{overflow-x:hidden}
 }
+
+/* bigger, steadier click targets */
+.nx-chip{padding:7px 13px;min-height:30px;font-size:12.5px}
+.nx-sub .nx-hit{r:14px}
+.neuron.pressed .nw{color:#fff;text-shadow:0 0 22px rgba(224,41,75,.9)}

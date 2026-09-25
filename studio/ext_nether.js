@@ -107,7 +107,7 @@
         dend += `<path class="nx-dend ${s.state}" d="${d}"/>`;
         const lx = Math.cos(t) >= 0 ? 8 : -8;
         nodes += `<g class="nx-sub ${s.state}" data-sub="${a.key}:${s.key}" tabindex="0" role="button" aria-label="${esc(a.name)} → ${esc(s.name)}: ${STATE[s.state]}">
-          <circle class="nx-hit" cx="${sx}" cy="${sy}" r="9"/><circle class="nx-soma" cx="${sx}" cy="${sy}" r="${4.2 * k}"/>
+          <circle class="nx-hit" cx="${sx}" cy="${sy}" r="14"/><circle class="nx-soma" cx="${sx}" cy="${sy}" r="${4.2 * k}"/>
           <text x="${sx + lx}" y="${sy + 3.5}" text-anchor="${lx > 0 ? "start" : "end"}">${esc(s.name)}</text></g>`;
       });
       nodes += `<g class="nx-agent ${a.state}" data-agent="${a.key}" tabindex="0" role="button" aria-label="${esc(a.name)} agent: ${STATE[a.state]}">
