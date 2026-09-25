@@ -139,6 +139,18 @@ def ts(sec):
     return f"{sec // 3600}:{sec % 3600 // 60:02d}:{sec % 60:02d}" if sec >= 3600 else f"{sec // 60}:{sec % 60:02d}"
 
 
+def thumb_for(ep, cfg, first, n):
+    """Reuse the lead chapter's own thumbnail (its proven 2–3 words + image) and add "+N MORE"."""
+    pk, _ = sources_of(ep["chapters"][0]["id"], ep["id"]) if ep.get("chapters") else ({}, "")
+    th = dict(pk.get("thumbnail") or {})
+    lines = [l for l in th.get("lines", []) if l][:2] or wrap_title(first, 12, 2)
+    if n > 1:
+        lines = lines + [f"+{n - 1} MORE"]
+    src = th.get("src") or cfg["segments"][1 if len(cfg["segments"]) > 1 else 0]["vis"]["src"]
+    return {"src": src, "lines": lines, "accent": len(lines) - 1, "cx": th.get("cx", 0.5), "cy": th.get("cy", 0.4),
+            "zoom": th.get("zoom", 1.0)}
+
+
 def package(ep, vid, cfg, marks, starts):
     chapters = [(0 if i == 0 else starts[sid], name) for i, (name, sid) in enumerate(marks)]
     lines = [f"{ts(t)} {name}" for t, name in chapters]
@@ -163,8 +175,7 @@ def package(ep, vid, cfg, marks, starts):
     pkg = {"title": title[:95], "title_options": [ep["title"][:95], f"{len(titles)} Buried Stories: {first}"[:95]],
            "youtube_description": desc, "youtube_tags": ", ".join((tags + ["nethermind", "long form"])[:15]),
            "pinned_comment": "Which of these did you already know? Tell me the one that surprised you most.",
-           "thumbnail": {"src": cfg["segments"][1 if len(cfg["segments"]) > 1 else 0]["vis"]["src"],
-                         "lines": wrap_title(first, 12, 3)[:3], "accent": 2, "cx": 0.5, "cy": 0.4, "zoom": 1.0},
+           "thumbnail": thumb_for(ep, cfg, first, len(titles)),
            "episode": ep["id"]}
     (PKG / f"{vid}.json").write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
     (HERE / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")

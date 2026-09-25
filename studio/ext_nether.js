@@ -360,7 +360,7 @@
     main.innerHTML = `<div class="page wide">
       <div class="head-row"><div class="head"><h1>Task log</h1><p>Every job is a task owned by an agent. When something breaks, the amber step shows where and why — retry it from here.</p></div>
         <div class="nx-counts"><span>${s.counts.working} working</span><span>${fmt(s.counts.complete)} done</span><span class="${s.counts.failed ? "bad" : ""}">${s.counts.failed} failed</span></div></div>
-      <div class="card nx-dailyc"><div><b>Daily run</b> <span class="nx-meta">7:00 · refresh → learn → draft the next video · Sundays: plan the episode</span>
+      <div class="card nx-dailyc"><div><b>Daily run</b> <span class="nx-meta">7:00 (+20:30 catch-up) · refresh → learn → scout 3 ideas → draft the next video · Sundays: plan + render the long-form</span>
         <div class="nx-meta">${daily ? `Last: ${esc(daily.status)} ${ago(daily.finished || daily.started)}` : "Hasn't run yet — install it once with ./install_daily.sh"}</div></div>
         <button class="btn small" id="nx-daily">Run now</button></div>
       <div class="nx-grid">${agents}</div>
