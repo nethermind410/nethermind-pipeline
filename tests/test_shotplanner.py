@@ -194,9 +194,28 @@ class ShotLength(unittest.TestCase):
         b["shots"][0]["narration"] = merged
         b["shots"][0]["communicates"] = sorted({v for s in b["shots"][:4] for v in s["communicates"]})
         del b["shots"][1:4]
+        slow = dict(BRIEF, letters_per_second=8)  # a slow voice makes the merged shot ~15 s
         with self.assertRaises(PlanError) as cm:
-            compile_plan(BRIEF, b)
+            compile_plan(slow, b)
         self.assertTrue(any("split the shot" in e for e in cm.exception.errors), cm.exception.errors)
+
+
+class Timing(unittest.TestCase):
+    """Calibrated against 104 real Kokoro am_liam segments (see shotplanner/timing.py)."""
+
+    def test_known_segment_is_close(self):
+        from shotplanner.timing import estimate
+        # measured 2026-09-25: 3.24 s of real Kokoro am_liam audio for this greenland_shark line
+        self.assertAlmostEqual(estimate(tokens("It is a Greenland shark. And that number came from its eye.")), 3.24, delta=0.5)
+
+    def test_digits_are_spoken_long(self):
+        from shotplanner.timing import estimate
+        self.assertGreater(estimate(tokens("In 1996 it sold.")), estimate(tokens("In May it sold.")) + 0.8)
+
+    def test_clip_request_has_safety_margin(self):
+        from shotplanner.timing import generate_length
+        for est in (1.0, 2.5, 4.4, 5.3, 8.6):
+            self.assertGreaterEqual(generate_length(est), est * 1.1 + 0.5)
 
 
 class SecondTopic(unittest.TestCase):
@@ -244,8 +263,8 @@ class Heuristic(unittest.TestCase):
     def test_long_sentence_is_split(self):
         script = " ".join(["word"] * 60) + "."
         plan = compile_plan(self.brief(script), B.heuristic(self.brief(script)), backend="heuristic")
-        self.assertGreater(len(plan["shots"]), 4)
-        self.assertTrue(all(s["timing"]["estimated_duration_s"] <= 6 for s in plan["shots"]))
+        self.assertGreater(len(plan["shots"]), 1)
+        self.assertTrue(all(s["timing"]["estimated_duration_s"] <= 4.5 for s in plan["shots"]))
 
     def test_every_repo_script_gets_a_valid_draft(self):
         import glob

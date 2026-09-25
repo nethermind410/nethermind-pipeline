@@ -23,7 +23,7 @@
         "fps": {"type": "integer"}, "target_duration_s": {"type": "number"}, "max_duration_s": {"type": "number"}
       }
     },
-    "words_per_second": {"type": "number", "exclusiveMinimum": 0, "description": "Narration pace used for timing estimates. Default 2.6."},
+    "letters_per_second": {"type": "number", "exclusiveMinimum": 0, "description": "Speech rate for timing estimates. Default 14.8, measured for Kokoro am_liam; re-measure with tools/calibrate_tts.py if the voice changes."},
     "planner_notes": {"type": "string", "description": "Free-text guidance passed to the LLM planner (e.g. which shot is the payoff)."},
     "style": {
       "type": "object",

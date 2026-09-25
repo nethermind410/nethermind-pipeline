@@ -16,7 +16,7 @@ import re
 from . import SCHEMA_ID, VERSION
 from . import prompts as P
 from .text import align_spans, sentences, tokens, word_count
-from .timing import DEFAULT_WPS, estimate, generate_length
+from .timing import DEFAULT_LPS, estimate, generate_length
 from .validate import check_structure, load_schema, validate_plan
 
 FRAMINGS = {"extreme_close_up", "close_up", "medium_close_up", "medium", "medium_wide", "wide",
@@ -109,7 +109,7 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
     style["global_negative"] = list(dict.fromkeys(TECH_NEGATIVE + style.get("global_negative", [])))
     refs_in = brief["references"]
     refs_by_id = {r["id"]: r for grp in ("characters", "environments") for r in refs_in.get(grp, [])}
-    wps = brief.get("words_per_second", DEFAULT_WPS)
+    lps = brief.get("letters_per_second", DEFAULT_LPS)
 
     script = " ".join(brief["script"].split())
     toks = tokens(script)
@@ -181,7 +181,7 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
     for i, (b, (ws, we)) in enumerate(zip(norm, ranges)):
         sid = ids[i]
         span = toks[ws:we]
-        est = estimate(span, wps)
+        est = estimate(span, lps)
         changes = any(r["start_state"] != r["end_state"] for r in b["refs"])
         mode = b.get("mode") or ("i2v_first_last" if changes else "i2v_single_keyframe")
         reason = ("set in the beat sheet" if b.get("mode") else
@@ -314,7 +314,7 @@ def compile_plan(brief, beats, backend="manual", plan_version=1, now=None):
         "plan_version": plan_version,
         "created_at": (now or datetime.datetime.now(datetime.timezone.utc)).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "planner": {"version": VERSION, "backend": backend,
-                    "script_sha256": hashlib.sha256(script.encode()).hexdigest(), "words_per_second": wps},
+                    "script_sha256": hashlib.sha256(script.encode()).hexdigest(), "letters_per_second": lps},
         "format": fmt, "style": style, "references": refs_out,
         "script": {"text": script, "sentences": sents},
         "visual_information": [{**v, "shown_in": [ids[i] for i, b in enumerate(norm) if v["id"] in b["communicates"]]}

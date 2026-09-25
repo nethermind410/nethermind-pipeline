@@ -11,10 +11,12 @@ Where beat sheets come from.
 All three produce the same format (schemas/beatsheet-0.2.schema.json).
 """
 import json
+import math
 import re
 
 from .compiler import PlanError, compile_plan
-from .text import is_word, sentences, tokens, word_count
+from .text import is_word, sentences, tokens
+from .timing import DEFAULT_LPS, estimate
 from .validate import load_schema
 
 PLANNING_RULES = """You are the shot planner for NETHERMIND, which makes short vertical science videos.
@@ -102,14 +104,16 @@ def from_llm(brief, provider, max_repairs=2, log=print):
     raise PlanError(errs)
 
 
-def _chunk_ranges(toks, sent_ranges, lo, hi, prefer=7):
-    """Token ranges for draft shots, lo..hi spoken words each where the script allows.
+def _chunk_ranges(toks, sent_ranges, lo, hi, prefer, lps):
+    """Token ranges for draft shots, lo..hi seconds each (estimated) where the script allows.
 
+    Measured in seconds with the same estimate the plan uses, so shot sizes
+    stay right if the voice or speech rate changes.
     1. break at clause punctuation and sentence ends;
-    2. split any piece longer than hi words into near-equal parts;
+    2. split any piece longer than hi seconds into near-equal parts;
     3. join pieces into shots, across sentence boundaries if needed, closing a
-       shot once it has at least lo words and either ends a sentence, has
-       reached `prefer` words, or the next piece would push it past hi;
+       shot once it has at least lo seconds and either ends a sentence, has
+       reached `prefer` seconds, or the next piece would push it past hi;
     4. fold a too-short final piece into the shot before it.
     """
     ends = {b for _, b in sent_ranges}
@@ -121,16 +125,17 @@ def _chunk_ranges(toks, sent_ranges, lo, hi, prefer=7):
     if a < len(toks):
         pieces.append((a, len(toks)))
 
-    def wc(r):
-        return word_count(toks[r[0]:r[1]])
+    def dur(r):
+        return estimate(toks[r[0]:r[1]], lps)
 
     split = []
     for r in pieces:
-        n = -(-wc(r) // hi)  # ceil
-        if n <= 1:
+        n = math.ceil(dur(r) / hi)
+        word_idx = [i for i in range(*r) if is_word(toks[i])]
+        if n <= 1 or len(word_idx) < 2:
             split.append(r)
             continue
-        word_idx = [i for i in range(*r) if is_word(toks[i])]
+        n = min(n, len(word_idx))
         cuts = [word_idx[round(k * len(word_idx) / n)] for k in range(1, n)]
         bounds = [r[0]] + cuts + [r[1]]
         split += list(zip(bounds, bounds[1:]))
@@ -139,19 +144,20 @@ def _chunk_ranges(toks, sent_ranges, lo, hi, prefer=7):
     for r in split:
         if out:
             cur = out[-1]
-            full = wc(cur) >= lo and (cur[1] in ends or wc(cur) >= prefer or wc(cur) + wc(r) > hi)
+            full = dur(cur) >= lo and (cur[1] in ends or dur(cur) >= prefer or dur((cur[0], r[1])) > hi)
             if not full:
                 out[-1] = (cur[0], r[1])
                 continue
         out.append(r)
-    if len(out) > 1 and wc(out[-1]) < lo and wc(out[-2]) + wc(out[-1]) <= hi + lo:
+    if len(out) > 1 and dur(out[-1]) < lo and dur((out[-2][0], out[-1][1])) <= hi + lo:
         out[-2:] = [(out[-2][0], out[-1][1])]
     return out
 
 
-def heuristic(brief, target_words=(4, 11)):
-    """Offline draft: clause-sized shots of 4-11 spoken words (about 1.5-4.5 s)."""
-    lo, hi = target_words
+def heuristic(brief, target_s=(1.6, 4.5), prefer_s=2.8):
+    """Offline draft: clause-sized shots of about 1.6-4.5 s of narration."""
+    lo, hi = target_s
+    lps = brief.get("letters_per_second", DEFAULT_LPS)
     script = " ".join(brief["script"].split())
     toks = tokens(script)
     sent_ranges = sentences(toks)
@@ -159,7 +165,7 @@ def heuristic(brief, target_words=(4, 11)):
     envs = brief["references"].get("environments", [])
     ref = [{"id": chars[0]["id"], "start_state": next(iter(chars[0]["states"]))}] if chars else []
     info, shots = [], []
-    for a, b in _chunk_ranges(toks, sent_ranges, lo, hi):
+    for a, b in _chunk_ranges(toks, sent_ranges, lo, hi, prefer_s, lps):
         text = " ".join(toks[a:b])
         vids = []
         for si, (sa, sb) in enumerate(sent_ranges, 1):

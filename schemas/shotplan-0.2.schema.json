@@ -28,7 +28,7 @@
         "version": {"type": "string", "description": "shotplanner package version that compiled this file."},
         "backend": {"type": "string", "description": "Where the visual beats came from: 'manual:<file>', 'gemini:<model>', or 'heuristic' (the heuristic output is a draft that needs review)."},
         "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Hash of the script text. A plan is stale if the script changes."},
-        "words_per_second": {"type": "number", "exclusiveMinimum": 0}
+        "letters_per_second": {"type": "number", "exclusiveMinimum": 0, "description": "Speech rate used for the timing estimates."}
       }
     },
     "format": {

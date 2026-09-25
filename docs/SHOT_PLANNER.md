@@ -91,7 +91,8 @@ schemas/brief-0.2.schema.json     input
 schemas/beatsheet-0.2.schema.json creative layer
 schemas/shotplan-0.2.schema.json  output (every field documented in "description")
 briefs/ beats/ plans/             worked examples: immortal_jellyfish, greenland_shark
-tests/test_shotplanner.py         33 tests, offline
+tests/test_shotplanner.py         36 tests, offline
+tools/calibrate_tts.py            re-measures the narration voice for the timing estimates
 ```
 
 ## Plan structure (summary; the schema is the full reference)
@@ -101,7 +102,7 @@ tests/test_shotplanner.py         33 tests, offline
   "schema": "nethermind.shotplan/0.2",
   "project": {"id", "title", "fact_sources"},
   "plan_version": 2, "created_at": "...",
-  "planner": {"version", "backend", "script_sha256", "words_per_second"},
+  "planner": {"version", "backend", "script_sha256", "letters_per_second"},
   "format": {"aspect_ratio": "9:16", "width": 1080, "height": 1920, "fps": 30, "target_duration_s", "max_duration_s"},
   "style": {"visual_style", "lighting", "color_palette", "lens_language", "global_must_avoid", "global_negative"},
   "references": {"characters": [...], "environments": [...]},   // named states, locked_attributes, must_avoid, status
@@ -214,10 +215,10 @@ allowed values, so an LLM can correct it in the repair round.
 | 6–10 s | warning: one picture held too long (README rule 6) |
 | > 10 s | error: longer than common video-model clips; split it |
 
-The heuristic draft aims for 4–11 spoken words per shot. It merges across
+The heuristic draft aims for about 1.6–4.5 s of narration per shot, measured with the same timing estimate. It merges across
 sentence boundaries when a sentence is too short ("Why?") and splits
 sentences that run long. Across the 22 scripts in `cfg/` its drafts come out
-at 1.9–5.7 s per shot.
+at 1.6–5.7 s per shot.
 
 ## QC
 
@@ -242,11 +243,35 @@ REJECTED (shot dropped/replaced in a new plan_version)
 
 ## Timing
 
-`seconds = words / words_per_second + 0.18 s per clause break + 0.35 s per sentence end`.
-The default of 2.6 words/s has **not** been measured against Kokoro am_liam. After the
-first real render, set `"words_per_second"` in the brief to the measured value
-(words ÷ seconds from `tts/<id>/*.json`). `make_short.py` always uses real TTS timing;
-these estimates only size the clips to request and plan the edit.
+`seconds = spoken letters / 14.8 + 0.08 s per sentence end` (a digit counts as 5 letters,
+because "1996" is spoken as "nineteen ninety-six").
+
+Measured against real Kokoro `am_liam` audio (speed 1.0, the `tts_kokoro.py` call) over all
+104 narration segments in `cfg/`:
+
+| Estimate | Mean error per segment | Within 1 s | Total vs real |
+|---|---|---|---|
+| old: 2.6 words/s + pauses | 1.92 s | — | +36% (too long) |
+| words, fitted (3.4 words/s) | 0.51 s | 89% | 0% |
+| **letters, fitted (14.8 letters/s)** | **0.21 s** | **97%** | **0%** |
+
+Kokoro makes no measurable pause at commas, so there's no clause pause. Letters work
+better than words because the audio length follows how much text there is to say.
+Check: the Greenland shark plan estimates 33.9 s; the real audio is 33.7 s.
+
+Clip requests are `estimate × 1.1 + 0.5 s`, rounded up to 3/4/5/6/8/10 s. Real audio ran
+up to 1.25× the estimate, and this rule gave a long-enough clip for all 104 segments.
+
+If you change the voice or speed, re-measure:
+
+```bash
+python3 tools/calibrate_tts.py            # all segments, ~2.5 min on CPU
+```
+
+It prints the new `DEFAULT_LPS` / `PAUSE_SENTENCE` for `shotplanner/timing.py`, and checks that
+clip requests still cover the real audio. A single brief can override the rate with
+`"letters_per_second"`. `make_short.py` always uses real TTS timing; these estimates
+size the clips and plan the edit.
 
 ## Adding an LLM provider
 

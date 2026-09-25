@@ -9,13 +9,13 @@
       "Natural History Museum, 'Immortal jellyfish: the secret to cheating death' (size ~4.5 mm; most are still eaten or die of disease)"
     ]
   },
-  "plan_version": 2,
-  "created_at": "2026-09-25T07:05:02Z",
+  "plan_version": 3,
+  "created_at": "2026-09-25T07:14:35Z",
   "planner": {
     "version": "0.2.0",
     "backend": "manual:beats/immortal_jellyfish.beats.json",
     "script_sha256": "66000d6b3f018650612270f68e23624d5a9f7af72d5cf05930e3f8c35429a0e4",
-    "words_per_second": 2.6
+    "letters_per_second": 14.8
   },
   "format": {
     "aspect_ratio": "9:16",
@@ -379,9 +379,9 @@
       },
       "timing": {
         "words": 8,
-        "estimated_duration_s": 3.43,
+        "estimated_duration_s": 2.24,
         "start_s": 0.0,
-        "generate_duration_s": 4.0
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "Introduce the star: one small, healthy jellyfish with a glowing-looking red-orange core, alone in dark water.",
@@ -448,7 +448,7 @@
         ],
         "video": {
           "prompt": "Camera: slow push-in toward the subject. The jellyfish hangs in the water and pulses its bell in slow, regular contractions, tentacles fanning out after each pulse. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -562,7 +562,7 @@
             "id": "S01.Q12",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.43s long?",
+            "description": "Is the clip at least 2.24s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -596,8 +596,8 @@
       },
       "timing": {
         "words": 4,
-        "estimated_duration_s": 1.72,
-        "start_s": 3.43,
+        "estimated_duration_s": 1.82,
+        "start_s": 2.24,
         "generate_duration_s": 3.0
       },
       "visual": {
@@ -771,7 +771,7 @@
             "id": "S02.Q11",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 1.72s long?",
+            "description": "Is the clip at least 1.82s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -805,9 +805,9 @@
       },
       "timing": {
         "words": 7,
-        "estimated_duration_s": 3.04,
-        "start_s": 5.15,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 2.11,
+        "start_s": 4.06,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "Scale: the whole jellyfish is visibly smaller than the fingernail beside it.",
@@ -880,7 +880,7 @@
         ],
         "video": {
           "prompt": "Camera: locked-off static camera. The fingertip holds still in the water just beside the jellyfish while the jellyfish pulses gently. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -1002,7 +1002,7 @@
             "id": "S03.Q13",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.04s long?",
+            "description": "Is the clip at least 2.11s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -1036,9 +1036,9 @@
       },
       "timing": {
         "words": 8,
-        "estimated_duration_s": 3.62,
-        "start_s": 8.19,
-        "generate_duration_s": 5.0
+        "estimated_duration_s": 2.84,
+        "start_s": 6.17,
+        "generate_duration_s": 4.0
       },
       "visual": {
         "goal": "The same adult, now plainly damaged and weak.",
@@ -1106,7 +1106,7 @@
         ],
         "video": {
           "prompt": "Camera: slow push-in toward the subject. The damaged jellyfish pulses weakly and unevenly, sinking slightly between pulses, broken tentacle pieces drifting away from it. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 5.0,
+          "duration_s": 4.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -1220,7 +1220,7 @@
             "id": "S04.Q12",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.62s long?",
+            "description": "Is the clip at least 2.84s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -1251,9 +1251,9 @@
       },
       "timing": {
         "words": 7,
-        "estimated_duration_s": 2.69,
-        "start_s": 11.81,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 2.03,
+        "start_s": 9.01,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "The adult body visibly shrinking and folding in on itself.",
@@ -1339,7 +1339,7 @@
         ],
         "video": {
           "prompt": "Camera: locked-off static camera. The bell contracts and folds inward while the tentacles shorten and are drawn up toward the body; the whole animal shrinks to about half its size. The change is gradual and continuous from the first keyframe to the last keyframe, with no jump, and the shot ends exactly on the last keyframe. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -1461,7 +1461,7 @@
             "id": "S05.Q13",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 2.69s long?",
+            "description": "Is the clip at least 2.03s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -1498,9 +1498,9 @@
       },
       "timing": {
         "words": 8,
-        "estimated_duration_s": 3.43,
-        "start_s": 14.5,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 2.24,
+        "start_s": 11.04,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "Reveal the earlier life stage it is heading back to: a colony of tiny polyps anchored to rock.",
@@ -1567,7 +1567,7 @@
         ],
         "video": {
           "prompt": "Camera: slow push-in toward the subject. The polyps' tentacle crowns sway gently in a slow current while the camera moves closer. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -1690,7 +1690,7 @@
             "id": "S06.Q13",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.43s long?",
+            "description": "Is the clip at least 2.24s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -1724,9 +1724,9 @@
       },
       "timing": {
         "words": 6,
-        "estimated_duration_s": 2.67,
-        "start_s": 17.93,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 1.96,
+        "start_s": 13.28,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "The shrunken jellyfish sinking onto the rock while its tentacles disappear into its body.",
@@ -1814,7 +1814,7 @@
         ],
         "video": {
           "prompt": "Camera: slow tilt down (follows the body down to the rock). The shrunken body drifts downward and settles on the rock; the last tentacle stubs retract into it as it lands. The change is gradual and continuous from the first keyframe to the last keyframe, with no jump, and the shot ends exactly on the last keyframe. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -1917,7 +1917,7 @@
             "id": "S07.Q11",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 2.67s long?",
+            "description": "Is the clip at least 1.96s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -1951,9 +1951,9 @@
       },
       "timing": {
         "words": 6,
-        "estimated_duration_s": 2.66,
-        "start_s": 20.6,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 1.77,
+        "start_s": 15.24,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "The body loses every jellyfish feature and becomes a small round blob stuck to the rock.",
@@ -2039,7 +2039,7 @@
         ],
         "video": {
           "prompt": "Camera: locked-off static camera. The rounded body slumps and smooths out into a small featureless ball with a thin translucent skin. The change is gradual and continuous from the first keyframe to the last keyframe, with no jump, and the shot ends exactly on the last keyframe. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -2170,7 +2170,7 @@
             "id": "S08.Q14",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 2.66s long?",
+            "description": "Is the clip at least 1.77s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -2204,9 +2204,9 @@
       },
       "timing": {
         "words": 9,
-        "estimated_duration_s": 3.82,
-        "start_s": 23.26,
-        "generate_duration_s": 5.0
+        "estimated_duration_s": 2.64,
+        "start_s": 17.01,
+        "generate_duration_s": 4.0
       },
       "visual": {
         "goal": "Time-lapse: the blob sends out root-like tubes and a first polyp grows upward.",
@@ -2293,7 +2293,7 @@
         ],
         "video": {
           "prompt": "Camera: slow pull-out away from the subject. Thin translucent tubes creep outward from the blob across the rock and a tiny polyp bud grows upright from them. The change is gradual and continuous from the first keyframe to the last keyframe, with no jump, and the shot ends exactly on the last keyframe. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 5.0,
+          "duration_s": 4.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -2424,7 +2424,7 @@
             "id": "S09.Q14",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.82s long?",
+            "description": "Is the clip at least 2.64s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -2458,8 +2458,8 @@
       },
       "timing": {
         "words": 9,
-        "estimated_duration_s": 3.99,
-        "start_s": 27.08,
+        "estimated_duration_s": 3.39,
+        "start_s": 19.65,
         "generate_duration_s": 5.0
       },
       "visual": {
@@ -2680,7 +2680,7 @@
             "id": "S10.Q14",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.99s long?",
+            "description": "Is the clip at least 3.39s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -2711,9 +2711,9 @@
       },
       "timing": {
         "words": 6,
-        "estimated_duration_s": 2.66,
-        "start_s": 31.07,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 2.24,
+        "start_s": 23.04,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "Several new jellyfish that look exactly like each other, framed exactly like the opening shot of the original.",
@@ -2780,7 +2780,7 @@
         ],
         "video": {
           "prompt": "Camera: slow pan right. Three young jellyfish pulse in unison, side by side, as the camera pans across them. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -2885,7 +2885,7 @@
             "id": "S11.Q11",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 2.66s long?",
+            "description": "Is the clip at least 2.24s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -2919,9 +2919,9 @@
       },
       "timing": {
         "words": 8,
-        "estimated_duration_s": 3.61,
-        "start_s": 33.73,
-        "generate_duration_s": 5.0
+        "estimated_duration_s": 2.24,
+        "start_s": 25.28,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "A row of lab dishes showing the cycle stages side by side: this has been watched happening repeatedly.",
@@ -2990,7 +2990,7 @@
         ],
         "video": {
           "prompt": "Camera: rack focus (near dish -> middle -> far). Focus moves from the jellyfish in the nearest dish to the blob in the middle dish and on to the polyps in the farthest dish. Motion is slow, smooth and physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 5.0,
+          "duration_s": 3.0,
           "motion_intensity": "low",
           "output": null
         },
@@ -3113,7 +3113,7 @@
             "id": "S12.Q13",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.61s long?",
+            "description": "Is the clip at least 2.24s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -3147,9 +3147,9 @@
       },
       "timing": {
         "words": 7,
-        "estimated_duration_s": 3.22,
-        "start_s": 37.34,
-        "generate_duration_s": 4.0
+        "estimated_duration_s": 1.84,
+        "start_s": 27.52,
+        "generate_duration_s": 3.0
       },
       "visual": {
         "goal": "Back in open water, a small fish darts in and swallows the jellyfish.",
@@ -3223,7 +3223,7 @@
         ],
         "video": {
           "prompt": "Camera: locked-off static camera. A small silver fish swims in from the left toward the pulsing jellyfish, opens its mouth, swallows the jellyfish in one bite and turns away. Motion is fast but physically plausible. Keep unchanged throughout: the bright red-orange digestive core; transparent, colourless body tissue; fine white tentacles. One continuous take, no cuts, no morphing of anatomy between frames.",
-          "duration_s": 4.0,
+          "duration_s": 3.0,
           "motion_intensity": "high",
           "output": null
         },
@@ -3373,7 +3373,7 @@
             "id": "S13.Q16",
             "type": "technical",
             "stage": "video",
-            "description": "Is the clip at least 3.22s long?",
+            "description": "Is the clip at least 1.84s long?",
             "severity": "blocker",
             "method": "auto"
           },
@@ -3397,7 +3397,7 @@
   ],
   "totals": {
     "shots": 13,
-    "estimated_duration_s": 40.56,
+    "estimated_duration_s": 29.36,
     "by_mode": {
       "i2v_single_keyframe": 8,
       "i2v_first_last": 5
