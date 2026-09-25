@@ -35,7 +35,7 @@ LANES = {  # first match wins; order matters (a Marvel animal video is Marvel)
     "gaming": "game games gaming nintendo mario sonic minecraft zelda halo playstation xbox speedrun arcade pac-man pacman",
     "space": "space star planet galaxy nasa black hole universe moon mars jupiter neptune kepler voyager telescope nebula",
     "ocean": "ocean deep sea shark whale jellyfish octopus squid fish reef trench abyss",
-    "creature": "animal creature species worm beetle frog bird insect spider snake lizard shrimp",
+    "creature": "superpower superpowers animal creature species worm beetle frog bird insect spider snake lizard shrimp",
 }
 COPYRIGHT_LANES = {"marvel", "anime", "gaming"}
 DEFAULT_WEIGHTS = {"demand": 30, "competition": 15, "fit": 20, "taste": 10, "visuals": 15, "sources": 10}

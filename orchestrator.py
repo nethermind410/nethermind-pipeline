@@ -56,9 +56,7 @@ AGENTS = {
     "publishing": {"name": "Publishing", "lobe": "Motor cortex · action", "role": "Gets videos out",
                    "ax": 0.47, "ay": 0.22, "subs": {
         "calendar": ("Calendar", "calendar", "Posted and scheduled, across every platform."),
-        "schedule": ("Scheduler", "calendar", "Queues videos on Buffer — only when you press Post."),
-        "undo": ("Undo", "calendar", "Takes a video back out of the queue."),
-        "reschedule": ("Reschedule", "calendar", "Moves a scheduled post.")}},
+        "schedule": ("Scheduler", "calendar", "Queues videos on Buffer when you press Post — and moves or pulls them back out.")}},
     "analytics": {"name": "Analytics", "lobe": "Parietal lobe · numbers", "role": "Measures and learns",
                   "ax": 0.7, "ay": 0.29, "subs": {
         "performance": ("Performance", "performance", "Views, watch time and engagement per video and platform."),
@@ -80,7 +78,7 @@ AGENTS = {
 
 # Studio's job buttons → (agent, sub-agent). build/build_nofetch report themselves from build.sh.
 STUDIO_ACTIONS = {"post_dry": ("publishing", "schedule"), "post_live": ("publishing", "schedule"),
-                  "undo": ("publishing", "undo"), "reschedule": ("publishing", "reschedule"),
+                  "undo": ("publishing", "schedule"), "reschedule": ("publishing", "schedule"),
                   "stats": ("analytics", "stats"), "demand": ("intelligence", "demand"),
                   "replies": ("business", "community"), "score": ("content", "titles")}
 

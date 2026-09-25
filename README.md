@@ -75,6 +75,10 @@ Sundays the daily run plans the week's episode (`episode.py --week`: that week's
 
 Seven agents own every job, each a region of the brain with sub-agents around it: **Intelligence** (Ideas, the five scouts), **Content** (research, script, packaging, hooks, episodes), **Production** (Videos, visuals, render, TikTok cut, QA, thumbnail), **Publishing** (Calendar, scheduling), **Analytics** (Performance, Retention, learning loop), **Business** (Comments, monetisation), **Control** (Task log, daily run, Settings). Every page lives inside the agent that owns it. Each has sub-agents; every job is a task in `out/nether.db` with its steps, errors and a Retry. They glow on the brain — crimson while working, amber when one needs you — and the **Agents** page shows exactly which step broke.
 
+**Every sub-agent has a desk.** Click any sub-agent (on the brain, or its chip in a hub) and you get its desk: the one question it answers (Demand scout: *do people actually watch Shorts about this?*), what it has found (the most-watched Shorts, small channels breaking out, which lanes beat your average, which scripts fail the 3-second hook rule, days with nothing going out…), what you can do right there (Scout, Draft it, Score, Refresh, Re-learn), and its own last tasks with Retry. Built by `studio_ext_desk.py` from each sub-agent's real work.
+
+**Iceberg is a template, not a topic.** Any subject in the channel's lanes becomes a 5-tier long-form essay ("The Dragon Ball Iceberg", "The Real-Life Superpowers Iceberg"). Make → Iceberg takes any topic; every Brief recommendation has *As an iceberg*; the Sunday run picks an iceberg from TOPICS.md in a different lane from last week's.
+
 ```bash
 python3 orchestrator.py                          # every agent's state + recent tasks
 python3 intelligence.py "wolverine vs axolotl"   # 5 scouts → a scorecard out of 100 (also: Studio → Intelligence)

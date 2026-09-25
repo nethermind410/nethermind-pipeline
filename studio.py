@@ -54,6 +54,7 @@ for f in sorted(UI.glob("ext_*.js")) + sorted(UI.glob("ext_*.css")):
     STATIC["/" + f.name] = (f.name, "text/javascript" if f.suffix == ".js" else "text/css")
 EXT_GET = {k: v for m in EXT for k, v in getattr(m, "GET", {}).items()}
 EXT_POST = {k: v for m in EXT for k, v in getattr(m, "POST", {}).items()}
+EXT_PREFIX = {k: v for m in EXT for k, v in getattr(m, "GET_PREFIX", {}).items()}   # "/api/x/" → f(rest of path)
 MEDIA = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".srt": "text/plain"}
 JARVIS = "http://127.0.0.1:8765/ask"
 
@@ -168,6 +169,12 @@ class H(BaseHTTPRequestHandler):
         routes.update(EXT_GET)
         if path in routes:
             return self.send(200, routes[path]())
+        for pre, f in EXT_PREFIX.items():
+            if path.startswith(pre):
+                try:
+                    return self.send(200, f(path[len(pre):]))
+                except ValueError as e:
+                    return self.send(400, {"error": str(e)})
         m = re.fullmatch(r"/api/video/([a-z0-9_]+)", path)
         if m and (CFG / f"{m[1]}.json").exists():
             v = api.video(m[1])

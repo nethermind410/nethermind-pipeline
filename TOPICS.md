@@ -2,7 +2,7 @@
 
 The queue the pipeline pulls from. Each line is a video: the hook, the format, and where to verify it. **Nothing here is pre-verified** — the source column is where to check, not proof. Verify before scripting; that step is the channel's whole defence.
 
-Formats: `fact` = narrated story · `ice` = iceberg chart (no media needed) · `creature` = animal reveal
+Formats: `fact` = narrated story · `creature` = animal reveal · `iceberg` = long-form iceberg essay (never a Short)
 
 ## Space — assets are public domain, easiest to produce
 
@@ -18,17 +18,21 @@ Formats: `fact` = narrated story · `ice` = iceberg chart (no media needed) · `
 | The coldest place in the universe is man-made | fact | NIST / Cold Atom Lab on ISS |
 | It rains diamonds on Neptune | fact | Lab study, Kraus et al. — inferred, not observed |
 
-## Iceberg — cheapest format, no media at all
+## Iceberg — the long-form template: any topic, 5 tiers of obscurity
+
+The proven video-essay format: Tier 1 is what everyone knows, Tier 5 is what almost nobody does. Works for any subject in the channel's lanes — pick an iceberg here or type any topic under Make → Iceberg. Each tier is verified entry by entry.
 
 | Hook | Format | Verify at |
 |---|---|---|
-| The Unsolved Signals Iceberg | ice | Per-tier, individually |
-| The Extinction Iceberg | ice | Museum / IUCN sources |
-| The Sleep Iceberg | ice | Peer-reviewed sleep research only — health claims need care |
-| The Video Game Cancellation Iceberg | ice | Developer interviews, not fan wikis |
-| The Heavy Metal Iceberg | ice | Band interviews, documented history |
-| The Ocean Trench Iceberg | ice | NOAA |
-| The Lost Media Iceberg | ice | Lost Media Wiki → then find the primary source |
+| The Marvel Iceberg | iceberg | Marvel publishing history, creator interviews |
+| The X-Men Iceberg | iceberg | Comic issues + Claremont/Lee interviews |
+| The Spider-Man Iceberg | iceberg | Issue history, Sony/Marvel deal reporting |
+| The Dragon Ball Iceberg | iceberg | Toriyama interviews, Shueisha / Toei records |
+| The Pokémon Iceberg | iceberg | Game Freak / Nintendo interviews, Iwata Asks |
+| The Studio Ghibli Iceberg | iceberg | Miyazaki/Suzuki interviews, Ghibli books |
+| The Nintendo Iceberg | iceberg | Iwata Asks, company history |
+| The Cancelled Video Games Iceberg | iceberg | Developer interviews, not fan wikis |
+| The Real-Life Superpowers Iceberg | iceberg | Peer-reviewed biology — animals with comic-book powers |
 
 ## Creatures — NOAA and Smithsonian imagery is public domain
 

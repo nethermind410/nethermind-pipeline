@@ -33,10 +33,11 @@ a little dry — a knowledgeable friend, never a lecture."""
 
 
 ICEBERG = """Format: an ICEBERG video essay — the topic broken into 5 tiers of obscurity, descending: Tier 1 "The
-Surface" (what every fan knows, told with a twist), Tier 2, Tier 3, Tier 4, Tier 5 "The Bottom" (deep lore almost nobody
+Surface" (what everyone knows, told with a twist), Tier 2, Tier 3, Tier 4, Tier 5 "The Bottom" (deep lore almost nobody
 knows). Each tier is one chapter holding 3–5 entries; each entry is a mini-story (claim → surprise → why it matters).
 Every entry must be verified; label shaky ones honestly as rumours. The deeper the tier, the stranger — but never
-invented."""
+invented. The template works for any subject — a franchise, a character, a studio, a game series, a real-world
+science topic — and the title follows the proven pattern "The <Subject> Iceberg"."""
 
 
 def is_iceberg(topic, style=None):
@@ -103,7 +104,8 @@ Beat: {{"id": "s1", "text": "spoken line, 8–18 words", "vis": {{"t": "kb", "sr
   "hero": {{"at": <word index>, "lines": ["BIG TEXT"], "col": "a2", "y": 390, "size": 150}} on the line with a key number.
 Rules: {TARGET_WORDS[0]}–{TARGET_WORDS[1]} words in total. 5–7 chapters of ~12–22 beats. In every chapter, mark the
 lines that only make sense in the long-form (context, bridges, "as we saw") with "in": ["long"]; the remaining lines,
-read on their own, must work as a 40–60 second Short with the chapter's hook text as its first line. At most
+read on their own, must work as a 40–60 second Short with the chapter's hook text as its first line — so the first Short line of each
+chapter is its cold open: 8 words or fewer, leading with the number or the claim (the swipe comes in 2 seconds). At most
 {MAX_AI_IMAGES} AI images in the whole episode; reuse each image on 2–4 consecutive beats with different zoom/centre.
 Reply with ONLY the JSON."""
     return ask(prompt, timeout=1500)
@@ -181,7 +183,7 @@ def draft(topic, notes=None, eid=None, style=None):
         eid, record = new_id(topic), {"topic": topic, "kind": "long", "notes": [], "style": style}
     parent = nether.begin("content", f"{'Redraft' if redo else 'Draft'} long-form: {topic}", video=f"{eid}_long",
                           input={"topic": topic, "notes": notes},
-                          retry={"kind": "redraft_long", "id": eid, "notes": notes} if redo else {"kind": "draft_long", "topic": topic})
+                          retry={"kind": "redraft_long", "id": eid, "notes": notes} if redo else {"kind": "draft_long", "topic": topic, "style": style})
     cur = None
     try:
         cur = nether.begin("content", "Deep research", sub="research", parent=parent)

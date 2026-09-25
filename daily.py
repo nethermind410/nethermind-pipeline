@@ -67,8 +67,8 @@ def pick_topic(skip=()):
     rank = lambda s: next((n for n, k in enumerate(lanes) if s["name"].lower().startswith(k)), len(lanes))
     for s in sorted(sections, key=rank):
         for i in s["items"]:
-            if not i["made"] and not i["dismissed"] and fresh(i["hook"]):
-                return i["hook"], f"next open idea in {s['name']}"
+            if not i["made"] and not i["dismissed"] and fresh(i["hook"]) and "iceberg" not in i["hook"].lower():
+                return i["hook"], f"next open idea in {s['name']}"          # icebergs are long-form, never a Short
     return None, "no open ideas left"
 
 
@@ -100,11 +100,16 @@ def pick_long_topic():
     import studio_api
     done = drafted_topics() | {_norm(json.loads(p.read_text()).get("draft", {}).get("topic", ""))
                                for p in (HERE / "episodes").glob("*.json") if not p.stem.startswith("_")}
+    import intelligence
     items = [(s["name"], i) for s in studio_api.ideas()["sections"] for i in s["items"]
              if not i["made"] and not i["dismissed"] and _norm(i["hook"]) not in done]
-    for name, i in items:
-        if "iceberg" in i["hook"].lower() and any(k in (name + i["hook"]).lower() for k in ("marvel", "gaming", "game", "anime", "comic")):
-            return i["hook"], "an iceberg idea in your lanes"
+    # the iceberg is a template for any topic: take one in the channel's lanes, rotating away from last week's lane
+    eps = sorted((p for p in (HERE / "episodes").glob("*.json") if not p.stem.startswith("_")), key=lambda p: p.stat().st_mtime)
+    last = intelligence.lane_of(json.loads(eps[-1].read_text()).get("title", "")) if eps else None
+    ice = [i for _, i in items if "iceberg" in i["hook"].lower() and intelligence.lane_of(i["hook"]) in ("marvel", "anime", "gaming", "creature")]
+    ice.sort(key=lambda i: intelligence.lane_of(i["hook"]) == last)          # a different lane from last week first
+    if ice:
+        return ice[0]["hook"], f"an iceberg in the {intelligence.lane_of(ice[0]['hook'])} lane"
     for name, i in items:
         if name.lower().startswith(("marvel", "anime", "gaming", "intelligence")):
             return i["hook"], f"open idea ({name})"

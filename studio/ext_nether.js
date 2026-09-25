@@ -107,7 +107,7 @@
         dend += `<path class="nx-dend ${s.state}" d="${d}"/>`;
         const lx = Math.cos(t) >= 0 ? 8 : -8;
         nodes += `<g class="nx-sub ${s.state}" data-sub="${a.key}:${s.key}" tabindex="0" role="button" aria-label="${esc(a.name)} → ${esc(s.name)}: ${STATE[s.state]}">
-          <circle class="nx-hit" cx="${sx}" cy="${sy}" r="9"/><circle class="nx-soma" cx="${sx}" cy="${sy}" r="${(s.page ? 4.2 : 3.2) * k}"/>
+          <circle class="nx-hit" cx="${sx}" cy="${sy}" r="9"/><circle class="nx-soma" cx="${sx}" cy="${sy}" r="${4.2 * k}"/>
           <text x="${sx + lx}" y="${sy + 3.5}" text-anchor="${lx > 0 ? "start" : "end"}">${esc(s.name)}</text></g>`;
       });
       nodes += `<g class="nx-agent ${a.state}" data-agent="${a.key}" tabindex="0" role="button" aria-label="${esc(a.name)} agent: ${STATE[a.state]}">
@@ -157,27 +157,67 @@
       if (r.kind === "intel") toast((await post("/api/intel/run", {topic: r.topic})).reply);
       else if (r.kind === "draft") toast((await post("/api/make/draft", {topic: r.topic})).reply);
       else if (r.kind === "redraft" || r.kind === "redraft_long") toast((await post("/api/make/redraft", {id: r.id, notes: r.notes})).reply);
-      else if (r.kind === "draft_long") toast((await post("/api/make/draft", {topic: r.topic, kind: "long"})).reply);
+      else if (r.kind === "draft_long") toast((await post("/api/make/draft", {topic: r.topic, kind: "long", style: r.style})).reply);
       else if (r.kind === "daily") toast((await post("/api/daily/run", {})).reply);
       else if (r.kind === "long") { toast((await post("/api/long/render", {id: r.id})).reply); watchLong(); }
       else if (r.action) runJob(r.action, r.id || "");
       setTimeout(refresh, 600);
     } catch (e) { toast(e.message); }
   }
-  async function subSheet(akey, skey) {
+  /* every sub-agent has a desk: the one question it answers, what it has found, and what you can do about it */
+  async function pageDesk() {
+    const [, akey, skey] = location.hash.slice(1).split("/");
     if (!sys) await refresh();
-    const a = sys.agents.find(x => x.key === akey), s = a?.subs.find(x => x.key === skey); if (!s) return;
-    const tasks = await get("/api/tasks").catch(() => []);
-    const owner = s.last && tasks.find(t => t.id === s.last.id || t.steps.some(x => x.id === s.last.id));
-    sheet(`<div class="nx-sheet"><div class="nx-head">${glyph(a, s.key, 34)}<span class="nx-meta">${esc(a.name)} agent · ${esc(a.lobe)} · <span class="st-${s.state}">${STATE[s.state]}</span></span></div>
-      <h2>${esc(s.name)}</h2><p>${esc(s.what)}</p>
-      ${s.recent.length ? `<div class="nx-hist"><span class="k">Last ${s.recent.length} runs</span>${pips(s.recent, s.name + " runs")}</div>` : ""}
-      <div class="nx-last">${s.last ? `<span class="k">Last task</span><b>${esc(s.last.title)}</b> <span class="nx-meta">${esc(s.last.status)} ${ago(s.last.finished)}</span>
-        ${s.last.error ? `<pre class="nx-err">${esc(s.last.error.split("\n").slice(-10).join("\n"))}</pre>` : ""}` : `<span class="nx-meta">Hasn't run yet.</span>`}</div>
-      <div class="row-end">${owner && owner.status === "failed" && owner.retry ? `<button class="btn primary" id="nx-sr">Retry</button>` : ""}
-        ${s.page ? `<button class="btn ${owner && owner.status === "failed" ? "" : "primary"}" data-go="${esc(s.page)}" data-close>Open ${esc(s.name)}</button>` : ""}
-        <button class="btn" data-go="${esc(akey)}" data-close>${esc(a.name)} hub</button><button class="btn" data-close>Close</button></div></div>`,
-      (el, close) => { el.classList.add("nx-wide"); const b = $("#nx-sr", el); if (b) b.onclick = () => { close(); retry(owner); }; });
+    const a = sys.agents.find(x => x.key === akey), s = a?.subs.find(x => x.key === skey);
+    if (!s) { main.innerHTML = `<div class="page"><div class="caught"><b>No such sub-agent</b></div></div>`; return; }
+    main.innerHTML = `<div class="page wide"><div class="nx-meta">Loading ${esc(s.name)}…</div></div>`;
+    const d = await get(`/api/desk/${akey}/${skey}`);
+    window._nxTasks = d.tasks;
+    const btn = (x, i) => x.go ? `<button class="btn ${x.primary ? "primary" : ""}" data-go="${esc(x.go)}">${esc(x.label)}</button>`
+      : `<button class="btn ${x.primary ? "primary" : ""}" data-desk-act="${i}">${esc(x.label)}</button>`;
+    const rowHtml = (r, pi, ri) => `<div class="desk-row ${r.tone || ""}">
+        ${r.img ? `<img src="${media(r.img)}" alt="" loading="lazy">` : ""}
+        <div class="desk-txt">${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.main)}</a>` : `<b>${esc(r.main)}</b>`}
+          ${r.sub ? `<span class="nx-meta">${esc(r.sub)}</span>` : ""}</div>
+        ${r.badge != null ? `<span class="desk-badge ${r.tone || ""}">${esc(String(r.badge))}</span>` : ""}
+        ${r.act ? `<button class="btn small" data-desk-row="${pi}:${ri}">${esc(r.act.label)}</button>` : ""}</div>`;
+    const inputs = d.actions.filter(x => x.field), plain = d.actions.filter(x => !x.field);
+    const fail = d.tasks.find(t => t.status === "failed");
+    main.innerHTML = `<div class="page wide desk">
+      <div class="desk-head">${glyph(a, s.key, 44)}<div><div class="nx-meta">${esc(a.name)} agent · ${esc(a.lobe)} · <span class="st-${s.state}">${STATE[s.state]}</span></div>
+        <h1>${esc(s.name)}</h1><p class="desk-q">${esc(d.question || s.what)}</p><p class="nx-meta">${esc(s.what)}</p></div>
+        <div class="desk-hist">${pips(s.recent, s.name + " runs")}<span class="nx-meta">${s.last ? `last ran ${ago(s.last.finished || s.last.started)}` : "hasn't run yet"}</span></div></div>
+      <div class="hub-subs">${a.subs.map(x => `<button class="nx-chip ${x.state} ${x.key === s.key ? "on" : ""}" data-sub="${akey}:${x.key}" title="${esc(x.what)}">${esc(x.name)}</button>`).join("")}</div>
+      ${d.error ? `<div class="card caught"><b>Couldn't read this desk's data</b>${esc(d.error)}</div>` : ""}
+      ${fail && fail === d.tasks[0] ? `<div class="card desk-fail"><b>Last run failed</b><pre class="nx-err">${esc((fail.error || "").split("\n").slice(-6).join("\n"))}</pre>
+        ${fail.retry ? `<button class="btn primary" data-nx-retry="${fail.id}">Retry</button>` : ""}</div>` : ""}
+      ${d.stats.length ? `<div class="desk-stats">${d.stats.map(x => `<div><span class="k">${esc(x.k)}</span><b>${esc(String(x.v))}</b></div>`).join("")}</div>` : ""}
+      ${inputs.map(x => `<form class="card nx-run" data-desk-form="${d.actions.indexOf(x)}"><input placeholder="${esc(x.placeholder || "")}" maxlength="160" required><button class="btn primary">${esc(x.label)}</button></form>`).join("")}
+      ${d.panels.map((p, pi) => `<section class="desk-panel"><h2>${esc(p.title)}</h2>${p.note ? `<p class="nx-meta">${esc(p.note)}</p>` : ""}
+        ${p.rows.length ? `<div class="desk-rows ${p.rows.some(r => r.img) ? "imgs" : ""}">${p.rows.map((r, ri) => rowHtml(r, pi, ri)).join("")}</div>` : p.empty ? `<div class="card caught">${esc(p.empty)}</div>` : ""}</section>`).join("")}
+      ${plain.length ? `<div class="row-end desk-acts">${plain.map(x => btn(x, d.actions.indexOf(x))).join("")}<button class="btn" data-go="${akey}">${esc(a.name)} hub</button></div>` : `<div class="row-end desk-acts"><button class="btn" data-go="${akey}">${esc(a.name)} hub</button></div>`}
+      ${d.tasks.length ? `<h2>Its last ${d.tasks.length} tasks</h2><div class="desk-rows">${d.tasks.map(t => `<div class="desk-row ${t.status === "failed" ? "bad" : ""}">
+        <div class="desk-txt"><b>${esc(t.title)}</b><span class="nx-meta">${esc(t.video || "")} ${ago(t.finished || t.created)}${t.error ? " · " + esc(t.error.trim().split("\n").pop().slice(0, 160)) : ""}</span></div>
+        <span class="desk-badge ${t.status === "complete" ? "good" : t.status === "failed" ? "bad" : ""}">${esc(RUN[t.status] || t.status)}</span>
+        ${t.status === "failed" && t.retry ? `<button class="btn small" data-nx-retry="${t.id}">Retry</button>` : ""}</div>`).join("")}</div>` : ""}</div>`;
+    document.querySelectorAll(".nav").forEach(n => n.classList.toggle("on", n.dataset.go === akey));
+    const doAct = async (x, extra = {}) => {
+      try {
+        if (x.go) return go(x.go);
+        if (x.job) { runJob(x.job, x.id || ""); return; }
+        const r = await post(x.post, {...(x.body || {}), ...(x.extra || {}), ...extra});
+        if (r.html) window.open(r.html, "_blank");
+        toast(r.reply || "Done.");
+        if (x.post === "/api/make/draft") watchDraft();
+        if (x.post === "/api/intel/run" || x.post === "/api/desk/scout_backlog") watchIntel();
+        setTimeout(route, 800);
+      } catch (e) { toast(e.message); }
+    };
+    main.querySelectorAll("[data-desk-act]").forEach(b => b.onclick = () => doAct(d.actions[+b.dataset.deskAct]));
+    main.querySelectorAll("[data-desk-row]").forEach(b => b.onclick = e => { e.stopPropagation(); const [pi, ri] = b.dataset.deskRow.split(":");
+      doAct(d.panels[+pi].rows[+ri].act); });
+    main.querySelectorAll("[data-desk-form]").forEach(f => f.onsubmit = e => { e.preventDefault();
+      const x = d.actions[+f.dataset.deskForm], v = f.querySelector("input").value.trim(); if (v) doAct(x, {[x.field]: v}); });
   }
 
   /* ---------- hubs: every page lives inside the agent that owns it ---------- */
@@ -274,6 +314,7 @@
         <div class="nx-call"><input class="nx-reason" placeholder="Why? (optional — it learns from this)" maxlength="300">
           <button class="btn small primary" data-nx-go="short" data-slug="${esc(r.slug)}" data-topic="${esc(r.topic)}">Make a Short</button>
           <button class="btn small" data-nx-go="long" data-slug="${esc(r.slug)}" data-topic="${esc(r.topic)}">Long-form</button>
+          <button class="btn small" data-nx-go="iceberg" data-slug="${esc(r.slug)}" data-topic="${esc(r.topic)}" title="The same topic as a 5-tier iceberg essay">As an iceberg</button>
           <button class="btn small" data-nx-decide="skip" data-slug="${esc(r.slug)}">Not for us</button></div></div>`).join("");
     const outl = b.breakouts.map(o => `<li><a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.title)}</a>
         <span class="nx-meta">${esc(o.channel)} · ${fmt(o.views)} views on ${o.subs != null ? fmt(o.subs) + " subs" : "a small channel"} · found investigating “${esc(o.topic)}”</span></li>`).join("");
@@ -342,7 +383,9 @@
   /* ---------- Content → Make: draft, approve, build ---------- */
   let makeKind = "short";
   const KINDS = {short: ["Short", "45–70s vertical · 3–6 min to draft"], long: ["Long-form", "10–12 min 16:9 episode in chapters · 8–15 min to draft"],
-                 iceberg: ["Iceberg", "long-form essay, 5 tiers of obscurity (e.g. The Marvel Iceberg)"]};
+                 iceberg: ["Iceberg", "a template for any topic: 5 tiers, from what every fan knows down to what almost nobody does"]};
+  const ICE_EG = ["The Dragon Ball Iceberg", "The Pokémon Iceberg", "The X-Men Iceberg", "The Cancelled Video Games Iceberg",
+                  "The Real-Life Superpowers Iceberg", "The Studio Ghibli Iceberg", "The Nintendo Iceberg", "The Spider-Man Iceberg"];
   async function pageMake() {
     const [d, ideas, L] = await Promise.all([get("/api/drafts"), get("/api/ideas").catch(() => ({sections: []})), get("/api/learning").catch(() => ({cards: []}))]);
     const picks = [];
@@ -367,7 +410,7 @@
     main.innerHTML = `<div class="page wide">
       <div class="head-row"><div class="head"><h1>Make</h1><p>Content researches the facts, writes the script and packaging, then stops for you. Edit any line, approve it, and Production builds it. Nothing posts without you.</p></div></div>
       <div class="nx-kind" role="radiogroup">${Object.entries(KINDS).map(([k, [l, sub]]) => `<button role="radio" aria-checked="${makeKind === k}" class="${makeKind === k ? "on" : ""}" data-nx-kind="${k}"><b>${l}</b><span>${sub}</span></button>`).join("")}</div>
-      <form class="card nx-run" id="nx-make"><input id="nx-mtopic" placeholder="${makeKind === "short" ? "What's the Short about? e.g. The Kamehameha is named after a Hawaiian king" : makeKind === "iceberg" ? "The iceberg: e.g. The Lost Marvel Games Iceberg" : "The episode: e.g. How Marvel almost went bankrupt — and the movie deal that saved it"}" maxlength="160" ${d.busy ? "disabled" : ""}>
+      <form class="card nx-run" id="nx-make"><input id="nx-mtopic" placeholder="${makeKind === "short" ? "What's the Short about? e.g. The Kamehameha is named after a Hawaiian king" : makeKind === "iceberg" ? `Any topic — e.g. ${ICE_EG[new Date().getDate() % ICE_EG.length]}` : "The episode: e.g. How Marvel almost went bankrupt — and the movie deal that saved it"}" maxlength="160" ${d.busy ? "disabled" : ""}>
         <button class="btn primary" ${d.busy ? "disabled" : ""}>${d.busy ? "Writing…" : "Draft it"}</button></form>
       ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — watch it fire on the brain.</p>` : ""}
       ${makeKind === "short" && !d.busy ? `<div class="row-end nx-batch"><span class="nx-meta">Batching is how faceless channels stay consistent — review them in one sitting.</span><button class="btn small" id="nx-batch">Draft a week (5 Shorts)</button></div>` : ""}
@@ -531,7 +574,7 @@
   /* ---------- clicks ---------- */
   document.addEventListener("click", async e => {
     const t = e.target;
-    const sub = t.closest("[data-sub]"); if (sub) { e.stopPropagation(); const [a, s] = sub.dataset.sub.split(":"); return subSheet(a, s); }
+    const sub = t.closest("[data-sub]"); if (sub) { e.stopPropagation(); const [a, s] = sub.dataset.sub.split(":"); return go(`desk/${a}/${s}`); }
     const ag = t.closest(".nx-agent");
     if (ag) { e.stopPropagation(); const a = sys?.agents.find(x => x.key === ag.dataset.agent);
       if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
@@ -540,7 +583,8 @@
     const gg = t.closest("[data-nx-go]");
     if (gg) { e.stopPropagation(); const reason = gg.closest(".nx-call")?.querySelector(".nx-reason")?.value || "";
       try { await post("/api/intel/decide", {slug: gg.dataset.slug, choice: "make", reason});
-            toast((await post("/api/make/draft", {topic: gg.dataset.topic, kind: gg.dataset.nxGo})).reply); watchDraft(); go("make"); }
+            const ice = gg.dataset.nxGo === "iceberg";
+            toast((await post("/api/make/draft", {topic: gg.dataset.topic, kind: ice ? "long" : gg.dataset.nxGo, ...(ice ? {style: "iceberg"} : {})})).reply); watchDraft(); go("make"); }
       catch (err) { toast(err.message); } return; }
     const kd = t.closest("[data-nx-kind]"); if (kd) { makeKind = kd.dataset.nxKind; return route(); }
     const cut = t.closest("[data-nx-cut]");
@@ -560,7 +604,7 @@
     const n = e.target.closest && e.target.closest(".nx-sub,.nx-agent"); if (n) { e.preventDefault(); n.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 
   /* ---------- register pages ---------- */
-  Object.assign(window.PAGES, {money: pageMoney, brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
+  Object.assign(window.PAGES, {desk: pageDesk, money: pageMoney, brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
   document.addEventListener("DOMContentLoaded", () => {      // after every extension has registered its pages,
     Object.keys(OWNER).forEach(wrap);                        // before the app's first route (window load)
     Object.entries(HUBS).forEach(([akey, tabs]) => { window.PAGES[akey] = window.PAGES[tabs[0][0]]; });

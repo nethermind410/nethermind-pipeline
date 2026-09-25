@@ -283,3 +283,40 @@ h2{letter-spacing:.14em}
 .nx-voice{display:inline-flex;align-items:center;gap:8px;font-size:12.5px}
 .nx-mine{color:#34C759;font-weight:600}
 [data-rec].recording{background:var(--accent);color:var(--on-accent);animation:nx-pulse 1s infinite}
+
+/* ---- a sub-agent's desk: its question, what it found, what you can do ---- */
+.desk-head{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px}
+.desk-head>div:nth-child(2){flex:1;min-width:240px}
+.desk-head h1{margin:2px 0 4px}
+.desk-q{font:600 18px/1.35 var(--grotesk);color:var(--ink);margin:0 0 4px;max-width:720px}
+.desk-hist{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.desk .hub-subs{margin:6px 0 18px}
+.nx-chip.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.desk-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 16px}
+.desk-stats>div{border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0}
+.desk-stats .k{display:block;color:var(--muted);font:500 11.5px var(--grotesk);letter-spacing:.04em;text-transform:uppercase}
+.desk-stats b{display:block;font:700 19px/1.25 var(--grotesk);margin-top:3px;overflow-wrap:anywhere}
+.desk-panel{margin:18px 0}
+.desk-panel h2{margin:0 0 4px}
+.desk-rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+.desk-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);min-width:0}
+.desk-row:first-child{border-top:0}
+.desk-row.warn{box-shadow:inset 3px 0 0 var(--nx-fail)}
+.desk-row.bad{box-shadow:inset 3px 0 0 var(--nx-fail);background:color-mix(in srgb,var(--nx-fail) 6%,transparent)}
+.desk-row.good{box-shadow:inset 3px 0 0 #34C759}
+.desk-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.desk-txt b,.desk-txt a{font-weight:600;overflow-wrap:anywhere}
+.desk-txt a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.desk-txt a:hover{text-decoration-color:var(--accent)}
+.desk-txt .nx-meta{overflow-wrap:anywhere}
+.desk-badge{flex:none;font:700 13px var(--grotesk);padding:3px 10px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.desk-badge.good{border-color:#34C759;color:#34C759}
+.desk-badge.warn,.desk-badge.bad{border-color:var(--nx-fail);color:var(--nx-fail)}
+.desk-row .btn.small{flex:none}
+.desk-rows.imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0}
+.desk-rows.imgs .desk-row{flex-direction:column;align-items:stretch;border-top:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.desk-rows.imgs img{width:100%;border-radius:8px;display:block}
+.desk-acts{margin:18px 0;flex-wrap:wrap}
+.desk-fail{border-color:var(--nx-fail)}
+.desk .nx-run{margin:0 0 12px}
+@media (max-width:640px){.desk-row{flex-wrap:wrap}.desk-hist{align-items:flex-start}}
