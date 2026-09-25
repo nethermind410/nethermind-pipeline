@@ -746,6 +746,15 @@ POST = {"/api/desk/scout_backlog": scout_backlog}
 
 
 # ------------------------------------------------------------------ the week board (home screen)
+def lined_up(v):
+    """Can this video fill a coming day? Scripts waiting and ready videos, yes; something half-made is only lined up
+    if it's recent (touched in the last 7 days) and in the channel's lanes — old space/ocean builds never come back."""
+    import intelligence
+    if v["stage"] in ("draft", "ready"):
+        return True
+    p = CFG / f"{v['id']}.json"
+    fresh = p.exists() and age_days(p) <= 7
+    return fresh and intelligence.lane_of(v["title"] + " " + v["id"].replace("_", " ")) not in ("space", "ocean")
 RANK = {"live": 5, "scheduled": 4, "ready": 3, "making": 2, "draft": 1}
 
 
@@ -774,7 +783,7 @@ def week():
         when = min([d for d in dates if d] + [local(s.get("dueAt")) for s in v["scheduled"] if local(s.get("dueAt"))], default=None)
         if when in slots and not slots[when]:
             slots[when] = {"id": v["id"], "title": v["title"], "stage": v["stage"]}
-        elif when is None and v["stage"] in ("draft", "making", "ready"):
+        elif when is None and v["stage"] in ("draft", "making", "ready") and lined_up(v):
             pipeline.append({"id": v["id"], "title": v["title"], "stage": v["stage"], "planned": True})
     for d in (EPS.glob("*.json") if not long else []):             # a long-form still at the script stage
         e = J(d, {}) or {}

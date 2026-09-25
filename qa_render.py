@@ -13,7 +13,7 @@ the full incident writeup). Both bugs shipped because nothing actually looked
 at the output before it was trusted. This script is that look, automated.
 
 What it checks (fast, no judgment calls):
-  - out/<id>.mp4 exists, is 1080x1920, h264+aac, bitrate above a healthy floor
+  - out/<file or id>.mp4 exists, is 1080x1920, h264+aac, bitrate above a healthy floor
   - duration roughly matches the config's segment timing (catches a stale/
     partial render or a wrong file)
   - the .srt exists and isn't empty
@@ -54,7 +54,7 @@ def main():
     cfg_path = sys.argv[1]
     cfg = json.load(open(cfg_path))
     vid = cfg["id"]
-    mp4 = os.path.join(HERE, "out", f"{vid}.mp4")
+    mp4 = os.path.join(HERE, "out", f"{cfg.get('file', vid)}.mp4")      # the renderer names it after cfg["file"] when set
     srt = os.path.join(HERE, "out", f"{vid}.srt")
     ok = True
 
