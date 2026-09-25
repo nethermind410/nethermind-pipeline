@@ -64,6 +64,10 @@
     render();
     const nav = document.querySelector('.nav[data-go="today"]');       // a reminder dot on Today until the Short is out
     if (nav) nav.classList.toggle("post-due", !isDone(day.post));
+    const left = day.steps.filter(s => !isDone(s)).length;            // one count everywhere: the badge, the brain pill, the dock
+    const badge = document.getElementById("count-today"); if (badge) { badge.hidden = !left; badge.textContent = left; }
+    const pill = document.getElementById("today-pill");
+    if (pill) { pill.innerHTML = left ? `Today <b>${left}</b> need${left > 1 ? "" : "s"} you` : "Today · all caught up"; pill.classList.toggle("hot", left > 0); }
   }
 
   /* ---------- a video went out: celebrate ---------- */

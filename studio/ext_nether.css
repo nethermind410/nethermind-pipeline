@@ -382,3 +382,13 @@ h2{letter-spacing:.14em}
 .mo-hero h2{color:var(--ink)}
 .mo-setup .nx-setup ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:4px 24px}
 .mo-details{margin:18px 0 40px}
+
+/* phones: the brain header wraps instead of running off-screen; nothing scrolls sideways */
+@media (max-width:640px){
+  .brain-top{flex-wrap:wrap;row-gap:8px;padding:16px}
+  .brain-top .ed,.brain-top .hint{display:none}
+  .brain-top .nx-status{order:3;max-width:100%;overflow:hidden}
+  .brain-top .today-pill{margin-left:auto}
+  .brain-top .ask{display:none}
+  main .page{overflow-x:hidden}
+}

@@ -24,7 +24,9 @@ async function brainData() {
   const next = (cal?.items || []).find(i => i.state === "scheduled");
   const openIdeas = (ideas?.sections || []).flatMap(s => s.items).filter(i => !i.made && !i.dismissed).length;
   const waitingC = (com?.comments || []).filter(c => !c.done).length;
-  const bad = (health || []).filter(h => !h.ok);
+  const ORDER = ["Drafting", "Rendering", "Narration", "Fonts", "Buffer", "Video hosting", "Daily run", "YouTube", "Stats", "AI art", "vidIQ", "Jarvis"];
+  const rank = h => { const i = ORDER.findIndex(o => h.name.startsWith(o)); return i < 0 ? 99 : i; };   // what blocks the most, first
+  const bad = (health || []).filter(h => !h.ok).sort((a, b) => rank(a) - rank(b));
   const nDraft = dr?.drafts?.length || 0, failed = (sys?.agents || []).filter(a => a.state === "failed").map(a => a.name);
   return {
     ch, today, wk, plan,
@@ -35,7 +37,7 @@ async function brainData() {
       publishing: [next ? `Next: ${PLAT[next.platform]} ${new Date(next.at).toLocaleString(undefined, {weekday: "short", hour: "numeric", minute: "2-digit"})}` : "Nothing queued", false],
       analytics: [ch?.ready ? `${fmt(ch.channel.views)} YouTube views` : "No numbers yet", false],
       business: [waitingC ? `${waitingC} comment${waitingC > 1 ? "s" : ""} waiting` : "Nobody waiting", waitingC > 0],
-      control: [failed.length ? `${failed.join(", ")} need${failed.length > 1 ? "" : "s"} a look` : bad.length ? `${bad.map(b => b.name.split(" (")[0]).join(", ")} need${bad.length > 1 ? "" : "s"} a look` : "Every agent and connection working", failed.length + bad.length > 0],
+      control: [failed.length ? `${failed.join(", ")} need${failed.length > 1 ? "" : "s"} a look` : bad.length ? `Fix ${bad[0].name.split(" (")[0]}${bad.length > 1 ? ` + ${bad.length - 1} more` : ""}` : "Every agent and connection working", failed.length + bad.length > 0],
     },
   };
 }
@@ -58,6 +60,7 @@ async function pageBrain() {
   const nT = data.today?.cards?.length || 0;                 // you: the one place every agent hands work to
   $("#today-pill").innerHTML = nT ? `Today <b>${nT}</b> need${nT > 1 ? "" : "s"} you` : "Today · all caught up";
   $("#today-pill").classList.toggle("hot", nT > 0);
+  window.nxDay?.reload();                                   // then the same count as the dock
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
     return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}" style="--s:${n.scale};--tilt:${n.tilt}deg">

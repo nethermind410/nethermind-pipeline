@@ -99,9 +99,9 @@ async function pageToday() {
       <div class="body">${body}</div><div class="actions">${actions}</div></div>`;
   };
   const now = t.cards.filter(c => c.kind !== "queued"), wait = t.cards.filter(c => c.kind === "queued");
-  const n = t.cards.length, badge = $("#count-today"); badge.hidden = !n; badge.textContent = n;
+  const n = t.cards.length; window.nxDay?.reload();
   main.innerHTML = `<div class="page">
-    <div class="head"><h1>Today</h1><p>${n ? `${n} thing${n > 1 ? "s" : ""} to tick off. Each one clears when you tick it.` : "Nothing needs you."}</p></div>
+    <div class="head"><h1>Today</h1><p>${n ? "Everything waiting on you, in one list — each clears when it's done. Today's run (bottom-right) takes you through it in order." : "Nothing needs you."}</p></div>
     ${now.length ? `<h2>Do now</h2><div class="card list">${now.map(row).join("")}</div>` : ""}
     ${wait.length ? `<h2>Waiting to go out</h2><div class="card list">${wait.map(row).join("")}</div>` : ""}
     ${n ? "" : `<div class="card"><div class="caught"><b>You're all caught up</b>The next video is made at 7:00. Pick what it'll be in <button class="link" data-go="ideas">Ideas</button>.</div></div>`}
@@ -141,7 +141,8 @@ async function pageVideo(id) {
       <div class="player">
         ${v.video ? `<video id="player" controls playsinline preload="metadata" src="${media(v.video)}"></video>
           ${v.tiktok ? `<div class="seg" role="tablist"><button class="on" data-src="${esc(v.video)}">YouTube · Instagram</button><button data-src="${esc(v.tiktok)}">TikTok</button></div>` : ""}`
-          : `<div class="tile"><div class="ph">Not made yet</div></div>`}
+          : v.picture ? `<div class="tile poster"><img src="${media(v.picture)}" alt=""><span>${v.stage === "live" || v.stage === "scheduled" ? "The video file isn't on this Mac — the picture is from YouTube or its artwork" : "Not rendered yet — press Make video"}</span></div>`
+          : `<div class="tile"><div class="ph">${v.stage === "live" || v.stage === "scheduled" ? "The video file isn't on this Mac" : "Not made yet"}</div></div>`}
       </div>
       <div style="display:grid;gap:18px">
         <div class="head"><h1 style="font-size:24px">${esc(v.title)}</h1></div>
@@ -223,7 +224,7 @@ function ring(parts, size = 132, label = "views") {
 }
 function legend(parts) {
   const total = PORDER.reduce((a, k) => a + (parts[k] || 0), 0);
-  return `<ul class="legend">${PORDER.map(k => `<li><i class="sw sw-${k}"></i><span>${PLAT[k]}</span>
+  return `<ul class="legend">${PORDER.map(k => `<li class="${parts[k] ? "" : "zero"}"><i class="sw sw-${k}"></i><span>${PLAT[k]}</span>
     <b>${pct(parts[k] || 0, total)}%</b><em>${fmt(parts[k] || 0)}</em></li>`).join("")}</ul>`;
 }
 let perfTab = "overview";
@@ -433,7 +434,7 @@ async function route() {
     if (name === "video" && id) { current = await get("/api/video/" + encodeURIComponent(id)); await pageVideo(id); }
     else await (window.PAGES[name] || window.PAGES.home || pageToday)();
   } catch (e) { main.innerHTML = `<div class="page"><div class="caught"><b>Couldn't load this</b>${esc(e.message)}</div></div>`; }
-  if (name !== "today") get("/api/today").then(t => { const b = $("#count-today"); b.hidden = !t.cards.length; b.textContent = t.cards.length; });
+  window.nxDay?.reload();                          // the Today count comes from Today's run, so it matches everywhere
 }
 window.addEventListener("hashchange", () => { route(); main.scrollTop = 0; });
 

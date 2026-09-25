@@ -43,7 +43,7 @@ def stale_videos():
     import studio_api
     out = []
     for v in studio_api.videos():
-        if v["stage"] != "making" or v["id"].endswith("_tiktok") or "__" in v["id"]:
+        if v["stage"] not in ("making", "earlier") or v["id"].endswith("_tiktok") or "__" in v["id"]:
             continue
         p = CFG / f"{v['id']}.json"
         if p.exists() and age_days(p) > 7:
@@ -65,8 +65,10 @@ def v_videos():
     if stale:
         acts.append({"label": f"Archive {len(stale)} stale", "post": "/api/videos/archive", "body": {"ids": [s["id"] for s in stale]},
                      "confirm": f"Move {len(stale)} videos that haven't moved in 7+ days out of the way? Their files go to cfg/archive/ — nothing is deleted."})
-    detail = (f"{len(stale)} haven't moved in 7+ days" + (f" ({sum(1 for s in stale if s['lane'] in OFF_LANES)} are old space/ocean ideas)" if stale else "")
-              + " — finish them or archive them." if stale else "Nothing stuck.")
+    off = sum(1 for s in stale if s["lane"] in OFF_LANES)
+    one = len(stale) == 1
+    detail = (f"{len(stale)} {'hasn' if one else 'haven'}'t moved in 7+ days" + (f" ({off} {'is an' if off == 1 else 'are'} old space/ocean idea{'s' if off != 1 else ''})" if off else "")
+              + f" — finish {'it' if one else 'them'} or archive {'it' if one else 'them'}." if stale else "Nothing stuck.")
     return V("What's ready, and what's stuck?", " · ".join(parts), detail, "warn" if stale or c("ready") else "good", acts)
 
 
