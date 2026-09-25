@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nethermind410/nethermind-pipeline/schemas/brief-0.2.schema.json",
+  "title": "NETHERMIND Shot Planner brief v0.2",
+  "description": "Everything the planner needs for one video: the fact-checked script, the film's style rules, and its references (cast and locations). Lives in briefs/<id>.json.",
+  "type": "object",
+  "required": ["project", "script", "style", "references"],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "type": "object", "required": ["id", "title"], "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "fact_sources": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "script": {"type": "string", "minLength": 1, "description": "The final narration, word for word. Fact-check it before planning; the plan is tied to this exact text by its hash."},
+    "format": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": {"type": "string"}, "width": {"type": "integer"}, "height": {"type": "integer"},
+        "fps": {"type": "integer"}, "target_duration_s": {"type": "number"}, "max_duration_s": {"type": "number"}
+      }
+    },
+    "words_per_second": {"type": "number", "exclusiveMinimum": 0, "description": "Narration pace used for timing estimates. Default 2.6."},
+    "planner_notes": {"type": "string", "description": "Free-text guidance passed to the LLM planner (e.g. which shot is the payoff)."},
+    "style": {
+      "type": "object",
+      "required": ["visual_style", "lighting", "color_palette"],
+      "additionalProperties": false,
+      "properties": {
+        "visual_style": {"type": "string", "minLength": 1},
+        "lighting": {"type": "string", "minLength": 1},
+        "color_palette": {"type": "string", "minLength": 1},
+        "lens_language": {"type": "string"},
+        "global_must_avoid": {"type": "array", "items": {"type": "string"}},
+        "global_negative": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "references": {
+      "type": "object", "required": ["characters", "environments"], "additionalProperties": false,
+      "properties": {
+        "characters": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+        "environments": {"type": "array", "items": {"$ref": "#/$defs/reference"}}
+      }
+    }
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "required": ["id", "name", "description", "states"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^(CHR|ENV|PROP)_[A-Z0-9_]+$"},
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "scale": {"type": "string"},
+        "states": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string"}},
+        "locked_attributes": {"type": "array", "items": {"type": "string"}},
+        "must_avoid": {"type": "array", "items": {"type": "string"}},
+        "reference_images": {"type": "array", "items": {"type": "string"}},
+        "status": {"enum": ["NEEDS_REFERENCE", "REFERENCE_READY", "APPROVED"]}
+      }
+    }
+  }
+}

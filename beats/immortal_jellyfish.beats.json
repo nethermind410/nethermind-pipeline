@@ -1,0 +1,544 @@
+{
+  "visual_information": [
+    {
+      "id": "V01",
+      "sentence_id": "N01",
+      "fact": "this specific jellyfish: a healthy adult, instantly recognisable by its red-orange core in a clear bell"
+    },
+    {
+      "id": "V02",
+      "sentence_id": "N02",
+      "fact": "its distinctive anatomy, clear enough to identify the species (name added as an overlay)"
+    },
+    {
+      "id": "V03",
+      "sentence_id": "N02",
+      "fact": "its tiny size: the whole animal smaller than a pinky fingernail"
+    },
+    {
+      "id": "V04",
+      "sentence_id": "N03",
+      "fact": "the adult form of the body"
+    },
+    {
+      "id": "V05",
+      "sentence_id": "N03",
+      "fact": "visible injury or stress: torn bell, lost tentacles, weak pulsing"
+    },
+    {
+      "id": "V06",
+      "sentence_id": "N03",
+      "fact": "the transformation happening: the adult body shrinking and folding inward"
+    },
+    {
+      "id": "V07",
+      "sentence_id": "N03",
+      "fact": "the earlier life stage it is heading back to: the polyp colony"
+    },
+    {
+      "id": "V08",
+      "sentence_id": "N04",
+      "fact": "it sinks to the seabed"
+    },
+    {
+      "id": "V09",
+      "sentence_id": "N04",
+      "fact": "its tentacles being drawn back into its body"
+    },
+    {
+      "id": "V10",
+      "sentence_id": "N04",
+      "fact": "it ends as a tiny featureless blob (cyst)"
+    },
+    {
+      "id": "V11",
+      "sentence_id": "N05",
+      "fact": "time passing (days, compressed)"
+    },
+    {
+      "id": "V12",
+      "sentence_id": "N05",
+      "fact": "the blob sprouting root-like tubes and polyps"
+    },
+    {
+      "id": "V13",
+      "sentence_id": "N05",
+      "fact": "polyps are the early, baby form: stalks with tentacle crowns anchored to rock"
+    },
+    {
+      "id": "V14",
+      "sentence_id": "N05",
+      "fact": "a polyp budding off a brand-new jellyfish"
+    },
+    {
+      "id": "V15",
+      "sentence_id": "N06",
+      "fact": "the new jellyfish look exactly like each other and like the original adult"
+    },
+    {
+      "id": "V16",
+      "sentence_id": "N07",
+      "fact": "a laboratory setting where scientists watch this"
+    },
+    {
+      "id": "V17",
+      "sentence_id": "N07",
+      "fact": "repetition: the cycle stages seen again, side by side"
+    },
+    {
+      "id": "V18",
+      "sentence_id": "N08",
+      "fact": "the wild ocean"
+    },
+    {
+      "id": "V19",
+      "sentence_id": "N08",
+      "fact": "a predator eating the jellyfish"
+    }
+  ],
+  "shots": [
+    {
+      "narration": "This jellyfish may never die of old age.",
+      "communicates": [
+        "V01"
+      ],
+      "goal": "Introduce the star: one small, healthy jellyfish with a glowing-looking red-orange core, alone in dark water.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_healthy"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "The jellyfish hangs in the water and pulses its bell in slow, regular contractions, tentacles fanning out after each pulse",
+      "framing": "macro",
+      "angle": "eye_level",
+      "movement": "slow_push_in",
+      "composition": "jellyfish centred in the upper half of the frame, bell top at about one-third height, tentacles spreading below it",
+      "must_show": [
+        "transparent bell with a red-orange core inside",
+        "fringe of fine white tentacles around the bell rim",
+        "a single jellyfish"
+      ],
+      "must_avoid": [
+        "more than one jellyfish",
+        "seabed or rocks"
+      ],
+      "edit_notes": [
+        "Hook text on frame zero per README rule 1: 'THIS JELLYFISH / MAY NEVER DIE / OF OLD AGE.'"
+      ]
+    },
+    {
+      "narration": "It's called Turritopsis dohrnii,",
+      "communicates": [
+        "V02"
+      ],
+      "goal": "Show the anatomy that identifies the species: clear bell, red-orange core, tentacle fringe, seen from the side.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_healthy"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "The jellyfish pulses once as the camera circles from the front to a side view of the bell",
+      "framing": "close_up",
+      "angle": "profile",
+      "movement": "orbit",
+      "movement_note": "about 45 degrees, left to right",
+      "composition": "bell in profile in the upper half, core clearly inside the bell, tentacles hanging below",
+      "transition_in": "match_cut",
+      "must_show": [
+        "bell shape and tentacle fringe clearly readable",
+        "red-orange core inside the bell",
+        "fine white tentacles"
+      ],
+      "edit_notes": [
+        "Overlay the species name 'Turritopsis dohrnii' in the edit; never generate it"
+      ],
+      "must_happen": [
+        "the camera circles to a side view of the bell"
+      ]
+    },
+    {
+      "narration": "and it's smaller than your pinky nail.",
+      "communicates": [
+        "V03"
+      ],
+      "goal": "Scale: the whole jellyfish is visibly smaller than the fingernail beside it.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_healthy"
+        },
+        {
+          "id": "PROP_PINKY",
+          "start_state": "in_water"
+        }
+      ],
+      "environment_ref": "ENV_LAB",
+      "environment": "one dish in close view, the jellyfish floating in it",
+      "action": "The fingertip holds still in the water just beside the jellyfish while the jellyfish pulses gently",
+      "framing": "macro",
+      "angle": "high",
+      "movement": "static",
+      "composition": "fingertip entering from the upper right, jellyfish just left of centre, both fully in frame at the same focus distance",
+      "must_show": [
+        "fingernail and jellyfish side by side in one frame",
+        "the whole jellyfish smaller than the fingernail"
+      ],
+      "must_avoid": [
+        "jellyfish as large as or larger than the fingertip",
+        "fingertip touching the jellyfish"
+      ],
+      "accuracy_notes": [
+        "Scale must read correctly: adult bell ~4.5 mm, a pinky nail ~8-10 mm wide"
+      ]
+    },
+    {
+      "narration": "When it's injured, starving, or under extreme stress,",
+      "communicates": [
+        "V04",
+        "V05"
+      ],
+      "goal": "The same adult, now plainly damaged and weak.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_injured"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "The damaged jellyfish pulses weakly and unevenly, sinking slightly between pulses, broken tentacle pieces drifting away from it",
+      "framing": "close_up",
+      "angle": "eye_level",
+      "movement": "slow_push_in",
+      "composition": "jellyfish centred in the upper half, torn side of the bell facing the camera",
+      "transition_in": "cut",
+      "must_show": [
+        "torn, notched bell rim",
+        "missing or broken tentacles",
+        "red-orange core still visible"
+      ],
+      "must_avoid": [
+        "blood",
+        "healthy symmetrical bell"
+      ]
+    },
+    {
+      "narration": "it can transform its adult body back",
+      "communicates": [
+        "V06"
+      ],
+      "goal": "The adult body visibly shrinking and folding in on itself.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_injured",
+          "end_state": "reverting"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "The bell contracts and folds inward while the tentacles shorten and are drawn up toward the body; the whole animal shrinks to about half its size",
+      "framing": "close_up",
+      "angle": "eye_level",
+      "movement": "static",
+      "composition": "subject held in the same place in the frame from start to end so the shrinking is obvious",
+      "transition_in": "continuous",
+      "must_show": [
+        "the bell folding inward",
+        "tentacles getting shorter",
+        "overall size clearly smaller by the end"
+      ],
+      "must_avoid": [
+        "the jellyfish exploding or dissolving into particles",
+        "sudden cut or pop between sizes"
+      ],
+      "accuracy_notes": [
+        "Real process takes hours; shown as a time-lapse"
+      ],
+      "edit_notes": [
+        "Optional subtle 'rewind' speed ramp in the edit; no text needed"
+      ]
+    },
+    {
+      "narration": "into an earlier stage of its life cycle.",
+      "communicates": [
+        "V07"
+      ],
+      "goal": "Reveal the earlier life stage it is heading back to: a colony of tiny polyps anchored to rock.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "polyp_colony"
+        }
+      ],
+      "environment_ref": "ENV_SEABED",
+      "action": "The polyps' tentacle crowns sway gently in a slow current while the camera moves closer",
+      "framing": "macro",
+      "angle": "high",
+      "movement": "slow_push_in",
+      "composition": "polyp colony across the middle of the frame, rock below, dark water above",
+      "transition_in": "location_change",
+      "must_show": [
+        "several upright polyps with crowns of fine white tentacles",
+        "thin tubes linking the polyps on the rock",
+        "reddish colour in the polyps matching the adult's core"
+      ],
+      "must_avoid": [
+        "sea anemones",
+        "coral polyps",
+        "plants or seaweed"
+      ],
+      "edit_notes": [
+        "Optional overlay 'POLYP = ITS BABY FORM' only if the test audience misreads it; the narration after this explains it"
+      ]
+    },
+    {
+      "narration": "It sinks, absorbs its own tentacles,",
+      "communicates": [
+        "V08",
+        "V09"
+      ],
+      "goal": "The shrunken jellyfish sinking onto the rock while its tentacles disappear into its body.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "reverting",
+          "end_state": "settled"
+        }
+      ],
+      "environment_ref": "ENV_SEABED",
+      "action": "The shrunken body drifts downward and settles on the rock; the last tentacle stubs retract into it as it lands",
+      "framing": "macro",
+      "angle": "eye_level",
+      "movement": "tilt_down",
+      "movement_note": "follows the body down to the rock",
+      "composition": "starts with the body high in frame and ends with it resting on the rock surface in the lower-middle",
+      "transition_in": "cut",
+      "must_show": [
+        "the body moving downward",
+        "landing on the rock",
+        "tentacles retracting into the body"
+      ],
+      "accuracy_notes": [
+        "Continues the S05 state (reverting); S06 is a cutaway to where it is heading"
+      ]
+    },
+    {
+      "narration": "and collapses into a tiny blob.",
+      "communicates": [
+        "V10"
+      ],
+      "goal": "The body loses every jellyfish feature and becomes a small round blob stuck to the rock.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "settled",
+          "end_state": "cyst"
+        }
+      ],
+      "environment_ref": "ENV_SEABED",
+      "action": "The rounded body slumps and smooths out into a small featureless ball with a thin translucent skin",
+      "framing": "extreme_close_up",
+      "angle": "high",
+      "movement": "static",
+      "composition": "blob centred in the frame on the rock surface",
+      "transition_in": "continuous",
+      "must_show": [
+        "a small round featureless blob on the rock",
+        "red-orange interior visible through a thin clear skin",
+        "no bell and no tentacles by the end"
+      ],
+      "must_avoid": [
+        "egg clutch",
+        "slime puddle",
+        "remaining tentacles at the end"
+      ],
+      "accuracy_notes": [
+        "The cyst stage has no recognisable medusa or polyp features (Matsumoto et al. 2019)"
+      ]
+    },
+    {
+      "narration": "Within a few days, that blob sprouts into polyps —",
+      "communicates": [
+        "V11",
+        "V12"
+      ],
+      "goal": "Time-lapse: the blob sends out root-like tubes and a first polyp grows upward.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "cyst",
+          "end_state": "sprouting"
+        }
+      ],
+      "environment_ref": "ENV_SEABED",
+      "environment": "sediment particles shifting slightly between frames as in a time-lapse",
+      "action": "Thin translucent tubes creep outward from the blob across the rock and a tiny polyp bud grows upright from them",
+      "framing": "macro",
+      "angle": "high",
+      "movement": "slow_pull_out",
+      "composition": "blob starts centred; the pull-out leaves room for the tubes spreading to the frame edges",
+      "transition_in": "time_jump",
+      "must_show": [
+        "the same blob at the start",
+        "tubes growing out across the rock",
+        "an upright polyp bud by the end"
+      ],
+      "must_avoid": [
+        "plant roots",
+        "fungus or mould",
+        "seedling leaves"
+      ],
+      "accuracy_notes": [
+        "Cyst develops stolons and polyps within about 24-36 hours; compressed to seconds"
+      ]
+    },
+    {
+      "narration": "the jellyfish's baby form — which bud off brand-new jellyfish.",
+      "communicates": [
+        "V13",
+        "V14"
+      ],
+      "goal": "The polyp colony, and a brand-new tiny jellyfish pulling free from a polyp and swimming off.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "polyp_colony",
+          "end_state": "budding"
+        }
+      ],
+      "environment_ref": "ENV_SEABED",
+      "action": "Polyps sway on their stalks; on the side of one polyp a tiny bell pulses, pulls free and swims upward out of the colony",
+      "framing": "macro",
+      "angle": "eye_level",
+      "movement": "tilt_up",
+      "movement_note": "follows the new jellyfish upward at the end",
+      "composition": "colony in the lower half; the new jellyfish rises into the upper half",
+      "transition_in": "time_jump",
+      "motion_intensity": "medium",
+      "must_show": [
+        "polyps with tentacle crowns",
+        "a tiny bell forming on the side of one polyp",
+        "red-orange core in the tiny bell"
+      ],
+      "must_avoid": [
+        "an adult-sized jellyfish emerging",
+        "eggs hatching"
+      ],
+      "must_happen": [
+        "the tiny new jellyfish pulls free from the polyp and swims upward"
+      ]
+    },
+    {
+      "narration": "They're genetic copies of the original.",
+      "communicates": [
+        "V15"
+      ],
+      "goal": "Several new jellyfish that look exactly like each other, framed exactly like the opening shot of the original.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "young_medusae"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "Three young jellyfish pulse in unison, side by side, as the camera pans across them",
+      "framing": "medium_close_up",
+      "angle": "eye_level",
+      "movement": "pan_right",
+      "composition": "the three jellyfish in a loose horizontal row in the upper half, same spacing, same size",
+      "transition_in": "match_cut",
+      "must_show": [
+        "three jellyfish with matching size, shape and red-orange cores",
+        "the same look as the S01 adult"
+      ],
+      "must_avoid": [
+        "jellyfish of different species or colours",
+        "one visibly larger than the others"
+      ],
+      "edit_notes": [
+        "Match-cut to S01's framing so the likeness is obvious"
+      ]
+    },
+    {
+      "narration": "In the lab, they've reset again and again.",
+      "communicates": [
+        "V16",
+        "V17"
+      ],
+      "goal": "A row of lab dishes showing the cycle stages side by side: this has been watched happening repeatedly.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_healthy"
+        }
+      ],
+      "environment_ref": "ENV_LAB",
+      "environment": "three dishes in a row: the nearest holds an adult jellyfish, the middle one a small round blob, the farthest a polyp colony",
+      "action": "Focus moves from the jellyfish in the nearest dish to the blob in the middle dish and on to the polyps in the farthest dish",
+      "framing": "medium",
+      "angle": "high",
+      "movement": "rack_focus",
+      "movement_note": "near dish -> middle -> far",
+      "composition": "dishes running diagonally from lower-left (near) to upper-right (far)",
+      "transition_in": "location_change",
+      "must_show": [
+        "three glass culture dishes",
+        "an adult jellyfish in one dish",
+        "a blob in another dish",
+        "a polyp colony in another dish"
+      ],
+      "must_avoid": [
+        "legible labels or text on the dishes",
+        "scientists' faces"
+      ],
+      "accuracy_notes": [
+        "Repeated reversal is from lab rearing observations; the three dishes show stages, not one animal at once"
+      ]
+    },
+    {
+      "narration": "In the wild, most still get eaten.",
+      "communicates": [
+        "V18",
+        "V19"
+      ],
+      "goal": "Back in open water, a small fish darts in and swallows the jellyfish.",
+      "refs": [
+        {
+          "id": "CHR_TURRITOPSIS",
+          "start_state": "adult_healthy"
+        },
+        {
+          "id": "CHR_FISH",
+          "start_state": "hunting"
+        }
+      ],
+      "environment_ref": "ENV_OPEN_WATER",
+      "action": "A small silver fish swims in from the left toward the pulsing jellyfish, opens its mouth, swallows the jellyfish in one bite and turns away",
+      "framing": "medium_close_up",
+      "angle": "eye_level",
+      "movement": "static",
+      "composition": "jellyfish in the upper-middle; the fish close to it at the left edge, mouth open",
+      "transition_in": "location_change",
+      "motion_intensity": "high",
+      "must_show": [
+        "the jellyfish in open water",
+        "a small fish close to it with its mouth open"
+      ],
+      "must_avoid": [
+        "blood or gore",
+        "shark",
+        "the jellyfish escaping"
+      ],
+      "accuracy_notes": [
+        "Predators include fish; generic small fish chosen, not a specific documented predator species"
+      ],
+      "must_happen": [
+        "the fish swallows the jellyfish in one bite",
+        "the jellyfish is gone after the bite"
+      ]
+    }
+  ]
+}

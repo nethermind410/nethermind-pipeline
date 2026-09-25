@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nethermind410/nethermind-pipeline/schemas/shotplan-0.2.schema.json",
+  "title": "NETHERMIND Shot Plan v0.2",
+  "description": "Machine-readable production plan produced by the Shot Planner. One file per video. Every shot states what the viewer must SEE so the footage explains the narration with the sound off. Written by shotplanner/compiler.py; checked by shotplanner/validate.py (structure against this file, then cross-field rules that JSON Schema cannot express). Full field guide: docs/SHOT_PLANNER.md.",
+  "type": "object",
+  "required": ["schema", "project", "plan_version", "created_at", "planner", "format", "style", "references", "script", "visual_information", "shots", "totals", "warnings"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "nethermind.shotplan/0.2", "description": "Schema identifier. Bumped when the structure changes."},
+    "project": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$", "description": "Matches the cfg/<id>.json id when the video is also rendered by make_short.py."},
+        "title": {"type": "string", "minLength": 1},
+        "fact_sources": {"type": "array", "items": {"type": "string"}, "description": "Primary sources for the claims the narration makes. Copied from the brief."}
+      }
+    },
+    "plan_version": {"type": "integer", "minimum": 1, "description": "Revision of this plan. Raise it whenever the plan is regenerated or hand-edited."},
+    "created_at": {"type": "string", "description": "UTC ISO-8601 timestamp."},
+    "planner": {
+      "type": "object",
+      "required": ["version", "backend", "script_sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"type": "string", "description": "shotplanner package version that compiled this file."},
+        "backend": {"type": "string", "description": "Where the visual beats came from: 'manual:<file>', 'gemini:<model>', or 'heuristic' (the heuristic output is a draft that needs review)."},
+        "script_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Hash of the script text. A plan is stale if the script changes."},
+        "words_per_second": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "format": {
+      "type": "object",
+      "required": ["aspect_ratio", "width", "height", "fps"],
+      "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": {"type": "string", "pattern": "^[0-9]+:[0-9]+$"},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "fps": {"type": "integer", "minimum": 1},
+        "target_duration_s": {"type": "number", "exclusiveMinimum": 0},
+        "max_duration_s": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "style": {"$ref": "#/$defs/style"},
+    "references": {
+      "type": "object",
+      "required": ["characters", "environments"],
+      "additionalProperties": false,
+      "description": "The film's cast and locations. Each shot's prompts are built from these descriptions, so every shot draws the same subject the same way.",
+      "properties": {
+        "characters": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+        "environments": {"type": "array", "items": {"$ref": "#/$defs/reference"}}
+      }
+    },
+    "script": {
+      "type": "object",
+      "required": ["text", "sentences"],
+      "additionalProperties": false,
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "sentences": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "required": ["id", "text", "word_start", "word_end"], "additionalProperties": false,
+            "properties": {
+              "id": {"type": "string", "pattern": "^N[0-9]{2,}$"},
+              "text": {"type": "string"},
+              "word_start": {"type": "integer", "minimum": 0},
+              "word_end": {"type": "integer", "minimum": 0, "description": "Exclusive."}
+            }
+          }
+        }
+      }
+    },
+    "visual_information": {
+      "type": "array", "minItems": 1,
+      "description": "Each separate thing the narration asks the viewer to understand, as something that can be seen. One sentence usually holds several. Each shot names the items it shows; every item must appear in at least one shot.",
+      "items": {
+        "type": "object", "required": ["id", "sentence_id", "fact", "shown_in"], "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^V[0-9]{2,}$"},
+          "sentence_id": {"type": "string", "pattern": "^N[0-9]{2,}$"},
+          "fact": {"type": "string", "minLength": 1, "description": "What must be seen, e.g. 'the adult body visibly damaged'."},
+          "shown_in": {"type": "array", "items": {"type": "string", "pattern": "^S[0-9]{2,}$"}}
+        }
+      }
+    },
+    "shots": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/shot"}},
+    "totals": {
+      "type": "object", "required": ["shots", "estimated_duration_s"], "additionalProperties": false,
+      "properties": {
+        "shots": {"type": "integer", "minimum": 1},
+        "estimated_duration_s": {"type": "number", "minimum": 0},
+        "by_mode": {"type": "object", "additionalProperties": {"type": "integer"}}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}, "description": "Problems the compiler found but did not treat as errors. Read these before generating."}
+  },
+  "$defs": {
+    "style": {
+      "type": "object",
+      "required": ["visual_style", "lighting", "color_palette", "global_must_avoid", "global_negative"],
+      "additionalProperties": false,
+      "description": "Style rules for the whole film, added to every prompt. Describe what the image looks like, not how impressive it is.",
+      "properties": {
+        "visual_style": {"type": "string", "minLength": 1},
+        "lighting": {"type": "string", "minLength": 1},
+        "color_palette": {"type": "string", "minLength": 1},
+        "lens_language": {"type": "string"},
+        "global_must_avoid": {"type": "array", "items": {"type": "string"}},
+        "global_negative": {"type": "array", "items": {"type": "string"}, "description": "Technical negatives added to every shot's negative prompt (text, watermark, ...)."}
+      }
+    },
+    "reference": {
+      "type": "object",
+      "required": ["id", "name", "description", "states", "reference_images", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^(CHR|ENV|PROP)_[A-Z0-9_]+$"},
+        "name": {"type": "string"},
+        "description": {"type": "string", "minLength": 1, "description": "The fixed physical description. Pasted into every prompt that uses this reference."},
+        "scale": {"type": "string", "description": "Real-world size. Prevents the model from getting the size wrong."},
+        "states": {
+          "type": "object", "minProperties": 1,
+          "additionalProperties": {"type": "string"},
+          "description": "The named conditions this subject appears in (healthy, injured, cyst...), each with what it looks like. Shots refer to these by name."
+        },
+        "locked_attributes": {"type": "array", "items": {"type": "string"}, "description": "Features that must never change between shots (colour, proportions, count). Copied into each shot's continuity block and QC checks."},
+        "must_avoid": {"type": "array", "items": {"type": "string"}, "description": "Things commonly confused with this subject. Added to every shot that uses it."},
+        "reference_images": {"type": "array", "items": {"type": "string"}, "description": "Paths or URLs of approved reference images. Empty until the reference stage runs."},
+        "status": {"enum": ["NEEDS_REFERENCE", "REFERENCE_READY", "APPROVED"]}
+      }
+    },
+    "ref_use": {
+      "type": "object", "required": ["id", "start_state", "end_state"], "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^(CHR|ENV|PROP)_[A-Z0-9_]+$"},
+        "start_state": {"type": "string", "description": "Named state (from the reference's states) at the first frame."},
+        "end_state": {"type": "string", "description": "Named state at the last frame. Differs from start_state when the shot shows a change."}
+      }
+    },
+    "qc_check": {
+      "type": "object", "required": ["id", "type", "stage", "description", "severity", "method"], "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^S[0-9]{2,}\\.Q[0-9]{2,}$"},
+        "type": {"enum": ["comprehension", "presence", "absence", "action", "state_change", "continuity", "scale", "technical"]},
+        "stage": {"enum": ["keyframe", "video", "both"], "description": "Which output the check is run against."},
+        "description": {"type": "string", "minLength": 1, "description": "A yes/no question. YES means pass."},
+        "severity": {"enum": ["blocker", "major", "minor"], "description": "blocker: shot fails and is regenerated. major: fails unless a person overrides it. minor: recorded only."},
+        "method": {"enum": ["vlm", "human", "auto"], "description": "vlm: a vision-language model answers the question from frames. auto: checked in code (duration, aspect ratio). human: needs a person."}
+      }
+    },
+    "keyframe": {
+      "type": "object", "required": ["role", "prompt", "prompt_parts", "reference_ids"], "additionalProperties": false,
+      "properties": {
+        "role": {"enum": ["start", "end"]},
+        "prompt": {"type": "string", "minLength": 1, "description": "The prompt for the image model, built from prompt_parts in a fixed order."},
+        "prompt_parts": {
+          "type": "object", "additionalProperties": {"type": "string"},
+          "description": "The same prompt split into labelled parts (subject, state, action, environment, camera, lighting, composition, continuity, style). A provider adapter can use these to reorder or reword the prompt for its own model."
+        },
+        "reference_ids": {"type": "array", "items": {"type": "string"}, "description": "References to pass as image conditioning when the provider supports it."},
+        "image": {"type": ["string", "null"], "description": "Path of the generated/approved keyframe. null until generated."}
+      }
+    },
+    "shot": {
+      "type": "object",
+      "required": ["id", "order", "narration", "timing", "visual", "continuity", "generation", "must_show", "must_happen", "must_avoid", "qc", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^S[0-9]{2,}$"},
+        "order": {"type": "integer", "minimum": 1},
+        "narration": {
+          "type": "object", "required": ["text", "sentence_ids", "word_start", "word_end"], "additionalProperties": false,
+          "description": "The exact words spoken over this shot. The shots' spans join to make the whole script, in order, with no gaps or overlaps. A span may begin or end in the middle of a sentence.",
+          "properties": {
+            "text": {"type": "string", "minLength": 1},
+            "sentence_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+            "word_start": {"type": "integer", "minimum": 0},
+            "word_end": {"type": "integer", "minimum": 1, "description": "Exclusive."}
+          }
+        },
+        "timing": {
+          "type": "object", "required": ["words", "estimated_duration_s", "start_s", "generate_duration_s"], "additionalProperties": false,
+          "properties": {
+            "words": {"type": "integer", "minimum": 1},
+            "estimated_duration_s": {"type": "number", "exclusiveMinimum": 0, "description": "Estimated from word count and punctuation pauses. Replaced by real TTS timing once the narration is recorded."},
+            "start_s": {"type": "number", "minimum": 0},
+            "generate_duration_s": {"type": "number", "exclusiveMinimum": 0, "description": "Clip length to request from the video model: the estimate plus trim room, rounded up to a length models usually offer."}
+          }
+        },
+        "visual": {
+          "type": "object",
+          "required": ["goal", "communicates", "subject", "subject_state", "action", "environment", "camera", "lighting", "composition"],
+          "additionalProperties": false,
+          "properties": {
+            "goal": {"type": "string", "minLength": 1, "description": "What a viewer with the sound off should understand from this shot."},
+            "communicates": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^V[0-9]{2,}$"}},
+            "subject": {"type": "string", "minLength": 1},
+            "subject_state": {"type": "string", "minLength": 1, "description": "The subject's physical condition that the viewer must see."},
+            "action": {"type": "string", "minLength": 1, "description": "What physically happens during the shot."},
+            "environment": {"type": "string", "minLength": 1},
+            "camera": {
+              "type": "object", "required": ["framing", "angle", "movement"], "additionalProperties": false,
+              "properties": {
+                "framing": {"enum": ["extreme_close_up", "close_up", "medium_close_up", "medium", "medium_wide", "wide", "extreme_wide", "macro", "insert"]},
+                "angle": {"enum": ["eye_level", "high", "low", "top_down", "bottom_up", "profile", "dutch"]},
+                "lens": {"type": "string"},
+                "movement": {"enum": ["static", "slow_push_in", "slow_pull_out", "pan_left", "pan_right", "tilt_up", "tilt_down", "track_follow", "orbit", "rack_focus", "handheld_drift", "crane_down", "crane_up"]},
+                "movement_note": {"type": "string"}
+              }
+            },
+            "lighting": {"type": "string", "minLength": 1},
+            "composition": {"type": "string", "minLength": 1, "description": "Where things sit in the vertical frame. Keep the caption area clear."}
+          }
+        },
+        "continuity": {
+          "type": "object",
+          "required": ["refs", "environment_ref", "previous_shot", "previous_shot_state", "next_shot", "next_shot_state", "transition_in", "locked_attributes"],
+          "additionalProperties": false,
+          "properties": {
+            "refs": {"type": "array", "items": {"$ref": "#/$defs/ref_use"}, "description": "Characters/props in the shot and the state each starts and ends in."},
+            "environment_ref": {"type": ["string", "null"]},
+            "previous_shot": {"type": ["string", "null"]},
+            "previous_shot_state": {"type": ["string", "null"], "description": "How the previous shot ends, so this shot can start from it."},
+            "next_shot": {"type": ["string", "null"]},
+            "next_shot_state": {"type": ["string", "null"], "description": "How the next shot starts."},
+            "transition_in": {"enum": ["cut", "match_cut", "continuous", "time_jump", "location_change", "open"], "description": "continuous = the story picks up exactly where the previous shot ended, so the states must match."},
+            "locked_attributes": {"type": "array", "items": {"type": "string"}, "description": "Details that must look the same in every shot where this subject appears."}
+          }
+        },
+        "generation": {
+          "type": "object",
+          "required": ["mode", "keyframes", "video", "negative_prompt", "reference_requirements"],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": ["i2v_single_keyframe", "i2v_first_last", "t2v", "still_kenburns", "stock_footage"],
+              "description": "i2v_single_keyframe: make one start image, then animate it. i2v_first_last: make start and end images, and the video model moves between them; required for visible changes of state. t2v: text-to-video with no image. still_kenburns: one still with the existing Ken Burns move. stock_footage: real public-domain footage fits this shot."
+            },
+            "mode_reason": {"type": "string"},
+            "keyframes": {"type": "array", "items": {"$ref": "#/$defs/keyframe"}},
+            "video": {
+              "type": ["object", "null"],
+              "required": ["prompt", "duration_s", "motion_intensity"],
+              "additionalProperties": false,
+              "properties": {
+                "prompt": {"type": "string", "minLength": 1, "description": "Motion only: the camera move, the action and how it changes over time. It does not describe the keyframe again."},
+                "duration_s": {"type": "number", "exclusiveMinimum": 0},
+                "motion_intensity": {"enum": ["low", "medium", "high"]},
+                "output": {"type": ["string", "null"]}
+              }
+            },
+            "negative_prompt": {"type": "string", "description": "Comma-separated things to leave out (no 'no'). Providers that take no negative prompt get these folded into the main prompt by their adapter."},
+            "reference_requirements": {"type": "array", "items": {"type": "string"}, "description": "Reference images that must exist and be approved before this shot is generated."},
+            "stock_query": {"type": "string"}
+          }
+        },
+        "must_show": {"type": "array", "minItems": 1, "items": {"type": "string"}, "description": "Things that must be visible in the frames. In a single-keyframe shot the keyframe itself must show them."},
+        "must_happen": {"type": "array", "items": {"type": "string"}, "description": "Events that must occur during the clip (the bite, the detachment). They can only be checked on the video, never on a keyframe."},
+        "must_avoid": {"type": "array", "items": {"type": "string"}},
+        "qc": {
+          "type": "object", "required": ["checks", "pass_required", "max_attempts"], "additionalProperties": false,
+          "properties": {
+            "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/qc_check"}},
+            "pass_required": {"type": "boolean"},
+            "max_attempts": {"type": "integer", "minimum": 1, "description": "Maximum generation attempts before the shot is escalated to NEEDS_REVIEW."}
+          }
+        },
+        "accuracy_notes": {"type": "array", "items": {"type": "string"}, "description": "Scientific liberties the shot takes (e.g. days shown as seconds)."},
+        "edit_notes": {"type": "array", "items": {"type": "string"}, "description": "Instructions for the edit stage (text overlays, speed ramps). Text is added in the edit, never generated."},
+        "status": {
+          "enum": ["PLANNED", "NEEDS_REVIEW", "REFS_READY", "KEYFRAME_GENERATED", "KEYFRAME_APPROVED", "VIDEO_GENERATED", "QC_PASSED", "QC_FAILED", "APPROVED", "REJECTED"],
+          "description": "Lifecycle; see docs/SHOT_PLANNER.md for allowed transitions."
+        }
+      }
+    }
+  }
+}

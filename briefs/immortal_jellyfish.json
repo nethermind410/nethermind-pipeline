@@ -1,0 +1,95 @@
+{
+  "project": {
+    "id": "immortal_jellyfish",
+    "title": "The jellyfish that ages backwards",
+    "fact_sources": [
+      "Matsumoto et al. 2019, Transcriptome Characterization of Reverse Development in Turritopsis dohrnii, PMC6893190 (triggers, cyst stage, 24-36 h cyst-to-polyp)",
+      "AMNH, 'The Immortal Jellyfish That Resets When Damaged' (amnh.org/explore/news-blogs/immortal-jellyfish)",
+      "Natural History Museum, 'Immortal jellyfish: the secret to cheating death' (size ~4.5 mm; most are still eaten or die of disease)"
+    ]
+  },
+  "script": "This jellyfish may never die of old age. It's called Turritopsis dohrnii, and it's smaller than your pinky nail. When it's injured, starving, or under extreme stress, it can transform its adult body back into an earlier stage of its life cycle. It sinks, absorbs its own tentacles, and collapses into a tiny blob. Within a few days, that blob sprouts into polyps — the jellyfish's baby form — which bud off brand-new jellyfish. They're genetic copies of the original. In the lab, they've reset again and again. In the wild, most still get eaten.",
+  "format": {"aspect_ratio": "9:16", "width": 1080, "height": 1920, "fps": 30, "target_duration_s": 35, "max_duration_s": 60},
+  "planner_notes": "S01 is the hook: the healthy adult, instantly readable. The payoff is the reversal sequence (injured adult -> shrinking -> cyst -> polyps -> new jellyfish), shown as one continuous physical process.",
+  "style": {
+    "visual_style": "photographic macro nature-documentary footage, realistic specimen photography, natural textures",
+    "lighting": "dark-field illumination: subject lit from the side and behind against a near-black background, so transparent tissue shows bright edges",
+    "color_palette": "near-black blue water, clear and white translucent tissue, one strong red-orange accent in the jellyfish's core",
+    "lens_language": "macro lens, shallow depth of field, background falls off to black",
+    "global_must_avoid": ["scuba divers", "cartoon or illustration style", "generated text or labels"],
+    "global_negative": ["oversaturated neon colours", "lens flare"]
+  },
+  "references": {
+    "characters": [
+      {
+        "id": "CHR_TURRITOPSIS",
+        "name": "Turritopsis dohrnii",
+        "description": "a tiny hydrozoan jellyfish; its tissue is transparent and colourless except for a bright red-orange digestive core at the centre of the body",
+        "scale": "the adult bell is about 4.5 mm tall and wide, smaller than a fingernail; every other life stage is smaller still",
+        "states": {
+          "adult_healthy": "adult medusa with a smooth, rounded, glass-clear bell slightly taller than wide, the red-orange core hanging inside it, and a dense fringe of fine white tentacles evenly spaced around the bell rim, spread outward",
+          "adult_injured": "adult medusa with a torn, notched bell rim, several tentacles broken off or limp, the bell slightly collapsed and asymmetric, the red-orange core still visible",
+          "reverting": "the same body shrunk to about half size, the bell folded inward into a rounded lump, tentacles short stubs, the red-orange core compacted in the centre",
+          "settled": "the shrunken rounded body resting on the rock, tentacles almost fully withdrawn, no longer bell-shaped",
+          "cyst": "a small featureless round blob stuck to the rock, a thin translucent outer skin around a red-orange interior, no bell and no tentacles",
+          "sprouting": "the round blob with thin translucent root-like tubes (stolons) creeping out across the rock and one tiny upright polyp bud rising from them",
+          "polyp_colony": "a small network of thin translucent stolon tubes on the rock with several upright polyps, each a slender stalk topped by a reddish body and a crown of fine white tentacles",
+          "budding": "the polyp colony with a tiny new medusa, a few millimetres or less, pulsing and pulling free from the side of one polyp, its own small clear bell and red-orange core visible",
+          "young_medusae": "three young medusae identical to each other: small clear bells, red-orange cores, short fringes of fine white tentacles"
+        },
+        "locked_attributes": [
+          "the bright red-orange digestive core",
+          "transparent, colourless body tissue",
+          "fine white tentacles"
+        ],
+        "must_avoid": [
+          "moon jellyfish with four horseshoe-shaped gonads",
+          "long trailing ribbon tentacles",
+          "bioluminescent glow",
+          "box jellyfish shape",
+          "jellyfish larger than a coin"
+        ]
+      },
+      {
+        "id": "PROP_PINKY",
+        "name": "human pinky fingertip",
+        "description": "an adult human little-finger tip with a short, clean, unpainted fingernail",
+        "states": {
+          "in_water": "the fingertip dipped into clear water, nail facing the camera, held still just beside the jellyfish"
+        },
+        "must_avoid": ["painted nails", "whole hand filling the frame", "rings or jewellery"]
+      },
+      {
+        "id": "CHR_FISH",
+        "name": "small coastal fish",
+        "description": "a small silver-grey coastal fish about 5 cm long with a plain body and large dark eye",
+        "states": {
+          "hunting": "mouth opening as it closes in on prey"
+        },
+        "must_avoid": ["shark", "large predatory fish", "cartoon fish"]
+      }
+    ],
+    "environments": [
+      {
+        "id": "ENV_OPEN_WATER",
+        "name": "open water",
+        "description": "open seawater with a near-black blue background and a few fine suspended particles drifting; no seabed or surface in view",
+        "states": {"default": "still water"}
+      },
+      {
+        "id": "ENV_SEABED",
+        "name": "seabed rock",
+        "description": "extreme close view of a rough grey rock surface on the seabed with a thin dusting of fine sediment, dark water above",
+        "states": {"default": "still water"},
+        "must_avoid": ["coral reef", "sand dunes", "plants"]
+      },
+      {
+        "id": "ENV_LAB",
+        "name": "lab culture dishes",
+        "description": "a laboratory bench with shallow round glass culture dishes of clear seawater, lit from below by a microscope light, dark surroundings",
+        "states": {"default": "bench lit from below"},
+        "must_avoid": ["legible labels", "people's faces"]
+      }
+    ]
+  }
+}

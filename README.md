@@ -17,6 +17,18 @@ Out comes `out/my_topic.mp4` (1080×1920, ~30–45s) and `out/my_topic.srt`. Tak
 
 Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice` (iceberg chart — needs no media at all, the chart is drawn in code), `creature` (animal reveal), `hero` (superhero trivia — Gemini-generated art only, see "Visuals" below).
 
+## Shot planning (AI-video pipeline, v0.2)
+
+For generated footage, `plan_shots.py` turns a script into a JSON shot plan.
+Each shot says what the viewer must see, and carries its keyframe and video
+prompts, negative prompt, continuity links and QC checks. See `docs/SHOT_PLANNER.md`.
+
+```bash
+python3 plan_shots.py plan briefs/immortal_jellyfish.json --beats beats/immortal_jellyfish.beats.json
+python3 plan_shots.py plan briefs/my_topic.json --llm gemini   # an LLM writes the beats
+python3 -m unittest discover -s tests
+```
+
 ## What's in here
 
 ```

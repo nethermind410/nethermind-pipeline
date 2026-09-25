@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nethermind410/nethermind-pipeline/schemas/beatsheet-0.2.schema.json",
+  "title": "NETHERMIND Beat Sheet v0.2",
+  "description": "The creative half of shot planning: what each shot shows and why. Written by a person, by an LLM (shotplanner/beats.py), or drafted by the offline heuristic. shotplanner/compiler.py turns it into a full shot plan and adds timing, continuity links, prompts, negative prompts and QC checks, so none of that is written by hand.",
+  "type": "object",
+  "required": ["visual_information", "shots"],
+  "additionalProperties": false,
+  "properties": {
+    "visual_information": {
+      "type": "array", "minItems": 1,
+      "description": "Split every sentence into the separate things the viewer must SEE to understand it. Example: 'When injured it can transform back into an earlier life stage' -> adult body / visible injury / the transformation / the earlier stage it becomes.",
+      "items": {
+        "type": "object", "required": ["id", "sentence_id", "fact"], "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^V[0-9]{2,}$"},
+          "sentence_id": {"type": "string", "pattern": "^N[0-9]{2,}$"},
+          "fact": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "shots": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["narration", "communicates", "goal", "refs", "environment_ref", "action", "framing", "angle", "movement", "composition", "must_show"],
+        "additionalProperties": false,
+        "properties": {
+          "narration": {"type": "string", "minLength": 1, "description": "The exact words spoken over this shot, copied from the script. The shots' narration joins to make the whole script."},
+          "communicates": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^V[0-9]{2,}$"}},
+          "goal": {"type": "string", "minLength": 1},
+          "subject": {"type": "string", "description": "Optional. Defaults to the name of the first reference in refs."},
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "object", "required": ["id", "start_state"], "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string"},
+                "start_state": {"type": "string"},
+                "end_state": {"type": "string", "description": "Leave out if the state does not change during the shot."}
+              }
+            }
+          },
+          "environment_ref": {"type": ["string", "null"]},
+          "environment": {"type": "string", "description": "Optional extra detail about the environment for this shot only, added after the reference description."},
+          "action": {"type": "string", "minLength": 1},
+          "framing": {"type": "string"},
+          "angle": {"type": "string"},
+          "lens": {"type": "string"},
+          "movement": {"type": "string"},
+          "movement_note": {"type": "string"},
+          "lighting": {"type": "string", "description": "Optional. Overrides style.lighting for this shot."},
+          "composition": {"type": "string", "minLength": 1},
+          "transition_in": {"type": "string"},
+          "mode": {"type": "string", "description": "Optional. If left out, the compiler picks i2v_first_last when any ref changes state and i2v_single_keyframe otherwise."},
+          "motion_intensity": {"type": "string"},
+          "must_show": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "must_happen": {"type": "array", "items": {"type": "string"}, "description": "Events during the clip, checked on the video only (e.g. 'the fish swallows the jellyfish')."},
+          "must_avoid": {"type": "array", "items": {"type": "string"}},
+          "accuracy_notes": {"type": "array", "items": {"type": "string"}},
+          "edit_notes": {"type": "array", "items": {"type": "string"}},
+          "stock_query": {"type": "string"}
+        }
+      }
+    }
+  }
+}
