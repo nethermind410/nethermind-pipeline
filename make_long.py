@@ -58,20 +58,41 @@ def sources_of(chapter_id, ep_id):
     return {}, ""
 
 
+def stills(ep):
+    """Every photo/art still in the episode, in order (iceberg frames carry tier labels — not for cards)."""
+    return [clean_vis(s["vis"]) for ch in ep["chapters"] for s in ch["segments"] if s.get("vis", {}).get("t") == "kb"]
+
+
+def card_vis(v, fallback):
+    return v if v.get("t") == "kb" else (dict(fallback) if fallback else v)
+
+
 def assemble(ep):
     vid = f"{ep['id']}_long"
-    segs, marks, reuse = [], [], []
+    pool = stills(ep)
+    first_still, last_still = (pool[0], pool[-1]) if pool else (None, None)
+    segs, marks, reuse, ice, skipped = [], [], [], None, []
     for s in ep.get("intro", []):
         if keep(s):
-            segs.append({**s, "id": f"intro_{s['id']}", "vis": clean_vis(s["vis"])})
+            segs.append({**s, "id": f"intro_{s['id']}", "vis": card_vis(clean_vis(s["vis"]), first_still)})
     if segs:
         marks.append(("Intro", segs[0]["id"]))
     for i, ch in enumerate(ep["chapters"]):
         body = [s for s in ch["segments"] if keep(s)]
         if not body:
             continue
+        if any(s.get("vis", {}).get("t") == "ice" for s in body):     # an iceberg Short: its tiers come with it
+            blk = ch.get("iceberg")
+            if not blk:
+                src = CFG / f"{ch['id']}.json"
+                blk = json.loads(src.read_text()).get("iceberg") if src.exists() else None
+            if not blk or (ice and blk != ice):          # the renderer draws one iceberg per video
+                skipped.append(ch.get("title", ch["id"]))
+                continue
+            ice = blk
         cid = f"c{i + 1}"                        # by position: truncated names can collide (foo / foo_2)
-        card = {"id": f"{cid}_title", "dur": TITLE_CARD, "gap": 0.2, "vis": clean_vis(body[0]["vis"]),
+        own = next((clean_vis(s["vis"]) for s in body if s["vis"].get("t") == "kb"), None)
+        card = {"id": f"{cid}_title", "dur": TITLE_CARD, "gap": 0.2, "vis": own or card_vis(clean_vis(body[0]["vis"]), first_still),
                 "hero": {"lines": wrap_title(ch.get("title", ch["id"])), "col": "a", "y": 660, "size": 118},
                 "sub": f"CHAPTER {i + 1}", "srt": ch.get("title", "")}
         segs.append(card)
@@ -83,7 +104,7 @@ def assemble(ep):
             reuse.append((n["id"], s["id"], s.get("text", ""), [ch["id"], f"{ep['id']}__{ch['id']}"]))
     outro = [s for s in ep.get("outro", []) if keep(s)]
     for s in outro:
-        segs.append({**s, "id": f"outro_{s['id']}", "vis": clean_vis(s["vis"])})
+        segs.append({**s, "id": f"outro_{s['id']}", "vis": card_vis(clean_vis(s["vis"]), last_still)})
     if outro:
         marks.append(("Outro", segs[-len(outro)]["id"]))
     if len(marks) < 3:
@@ -93,6 +114,10 @@ def assemble(ep):
            "hook": {"lines": []}, "episode": ep["id"],
            "end": {"at": 1.6, "lines": ["SUBSCRIBE FOR MORE", "NEXT WEEK:", str(ep.get("next", "MORE BURIED HISTORY")).upper()]},
            "segments": segs}
+    if ice:
+        cfg["iceberg"] = ice
+    if skipped:
+        print("left out (only one iceberg chart fits a video): " + "; ".join(skipped))
     return vid, cfg, marks, reuse
 
 

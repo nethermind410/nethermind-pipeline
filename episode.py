@@ -133,11 +133,14 @@ def weekly(days=7):
     ep = {"id": eid, "title": f"Nethermind — week {w}: " + " · ".join(t.split(" — ")[0] for t in titles[:3]),
           "shorts": False, "next": "NEXT WEEK'S EPISODE",
           **{k: picks[0][1][k] for k in SHARED if k in picks[0][1]},
-          "intro": [{"id": "i1", "in": ["long"], "vis": dict(picks[0][1]["segments"][0]["vis"]), "gap": 0.3,
+          "intro": [{"id": "i1", "in": ["long"], "vis": dict(next((s["vis"] for _, c, _ in picks for s in c["segments"]
+                                                                   if s["vis"].get("t") == "kb"), picks[0][1]["segments"][0]["vis"])), "gap": 0.3,
                      "text": f"This week: {len(picks)} stories where the popular version is wrong. Starting with this one."}],
           "chapters": [{"id": vid, "title": pk.get("title", vid), "hook": c.get("hook", {"lines": []}),
+                        **({"iceberg": c["iceberg"]} if c.get("iceberg") else {}),
                         "segments": [s for s in c["segments"]]} for vid, c, pk in picks],
-          "outro": [{"id": "o1", "in": ["long"], "vis": dict(picks[-1][1]["segments"][-1]["vis"]), "gap": 0.3,
+          "outro": [{"id": "o1", "in": ["long"], "vis": dict(next((s["vis"] for _, c, _ in reversed(picks) for s in reversed(c["segments"])
+                                                                   if s["vis"].get("t") == "kb"), picks[-1][1]["segments"][-1]["vis"])), "gap": 0.3,
                      "text": "That's the week. Subscribe, and next week there's another round of buried history."}]}
     path = here / "episodes" / f"{eid}.json"
     path.parent.mkdir(exist_ok=True)

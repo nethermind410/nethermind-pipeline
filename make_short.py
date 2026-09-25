@@ -306,7 +306,7 @@ def draw_tier(d, seg, tl):
     f = font(F_CAP, int(96 * FSC * (.86 + .14 * ease(p))))
     centre(d, tr["label"].upper(), f, L(300), COL[tr.get("col", "a")], 8)
     fs = font(F_SM, int(62 * FSC))
-    centre(d, tr["depth"], fs, L(300 + 118), (190, 210, 230), 5)
+    centre(d, tr["depth"], fs, L(300) + int(118 * FSC), (190, 210, 230), 5)
 
 def draw_caps(d, seg, tl):
     if seg["vis"]["t"] == "ice":
