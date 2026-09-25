@@ -56,6 +56,7 @@ EXT_GET = {k: v for m in EXT for k, v in getattr(m, "GET", {}).items()}
 EXT_POST = {k: v for m in EXT for k, v in getattr(m, "POST", {}).items()}
 EXT_PREFIX = {k: v for m in EXT for k, v in getattr(m, "GET_PREFIX", {}).items()}   # "/api/x/" → f(rest of path)
 MEDIA = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".srt": "text/plain"}
+MUSIC_DIR, TRACKS = HERE / "music", {".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".wav": "audio/wav", ".ogg": "audio/ogg"}
 JARVIS = "http://127.0.0.1:8765/ask"
 
 
@@ -189,6 +190,12 @@ class H(BaseHTTPRequestHandler):
         if path == "/api/job":
             with LOCK:
                 return self.send(200, dict(JOB))
+        if path == "/api/music":                             # your own tracks for the interface's music player
+            return self.send(200, {"tracks": sorted(p.name for p in MUSIC_DIR.glob("*") if p.suffix.lower() in TRACKS)
+                                   if MUSIC_DIR.is_dir() else []})
+        m = re.fullmatch(r"/music/([^/]+)", path)
+        if m and (MUSIC_DIR / m[1]).is_file() and (MUSIC_DIR / m[1]).suffix.lower() in TRACKS and (MUSIC_DIR / m[1]).resolve().parent == MUSIC_DIR.resolve():
+            return self.send_file(MUSIC_DIR / m[1], TRACKS[(MUSIC_DIR / m[1]).suffix.lower()])
         m = re.fullmatch(r"/media/([A-Za-z0-9_.\-]+)", path)
         if m and (OUT / m[1]).is_file() and (OUT / m[1]).suffix in MEDIA:
             return self.send_file(OUT / m[1], MEDIA[(OUT / m[1]).suffix])

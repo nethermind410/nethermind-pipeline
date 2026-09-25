@@ -141,12 +141,15 @@
       const was = prevLast[a.key], now = a.last;
       if (was && now && (now.id !== was.id || now.status !== was.status) && now.status === "complete" && onBrain()) {
         const nx = FLOW[a.key], d = geo[`${a.key}>${nx}`], to = s.agents.find(x => x.key === nx);
-        if (d) pulse(d, 900).then(() => to && brainNet.fire(to.ax, to.ay));
+        if (d) { window.nxSound?.play("handoff"); pulse(d, 900).then(() => to && brainNet.fire(to.ax, to.ay)); }
       }
       prevLast[a.key] = now ? {id: now.id, status: now.status} : null;
     });
   }
   setInterval(() => { if (document.body.classList.contains("on-brain")) mount(); }, 600);
+  // for other extensions: fire an impulse along a tract (e.g. Publishing → Analytics when a video goes live)
+  window.nxFire = async (from, to) => { if (!onBrain() || !sys) return; const d = geo[`${from}>${to}`], a = sys.agents.find(x => x.key === to);
+    if (d) { await pulse(d, 1100); if (a) brainNet.fire(a.ax, a.ay); } };
   setInterval(() => { if (!document.hidden) refresh(); }, 4000);
   refresh();
 

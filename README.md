@@ -77,6 +77,10 @@ Seven agents own every job, each a region of the brain with sub-agents around it
 
 **Every sub-agent has a desk.** Click any sub-agent (on the brain, or its chip in a hub) and you get its desk: the one question it answers (Demand scout: *do people actually watch Shorts about this?*), what it has found (the most-watched Shorts, small channels breaking out, which lanes beat your average, which scripts fail the 3-second hook rule, days with nothing going out…), what you can do right there (Scout, Draft it, Score, Refresh, Re-learn), and its own last tasks with Retry. Built by `studio_ext_desk.py` from each sub-agent's real work.
 
+**Today's run (bottom-right, every page).** One tap walks you through today, job by job — posting first: until today's Short is live or scheduled, step 1 is whatever gets it there (approve the script, build it, or post it), and the dock glows. Go opens the right page, Done ticks it off. It never posts for you. On a Mac, the 7:00 run and the 20:30 catch-up also send a notification if today's Short isn't out yet (`studio_ext_day.py remind`). When a video goes out, the screen bursts and Publishing fires into Analytics on the brain.
+
+**Music and sound (bottom-left ♪).** *Nether drift* is generative ambient made live in the browser (no files, no rights issues); or drop your own .mp3/.m4a files into `music/` (never committed). Interface sounds — hand-offs, Done, a video going live — are off until you tick them.
+
 **Iceberg is a template, not a topic.** Any subject in the channel's lanes becomes a 5-tier long-form essay ("The Dragon Ball Iceberg", "The Real-Life Superpowers Iceberg"). Make → Iceberg takes any topic; every Brief recommendation has *As an iceberg*; the Sunday run picks an iceberg from TOPICS.md in a different lane from last week's.
 
 ```bash

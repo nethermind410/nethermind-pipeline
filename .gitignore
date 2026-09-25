@@ -25,3 +25,7 @@ _hyperframes_eval/
 _qa/
 studio/brain_cands*/
 inspiration/
+
+# your own music for the Studio player (never committed)
+music/*
+!music/README.txt

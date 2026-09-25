@@ -123,6 +123,11 @@ def main(dry=False):
         waiting = [d["id"] for d in drafter.drafts()]
         print(f"would draft: {topic!r} — {why}" + (f" (but {waiting} still waiting, so it would skip)" if waiting else ""))
         return
+    try:                                               # the baseline: a nudge if today's Short isn't out yet
+        import studio_ext_day
+        studio_ext_day.remind()
+    except Exception:
+        pass
     last = nether.last("control", "daily")
     if last and last["status"] == "complete" and last["started"][:10] == nether.now()[:10] and "--force" not in sys.argv:
         print("Today's run already completed — nothing to do (this is the 20:30 catch-up slot).")
