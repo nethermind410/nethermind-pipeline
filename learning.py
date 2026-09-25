@@ -11,8 +11,8 @@ Learning: once a video made from a scorecard is posted and stats.py has its
 views, each scorecard is a prediction that can be checked. With enough of
 them, each part of the score (demand, competition, fit, taste, visuals,
 sources) is re-weighted by whether high marks on it really went with more
-views. Changes are small (±25% per run at most) and need at least 2 videos on
-each side, so one lucky video can't swing it. Weights → out/intel_weights.json;
+views. Each part moves at most ±25% from its default (recomputed from scratch every run, so
+it never compounds) and needs at least 2 videos on each side, so one lucky video can't swing it. Weights → out/intel_weights.json;
 lessons → the auto block in LEARNINGS.md, which the daily build already reads.
 """
 import json, re, statistics
@@ -111,7 +111,7 @@ def link(cards, views):
 
 def calibrate(cards, views):
     import intelligence
-    w = intelligence.weights()
+    w = dict(intelligence.DEFAULT_WEIGHTS)    # always from the defaults: the same evidence can't compound run after run
     done = [c for c in cards if c.get("made_as") in views]
     notes, new = [], dict(w)
     for comp in w:
@@ -129,11 +129,22 @@ def calibrate(cards, views):
     new = {k: round(v / tot * 100, 1) for k, v in new.items()}
     acc = None
     if len(done) >= 4:
-        rank = lambda xs: {x: i for i, x in enumerate(sorted(xs))}
-        s, v = [c["score"] for c in done], [views[c["made_as"]] for c in done]
-        rs, rv = rank(s), rank(v)
-        n = len(done)
-        acc = 1 - 6 * sum((rs[a] - rv[b]) ** 2 for a, b in zip(s, v)) / (n * (n * n - 1))
+        def ranks(xs):                         # average rank for ties (scores are rounded, ties are common)
+            order = sorted(range(len(xs)), key=lambda i: xs[i])
+            r, i = [0.0] * len(xs), 0
+            while i < len(order):
+                j = i
+                while j + 1 < len(order) and xs[order[j + 1]] == xs[order[i]]:
+                    j += 1
+                for k in range(i, j + 1):
+                    r[order[k]] = (i + j) / 2
+                i = j + 1
+            return r
+        rs, rv = ranks([c["score"] for c in done]), ranks([views[c["made_as"]] for c in done])
+        ms, mv = sum(rs) / len(rs), sum(rv) / len(rv)
+        cov = sum((a - ms) * (b - mv) for a, b in zip(rs, rv))
+        den = (sum((a - ms) ** 2 for a in rs) * sum((b - mv) ** 2 for b in rv)) ** 0.5
+        acc = cov / den if den else 0.0            # Spearman = Pearson on ranks, correct with ties
     hist = []
     try:
         hist = json.loads(WEIGHTS.read_text()).get("history", [])

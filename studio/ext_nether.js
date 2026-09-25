@@ -123,17 +123,17 @@
     layer.innerHTML = `<g>${tracts}</g><g>${dend}</g><g>${nodes}</g>`;
   }
   /* impulses: resting traffic along tracts, rapid firing inside working agents */
-  const onBrain = () => document.body.classList.contains("on-brain") && !document.hidden && layer && window.spark;
+  const onBrain = () => document.body.classList.contains("on-brain") && !document.hidden && layer && window.pulse;
   setInterval(() => {
     if (!onBrain() || !sys) return;
     const keys = Object.keys(geo).filter(k => k.includes(">"));
-    if (keys.length) spark(geo[keys[Math.floor(Math.random() * keys.length)]], 1600, "faint");
+    if (keys.length) pulse(geo[keys[Math.floor(Math.random() * keys.length)]], 1600, "faint");
   }, 1900);
   setInterval(() => {
     if (!onBrain() || !sys) return;
     sys.agents.filter(a => a.state === "working").forEach(a => {
       const subs = a.subs.filter(s => s.state === "working"), pick = (subs.length ? subs : a.subs)[Math.floor(Math.random() * (subs.length || a.subs.length))];
-      const d = geo[a.key]?.subs[pick.key]; if (d) spark(d, 520, "work");
+      const d = geo[a.key]?.subs[pick.key]; if (d) pulse(d, 520, "work");
     });
   }, 650);
   function handoffs(s) {                            // finished work travels to the next agent
@@ -141,7 +141,7 @@
       const was = prevLast[a.key], now = a.last;
       if (was && now && (now.id !== was.id || now.status !== was.status) && now.status === "complete" && onBrain()) {
         const nx = FLOW[a.key], d = geo[`${a.key}>${nx}`], to = s.agents.find(x => x.key === nx);
-        if (d) spark(d, 900).then(() => to && brainNet.fire(to.ax, to.ay));
+        if (d) pulse(d, 900).then(() => to && brainNet.fire(to.ax, to.ay));
       }
       prevLast[a.key] = now ? {id: now.id, status: now.status} : null;
     });
@@ -156,6 +156,7 @@
     try {
       if (r.kind === "intel") toast((await post("/api/intel/run", {topic: r.topic})).reply);
       else if (r.kind === "draft") toast((await post("/api/make/draft", {topic: r.topic})).reply);
+      else if (r.kind === "redraft") toast((await post("/api/make/redraft", {id: r.id, notes: r.notes})).reply);
       else if (r.kind === "daily") toast((await post("/api/daily/run", {})).reply);
       else if (r.kind === "long") { toast((await post("/api/long/render", {id: r.id})).reply); watchLong(); }
       else if (r.action) runJob(r.action, r.id || "");
@@ -383,7 +384,7 @@
     const r = t.closest("[data-nx-retry]");
     if (r) { const task = (window._nxTasks || []).find(x => x.id === +r.dataset.nxRetry); if (task) { await retry(task); setTimeout(route, 900); } return; }
     const cx = t.closest("[data-nx-cancel]");
-    if (cx) { await post("/api/tasks/cancel", {id: +cx.dataset.nxCancel}); toast("Cancelled."); return route(); }
+    if (cx) { await post("/api/tasks/cancel", {id: +cx.dataset.nxCancel}); toast("Cancelled — anything already mid-way finishes quietly in the background."); return route(); }
     const dc = t.closest("[data-nx-decide]");
     if (dc) { const reason = dc.closest(".nx-call").querySelector(".nx-reason").value;
       try { toast((await post("/api/intel/decide", {slug: dc.dataset.slug, choice: dc.dataset.nxDecide, reason})).reply); route(); } catch (err) { toast(err.message); } }

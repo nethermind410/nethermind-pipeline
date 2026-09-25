@@ -12,7 +12,7 @@ Runs at 7:00 and again at 20:30: the evening slot does nothing if the morning ru
 retries it if it failed (e.g. the Claude usage limit, which resets during the day). If the Mac was
 asleep, launchd runs it on wake; if it still hasn't run for 26 hours, Today says so.
 """
-import datetime, json, subprocess, sys
+import datetime, json, re, subprocess, sys
 from pathlib import Path
 
 import orchestrator as nether
@@ -21,25 +21,51 @@ HERE = Path(__file__).resolve().parent
 PY = str(HERE / ".venv" / "bin" / "python") if (HERE / ".venv" / "bin" / "python").exists() else sys.executable
 
 
+def _norm(t):
+    return re.sub(r"[^a-z0-9]+", " ", str(t).lower()).strip()
+
+
+def drafted_topics():
+    """Every topic the Content agent has already drafted (waiting, approved or built) — by topic text, not by
+    slug, because cfg ids and idea slugs are cut to different lengths."""
+    seen = set()
+    for p in (HERE / "out" / "drafts").glob("*.json") if (HERE / "out" / "drafts").exists() else []:
+        try:
+            seen.add(_norm(json.loads(p.read_text()).get("topic", "")))
+        except Exception:
+            pass
+    for p in (HERE / "cfg").glob("*.json"):
+        seen.add(_norm(p.stem.replace("_", " ")))
+        try:
+            d = json.loads(p.read_text()).get("draft")
+            if d:
+                seen.add(_norm(d.get("topic", "")))
+        except Exception:
+            pass
+    seen.discard("")
+    return seen
+
+
 def pick_topic():
     import studio_api, learning
+    done = drafted_topics()
+    fresh = lambda t: _norm(t) not in done
     nxt = studio_api.jload(studio_api.NEXT, None)
-    if nxt and nxt.get("hook"):
+    if nxt and nxt.get("hook") and fresh(nxt["hook"]):
         return nxt["hook"], "you pinned it as Make this next"
-    made = {p.stem for p in (HERE / "cfg").glob("*.json")}
     for c in sorted(learning._cards(), key=lambda c: c.get("at", ""), reverse=True):
         d = c.get("decision") or {}
-        if d.get("choice") == "make" and not c.get("made_as") and c["slug"] not in made:
+        if d.get("choice") == "make" and not c.get("made_as") and fresh(c["topic"]):
             return c["topic"], f"you said Make it to its scorecard ({c['score']}/100)"
     sections = studio_api.ideas()["sections"]
     for s in sections:
         if s["name"].startswith("Intelligence picks"):
             for i in s["items"]:
-                if not i["dismissed"] and i["slug"] not in made:
+                if not i["dismissed"] and fresh(i["hook"]):
                     return i["hook"], "top of Intelligence picks"
     for s in sections:
         for i in s["items"]:
-            if not i["made"] and not i["dismissed"] and i["slug"] not in made:
+            if not i["made"] and not i["dismissed"] and fresh(i["hook"]):
                 return i["hook"], f"first open idea ({s['name']})"
     return None, "no open ideas left"
 
@@ -106,6 +132,9 @@ def main(dry=False):
                 cur = None
                 vid = drafter.draft(cur_topic)          # its own Content task, with research/script/packaging steps
                 report["draft"] = f"{vid} ({why})"
+                if why.startswith("you pinned"):          # the pin is used up: tomorrow picks the next topic
+                    import studio_api
+                    studio_api.set_next("", "")
         if datetime.date.today().weekday() == 6:
             import episode
             cur = nether.begin("content", "Plan the weekly episode", sub="episodes", parent=parent)

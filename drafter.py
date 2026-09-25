@@ -239,7 +239,8 @@ def draft(topic, notes=None, vid=None):
     else:
         vid, record = new_id(topic), {"topic": topic, "notes": []}
     parent = nether.begin("content", f"{'Redraft' if redo else 'Draft'}: {topic}", video=vid,
-                          input={"topic": topic, "notes": notes}, retry={"kind": "draft", "topic": topic})
+                          input={"topic": topic, "notes": notes},
+                          retry={"kind": "redraft", "id": vid, "notes": notes} if redo else {"kind": "draft", "topic": topic})
     cur = None
     try:
         cur = nether.begin("content", "Research & fact-check", sub="research", parent=parent)

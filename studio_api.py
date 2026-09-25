@@ -161,7 +161,7 @@ def today():
         open_cards = [c for c in learning._cards() if not c.get("decision")]
         if open_cards:
             best = max(open_cards, key=lambda c: c.get("score", 0))
-            cards.append({"key": f"intel:{len(open_cards)}:{best['slug'][:30]}", "kind": "intel", "video": "", "thumb": None,
+            cards.append({"key": f"intel:n{len(open_cards)}_{best['slug'][:40]}", "kind": "intel", "video": "", "thumb": None,
                           "title": f"{len(open_cards)} scorecard{'s' if len(open_cards) > 1 else ''}",
                           "text": f"need your call — best: “{best['topic'][:70]}” ({best['score']}/100). Make it, or not for us?"})
     except Exception:
@@ -170,7 +170,7 @@ def today():
         import orchestrator
         last = orchestrator.last("control", "daily")
         if last and (datetime.datetime.now().astimezone() - parse_dt(last["started"])).total_seconds() > 26 * 3600:
-            cards.append({"key": f"missed:{last['started'][:10]}", "kind": "missed", "video": "", "title": "The daily run",
+            cards.append({"key": f"missed:d{last['started'][:10].replace('-', '_')}", "kind": "missed", "video": "", "title": "The daily run",
                           "thumb": None, "text": f"hasn't run since {when(last['started'])}. Is the Mac asleep at 7:00? "
                                                  "Control → Daily run → Run now."})
     except Exception:

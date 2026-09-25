@@ -121,8 +121,8 @@ def begin(agent, title, sub=None, parent=None, video=None, input=None, retry=Non
 
 
 def _close(c, tid, status, output=None, error=None):
-    c.execute("UPDATE tasks SET status=?, output=COALESCE(?, output), error=COALESCE(?, error), finished=? WHERE id=?",
-              (status, _j(output), error, now(), tid))
+    c.execute("UPDATE tasks SET status=?, output=COALESCE(?, output), error=COALESCE(?, error), finished=? "
+              "WHERE id=? AND status != 'cancelled'", (status, _j(output), error, now(), tid))   # a cancel sticks
 
 
 def finish(tid, output=None):
@@ -140,14 +140,16 @@ def cancel(tid):
         for r in c.execute("SELECT id FROM tasks WHERE (id=? OR parent=?) AND status IN ('queued','working','waiting')",
                            (tid, tid)).fetchall():
             _close(c, r["id"], "cancelled")
+    # the process itself isn't killed (a render mid-frame is safe to let finish); its later reports can't
+    # un-cancel the task, and steps it opens under a cancelled parent are cancelled on arrival (step()).
     return {"ok": True}
 
 
 def step(parent, name):
     """Close the parent's running step and open the next one (used by build.sh between stages)."""
     with db() as c:
-        p = c.execute("SELECT agent FROM tasks WHERE id=?", (parent,)).fetchone()
-        if not p:
+        p = c.execute("SELECT agent, status FROM tasks WHERE id=?", (parent,)).fetchone()
+        if not p or p["status"] == "cancelled":
             return None
         for r in c.execute("SELECT id FROM tasks WHERE parent=? AND status='working'", (parent,)).fetchall():
             _close(c, r["id"], "complete")

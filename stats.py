@@ -71,7 +71,7 @@ def load_fuzzy():
             c = json.loads(p.read_text())
         except Exception:
             continue
-        if c.get("draft"):
+        if c.get("draft") or c.get("format") == "landscape":   # long-form repeats every chapter's words
             continue
         text = " ".join(s.get("text", "") for s in c.get("segments", [])) + " " + p.stem.replace("_", " ")
         pk = HERE / "packaging" / f"{p.stem}.json"

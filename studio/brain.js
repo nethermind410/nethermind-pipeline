@@ -148,12 +148,12 @@ function ambient() {
     const na = $("#n-" + a.key), nb = $("#n-" + b.key); if (!na || !nb) return;
     const x1 = +na.getAttribute("cx"), y1 = +na.getAttribute("cy"), x2 = +nb.getAttribute("cx"), y2 = +nb.getAttribute("cy");
     const mx = (x1 + x2) / 2 + (y2 - y1) * 0.25, my = (y1 + y2) / 2 - (x2 - x1) * 0.25;
-    spark(`M${x1},${y1} Q${mx},${my} ${x2},${y2}`, 1400, "faint");
+    pulse(`M${x1},${y1} Q${mx},${my} ${x2},${y2}`, 1400, "faint");
   }, 1700);
 }
 
 /* a travelling pulse along a path */
-function spark(d, ms, cls = "") {
+function pulse(d, ms, cls = "") {   // (was "spark", which clobbered app.js's sparkline helper)
   const g = $("#sparks"); if (!g) return Promise.resolve();
   const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", d); p.setAttribute("class", "trail " + cls);
   const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("r", cls ? 2.2 : 4); c.setAttribute("class", "spark " + cls);
@@ -191,7 +191,7 @@ document.addEventListener("click", async e => {
   const key = n.dataset.neuron, target = key === "home-core" ? "channel" : key;
   if (REDUCED) return go(target);
   const l = $("#l-" + key);
-  if (l) { l.style.strokeDashoffset = 0; await spark(l.getAttribute("d"), 480); }
+  if (l) { l.style.strokeDashoffset = 0; await pulse(l.getAttribute("d"), 480); }
   const nn = findN(key);
   if (nn && window.brainNet) await brainNet.fire(nn.ax, nn.ay);      // the wave spreads through the network
   const node = $("#n-" + key), stage = $("#stage");

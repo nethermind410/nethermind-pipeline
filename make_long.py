@@ -70,7 +70,7 @@ def assemble(ep):
         body = [s for s in ch["segments"] if keep(s)]
         if not body:
             continue
-        cid = re.sub(r"[^a-z0-9]", "", ch["id"])[:14] or f"ch{i + 1}"
+        cid = f"c{i + 1}"                        # by position: truncated names can collide (foo / foo_2)
         card = {"id": f"{cid}_title", "dur": TITLE_CARD, "gap": 0.2, "vis": clean_vis(body[0]["vis"]),
                 "hero": {"lines": wrap_title(ch.get("title", ch["id"])), "col": "a", "y": 660, "size": 118},
                 "sub": f"CHAPTER {i + 1}", "srt": ch.get("title", "")}
