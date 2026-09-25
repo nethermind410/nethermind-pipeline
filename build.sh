@@ -41,6 +41,7 @@ $PY retention.py tiktok "cfg/$ID.json" --max 35 | sed -n '/_tiktok.json  —/,$p
 
 step "narration (your voice where recorded)"
 $PY voice.py apply "cfg/$ID.json"
+$PY voice.py apply "cfg/${ID}_tiktok.json"
 
 for C in "$ID" "${ID}_tiktok"; do
   if [[ "$C" == *_tiktok ]]; then

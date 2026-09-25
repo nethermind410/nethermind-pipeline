@@ -188,6 +188,10 @@ def package(ep, vid, cfg, marks, starts):
     if own.exists() and json.loads(own.read_text()).get("drafted"):      # a written long-form: its own packaging
         pkg = json.loads(own.read_text())
         body = pkg.get("youtube_description_template") or pkg.get("youtube_description", "")
+        import business, intelligence                # current links, not the ones from when it was drafted
+        tmpl = {"youtube_description": body}
+        business.apply_links(tmpl, pkg.get("title", ep["title"]), intelligence.lane_of(ep["title"]))
+        body = tmpl["youtube_description"]
         pkg["youtube_description_template"] = body
         pkg["youtube_description"] = body.replace("{CHAPTERS}", "Chapters\n" + "\n".join(lines))
         pkg["episode"] = ep["id"]
@@ -281,7 +285,9 @@ def main(path, preview=False):
         made = 1
         for i, opt in enumerate(pkg.get("thumbnail_options", [])[:2], start=2):
             tmp = PKG / f"{vid}_t{i}.json"             # make_thumb names its output after the packaging file
+            tmp_cfg = CFG / f"{vid}_t{i}.json"         # …and reads the video's palette from cfg/<same name>.json
             tmp.write_text(json.dumps({**pkg, "thumbnail": {**pkg.get("thumbnail", {}), **opt}}, ensure_ascii=False))
+            tmp_cfg.write_text((CFG / f"{vid}.json").read_text())
             try:
                 run([PY, "make_thumb.py", str(tmp.relative_to(HERE))], cur)
                 for kind in ("thumb", "cover"):
@@ -291,6 +297,7 @@ def main(path, preview=False):
                 made += 1
             finally:
                 tmp.unlink(missing_ok=True)
+                tmp_cfg.unlink(missing_ok=True)
         nether.finish(cur, {"thumbnails": made})
         cur = None
         nether.finish(parent, {"video": f"out/{vid}.mp4", "length": ts(total), "chapters": lines})

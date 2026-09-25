@@ -53,7 +53,8 @@ def main(path):
         cid = f"{ep['id']}__{ch['id']}"
         segs = [dict(s) for s in ch["segments"] if keep(s, "short")]
         if not segs:
-            sys.exit(f"chapter {ch['id']} has no segments tagged for 'short'")
+            print(f"skipped chapter {ch['id']}: every line is long-form only")
+            continue
         segs[0]["hook"] = True
         nxt = chapters[i + 1]["title"] if i + 1 < len(chapters) else ep.get("next", "PART 2")
         cfg = {"id": cid, "file": cid,

@@ -147,9 +147,9 @@ def clean_episode(ep, eid):
         raise ValueError(f"{len(ai)} AI images — over the daily free limit; ask for more real photos.")
     it = iter(segs)
     ep["intro"] = [next(it) for _ in blocks[0][1]]
-    for c, (_, raw) in zip(chapters, blocks[1:-1]):
+    for n, (c, (_, raw)) in enumerate(zip(chapters, blocks[1:-1]), 1):
         c["segments"] = [next(it) for _ in raw]
-        c["id"] = re.sub(r"[^a-z0-9_]", "", str(c.get("id") or "ch"))[:12] or "ch"
+        c["id"] = f"ch{n}"                                    # unique: it names the Short cut from it
         c.setdefault("title", c["id"])
         c.setdefault("hook", {"lines": [], "size": 140, "y": 600})
     ep["outro"] = [next(it) for _ in blocks[-1][1]]
@@ -176,8 +176,9 @@ def draft(topic, notes=None, eid=None, style=None):
     if redo:
         record = json.loads(read(DRAFTS / f"{eid}.json") or "{}")
         topic = record.get("topic", topic)
+        style = style or record.get("style") or load(eid).get("style")
     else:
-        eid, record = new_id(topic), {"topic": topic, "kind": "long", "notes": []}
+        eid, record = new_id(topic), {"topic": topic, "kind": "long", "notes": [], "style": style}
     parent = nether.begin("content", f"{'Redraft' if redo else 'Draft'} long-form: {topic}", video=f"{eid}_long",
                           input={"topic": topic, "notes": notes},
                           retry={"kind": "redraft_long", "id": eid, "notes": notes} if redo else {"kind": "draft_long", "topic": topic})

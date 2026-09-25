@@ -46,9 +46,9 @@ def drafted_topics():
     return seen
 
 
-def pick_topic():
+def pick_topic(skip=()):
     import studio_api, learning
-    done = drafted_topics()
+    done = drafted_topics() | {_norm(t) for t in skip}
     fresh = lambda t: _norm(t) not in done
     nxt = studio_api.jload(studio_api.NEXT, None)
     if nxt and nxt.get("hook") and fresh(nxt["hook"]):
@@ -166,7 +166,10 @@ def main(dry=False):
                 nether.finish(cur, {"topic": topic, "why": why})
                 cur = None
                 if topic:
-                    report["long"] = drafter_long.draft(topic)
+                    try:
+                        report["long"] = drafter_long.draft(topic)   # its own Content task shows any failure
+                    except (Exception, SystemExit) as e:
+                        report["long"] = f"failed: {type(e).__name__}: {e}"
         cur = None
         nether.finish(parent, report)
         print(json.dumps(report, indent=1))

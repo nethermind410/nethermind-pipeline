@@ -118,7 +118,13 @@ def refresh_all():
             continue
         pkg = json.loads(p.read_text())
         topic = pkg.get("title", p.stem.replace("_", " "))
-        if apply_links(pkg, topic, intelligence.lane_of(topic + " " + p.stem.replace("_", " "))):
+        lane = intelligence.lane_of(topic + " " + p.stem.replace("_", " "))
+        dirty = False
+        if pkg.get("youtube_description_template"):       # a long-form's description is rebuilt from this at render
+            tmpl = {"youtube_description": pkg["youtube_description_template"]}
+            if apply_links(tmpl, topic, lane):
+                pkg["youtube_description_template"], dirty = tmpl["youtube_description"], True
+        if apply_links(pkg, topic, lane) or dirty:
             p.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
             changed.append(p.stem)
     return changed

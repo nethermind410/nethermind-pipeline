@@ -96,20 +96,27 @@ def apply(cfg_path):
         owners.append(vid.split("__")[0])
     if cfg.get("episode"):
         owners.append(cfg["episode"])
-    used = 0
+    used, dst = 0, TTS / vid
     for s in cfg.get("segments", []):
         if not s.get("text"):
             continue
-        lid = s.get("src_id") or s["id"]
+        lid, sid = s.get("src_id") or s["id"], s["id"]
+        hit = None
         for o in owners:
             mp3, meta = VOICE / o / f"{lid}.mp3", VOICE / o / f"{lid}.json"
             if mp3.exists() and meta.exists() and json.loads(meta.read_text()).get("text") == _norm(s["text"]):
-                dst = TTS / vid
-                dst.mkdir(parents=True, exist_ok=True)
-                shutil.copy(mp3, dst / f"{s['id']}.mp3")
-                (dst / f"{s['id']}.json").write_text(json.dumps(timings(s["text"], _dur(mp3))))
-                used += 1
+                hit = mp3
                 break
+        if hit:
+            dst.mkdir(parents=True, exist_ok=True)
+            shutil.copy(hit, dst / f"{sid}.mp3")
+            (dst / f"{sid}.json").write_text(json.dumps(timings(s["text"], _dur(hit))))
+            (dst / f"{sid}.txt").write_text(s["text"])       # make_short keeps a cached line only if this matches
+            (dst / f"{sid}.voice").write_text(str(hit))      # marks the cache entry as your take
+            used += 1
+        elif (dst / f"{sid}.voice").exists():                # your take was removed or the line changed:
+            for ext in (".mp3", ".json", ".txt", ".voice"):  # clear it so Kokoro reads the line again
+                (dst / f"{sid}{ext}").unlink(missing_ok=True)
     return used
 
 

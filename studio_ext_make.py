@@ -116,14 +116,16 @@ def batch(body):
         raise ValueError(f"Content is still busy: {_BUSY['what']}.")
 
     def run():
+        failed = set()
         for i in range(n):
-            topic, why = daily.pick_topic()             # skips anything already drafted, so each pick is new
+            topic, why = daily.pick_topic(skip=failed)  # skips drafted topics, and any that failed this batch
             if not topic:
                 break
             _BUSY["what"] = f"drafting {i + 1} of {n}: “{topic}”"
             try:
                 drafter.draft(topic)
-            except Exception as e:
+            except (Exception, SystemExit) as e:
+                failed.add(topic)
                 if "limit" in str(e).lower():         # the Claude allowance ran out: stop, don't burn retries
                     break
     _bg(f"drafting a batch of {n}", run)
@@ -148,6 +150,8 @@ def redraft(body):
 def approve(body):
     vid = str(body.get("id", ""))
     if drafter_long.is_draft(vid):
+        if _LONG["what"]:
+            raise ValueError(f"Production is rendering {_LONG['what']} — approve this once it finishes.")
         r = drafter_long.approve(vid)
         render_long({"id": vid})                        # Production: visuals, 16:9 render, QA, chapters, thumbnails
         return {**r, "reply": "Approved — Production is fetching the visuals and rendering the episode (20–45 min)."}
@@ -178,8 +182,11 @@ def cut_shorts(body):
         raise ValueError("Which episode?")
     if drafter_long.is_draft(eid):
         raise ValueError("Approve the episode first.")
-    with contextlib.redirect_stdout(io.StringIO()):
-        episode.main(str(p))
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            episode.main(str(p))
+    except (Exception, SystemExit) as e:
+        raise ValueError(f"Couldn't cut the Shorts: {e}")
     n = len([q for q in (HERE / "cfg").glob(f"{eid}__*.json") if not q.stem.endswith("_tiktok")])
     return {"ok": True, "reply": f"{n} Shorts cut from the chapters — they're in Production → Videos, ready to build."}
 
