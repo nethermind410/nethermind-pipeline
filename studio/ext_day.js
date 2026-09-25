@@ -43,7 +43,7 @@
     running = false; render();
     if (!day.steps.some(s => !isDone(s))) { celebrate("Day done", `${day.out} of 7 out this week${day.streak ? ` · ${day.streak}-day streak` : ""}`); }
   }
-  dock.addEventListener("click", e => {
+  dock.addEventListener("click", async e => {
     const b = e.target.closest("[data-dr],[data-dr-jump]"); if (!b) return;
     const a = b.dataset.dr;
     if (b.dataset.drJump) { i = +b.dataset.drJump; return render(); }
@@ -51,11 +51,16 @@
     if (a === "close") { running = false; return render(); }
     const s = day.steps[i];
     if (a === "go") { window.nxSound?.play("tick"); go(s.go); return; }
-    if (a === "done") { tick(s.key); window.nxSound?.play("done");
+    if (a === "done" && s.key === "post") {             // posting can't be ticked by hand: it clears when it's really out
+      await load();
+      if (!isDone(day.post)) { toast("Not out yet — this clears by itself once today's Short is scheduled or live."); return render(); }
+      window.nxSound?.play("done");
+    } else if (a === "done") { tick(s.key); window.nxSound?.play("done");
       if (/^setup:/.test(s.key)) post("/api/done", {key: s.key}).catch(() => {}); }        // a money step: tick it on the Money page too
     if (a === "done" || a === "skip" || a === "next") {
       const n = nextOpen(i);
       if (n < 0 || (a === "next" && i === day.steps.length - 1 && n <= i)) return finish();
+      if (n === i) { running = false; return render(); }          // skipped the only job left: close, it waits for later
       i = n; render();
     }
   });

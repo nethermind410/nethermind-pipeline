@@ -79,6 +79,8 @@ Seven agents own every job, each a region of the brain with sub-agents around it
 
 **Today's run (bottom-right, every page).** One tap walks you through today, job by job — posting first: until today's Short is live or scheduled, step 1 is whatever gets it there (approve the script, build it, or post it), and the dock glows. Go opens the right page, Done ticks it off. It never posts for you. On a Mac, the 7:00 run and the 20:30 catch-up also send a notification if today's Short isn't out yet (`studio_ext_day.py remind`). When a video goes out, the screen bursts and Publishing fires into Analytics on the brain.
 
+**Every page opens with its answer.** Today, Videos, Calendar, Performance, Retention, Channel, Comments, Task log, Settings and Ideas start with a headline card (`studio_ext_verdict.py`): the page's one question ("What's ready, and what's stuck?"), the answer from real data, and the next action — archive stale videos, dismiss off-lane ideas, fill a gap, fix the connection that blocks the most. On Mondays the brain shows last week in 30 seconds and this week's plan.
+
 **Music and sound (bottom-left ♪).** *Nether drift* is generative ambient made live in the browser (no files, no rights issues); or drop your own .mp3/.m4a files into `music/` (never committed). Interface sounds — hand-offs, Done, a video going live — are off until you tick them.
 
 **Iceberg is a template, not a topic.** Any subject in the channel's lanes becomes a 5-tier long-form essay ("The Dragon Ball Iceberg", "The Real-Life Superpowers Iceberg"). Make → Iceberg takes any topic; every Brief recommendation has *As an iceberg*; the Sunday run picks an iceberg from TOPICS.md in a different lane from last week's.
