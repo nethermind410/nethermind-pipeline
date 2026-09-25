@@ -136,7 +136,7 @@ async function pageVideo(id) {
   const sched = v.scheduled.length ? `<div class="card list">${v.scheduled.map(s => `<div class="row"><div class="body"><div class="t">${PLAT[s.platform] || esc(s.platform)}</div><div class="s">Goes out ${esc(when(s.dueAt))}</div></div></div>`).join("")}</div>` : "";
   const live = v.posts.length ? `<div class="card list">${v.posts.map(x => `<div class="row"><div class="body"><div class="t">${PLAT[x.platform] || esc(x.platform)}</div><div class="s">${fmt(x.views)} views · posted ${esc(when(x.sentAt))}</div></div>${x.url ? `<a class="btn small" href="${esc(x.url)}" target="_blank" rel="noopener">Open</a>` : ""}</div>`).join("")}</div>` : "";
   main.innerHTML = `<div class="page"><button class="back" data-go="videos">‹ Videos</button>
-    <div class="review">
+    <div class="review ${v.format === "landscape" ? "wide" : ""}">
       <div class="player">
         ${v.video ? `<video id="player" controls playsinline preload="metadata" src="${media(v.video)}"></video>
           ${v.tiktok ? `<div class="seg" role="tablist"><button class="on" data-src="${esc(v.video)}">YouTube · Instagram</button><button data-src="${esc(v.tiktok)}">TikTok</button></div>` : ""}`

@@ -3,8 +3,9 @@
 Written 25 Sep 2026 at Courtney's request. Read this before starting new architecture work.
 
 ## Next: finish Nethermind
-- 16:9 long-form renderer (the weekly episode can be planned, not yet rendered).
-- First real runs of the Content agent (drafter.py) and Intelligence scouts on the Mac; fix what breaks.
+- ~~16:9 long-form renderer~~ — done 25 Sep (make_long.py; Sundays plan + render automatically).
+- First real runs of the Content agent (drafter.py), Intelligence scouts and a real long-form render on the
+  Mac; fix what breaks. (Tested in the cloud with stand-in narration, images and a stand-in Claude.)
 
 ## When it's making money: scale
 - Give the Content agent its own Anthropic API key (drafter.py) instead of Courtney's Claude subscription,

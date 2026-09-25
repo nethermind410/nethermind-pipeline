@@ -61,7 +61,15 @@ Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice
 
 **Content → Make** (or **Draft now** on any idea, or **Draft it now** on a scorecard you said "Make it" to): the Content agent researches the facts with sources, writes the script, visuals plan and packaging, checks the hook, and stops. The draft lands in **Today** — read it, edit any line, pick a title, then **Approve & build** (Production renders the Short + TikTok cut, QA, thumbnail) or **Redraft with notes**. Nothing posts until you press Post. `python3 drafter.py "topic"` does the same from Terminal.
 
-**Daily (7:00):** `./install_daily.sh` once. `daily.py` refreshes the numbers, runs the learning loop, drafts the next video (your pinned idea → your "Make it" scorecards → Intelligence picks → backlog) and on Sundays plans the weekly long-form from that week's Shorts (`episode.py --week`). launchd catches up after sleep; if it still hasn't run for 26h, Today says so. Don't also run the Claude app's old "Nethermind daily build", or you'll get two videos a day.
+**Daily (7:00, with a 20:30 catch-up if the morning run failed):** `./install_daily.sh` once (re-run it after updating). `daily.py` refreshes the numbers, runs the learning loop, drafts the next video (your pinned idea → your "Make it" scorecards → Intelligence picks → backlog) and on Sundays plans and renders the weekly long-form from that week's Shorts. launchd catches up after sleep; if it still hasn't run for 26h, Today says so. Don't also run the Claude app's old "Nethermind daily build", or you'll get two videos a day.
+
+## Weekly long-form (16:9)
+
+Sundays the daily run plans the week's episode (`episode.py --week`: that week's finished Shorts become chapters) and Production renders it (`make_long.py episodes/<id>.json`): intro, a title card per chapter, the Shorts' own narration reused (no re-recording), 1920x1080 with portrait art centred over a blurred fill, captions in the lower third, then QA, **real YouTube chapter timestamps**, a description listing every chapter's sources, and a thumbnail. It lands in Production → Videos for review; posting it goes to YouTube only (`./post.sh <id>_long`). Content → Make shows each episode with Render / Review buttons. Any config can be rendered wide with `"format": "landscape"` — Shorts are unchanged.
+
+## Is everything working?
+
+`python3 selftest.py` (same checks as Control → Settings): keys, the 7:00 run, the `claude` command for drafting, ffmpeg, the Kokoro voice files, fonts, disk space — each with the fix in plain English.
 
 ## NETHER — agents that run the pipeline, and learn
 

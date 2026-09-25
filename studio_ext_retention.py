@@ -46,7 +46,7 @@ def overview():
         if vid.endswith("_tiktok") or vid.startswith(("test", "_")):
             continue
         cfg = _load(p)
-        if not cfg or "segments" not in cfg:
+        if not cfg or "segments" not in cfg or cfg.get("format") == "landscape":   # long-form isn't a Short
             continue
         tk = _load(CFG / f"{vid}_tiktok.json")
         posts = stats.get(vid, [])

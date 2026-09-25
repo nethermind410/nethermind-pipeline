@@ -92,7 +92,7 @@ def video(vid):
     yt, yt_edit = youtube_urls(posts)
     title = (pkg or {}).get("title") or vid.replace("_", " ").capitalize()
     return {
-        "id": vid, "title": title, "stage": stage, "file": f,
+        "id": vid, "title": title, "stage": stage, "file": f, "format": cfg.get("format", "vertical"),
         "thumb": f"{vid}_thumb.jpg" if (OUT / f"{vid}_thumb.jpg").exists() else None,
         "cover": f"{vid}_cover.jpg" if (OUT / f"{vid}_cover.jpg").exists() else None,
         "video": f"{f}.mp4" if rendered else None,
@@ -328,9 +328,45 @@ def health():
         {"name": "vidIQ (title scores)", "ok": (jload(OUT / "vidiq_balance.json", {}) or {}).get("credits", 0) >= 5,
          "detail": (lambda b: f"{b.get('credits', '?')} credits (5 per score) · refills {str(b.get('resets', ''))[:10]}")(jload(OUT / "vidiq_balance.json", {}) or {})},
         {"name": "Jarvis", "ok": jarvis_up(), "detail": "Answers questions (⌘K)" if jarvis_up() else "Not running. Nethermind starts it for you."},
-        {"name": "Daily build", "ok": fresh, "detail": f"Last ran {last}" if last else "Hasn't run yet (7:00 daily)"},
+        *daily_and_tools(),
         {"name": "Stats", "ok": bool(stats.get("updated")), "detail": f"Updated {when(stats.get('updated'))}" if stats.get("updated") else "Never refreshed"},
     ]
+
+
+def daily_and_tools():
+    """What the agents need on this Mac: the 7:00 run, drafting, rendering. Plain-English fixes."""
+    import shutil
+    out = []
+    try:
+        import orchestrator
+        d = orchestrator.last("control", "daily")
+    except Exception:
+        d = None
+    plist = Path.home() / "Library" / "LaunchAgents" / "com.nethermind.daily.plist"
+    if d:
+        age = (datetime.datetime.now().astimezone() - parse_dt(d["started"])).total_seconds() / 3600
+        out.append({"name": "Daily run (7:00)", "ok": age < 26 and d["status"] != "failed",
+                    "detail": f"Last ran {when(d['started'])} · {d['status']}" + ("" if plist.exists() else " · not installed: run ./install_daily.sh")})
+    else:
+        out.append({"name": "Daily run (7:00)", "ok": plist.exists(),
+                    "detail": "Installed — first run at 7:00" if plist.exists() else "Not installed: run ./install_daily.sh once"})
+    claude = shutil.which("claude") or next((str(p) for p in (Path.home() / ".local/bin/claude", Path("/opt/homebrew/bin/claude"),
+                                                                Path("/usr/local/bin/claude")) if p.exists()), None)
+    out.append({"name": "Drafting (Claude)", "ok": bool(claude),
+                "detail": "Content agent writes scripts with your Claude login" if claude else "Install Claude Code (the claude command) to draft scripts"})
+    out.append({"name": "Rendering (ffmpeg)", "ok": bool(shutil.which("ffmpeg") and shutil.which("ffprobe")),
+                "detail": "Video and audio" if shutil.which("ffprobe") else "Install ffmpeg: brew install ffmpeg"})
+    try:
+        import tts_kokoro                              # honours KOKORO_MODEL_PATH / KOKORO_VOICES_PATH
+        voice = Path(tts_kokoro.MODEL_PATH).exists() and Path(tts_kokoro.VOICES_PATH).exists()
+    except Exception:
+        voice = False
+    out.append({"name": "Narration voice", "ok": voice, "detail": "Kokoro model present" if voice else "Voice model missing — see SETUP.md (Kokoro files)"})
+    fonts = (HERE / "assets" / "Anton-Regular.ttf").exists() and (HERE / "assets" / "BebasNeue-Regular.ttf").exists()
+    out.append({"name": "Fonts", "ok": fonts, "detail": "Anton + Bebas Neue" if fonts else "Fonts missing — run ./fetch_assets.sh"})
+    free = shutil.disk_usage(HERE).free / 1e9
+    out.append({"name": "Disk space", "ok": free > 5, "detail": f"{free:.0f} GB free" + ("" if free > 5 else " — renders need room; clear old out/ files")})
+    return out
 
 
 # ------------------------------------------------------------------ plain-English errors
@@ -343,6 +379,7 @@ FRIENDLY = [
     (r"missing from assets/|FileNotFoundError", "A picture or clip for this video is missing. Tap Make video to fetch it again."),
     (r"Buffer rejected the post|MutationError", "Buffer refused the post. Open Buffer to see why."),
     (r"ModuleNotFoundError", "Part of Nethermind's toolkit is missing. Ask Claude to repair the setup."),
+    (r"weekly limit|usage limit|hit your .*limit", "Your Claude usage limit is used up for now. It resets on its own — press Retry after the reset time shown."),
 ]
 
 

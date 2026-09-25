@@ -157,6 +157,7 @@
       if (r.kind === "intel") toast((await post("/api/intel/run", {topic: r.topic})).reply);
       else if (r.kind === "draft") toast((await post("/api/make/draft", {topic: r.topic})).reply);
       else if (r.kind === "daily") toast((await post("/api/daily/run", {})).reply);
+      else if (r.kind === "long") { toast((await post("/api/long/render", {id: r.id})).reply); watchLong(); }
       else if (r.action) runJob(r.action, r.id || "");
       setTimeout(refresh, 600);
     } catch (e) { toast(e.message); }
@@ -268,13 +269,23 @@
       ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — research, script, packaging, check. Usually 3–6 minutes; watch it fire on the brain.</p>` : ""}
       ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
       <h2>Scripts waiting for you</h2>${drafts || `<div class="card caught"><b>Nothing waiting</b>Draft one above — or the daily run drafts the next one at 7:00.</div>`}
-      <h2>Weekly long-form</h2><div class="card nx-week"><p>Every Sunday the Episode planner turns the week's Shorts into one long-form episode: chapters, script and YouTube chapter timestamps.</p>
-        <div class="row-end"><button class="btn" id="nx-week">Plan this week's episode now</button></div>
-        ${d.episodes.map(e => `<details><summary>${esc(e.id)}</summary><pre class="rt-pre">${esc(e.plan)}</pre></details>`).join("")}</div></div>`;
+      <h2>Weekly long-form</h2><div class="card nx-week"><p>Every Sunday the Episode planner turns the week's Shorts into one 16:9 episode, and Production renders it with chapter cards, real YouTube timestamps, a description with every chapter's sources, and a thumbnail. It waits in Production for your review — long-form posts to YouTube only.</p>
+        <div class="row-end"><button class="btn" id="nx-week">Plan this week's episode now</button></div></div>
+        ${d.episodes.map(e => `<div class="card nx-ep">
+          <div class="nx-head"><b>${esc(e.title)}</b><span class="pill ${e.rendered ? "live" : ""}">${e.rendering ? "Rendering…" : e.rendered ? "Rendered" : "Planned"}</span></div>
+          <ol class="nx-chaps">${e.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol>
+          ${e.timestamps ? `<pre class="rt-pre nx-ts">${esc(e.timestamps)}</pre>` : ""}
+          <div class="row-end">${e.rendered ? `<button class="btn primary small" data-open="${esc(e.video)}">Review the video</button>` : ""}
+            <button class="btn small" data-nx-long="${esc(e.id)}" ${d.rendering ? "disabled" : ""}>${e.rendering ? "Rendering…" : e.rendered ? "Re-render" : "Render long-form"}</button>
+            ${e.plan ? `<details class="nx-plan"><summary>Script</summary><pre class="rt-pre">${esc(e.plan)}</pre></details>` : ""}</div></div>`).join("")}</div>`;
     $("#nx-make").onsubmit = async e => { e.preventDefault(); make($("#nx-mtopic").value.trim()); };
     $("#nx-week").onclick = async () => { try { toast((await post("/api/episode/week", {})).reply); route(); } catch (err) { toast(err.message); } };
     if (d.busy) watchDraft();
+    if (d.rendering) watchLong();
   }
+  let wL = null;
+  function watchLong() { clearInterval(wL); wL = setInterval(async () => { const d = await get("/api/drafts"); if (d.rendering) return;
+    clearInterval(wL); refresh(); toast("Long-form finished — review it in Production.", {label: "Open", run: () => go("make")}); if (["#make", "#content"].includes(location.hash)) route(); }, 5000); }
   async function make(topic) {
     if (!topic) return;
     try { toast((await post("/api/make/draft", {topic})).reply); watchDraft(); if (location.hash !== "#make") go("make"); else route(); }
@@ -366,6 +377,8 @@
       if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
       return go(ag.dataset.agent); }
     const sl = t.closest("[data-scroll-line]"); if (sl) { const l = $("#nx-line-" + sl.dataset.scrollLine); if (l) { l.scrollIntoView({behavior: "smooth", block: "center"}); l.querySelector("textarea")?.focus(); } return; }
+    const lg = t.closest("[data-nx-long]");
+    if (lg) { e.stopPropagation(); try { toast((await post("/api/long/render", {id: lg.dataset.nxLong})).reply); watchLong(); route(); } catch (err) { toast(err.message); } return; }
     const mk = t.closest("[data-nx-make]"); if (mk) { e.stopPropagation(); return make(mk.dataset.nxMake); }
     const r = t.closest("[data-nx-retry]");
     if (r) { const task = (window._nxTasks || []).find(x => x.id === +r.dataset.nxRetry); if (task) { await retry(task); setTimeout(route, 900); } return; }

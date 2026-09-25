@@ -13,12 +13,18 @@ ID="${1:-}"
 if [[ -z "$ID" || ! "$ID" =~ ^[a-z0-9_]+$ ]]; then echo "usage: ./post.sh <id> [--live]"; exit 1; fi
 PY=.venv/bin/python
 FILE=$($PY -c "import json;print(json.load(open('cfg/$ID.json')).get('file','$ID'))")
-for f in "out/$FILE.mp4" "out/${ID}_tiktok.mp4" "packaging/$ID.json"; do
-  [[ -f "$f" ]] || { echo "missing $f — run ./build.sh $ID and write the packaging first"; exit 1; }
+LAND=$($PY -c "import json;print(json.load(open('cfg/$ID.json')).get('format','') == 'landscape')")
+if [[ "$LAND" == "True" ]]; then          # long-form (16:9): YouTube only, no TikTok cut
+  NEED=("out/$FILE.mp4" "packaging/$ID.json")
+  ARGS=(--video "out/$FILE.mp4" --packaging "packaging/$ID.json" --platforms "youtube")
+else
+  NEED=("out/$FILE.mp4" "out/${ID}_tiktok.mp4" "packaging/$ID.json")
+  ARGS=(--video "out/$FILE.mp4" --tiktok-video "out/${ID}_tiktok.mp4"
+        --packaging "packaging/$ID.json" --platforms "youtube,instagram,tiktok")
+fi
+for f in "${NEED[@]}"; do
+  [[ -f "$f" ]] || { echo "missing $f — build it and write the packaging first"; exit 1; }
 done
-
-ARGS=(--video "out/$FILE.mp4" --tiktok-video "out/${ID}_tiktok.mp4"
-      --packaging "packaging/$ID.json" --platforms "youtube,instagram,tiktok")
 
 if [[ "${2:-}" == "--live" ]]; then
   # --record makes this safe to re-run: platforms that already succeeded are skipped

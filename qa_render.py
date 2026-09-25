@@ -72,7 +72,8 @@ def main():
         if not cond:
             ok = False
 
-    check("dimensions", (w, h) == (1080, 1920), f"{w}x{h}")
+    land = cfg.get("format") == "landscape"            # long-form is 16:9
+    check("dimensions", (w, h) == ((1920, 1080) if land else (1080, 1920)), f"{w}x{h}")
     check("bitrate", br > 1_000_000, f"{br/1e6:.1f} Mbps (floor: 1.0 Mbps — a Descript-remux crush lands ~0.2)")
     check("srt exists", os.path.exists(srt) and os.path.getsize(srt) > 0, srt)
 
@@ -80,11 +81,11 @@ def main():
                         [{"start": 0, "dur": 0}]) if False else None
     # segment timing isn't in the config directly (it's computed at render time
     # from TTS output) — just sanity-check duration is in a plausible Shorts range
-    check("duration plausible", 3 <= dur <= 180, f"{dur:.1f}s")
+    check("duration plausible", (60 <= dur <= 4 * 3600) if land else (3 <= dur <= 180), f"{dur:.1f}s")
 
     # ---- contact sheet: hook + one frame per segment + end card ----
     from PIL import Image
-    n_probe = 8  # evenly spaced samples across the video is good enough for
+    n_probe = 12 if land else 8  # evenly spaced samples across the video is good enough for
                  # a QA glance without needing the real per-segment timing
     times = [dur * i / (n_probe + 1) for i in range(1, n_probe + 1)]
     tiles = []
@@ -100,7 +101,7 @@ def main():
 
     cols = 4
     rows = math.ceil(len(tiles) / cols)
-    tw, th = 270, 480  # thumbnail size per tile
+    tw, th = (480, 270) if land else (270, 480)  # thumbnail size per tile
     sheet = Image.new("RGB", (tw * cols, th * rows), (20, 20, 20))
     for i, im in enumerate(tiles):
         sheet.paste(im.resize((tw, th)), ((i % cols) * tw, (i // cols) * th))

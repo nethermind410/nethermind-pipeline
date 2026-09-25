@@ -23,6 +23,13 @@ A = os.path.join(HERE, "assets")
 CFG = json.load(open(sys.argv[1]))
 PREVIEW = "--preview" in sys.argv
 VID = CFG["id"]
+# "format": "landscape" renders 16:9 (1920x1080) for long-form; positions and type sizes in configs stay in
+# the vertical 1080x1920 units and are mapped by LY/FSC, so a Short renders exactly as before.
+LAND = CFG.get("format") == "landscape"
+if LAND:
+    W, H = 1920, 1080
+LY, FSC = (H / 1920, 0.74) if LAND else (1.0, 1.0)
+def L(v): return v * LY
 OUT = os.path.join(HERE, "out"); os.makedirs(OUT, exist_ok=True)
 TTS_DIR = os.path.join(HERE, "tts", VID); os.makedirs(TTS_DIR, exist_ok=True)
 
@@ -99,13 +106,30 @@ def vframes(src, ss=0.0, length=8.0):
         _vf[key] = (d, sorted(os.listdir(d)))
     return _vf[key]
 
-def fit_cover(im, zoom=1.0, cx=.5, cy=.5):
+def fit_cover(im, zoom=1.0, cx=.5, cy=.5, bw=None, bh=None):
+    bw, bh = bw or W, bh or H
     iw, ih = im.size
-    base = min(iw / W, ih / H)
-    cw, chh = W * base / zoom, H * base / zoom
+    base = min(iw / bw, ih / bh)
+    cw, chh = bw * base / zoom, bh * base / zoom
     x0 = min(max(cx * iw - cw / 2, 0), iw - cw)
     y0 = min(max(cy * ih - chh / 2, 0), ih - chh)
-    return im.crop((int(x0), int(y0), int(x0 + cw), int(y0 + chh))).resize((W, H), Image.BILINEAR)
+    return im.crop((int(x0), int(y0), int(x0 + cw), int(y0 + chh))).resize((int(bw), int(bh)), Image.BILINEAR)
+
+_wide = {}
+def fit_wide(im, key, zoom=1.0, cx=.5, cy=.5):
+    """Long-form: a portrait/square still keeps its framing — full height, centred — over a dark blurred
+    fill of itself, instead of being cropped to a thin, soft strip. Ken Burns moves the foreground."""
+    iw, ih = im.size
+    if iw / ih >= 1.3:
+        return fit_cover(im, zoom, cx, cy)
+    if key not in _wide:
+        sm = fit_cover(im, 1.0, .5, .5).resize((W // 10, H // 10)).filter(ImageFilter.GaussianBlur(4))
+        _wide[key] = Image.eval(sm.resize((W, H), Image.BILINEAR), lambda c: int(c * .42))
+    bw = min(int(H * iw / ih * 1.3), int(W * .62))       # a little top/bottom crop for a fuller panel
+    fg = fit_cover(im, zoom, cx, cy, bw, H)
+    frame = _wide[key].copy()
+    frame.paste(fg, ((W - bw) // 2, 0))
+    return frame
 
 def ease(p): return p * p * (3 - 2 * p)
 
@@ -197,10 +221,14 @@ def background(seg, p, tl):
     v = seg["vis"]
     if v["t"] == "kb":
         z = v.get("z0", 1.1) + (v.get("z1", 1.25) - v.get("z0", 1.1)) * ease(p)
+        if LAND:
+            return fit_wide(img(v["src"]), v["src"], z, v.get("cx", .5), v.get("cy", .5))
         return fit_cover(img(v["src"]), z, v.get("cx", .5), v.get("cy", .5))
     if v["t"] == "vid":
         d, files = vframes(v["src"], v.get("ss", 0), seg["dur"] + .4)
         fr = Image.open(os.path.join(d, files[min(int(tl * FPS), len(files) - 1)])).convert("RGB")
+        if LAND:
+            return fit_wide(fr, "vid:" + v["src"], 1.02)
         if v.get("fit") == "square" or fr.width >= fr.height:
             bg = blur_bg(fr, v["src"])
             side = W if v.get("fit") == "square" else W
@@ -244,8 +272,8 @@ def chunks(ws, maxn=3):
     return out
 
 def draw_hook(d):
-    size = CFG["hook"].get("size", 150)
-    y = CFG["hook"].get("y", 620)
+    size = int(CFG["hook"].get("size", 150) * FSC)
+    y = L(CFG["hook"].get("y", 620))
     lines = CFG["hook"]["lines"]
     max_w = W - 80  # keep clear of both edges
     # shrink uniformly (never per-line) until every hook line fits the frame
@@ -262,9 +290,11 @@ def draw_hook(d):
 
 def draw_hero(d, hero, sc):
     lines = hero["lines"]
-    size = int(hero.get("size", 150 if len(lines) > 1 else 170) * sc)
+    size = int(hero.get("size", 150 if len(lines) > 1 else 170) * sc * FSC)
+    while size > 30 and any(font(F_CAP, size).getbbox(ln)[2] - font(F_CAP, size).getbbox(ln)[0] > W - 80 for ln in lines):
+        size -= 4                                      # never let a headline run off the frame
     f = font(F_CAP, size)
-    y = hero.get("y", 380)
+    y = L(hero.get("y", 380))
     for ln in lines:
         h = centre(d, ln, f, y, COL[hero.get("col", "a")], 8)
         y += size * 1.12
@@ -273,10 +303,10 @@ def draw_tier(d, seg, tl):
     """Iceberg tier label above, fact caption below."""
     tr = CFG["iceberg"]["tiers"][seg["vis"]["tier"]]
     p = min(tl / .22, 1)
-    f = font(F_CAP, int(96 * (.86 + .14 * ease(p))))
-    centre(d, tr["label"].upper(), f, 300, COL[tr.get("col", "a")], 8)
-    fs = font(F_SM, 62)
-    centre(d, tr["depth"], fs, 300 + 118, (190, 210, 230), 5)
+    f = font(F_CAP, int(96 * FSC * (.86 + .14 * ease(p))))
+    centre(d, tr["label"].upper(), f, L(300), COL[tr.get("col", "a")], 8)
+    fs = font(F_SM, int(62 * FSC))
+    centre(d, tr["depth"], fs, L(300 + 118), (190, 210, 230), 5)
 
 def draw_caps(d, seg, tl):
     if seg["vis"]["t"] == "ice":
@@ -287,7 +317,7 @@ def draw_caps(d, seg, tl):
         if seg.get("hero"):
             draw_hero(d, seg["hero"], .75 + .25 * ease(min(tl / .25, 1)))
             if seg.get("sub"):
-                centre(d, seg["sub"], font(F_SM, 66), 1400, WHITE, 5)
+                centre(d, seg["sub"], font(F_SM, int(66 * FSC)), L(1400), WHITE, 5)
         return
     ws = align_words(seg)
     if not ws: return
@@ -300,10 +330,11 @@ def draw_caps(d, seg, tl):
     if cur is None: return
     shown = [w for w in cur if w["start"] - .05 <= tl]
     if not shown: return
-    f = font(F_CAP, 116)
+    CAP = int(116 * FSC)
+    f = font(F_CAP, CAP)
     parts = [w["word"] for w in shown]
     wds = [d.textbbox((0, 0), p_, font=f)[2] for p_ in parts]
-    sp, lines, cl, cw = 32, [], [], 0
+    sp, lines, cl, cw = int(32 * FSC), [], [], 0
     if sum(wds) + sp * (len(wds) - 1) > W - 110:
         for p_, wd in zip(parts, wds):
             if cl and cw + sp + wd > W - 110:
@@ -312,7 +343,7 @@ def draw_caps(d, seg, tl):
         lines.append(cl)
     else:
         lines = [list(zip(parts, wds))]
-    y = CFG.get("cap_y", 1120) - 70 * (len(lines) - 1)
+    y = (H * 0.79 if LAND else CFG.get("cap_y", 1120)) - int(70 * FSC) * (len(lines) - 1)
     last = shown[-1]["word"]
     for line in lines:
         lw = sum(w for _, w in line) + sp * (len(line) - 1)
@@ -321,32 +352,32 @@ def draw_caps(d, seg, tl):
             if p_ == last:
                 age = tl - shown[-1]["start"] + .05
                 s = 1 + .12 * (1 - min(age / .12, 1))
-                fb = font(F_CAP, int(116 * s))
+                fb = font(F_CAP, int(CAP * s))
                 bb = d.textbbox((0, 0), p_, font=fb)
-                outline(d, (x - (bb[2] - wd) / 2, y - (bb[3] - 116) / 2), p_, fb, ACCENT)
+                outline(d, (x - (bb[2] - wd) / 2, y - (bb[3] - CAP) / 2), p_, fb, ACCENT)
             else:
                 outline(d, (x, y), p_, f, WHITE)
             x += wd + sp
-        y += 138
+        y += int(138 * FSC)
 
 def draw_end(d, seg, tl):
     e = CFG.get("end")
     if not e or seg["id"] != segs[-1]["id"] or tl < e.get("at", 1.6): return
-    f = font(F_SM, 62)
+    f = font(F_SM, int(62 * FSC))
     for i, txt in enumerate(e["lines"]):
-        centre(d, txt, f, 1370 + i * 70, COL["a2"] if i else WHITE, 5)
+        centre(d, txt, f, (H * 0.6 if LAND else 1370) + i * int(70 * FSC), COL["a2"] if i else WHITE, 5)
 
 def draw_credit(d):
     max_w = W - 80  # keep clear of both edges
-    s = 34
-    while s > 16:
+    s = int(34 * FSC)
+    while s > 14:
         f = font(F_SM, s)
         if (f.getbbox(CFG["credit"])[2] - f.getbbox(CFG["credit"])[0]) <= max_w:
             break
         s -= 1
     f = font(F_SM, s)
     bb = d.textbbox((0, 0), CFG["credit"], font=f)
-    d.text(((W - bb[2]) / 2, 215), CFG["credit"], font=f, fill=(150, 150, 150))
+    d.text(((W - bb[2]) / 2, 34 if LAND else 215), CFG["credit"], font=f, fill=(150, 150, 150))
 
 # ---------------------------------------------------------------- video
 TMP = os.path.join(tempfile.gettempdir(), "shortfactory_" + VID)

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """daily.py — the Control agent's daily run (7:00 via launchd; see install_daily.sh).
 
-    python3 daily.py            refresh → learn → draft the next video → (Sundays) plan the weekly episode
+    python3 daily.py            refresh → learn → draft the next video → (Sundays) plan + render the weekly episode
     python3 daily.py --dry      say what it would draft, change nothing
 
 It never builds or posts: the draft waits in Today for your approval (Draft → you approve → build).
 Which topic: the idea you pinned "Make this next", else your newest "Make it" scorecard not yet made,
 else the top of TOPICS.md → Intelligence picks, else the first open idea. If a draft is already
 waiting for you, it doesn't pile another one on top.
-If the Mac was asleep at 7:00, launchd runs it on wake; if it still hasn't run for 26 hours,
-Today says so.
+Runs at 7:00 and again at 20:30: the evening slot does nothing if the morning run completed, and
+retries it if it failed (e.g. the Claude usage limit, which resets during the day). If the Mac was
+asleep, launchd runs it on wake; if it still hasn't run for 26 hours, Today says so.
 """
 import datetime, json, subprocess, sys
 from pathlib import Path
@@ -50,6 +51,10 @@ def main(dry=False):
         waiting = [d["id"] for d in drafter.drafts()]
         print(f"would draft: {topic!r} — {why}" + (f" (but {waiting} still waiting, so it would skip)" if waiting else ""))
         return
+    last = nether.last("control", "daily")
+    if last and last["status"] == "complete" and last["started"][:10] == nether.now()[:10] and "--force" not in sys.argv:
+        print("Today's run already completed — nothing to do (this is the 20:30 catch-up slot).")
+        return
     parent = nether.begin("control", f"Daily run {datetime.date.today():%a %-d %b}", sub="daily",
                           retry={"kind": "daily"})
     report, cur = {}, None
@@ -82,6 +87,9 @@ def main(dry=False):
                 eid = episode.weekly()
                 nether.finish(cur, {"episode": eid})
                 report["episode"] = eid
+                import make_long                        # Production renders it; you review before it posts
+                cur = None
+                report["long"] = make_long.main(str(HERE / "episodes" / f"{eid}.json"))
             except ValueError as e:                     # too few Shorts this week isn't a failure of the run
                 nether.finish(cur, {"skipped": str(e)})
                 report["episode"] = str(e)

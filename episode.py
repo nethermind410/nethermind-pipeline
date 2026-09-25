@@ -106,21 +106,25 @@ def main(path):
     for c, cid, s, k in rows:
         print(f"  {cid:40s} short {s}/10   tiktok {k}/10")
     print(f"\nwrote {len(written)} configs + {os.path.relpath(plan_path, HERE)}")
-    print(f"build each:  ./build.sh {ep['id']}__<chapter>   (Short + TikTok cut + QA + thumbnail)")
+    if written:
+        print(f"build each:  ./build.sh {ep['id']}__<chapter>   (Short + TikTok cut + QA + thumbnail)")
+    print(f"long-form:   python3 make_long.py {os.path.relpath(path, HERE)}   (16:9, chapters, packaging, thumbnail)")
 
 
 def weekly(days=7):
     """The Episode planner's weekly job: this week's made Shorts become the chapters of one long-form
     episode (no new Shorts are cut — they already exist). Writes episodes/week_<year>_<week>.json + plan."""
     import datetime
+    from pathlib import Path
+    here = Path(HERE)
     cut = datetime.datetime.now().timestamp() - days * 86400
     picks = []
-    for p in sorted((HERE / "cfg").glob("*.json"), key=lambda p: p.stat().st_mtime):
+    for p in sorted((here / "cfg").glob("*.json"), key=lambda p: p.stat().st_mtime):
         c = json.load(open(p))
         if (p.stat().st_mtime < cut or p.stem.endswith("_tiktok") or "__" in p.stem or p.stem.startswith(("test", "_"))
-                or c.get("draft") or not (HERE / "packaging" / f"{p.stem}.json").exists()):
+                or c.get("draft") or c.get("format") == "landscape" or not (here / "packaging" / f"{p.stem}.json").exists()):
             continue
-        picks.append((p.stem, c, json.load(open(HERE / "packaging" / f"{p.stem}.json"))))
+        picks.append((p.stem, c, json.load(open(here / "packaging" / f"{p.stem}.json"))))
     if len(picks) < 3:
         raise ValueError(f"Only {len(picks)} finished Short(s) from the last {days} days — an episode needs at least 3 chapters.")
     y, w, _ = datetime.date.today().isocalendar()
@@ -135,7 +139,7 @@ def weekly(days=7):
                         "segments": [s for s in c["segments"]]} for vid, c, pk in picks],
           "outro": [{"id": "o1", "in": ["long"], "vis": dict(picks[-1][1]["segments"][-1]["vis"]), "gap": 0.3,
                      "text": "That's the week. Subscribe, and next week there's another round of buried history."}]}
-    path = HERE / "episodes" / f"{eid}.json"
+    path = here / "episodes" / f"{eid}.json"
     path.parent.mkdir(exist_ok=True)
     path.write_text(json.dumps(ep, indent=1, ensure_ascii=False))
     main(str(path))

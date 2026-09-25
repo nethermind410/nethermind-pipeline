@@ -15,6 +15,10 @@ if [[ -z "$ID" || ! "$ID" =~ ^[a-z0-9_]+$ || ! -f "cfg/$ID.json" ]]; then
 fi
 PY="${PY:-.venv/bin/python}"   # CI sets PY=python3
 command -v "$PY" >/dev/null || { echo "missing $PY — see README (.venv)"; exit 1; }
+EP=$($PY -c "import json;c=json.load(open('cfg/$ID.json'));print(c.get('episode','') if c.get('format')=='landscape' else '')")
+if [[ -n "$EP" ]]; then                    # a long-form video is rebuilt from its episode by make_long.py
+  exec $PY make_long.py "episodes/$EP.json"
+fi
 # report to NETHER (orchestrator.py): one Production task per build, one step per stage,
 # so a failure shows which stage broke and its last lines. Reporting never stops a build.
 mkdir -p out/logs; LOG="out/logs/build_$ID.log"; : > "$LOG"

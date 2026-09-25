@@ -51,7 +51,8 @@ AGENTS = {
         "render": ("Renderer", None, "Narration, captions, motion, score and mix."),
         "qa": ("QA", None, "Checks every render before you see it."),
         "thumbnail": ("Thumbnail", None, "Thumbnail and vertical cover."),
-        "bundle": ("Asset upload", None, "Backs the assets up to R2 for the cloud workflow.")}},
+        "bundle": ("Asset upload", None, "Backs the assets up to R2 for the cloud workflow."),
+        "longform": ("Long-form renderer", "make", "Renders the weekly episode in 16:9 with chapter cards and timestamps.")}},
     "publishing": {"name": "Publishing", "lobe": "Motor cortex · action", "role": "Gets videos out",
                    "ax": 0.47, "ay": 0.22, "subs": {
         "calendar": ("Calendar", "calendar", "Posted and scheduled, across every platform."),
