@@ -6,6 +6,11 @@ Written 25 Sep 2026 at Courtney's request. Read this before starting new archite
 - 16:9 long-form renderer (the weekly episode can be planned, not yet rendered).
 - First real runs of the Content agent (drafter.py) and Intelligence scouts on the Mac; fix what breaks.
 
+## When it's making money: scale
+- Give the Content agent its own Anthropic API key (drafter.py) instead of Courtney's Claude subscription,
+  so drafts never stop at the weekly usage limit (hit on 25 Sep 2026). Keep the login as a fallback.
+  Until then: drafts share the subscription limit; a limit error shows on the Content agent with Retry.
+
 ## Later: more channels on the same structure
 Once Nethermind is fully built and running, reuse the same multi-agent system (agents + sub-agents,
 the brain, Draft → approve → build, the learning loop, never posting without approval) for:
