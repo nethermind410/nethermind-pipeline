@@ -264,3 +264,15 @@ h2{letter-spacing:.14em}
 .nx-lv{color:var(--muted);font-variant-numeric:tabular-nums}.nx-lv b{color:var(--ink)}
 .nx-mix{display:flex;flex-wrap:wrap;gap:6px}
 @media (max-width:700px){.nx-lane{grid-template-columns:1fr;gap:4px}}
+
+/* ---- Business → Money ---- */
+.nx-route,.nx-streams,.nx-bform,.nx-setup{padding:16px 18px;display:grid;gap:12px}
+.nx-routes{margin-bottom:-6px}
+.nx-meter{display:grid;gap:5px}
+.nx-mbar{height:10px;border-radius:5px;background:var(--hover);overflow:hidden}.nx-mbar i{display:block;height:100%;background:var(--accent)}
+.nx-streams ul,.nx-setup ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.nx-setup li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.nx-setup li.on b{text-decoration:line-through;color:var(--muted)}
+.nx-bform label{display:grid;gap:4px}
+.nx-bform input,.nx-bform textarea{background:var(--hover);border:1px solid transparent;border-radius:8px;color:var(--ink);padding:8px 10px;font:400 14px var(--grotesk)}
+.nx-bform input:focus,.nx-bform textarea:focus{border-color:var(--accent);outline:none}

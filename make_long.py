@@ -212,11 +212,13 @@ def package(ep, vid, cfg, marks, starts):
                       "Every story is fact-checked; sources per chapter:", *(srcs or ["(see each chapter's Short)"]), "",
                       "Subscribe for the buried history behind comics, anime, games and the real science hiding inside them.",
                       "", "#nethermind #comics #history #science"])
+    import business, intelligence
     pkg = {"title": title[:95], "title_options": [ep["title"][:95], f"{len(titles)} Buried Stories: {first}"[:95]],
            "youtube_description": desc, "youtube_tags": ", ".join((tags + ["nethermind", "long form"])[:15]),
            "pinned_comment": "Which of these did you already know? Tell me the one that surprised you most.",
            "thumbnail": thumb_for(ep, cfg, first, len(titles)),
            "episode": ep["id"]}
+    business.apply_links(pkg, ep["title"], intelligence.lane_of(" ".join(titles)))
     (PKG / f"{vid}.json").write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
     (HERE / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
     return pkg, lines

@@ -46,7 +46,7 @@
   const HUBS = {intelligence: [["brief", "Brief"], ["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
     production: [["videos", "Videos"]], publishing: [["calendar", "Calendar"]],
     analytics: [["performance", "Performance"], ["retention", "Retention"]],
-    business: [["comments", "Comments"], ["channel", "Monetisation"]], control: [["agents", "Task log"], ["settings", "Settings"]]};
+    business: [["money", "Money"], ["comments", "Comments"], ["channel", "Channel"]], control: [["agents", "Task log"], ["settings", "Settings"]]};
   const OWNER = Object.fromEntries(Object.entries(HUBS).flatMap(([a, tabs]) => tabs.map(([r]) => [r, a])));
   Object.assign(OWNER, {draft: "content", video: "production"});
   const FLOW = {intelligence: "content", content: "production", production: "publishing", publishing: "analytics",
@@ -206,6 +206,53 @@
   function ideasExtras() {                       // every idea can go straight to the Content agent
     main.querySelectorAll("[data-next]").forEach(b => { if (b.nextElementSibling?.dataset?.nxMake) return;
       b.insertAdjacentHTML("afterend", `<button class="btn small" data-nx-make="${esc(b.dataset.hook)}" title="Content researches and writes it now; you approve before it's built">Draft now</button>`); });
+  }
+
+  /* ---------- Business → Money ---------- */
+  async function pageMoney() {
+    const m = await get("/api/money"), s = m.settings;
+    const meter = (label, value, goal, note, eta) => { const pct = Math.min(100, value / goal * 100);
+      return `<div class="nx-meter"><div class="nx-head"><b>${esc(label)}</b><span class="nx-meta">${fmt(value)} of ${fmt(goal)} · ${pct.toFixed(pct < 1 ? 2 : 0)}%</span></div>
+        <span class="nx-mbar" role="img" aria-label="${esc(label)}: ${pct.toFixed(1)}%"><i style="width:${Math.max(pct, 0.6)}%"></i></span>
+        <span class="nx-meta">${esc(note || "")}${eta ? ` · at this pace: ${esc(eta)}` : ""}</span></div>`; };
+    const g = Object.fromEntries((m.goals || []).map(x => [x.key, x]));
+    const routes = g.subs ? `
+      <div class="nx-two nx-routes"><div class="card nx-route"><span class="k">Route 1 · Shorts</span>
+          ${meter("Subscribers", g.subs.value, g.subs.goal, g.subs.note, g.subs.eta)}${g.views ? meter("Shorts views, 90 days", g.views.value, g.views.goal, g.views.note, g.views.eta) : ""}</div>
+        <div class="card nx-route"><span class="k">Route 2 · Long-form</span>
+          ${meter("Subscribers", g.subs.value, g.subs.goal, "Same 1,000.", g.subs.eta)}
+          ${meter("Watch hours, 12 months", m.watch_hours_est, m.watch_goal, `Rough estimate from ${m.long_videos} long-form video${m.long_videos === 1 ? "" : "s"} at a typical 35% view duration — Studio → Earn has the real number.`)}</div></div>
+      <p class="nx-meta">Shorts pay ~$0.01–0.10 per 1,000 views; long-form pays far more per view. That's why the weekly episode matters.</p>`
+      : `<div class="card caught"><b>No channel numbers yet</b>Refresh numbers in Analytics.</div>`;
+    const streams = m.streams.map(x => `<li><span class="pill ${x.on ? "live" : ""}">${x.on ? "On" : "Not set up"}</span> <b>${esc(x.name)}</b> <span class="nx-meta">— ${esc(x.how)}</span></li>`).join("");
+    const setup = m.setup.map(x => `<li class="${x.done ? "on" : ""}"><button class="check ${x.done ? "on" : ""}" data-step="setup:${esc(x.key)}" aria-pressed="${x.done}" aria-label="Done: ${esc(x.title)}"></button>
+        <div><b>${esc(x.title)}</b><div class="nx-meta">${esc(x.how)}</div></div></li>`).join("");
+    const linkLines = (s.links || []).map(l => `${l.label} | ${l.url}${l.lanes?.length ? " | " + l.lanes.join(",") : ""}`).join("\n");
+    main.innerHTML = `<div class="page wide">
+      <div class="head-row"><div class="head"><h1>Money</h1><p>Two ways YouTube starts paying, and the income that doesn't wait for it — ads are only 30–50% of a successful faceless channel's money.</p></div>
+        <button class="btn" id="nx-kit">Build media kit</button></div>
+      <h2>Getting paid by YouTube</h2>${routes}
+      <h2>Income streams</h2><div class="card nx-streams"><ul>${streams}</ul></div>
+      <div class="nx-two"><div>
+        <h2>Links in every description</h2>
+        <form class="card nx-bform" id="nx-bform">
+          <label><span class="k">Amazon Associates tag</span><input name="amazon_tag" value="${esc(s.amazon_tag)}" placeholder="e.g. nethermind-20"></label>
+          <label><span class="k">Newsletter signup link</span><input name="newsletter_url" value="${esc(s.newsletter_url)}" placeholder="https://…"></label>
+          <label><span class="k">Sponsor contact email (media kit)</span><input name="sponsor_email" value="${esc(s.sponsor_email)}" placeholder="you@…"></label>
+          <label><span class="k">Other links — one per line: Label | https://… | lanes (optional, e.g. marvel,anime)</span><textarea name="links" rows="3">${esc(linkLines)}</textarea></label>
+          <label><span class="k">Affiliate disclosure (Amazon and the FTC require it)</span><input name="disclosure" value="${esc(s.disclosure)}"></label>
+          <div class="row-end"><button class="btn primary">Save &amp; update unposted videos</button></div>
+          <p class="nx-meta">Each video gets a search link for its own source material (e.g. the collected editions it talks about). Posted videos keep what went out.</p></form>
+      </div><div>
+        <h2>One-time setup</h2><div class="card nx-setup"><ul>${setup}</ul></div>
+      </div></div></div>`;
+    $("#nx-bform").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target);
+      const links = String(f.get("links") || "").split("\n").map(l => l.split("|").map(x => x.trim())).filter(p => p[1])
+        .map(([label, url, lanes]) => ({label, url, lanes: (lanes || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean)}));
+      try { toast((await post("/api/business/settings", {amazon_tag: f.get("amazon_tag"), newsletter_url: f.get("newsletter_url"),
+          sponsor_email: f.get("sponsor_email"), disclosure: f.get("disclosure"), links})).reply); route(); } catch (err) { toast(err.message); } };
+    $("#nx-kit").onclick = async () => { try { const r = await post("/api/business/kit", {}); toast(r.reply);
+      const w = window.open(URL.createObjectURL(new Blob([r.html], {type: "text/html"})), "_blank"); if (!w) toast("Saved to out/media_kit.html"); } catch (err) { toast(err.message); } };
   }
 
   /* ---------- Intelligence → Brief: what to make next, and why ---------- */
@@ -460,7 +507,7 @@
     const n = e.target.closest && e.target.closest(".nx-sub,.nx-agent"); if (n) { e.preventDefault(); n.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 
   /* ---------- register pages ---------- */
-  Object.assign(window.PAGES, {brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
+  Object.assign(window.PAGES, {money: pageMoney, brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
   document.addEventListener("DOMContentLoaded", () => {      // after every extension has registered its pages,
     Object.keys(OWNER).forEach(wrap);                        // before the app's first route (window load)
     Object.entries(HUBS).forEach(([akey, tabs]) => { window.PAGES[akey] = window.PAGES[tabs[0][0]]; });

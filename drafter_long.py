@@ -210,6 +210,8 @@ def draft(topic, notes=None, eid=None, style=None):
         if "{CHAPTERS}" not in pkg.get("youtube_description", ""):
             pkg["youtube_description"] = pkg.get("youtube_description", "") + "\n\n{CHAPTERS}"
         pkg["drafted"] = True
+        import business, intelligence                    # Business: affiliate + newsletter links in the description
+        business.apply_links(pkg, topic, intelligence.lane_of(topic))
         pkg.setdefault("thumbnail", {}).setdefault("src", ep["chapters"][0]["segments"][0]["vis"]["src"])
         nether.finish(cur, {"title": pkg["title"]})
         cur = None

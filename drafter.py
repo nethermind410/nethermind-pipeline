@@ -268,6 +268,8 @@ def draft(topic, notes=None, vid=None):
         pkg = write_packaging(cfg, facts)
         if not pkg.get("title"):
             raise RuntimeError("Packaging came back without a title.")
+        import business, intelligence                    # Business: affiliate + newsletter links in the description
+        business.apply_links(pkg, topic, intelligence.lane_of(topic))
         nether.finish(cur, {"title": pkg["title"]})
 
         cur = nether.begin("content", "Hook & retention check", sub="hooks", parent=parent)

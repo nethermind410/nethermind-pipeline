@@ -68,7 +68,9 @@ AGENTS = {
     "business": {"name": "Business", "lobe": "Limbic system · relationships", "role": "Audience and money",
                  "ax": 0.53, "ay": 0.6, "subs": {
         "community": ("Comments", "comments", "Comments waiting for a reply, with drafted answers."),
-        "monetisation": ("Monetisation", "channel", "How close the channel is to getting paid.")}},
+        "monetisation": ("Monetisation", "money", "How close the channel is to getting paid, by both YouTube routes."),
+        "affiliates": ("Affiliate links", "money", "Adds the source-material and newsletter links to every description."),
+        "sponsors": ("Sponsor kit", "money", "A one-page media kit built from your real numbers.")}},
     "control": {"name": "Control", "lobe": "Cerebellum · coordination", "role": "Keeps every agent running",
                 "ax": 0.74, "ay": 0.72, "subs": {
         "tasks": ("Task log", "agents", "Every task every agent ran — what broke, and Retry."),
