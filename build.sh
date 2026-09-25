@@ -4,8 +4,8 @@
 #   ./build.sh <id>            fetch → generate → render (main + tiktok) → QA → thumbnail
 #   ./build.sh <id> --no-fetch skip fetch_real / gen_visuals (assets already in place)
 #
-# <id> is the cfg/<id>.json name. The TikTok config is (re)generated from the main one
-# every run, so edit only cfg/<id>.json. Stops at the first failing step.
+# <id> is the cfg/<id>.json name. The TikTok cut is (re)generated from the main one by
+# retention.py every run, so edit only cfg/<id>.json. Stops at the first failing step.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -22,21 +22,16 @@ if [[ "${2:-}" != "--no-fetch" ]]; then
   step "generated art (gen_visuals)"; $PY gen_visuals.py "cfg/$ID.json"
 fi
 
-step "tiktok config"
-$PY - "$ID" <<'EOF'
-import json, sys
-vid = sys.argv[1]
-c = json.load(open(f"cfg/{vid}.json"))
-c["id"] = c["file"] = f"{vid}_tiktok"
-lines = c.get("end", {}).get("lines", [])
-if lines and lines[0].upper().startswith("SUBSCRIBE"):
-    lines[0] = "FOLLOW FOR MORE"
-with open(f"cfg/{vid}_tiktok.json", "w") as f:
-    json.dump(c, f, indent=1, ensure_ascii=False); f.write("\n")
-print(f"  wrote cfg/{vid}_tiktok.json")
-EOF
+step "tiktok config (retention cut)"
+# retention.py: number on frame 0, punch-in, tight gaps, no still held over ~6s,
+# follow end card. Tag beats "in": ["short"] in cfg/<id>.json to leave them out.
+$PY retention.py tiktok "cfg/$ID.json" --max 35 | sed -n '/_tiktok.json  —/,$p;/^!/,/re-run/p'
 
 for C in "$ID" "${ID}_tiktok"; do
+  if [[ "$C" == *_tiktok ]]; then
+    # reuse the main narration: only beats the cut splits get re-narrated
+    mkdir -p "tts/$C" && cp -n tts/"$ID"/* "tts/$C/" 2>/dev/null || true
+  fi
   step "render $C";  $PY make_short.py "cfg/$C.json" | tail -2
   step "QA $C";      $PY qa_render.py "cfg/$C.json" | tail -3
 done

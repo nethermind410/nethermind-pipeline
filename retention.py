@@ -18,12 +18,16 @@ the YouTube hook and the slow opening zoom. This cut changes the first second:
   6. No long holds — any beat over ~6s is split at a clause break and the second
      half re-frames the still, so the picture changes every few seconds.
 
-Wording is never changed. Beats that are kept whole reuse the cached narration
-in tts/<id>/ (the config "id" stays the same for that reason); split beats get
-new ids (s7_p1/s7_p2), so only those are re-narrated by Kokoro.
+Wording is never changed. The cut gets its own id (<id>_tiktok); copy
+tts/<id>/ into tts/<id>_tiktok/ first (build.sh does) and every beat kept whole
+reuses the main narration. Split beats get new ids (s7_p1/s7_p2), so only those
+are re-narrated by Kokoro.
 
-The check score is a heuristic, not a prediction: the old hulk TikTok cut scores
-8/10 but averaged 3.8s watched. Validate rule changes against stats, not the score.
+The check score is a pacing checklist, not a prediction. Against real results it
+doesn't hold up yet: the old hulk TikTok cut scores 8/10 but averaged 3.8s
+watched; wolverine scores 1/10 and was the best performer (8.6s on TikTok,
+2,430 IG views). Treat the TikTok cut as an experiment and judge it on stats.py
+average watch time, not on this score.
 
 Segments can carry "in": ["long", "short", "tiktok"] to say where they appear;
 a segment without "in" appears everywhere.
@@ -122,7 +126,9 @@ def split_long(segs, max_beat=6.0):
 
 def tiktok(cfg, max_s=30):
     c = copy.deepcopy(cfg)
-    c["file"] = cfg.get("file", cfg["id"]).removesuffix("_tiktok") + "_tiktok"
+    # own id: make_short.py names the .srt and qa_render.py finds the .mp4 by id,
+    # so sharing the main id would overwrite the main video's subtitles
+    c["id"] = c["file"] = cfg["id"].removesuffix("_tiktok") + "_tiktok"
     segs = [s for s in c["segments"] if "tiktok" in s.get("in", ["tiktok"])]
     for s in segs:
         s.pop("prompt", None); s.get("vis", {}).pop("prompt", None)

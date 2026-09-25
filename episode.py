@@ -21,9 +21,8 @@ and the Shorts don't — the Shorts stay tight, the episode gets the detail.
 Each Short's end card points at the next chapter's Short, and the last one at
 the episode's "next", so the Shorts chain into each other and into the episode.
 
-Chapter configs keep the ids <ep>__<chapter>, so the narration cached in
-tts/<ep>__<chapter>/ is shared by the Short, the TikTok cut and (later) the
-long-form render — each line is narrated once.
+Build each chapter with ./build.sh <ep>__<chapter> — it renders the Short and
+its TikTok cut, reusing the Short's narration for the cut.
 
 The long-form (16:9) render itself is not wired yet: make_short.py is fixed
 at 1080x1920. The plan file is the script and chapter list for it meanwhile.
@@ -106,7 +105,7 @@ def main(path):
     for c, cid, s, k in rows:
         print(f"  {cid:40s} short {s}/10   tiktok {k}/10")
     print(f"\nwrote {len(written)} configs + {os.path.relpath(plan_path, HERE)}")
-    print("render each:  python3 make_short.py cfg/<config>.json")
+    print(f"build each:  ./build.sh {ep['id']}__<chapter>   (Short + TikTok cut + QA + thumbnail)")
 
 
 if __name__ == "__main__":
