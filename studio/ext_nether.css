@@ -249,3 +249,18 @@ h2{letter-spacing:.14em}
 .nx-thumbw b.acc{color:var(--accent)}
 .nx-recap summary{cursor:pointer;color:var(--muted);font-size:14px;margin:8px 0}
 @media (max-width:700px){.nx-kind{grid-template-columns:1fr}}
+
+/* ---- Intelligence brief ---- */
+.nx-rec{padding:16px 18px;display:grid;gap:10px;margin-bottom:10px}
+.nx-rec .nx-head>div{display:grid;gap:3px}
+.nx-rt{font-size:17px}
+.nx-lanecard,.nx-out{padding:16px 18px;display:grid;gap:10px}
+.nx-lanes{display:grid;gap:8px}
+.nx-lane{display:grid;grid-template-columns:130px 1fr 170px;gap:10px;align-items:center;font-size:13.5px}
+.nx-lbar{position:relative;height:10px;background:var(--hover);border-radius:4px}
+.nx-lbar i{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.nx-lbar em,.nx-avgkey{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--ink);opacity:.8}
+.nx-avgkey{position:relative;display:inline-block;height:12px;top:2px;margin-right:6px}
+.nx-lv{color:var(--muted);font-variant-numeric:tabular-nums}.nx-lv b{color:var(--ink)}
+.nx-mix{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:700px){.nx-lane{grid-template-columns:1fr;gap:4px}}

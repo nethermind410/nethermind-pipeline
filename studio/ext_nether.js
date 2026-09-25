@@ -43,7 +43,7 @@
       <div class="nx-pace-axis"><span>0s</span><span class="nx-meta">${lines.length} lines · hook in <b>crimson</b>${long ? ` · <span class="bad">${long} held over 6s</span>` : " · no long holds"} · on-screen numbers above their line</span><span>${total.toFixed(0)}s</span></div></div>`;
   }
 
-  const HUBS = {intelligence: [["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
+  const HUBS = {intelligence: [["brief", "Brief"], ["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
     production: [["videos", "Videos"]], publishing: [["calendar", "Calendar"]],
     analytics: [["performance", "Performance"], ["retention", "Retention"]],
     business: [["comments", "Comments"], ["channel", "Monetisation"]], control: [["agents", "Task log"], ["settings", "Settings"]]};
@@ -206,6 +206,45 @@
   function ideasExtras() {                       // every idea can go straight to the Content agent
     main.querySelectorAll("[data-next]").forEach(b => { if (b.nextElementSibling?.dataset?.nxMake) return;
       b.insertAdjacentHTML("afterend", `<button class="btn small" data-nx-make="${esc(b.dataset.hook)}" title="Content researches and writes it now; you approve before it's built">Draft now</button>`); });
+  }
+
+  /* ---------- Intelligence → Brief: what to make next, and why ---------- */
+  const LANE = {marvel: "Marvel & comics", anime: "Anime", gaming: "Gaming", space: "Space", ocean: "Ocean", creature: "Creatures", other: "Other"};
+  async function pageBrief() {
+    const b = await get("/api/intel/brief");
+    const max = Math.max(1, ...b.lanes.map(l => l.avg), b.channel_avg);
+    const lanes = b.lanes.length ? `<div class="nx-lanes" role="list">${b.lanes.map(l => `<div class="nx-lane" role="listitem" title="${esc(LANE[l.lane] || l.lane)}: ${fmt(l.avg)} avg views over ${l.videos} video${l.videos > 1 ? "s" : ""} (${l.ratio}× your channel average)">
+          <span class="nx-ln">${esc(LANE[l.lane] || l.lane)}</span>
+          <span class="nx-lbar"><i style="width:${(l.avg / max * 100).toFixed(1)}%"></i><em style="left:${(b.channel_avg / max * 100).toFixed(1)}%"></em></span>
+          <span class="nx-lv"><b>${fmt(l.avg)}</b> · ${l.ratio}× · ${l.videos} vid${l.videos > 1 ? "s" : ""}</span></div>`).join("")}
+        <div class="nx-meta nx-lnote"><em class="nx-avgkey"></em> your channel average: ${fmt(b.channel_avg)} views per video · lanes need 2+ videos to count</div></div>`
+      : `<p class="nx-meta">No numbers yet — Refresh numbers in Analytics, then this fills in.</p>`;
+    const mix = Object.keys(b.mix).length ? `<div class="nx-mix">${Object.entries(b.mix).sort((a, c) => c[1] - a[1]).map(([k, n]) => `<span class="nx-chip">${esc(LANE[k] || k)} × ${n}</span>`).join("")}</div>
+        <p class="nx-meta">7 Shorts a week, weighted by how each lane really performs — every proven lane keeps at least one slot so it can keep proving itself.</p>` : "";
+    const recs = b.recommendations.map((r, i) => `<div class="card nx-rec">
+        <div class="nx-head">${ring(r.score, r.score >= 70 ? "good" : r.score >= 50 ? "ok" : "low")}<div><span class="k">#${i + 1} · ${esc(LANE[r.lane] || r.lane)} · ${esc(r.verdict)}</span><b class="nx-rt">${esc(r.topic)}</b></div></div>
+        <ul class="nx-reasons">${r.why.map(w => `<li>${esc(w)}</li>`).join("")}${r.failed.length ? `<li class="bad">${esc(r.failed.join(", "))} scout failed — score is partial</li>` : ""}</ul>
+        <div class="nx-call"><input class="nx-reason" placeholder="Why? (optional — it learns from this)" maxlength="300">
+          <button class="btn small primary" data-nx-go="short" data-slug="${esc(r.slug)}" data-topic="${esc(r.topic)}">Make a Short</button>
+          <button class="btn small" data-nx-go="long" data-slug="${esc(r.slug)}" data-topic="${esc(r.topic)}">Long-form</button>
+          <button class="btn small" data-nx-decide="skip" data-slug="${esc(r.slug)}">Not for us</button></div></div>`).join("");
+    const outl = b.breakouts.map(o => `<li><a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.title)}</a>
+        <span class="nx-meta">${esc(o.channel)} · ${fmt(o.views)} views on ${o.subs != null ? fmt(o.subs) + " subs" : "a small channel"} · found investigating “${esc(o.topic)}”</span></li>`).join("");
+    const wdiff = Object.entries(b.weights).filter(([k, v]) => Math.abs(v - (b.default[k] || 0)) >= 0.5).map(([k, v]) => `${COMP[k] || k} ${v > b.default[k] ? "↑" : "↓"} ${Math.round(v)}`);
+    main.innerHTML = `<div class="page wide">
+      <div class="head-row"><div class="head"><h1>Brief</h1><p>What to make next and why — from your real numbers, YouTube demand, what small channels are winning with, and your own calls.</p></div>
+        <div class="nx-counts"><span>${b.backlog.scored} of ${b.backlog.open} ideas scored</span><span>${b.decided} calls made</span><span>${b.linked} checked against results</span></div></div>
+      <h2>Make next</h2>
+      ${recs || `<div class="card caught"><b>Nothing scored and waiting</b>The daily run scouts 3 backlog ideas every morning — or <button class="link" data-go="investigate">investigate one now</button>.</div>`}
+      <div class="nx-two"><div>
+        <h2>Your lanes</h2><div class="card nx-lanecard">${lanes}${mix ? `<span class="k">Suggested weekly mix</span>${mix}` : ""}</div>
+      </div><div>
+        <h2>Working elsewhere</h2><div class="card nx-out">${outl ? `<p class="nx-meta">Small channels (under 100k subs) that broke 100k views on topics you investigated — proof the topic can win without a big audience.</p><ul class="nx-top">${outl}</ul>` : `<p class="nx-meta">Breakouts show up here as the scouts find them.</p>`}</div>
+        <h2>What it's learned</h2><div class="card nx-learned">
+          <ul class="nx-reasons">${b.lessons.map(l => `<li>${esc(l)}</li>`).join("") || "<li>Nothing yet — every Make it / Not for us call and every posted result teaches it.</li>"}</ul>
+          <p class="nx-meta">${wdiff.length ? "Scoring has shifted from real results: " + esc(wdiff.join(" · ")) : "Scoring still at its starting weights — it moves once scorecards are checked against real views."}</p>
+          <button class="link" data-go="investigate">Scorecards &amp; weights ›</button></div>
+      </div></div></div>`;
   }
 
   /* ---------- Intelligence → Investigate ---------- */
@@ -398,6 +437,11 @@
       if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
       return go(ag.dataset.agent); }
     const sl = t.closest("[data-scroll-line]"); if (sl) { const l = $("#nx-line-" + sl.dataset.scrollLine); if (l) { l.scrollIntoView({behavior: "smooth", block: "center"}); l.querySelector("textarea")?.focus(); } return; }
+    const gg = t.closest("[data-nx-go]");
+    if (gg) { e.stopPropagation(); const reason = gg.closest(".nx-call")?.querySelector(".nx-reason")?.value || "";
+      try { await post("/api/intel/decide", {slug: gg.dataset.slug, choice: "make", reason});
+            toast((await post("/api/make/draft", {topic: gg.dataset.topic, kind: gg.dataset.nxGo})).reply); watchDraft(); go("make"); }
+      catch (err) { toast(err.message); } return; }
     const kd = t.closest("[data-nx-kind]"); if (kd) { makeKind = kd.dataset.nxKind; return route(); }
     const cut = t.closest("[data-nx-cut]");
     if (cut) { e.stopPropagation(); try { toast((await post("/api/episode/shorts", {id: cut.dataset.nxCut})).reply); route(); } catch (err) { toast(err.message); } return; }
@@ -416,7 +460,7 @@
     const n = e.target.closest && e.target.closest(".nx-sub,.nx-agent"); if (n) { e.preventDefault(); n.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 
   /* ---------- register pages ---------- */
-  Object.assign(window.PAGES, {investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
+  Object.assign(window.PAGES, {brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
   document.addEventListener("DOMContentLoaded", () => {      // after every extension has registered its pages,
     Object.keys(OWNER).forEach(wrap);                        // before the app's first route (window load)
     Object.entries(HUBS).forEach(([akey, tabs]) => { window.PAGES[akey] = window.PAGES[tabs[0][0]]; });
