@@ -116,7 +116,9 @@ def videos():
 PLATFORMS = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instagram"}
 FINISH_STEPS = [("tags", "Paste the tags into YouTube Studio"),
                 ("comment", "Post and pin the comment"),
+                ("playlist", "Add it to its series playlist and set an end screen (next video)"),
                 ("check", "Check the video plays and looks right")]
+LONG_STEPS = [("testcompare", "Test & Compare: add the 3 thumbnails (out/<id>_thumb, _thumb2, _thumb3)")]
 
 
 def when(iso):
@@ -148,8 +150,8 @@ def today():
         week = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
         recent = [p for p in v["posts"] if p.get("platform") == "youtube" and (parse_dt(p.get("sentAt")) or week) > week]
         if recent:
-            steps = [{"key": f"finish:{v['id']}:{k}", "label": label, "done": f"finish:{v['id']}:{k}" in done}
-                     for k, label in FINISH_STEPS]
+            steps = [{"key": f"finish:{v['id']}:{k}", "label": label.replace("<id>", v["id"]), "done": f"finish:{v['id']}:{k}" in done}
+                     for k, label in FINISH_STEPS + (LONG_STEPS if v.get("format") == "landscape" else [])]
             if not all(s["done"] for s in steps):
                 pkg = v["packaging"] or {}
                 cards.append({"key": f"finish:{v['id']}", "kind": "finish", "video": v["id"], "title": v["title"],

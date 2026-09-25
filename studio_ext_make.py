@@ -108,6 +108,29 @@ def make(body):
     return {"ok": True, "reply": "Content is researching and writing it — usually 3–6 minutes. It'll land in Today."}
 
 
+def batch(body):
+    """Draft a week of Shorts in one go (one after another): the next N topics the daily run would pick."""
+    import daily
+    n = max(1, min(int(body.get("n", 5) or 5), 7))
+    if _BUSY["what"]:
+        raise ValueError(f"Content is still busy: {_BUSY['what']}.")
+
+    def run():
+        for i in range(n):
+            topic, why = daily.pick_topic()             # skips anything already drafted, so each pick is new
+            if not topic:
+                break
+            _BUSY["what"] = f"drafting {i + 1} of {n}: “{topic}”"
+            try:
+                drafter.draft(topic)
+            except Exception as e:
+                if "limit" in str(e).lower():         # the Claude allowance ran out: stop, don't burn retries
+                    break
+    _bg(f"drafting a batch of {n}", run)
+    return {"ok": True, "reply": f"Content is drafting {n} Shorts one after another — about {n * 4}–{n * 6} minutes. "
+                                 "Each lands in Today as it's done. (Uses {n}× the Claude allowance of one draft.)".replace("{n}", str(n))}
+
+
 def redraft(body):
     vid, notes = str(body.get("id", "")), str(body.get("notes", "")).strip()[:1500]
     if not notes:
@@ -181,4 +204,5 @@ def daily(body):
 GET = {"/api/drafts": drafts}
 POST = {"/api/make/draft": make, "/api/make/redraft": redraft, "/api/make/approve": approve,
         "/api/make/discard": discard, "/api/episode/week": week, "/api/daily/run": daily,
-        "/api/long/render": render_long, "/api/make/lines": lines, "/api/episode/shorts": cut_shorts}
+        "/api/long/render": render_long, "/api/make/lines": lines, "/api/episode/shorts": cut_shorts,
+        "/api/make/batch": batch}

@@ -63,10 +63,12 @@ def pick_topic():
             for i in s["items"]:
                 if not i["dismissed"] and fresh(i["hook"]):
                     return i["hook"], "top of Intelligence picks"
-    for s in sections:
+    lanes = ("marvel", "anime", "gaming")                # the channel's lanes first — never drift back to old backlogs
+    rank = lambda s: next((n for n, k in enumerate(lanes) if s["name"].lower().startswith(k)), len(lanes))
+    for s in sorted(sections, key=rank):
         for i in s["items"]:
             if not i["made"] and not i["dismissed"] and fresh(i["hook"]):
-                return i["hook"], f"first open idea ({s['name']})"
+                return i["hook"], f"next open idea in {s['name']}"
     return None, "no open ideas left"
 
 
@@ -75,7 +77,9 @@ def scout_backlog(n=3):
     import studio_api, intelligence
     have = {p.stem for p in (HERE / "out" / "intel").glob("*.json")} if (HERE / "out" / "intel").exists() else set()
     done = []
-    for s in studio_api.ideas()["sections"]:
+    lanes = ("intelligence picks", "marvel", "anime", "gaming")     # score the channel's lanes first
+    rank = lambda s: next((k for k, name in enumerate(lanes) if s["name"].lower().startswith(name)), len(lanes))
+    for s in sorted(studio_api.ideas()["sections"], key=rank):
         for i in s["items"]:
             if len(done) >= n:
                 return done

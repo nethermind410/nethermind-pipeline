@@ -370,6 +370,7 @@
       <form class="card nx-run" id="nx-make"><input id="nx-mtopic" placeholder="${makeKind === "short" ? "What's the Short about? e.g. The Kamehameha is named after a Hawaiian king" : makeKind === "iceberg" ? "The iceberg: e.g. The Lost Marvel Games Iceberg" : "The episode: e.g. How Marvel almost went bankrupt — and the movie deal that saved it"}" maxlength="160" ${d.busy ? "disabled" : ""}>
         <button class="btn primary" ${d.busy ? "disabled" : ""}>${d.busy ? "Writing…" : "Draft it"}</button></form>
       ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — watch it fire on the brain.</p>` : ""}
+      ${makeKind === "short" && !d.busy ? `<div class="row-end nx-batch"><span class="nx-meta">Batching is how faceless channels stay consistent — review them in one sitting.</span><button class="btn small" id="nx-batch">Draft a week (5 Shorts)</button></div>` : ""}
       ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
       <h2>Scripts waiting for you</h2>${drafts || `<div class="card caught"><b>Nothing waiting</b>Draft one above — the daily run drafts a Short every morning and a long-form on Sundays.</div>`}
       <h2>Long-form episodes</h2>${longs.map(epCard).join("") || `<div class="card caught"><b>No long-form yet</b>Pick Long-form or Iceberg above. Sundays, the daily run drafts one for you to approve.</div>`}
@@ -377,6 +378,7 @@
         <div class="card nx-week"><p>Joins the week's finished Shorts with chapter cards. Useful as a compilation, not as the weekly episode.</p>
         <div class="row-end"><button class="btn small" id="nx-week">Plan a recap</button></div></div>${recaps.map(epCard).join("")}</details></div>`;
     $("#nx-make").onsubmit = async e => { e.preventDefault(); make($("#nx-mtopic").value.trim()); };
+    const bt = $("#nx-batch"); if (bt) bt.onclick = async () => { try { toast((await post("/api/make/batch", {n: 5})).reply); watchDraft(); route(); } catch (err) { toast(err.message); } };
     $("#nx-week").onclick = async () => { try { toast((await post("/api/episode/week", {})).reply); route(); } catch (err) { toast(err.message); } };
     if (d.busy) watchDraft();
     if (d.rendering) watchLong();
