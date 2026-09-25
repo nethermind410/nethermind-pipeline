@@ -57,9 +57,15 @@ every time, not just when the exit code is non-zero.
 
 Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice` (iceberg chart — needs no media at all, the chart is drawn in code), `creature` (animal reveal), `hero` (superhero trivia — Gemini-generated art only, see "Visuals" below).
 
+## Making a video (Draft → you approve → build)
+
+**Content → Make** (or **Draft now** on any idea, or **Draft it now** on a scorecard you said "Make it" to): the Content agent researches the facts with sources, writes the script, visuals plan and packaging, checks the hook, and stops. The draft lands in **Today** — read it, edit any line, pick a title, then **Approve & build** (Production renders the Short + TikTok cut, QA, thumbnail) or **Redraft with notes**. Nothing posts until you press Post. `python3 drafter.py "topic"` does the same from Terminal.
+
+**Daily (7:00):** `./install_daily.sh` once. `daily.py` refreshes the numbers, runs the learning loop, drafts the next video (your pinned idea → your "Make it" scorecards → Intelligence picks → backlog) and on Sundays plans the weekly long-form from that week's Shorts (`episode.py --week`). launchd catches up after sleep; if it still hasn't run for 26h, Today says so. Don't also run the Claude app's old "Nethermind daily build", or you'll get two videos a day.
+
 ## NETHER — agents that run the pipeline, and learn
 
-Six agents own every job: **Intelligence** (finds topics), **Content** (scripts, hooks, packaging), **Production** (builds), **Publishing** (Buffer), **Analytics** (numbers + learning loop), **Business** (comments, money). Each has sub-agents; every job is a task in `out/nether.db` with its steps, errors and a Retry. They glow on the brain — crimson while working, amber when one needs you — and the **Agents** page shows exactly which step broke.
+Seven agents own every job, each a region of the brain with sub-agents around it: **Intelligence** (Ideas, the five scouts), **Content** (research, script, packaging, hooks, episodes), **Production** (Videos, visuals, render, TikTok cut, QA, thumbnail), **Publishing** (Calendar, scheduling), **Analytics** (Performance, Retention, learning loop), **Business** (Comments, monetisation), **Control** (Task log, daily run, Settings). Every page lives inside the agent that owns it. Each has sub-agents; every job is a task in `out/nether.db` with its steps, errors and a Retry. They glow on the brain — crimson while working, amber when one needs you — and the **Agents** page shows exactly which step broke.
 
 ```bash
 python3 orchestrator.py                          # every agent's state + recent tasks

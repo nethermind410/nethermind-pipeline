@@ -3,6 +3,7 @@
 episode.py — one research pass in, a long-form episode plus its Shorts out.
 
     python3 episode.py episodes/<id>.json
+    python3 episode.py --week          this week's finished Shorts → one long-form episode plan
 
 Write the episode once as chapters. Each chapter is a complete Short-sized
 story with its own hook; the long-form video is the chapters in order with an
@@ -48,7 +49,7 @@ def main(path):
     os.makedirs(os.path.join(HERE, "cfg"), exist_ok=True)
     written, rows = [], []
 
-    for i, ch in enumerate(chapters):
+    for i, ch in enumerate(chapters if ep.get("shorts", True) else []):   # a weekly episode's chapters ARE made Shorts
         cid = f"{ep['id']}__{ch['id']}"
         segs = [dict(s) for s in ch["segments"] if keep(s, "short")]
         if not segs:
@@ -108,7 +109,43 @@ def main(path):
     print(f"build each:  ./build.sh {ep['id']}__<chapter>   (Short + TikTok cut + QA + thumbnail)")
 
 
+def weekly(days=7):
+    """The Episode planner's weekly job: this week's made Shorts become the chapters of one long-form
+    episode (no new Shorts are cut — they already exist). Writes episodes/week_<year>_<week>.json + plan."""
+    import datetime
+    cut = datetime.datetime.now().timestamp() - days * 86400
+    picks = []
+    for p in sorted((HERE / "cfg").glob("*.json"), key=lambda p: p.stat().st_mtime):
+        c = json.load(open(p))
+        if (p.stat().st_mtime < cut or p.stem.endswith("_tiktok") or "__" in p.stem or p.stem.startswith(("test", "_"))
+                or c.get("draft") or not (HERE / "packaging" / f"{p.stem}.json").exists()):
+            continue
+        picks.append((p.stem, c, json.load(open(HERE / "packaging" / f"{p.stem}.json"))))
+    if len(picks) < 3:
+        raise ValueError(f"Only {len(picks)} finished Short(s) from the last {days} days — an episode needs at least 3 chapters.")
+    y, w, _ = datetime.date.today().isocalendar()
+    eid = f"week_{y}_{w:02d}"
+    titles = [pk.get("title", vid) for vid, _, pk in picks]
+    ep = {"id": eid, "title": f"Nethermind — week {w}: " + " · ".join(t.split(" — ")[0] for t in titles[:3]),
+          "shorts": False, "next": "NEXT WEEK'S EPISODE",
+          **{k: picks[0][1][k] for k in SHARED if k in picks[0][1]},
+          "intro": [{"id": "i1", "in": ["long"], "vis": dict(picks[0][1]["segments"][0]["vis"]), "gap": 0.3,
+                     "text": f"This week: {len(picks)} stories where the popular version is wrong. Starting with this one."}],
+          "chapters": [{"id": vid, "title": pk.get("title", vid), "hook": c.get("hook", {"lines": []}),
+                        "segments": [s for s in c["segments"]]} for vid, c, pk in picks],
+          "outro": [{"id": "o1", "in": ["long"], "vis": dict(picks[-1][1]["segments"][-1]["vis"]), "gap": 0.3,
+                     "text": "That's the week. Subscribe, and next week there's another round of buried history."}]}
+    path = HERE / "episodes" / f"{eid}.json"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(json.dumps(ep, indent=1, ensure_ascii=False))
+    main(str(path))
+    return eid
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) == 2 and sys.argv[1] == "--week":
+        print(weekly())
+    elif len(sys.argv) == 2:
+        main(sys.argv[1])
+    else:
         sys.exit(__doc__)
-    main(sys.argv[1])

@@ -50,7 +50,7 @@ function progress(stage) {
     STAGES.map((s, n) => `<span class="${n < i ? "past" : n === i ? "now" : ""}">${s[1]}</span>`).join("")}</div>`;
 }
 function pill(stage) {
-  const label = {ready: "Ready for you", scheduled: "Scheduled", live: "Live", making: "Making", earlier: "Made earlier"}[stage];
+  const label = {draft: "Script to approve", ready: "Ready for you", scheduled: "Scheduled", live: "Live", making: "Making", earlier: "Made earlier"}[stage];
   return `<span class="pill ${esc(stage)}">${label}</span>`;
 }
 function spark(series, w = 200, h = 36) {
@@ -81,7 +81,9 @@ async function pageToday() {
   const row = c => {
     const img = c.thumb ? `<img class="thumb" src="${media(c.thumb)}" alt="" data-open="${esc(c.video)}">` : `<div class="thumb ph"></div>`;
     let body = `<div class="t">${esc(c.title)}</div><div class="s">${esc(c.text)}</div>`;
-    let actions = c.kind === "ready" ? `<button class="btn primary small" data-open="${esc(c.video)}">Review</button>` :
+    let actions = c.kind === "draft" ? `<button class="btn primary small" data-go="draft/${esc(c.video)}">Read &amp; approve</button>` :
+                  c.kind === "missed" ? `<button class="btn primary small" data-go="control">Open Control</button>` :
+                  c.kind === "ready" ? `<button class="btn primary small" data-open="${esc(c.video)}">Review</button>` :
                   `<button class="btn small" data-open="${esc(c.video)}">Open</button>`;
     if (c.steps) {
       const helper = {tags: c.tags ? `<button class="btn small" data-copy="${esc(c.tags)}">Copy tags</button>` : "",
@@ -109,7 +111,7 @@ async function pageToday() {
 /* ---------- Videos ---------- */
 async function pageVideos() {
   const vs = await get("/api/videos");
-  const tile = v => `<button class="tile" data-open="${esc(v.id)}">
+  const tile = v => `<button class="tile" ${v.stage === "draft" ? `data-go="draft/${esc(v.id)}"` : `data-open="${esc(v.id)}"`}>
       ${v.cover || v.thumb ? `<img src="${media(v.cover || v.thumb)}" alt="">` : `<div class="ph">No picture yet</div>`}
       <div class="t">${esc(v.title)}</div>${pill(v.stage)}</button>`;
   const group = (name, list, open = true) => list.length ? (open
@@ -117,7 +119,7 @@ async function pageVideos() {
     : `<details class="more"><summary>${name} (${list.length})</summary><div class="grid" style="margin-top:12px">${list.map(tile).join("")}</div></details>`) : "";
   const by = s => vs.filter(v => v.stage === s);
   main.innerHTML = `<div class="page"><div class="head"><h1>Videos</h1><p>Everything you've made, newest first.</p></div>
-    ${group("Ready for you", by("ready"))}${group("Being made", by("making"))}${group("Scheduled", by("scheduled"))}
+    ${group("Scripts to approve", by("draft"))}${group("Ready for you", by("ready"))}${group("Being made", by("making"))}${group("Scheduled", by("scheduled"))}
     ${group("Live", by("live"))}${group("Made earlier", by("earlier"), false)}</div>`;
 }
 

@@ -23,23 +23,56 @@ HERE = Path(__file__).resolve().parent
 DB = HERE / "out" / "nether.db"
 STALE_HOURS = 6        # a task still "working" after this long stopped without reporting (app closed mid-job)
 
-# ax/ay: where the agent sits inside the brain drawing (same 0–1 box as the brain's sections)
+# The whole system as agents. Each is a region of the brain (ax/ay: its anchor in the brain drawing,
+# same 0–1 box as brain.js) and owns sub-agents. A sub-agent is (name, Studio page it opens or None,
+# what it does). Pages are how you work with a sub-agent; tasks are how it reports its work.
 AGENTS = {
-    "intelligence": {"name": "Intelligence", "role": "Finds topics worth making", "ax": 0.3, "ay": 0.43,
-                     "subs": {"demand": "Demand scout", "competitors": "Competitor scout", "fit": "Channel-fit scout",
-                              "rights": "Visuals & rights scout", "sources": "Source scout"}},
-    "content": {"name": "Content", "role": "Scripts, hooks and packaging", "ax": 0.43, "ay": 0.31,
-                "subs": {"script": "Script writer", "hooks": "Hook & retention check", "packaging": "Packaging",
-                         "titles": "Title scoring", "episodes": "Episode planner"}},
-    "production": {"name": "Production", "role": "Makes the videos", "ax": 0.62, "ay": 0.37,
-                   "subs": {"visuals": "Visuals", "tiktok": "TikTok cut", "render": "Renderer", "qa": "QA",
-                            "thumbnail": "Thumbnail", "bundle": "Asset upload"}},
-    "publishing": {"name": "Publishing", "role": "Queues and moves posts", "ax": 0.74, "ay": 0.53,
-                   "subs": {"schedule": "Scheduler", "undo": "Undo", "reschedule": "Reschedule"}},
-    "analytics": {"name": "Analytics", "role": "Pulls the real numbers", "ax": 0.56, "ay": 0.53,
-                  "subs": {"stats": "Numbers refresh", "retention": "Retention report", "learning": "Learning loop"}},
-    "business": {"name": "Business", "role": "Community and money", "ax": 0.42, "ay": 0.58,
-                 "subs": {"community": "Comment replies", "monetisation": "Monetisation tracker"}},
+    "intelligence": {"name": "Intelligence", "lobe": "Frontal lobe · planning", "role": "Finds topics worth making",
+                     "ax": 0.3, "ay": 0.4, "subs": {
+        "ideas": ("Ideas backlog", "ideas", "Every topic waiting to be made, ranked by real demand."),
+        "demand": ("Demand scout", "investigate", "How many views similar Shorts got in the last year."),
+        "competitors": ("Competitor scout", "investigate", "Who made them, and whether small channels are winning."),
+        "fit": ("Channel-fit scout", "investigate", "How this lane has done on your own channel."),
+        "rights": ("Visuals & rights scout", "investigate", "Public-domain photos, or AI art only for characters."),
+        "sources": ("Source scout", "investigate", "Where fact-checking starts.")}},
+    "content": {"name": "Content", "lobe": "Temporal lobe · language", "role": "Researches and writes the videos",
+                "ax": 0.36, "ay": 0.64, "subs": {
+        "research": ("Researcher", "make", "Finds and checks the facts, with sources, before a word is written."),
+        "script": ("Script writer", "make", "Writes the draft script, visuals plan and end card for you to approve."),
+        "packaging": ("Packaging", "make", "Titles, descriptions, captions, tags and the pinned comment."),
+        "hooks": ("Hook & retention check", "retention", "Checks the first seconds and pacing against the rules."),
+        "titles": ("Title scoring", None, "Scores title options with vidIQ."),
+        "episodes": ("Episode planner", "make", "Turns the week's Shorts into the weekly long-form episode.")}},
+    "production": {"name": "Production", "lobe": "Occipital lobe · vision", "role": "Makes the videos",
+                   "ax": 0.85, "ay": 0.46, "subs": {
+        "videos": ("Videos", "videos", "Every video, from being made to live."),
+        "visuals": ("Visuals", None, "Fetches real photos and generates the art."),
+        "tiktok": ("TikTok cut", "retention", "Builds the TikTok retention cut."),
+        "render": ("Renderer", None, "Narration, captions, motion, score and mix."),
+        "qa": ("QA", None, "Checks every render before you see it."),
+        "thumbnail": ("Thumbnail", None, "Thumbnail and vertical cover."),
+        "bundle": ("Asset upload", None, "Backs the assets up to R2 for the cloud workflow.")}},
+    "publishing": {"name": "Publishing", "lobe": "Motor cortex · action", "role": "Gets videos out",
+                   "ax": 0.47, "ay": 0.22, "subs": {
+        "calendar": ("Calendar", "calendar", "Posted and scheduled, across every platform."),
+        "schedule": ("Scheduler", "calendar", "Queues videos on Buffer — only when you press Post."),
+        "undo": ("Undo", "calendar", "Takes a video back out of the queue."),
+        "reschedule": ("Reschedule", "calendar", "Moves a scheduled post.")}},
+    "analytics": {"name": "Analytics", "lobe": "Parietal lobe · numbers", "role": "Measures and learns",
+                  "ax": 0.7, "ay": 0.29, "subs": {
+        "performance": ("Performance", "performance", "Views, watch time and engagement per video and platform."),
+        "retention": ("Retention", "retention", "Pacing checklist beside real watch time."),
+        "stats": ("Numbers refresh", "performance", "Pulls the true numbers from YouTube and Buffer."),
+        "learning": ("Learning loop", "investigate", "Checks predictions against results and re-weights.")}},
+    "business": {"name": "Business", "lobe": "Limbic system · relationships", "role": "Audience and money",
+                 "ax": 0.53, "ay": 0.6, "subs": {
+        "community": ("Comments", "comments", "Comments waiting for a reply, with drafted answers."),
+        "monetisation": ("Monetisation", "channel", "How close the channel is to getting paid.")}},
+    "control": {"name": "Control", "lobe": "Cerebellum · coordination", "role": "Keeps every agent running",
+                "ax": 0.74, "ay": 0.72, "subs": {
+        "tasks": ("Task log", "agents", "Every task every agent ran — what broke, and Retry."),
+        "daily": ("Daily run", "agents", "The 7:00 run: refresh, learn, draft the next video."),
+        "settings": ("Settings", "settings", "Connections and keys, and whether each one works.")}},
 }
 
 # Studio's job buttons → (agent, sub-agent). build/build_nofetch report themselves from build.sh.
@@ -166,6 +199,14 @@ def tasks(limit=30, agent=None, top_only=True):
         return rows
 
 
+def last(agent, sub=None):
+    """The most recent top-level task of an agent (and sub-agent), or None."""
+    with db() as c:
+        q = "SELECT * FROM tasks WHERE agent=? AND parent IS NULL" + (" AND sub=?" if sub else "") + " ORDER BY id DESC LIMIT 1"
+        r = c.execute(q, (agent, sub) if sub else (agent,)).fetchone()
+        return _row(r) if r else None
+
+
 def task(tid):
     with db() as c:
         r = c.execute("SELECT * FROM tasks WHERE id=?", (tid,)).fetchone()
@@ -198,13 +239,13 @@ def system():
     agents = []
     for key, a in AGENTS.items():
         subs = []
-        for sk, name in a["subs"].items():
+        for sk, (name, page, what) in a["subs"].items():
             rec = latest.get((key, sk))
-            subs.append({"key": sk, "name": name, "state": state(rec),
+            subs.append({"key": sk, "name": name, "page": page, "what": what, "state": state(rec),
                          "last": {k: rec[k] for k in ("id", "title", "status", "finished", "error")} if rec else None})
         last = top.get(key)
         st = "working" if latest.get((key, "__working")) else state(last)
-        agents.append({"key": key, "name": a["name"], "role": a["role"], "ax": a["ax"], "ay": a["ay"], "state": st,
+        agents.append({"key": key, "name": a["name"], "lobe": a["lobe"], "role": a["role"], "ax": a["ax"], "ay": a["ay"], "state": st,
                        "active": latest.get((key, "__working"), 0), "subs": subs,
                        "last": {k: last[k] for k in ("id", "title", "status", "finished")} if last else None})
     return {"online": True, "agents": agents, "counts": {s: counts.get(s, 0) for s in

@@ -3,39 +3,39 @@
    Da Vinci construction lines; hovering draws the line, clicking fires a signal along it and
    zooms into that region before opening the section. Every caption is live data. */
 const NEURONS = [
-  // each section sits on the part of the brain that does that job (side profile: front is left).
-  // Placed by hand, deliberately uneven: gap = distance outside the brain, nudge = px offset,
-  // scale = type size, tilt = degrees.
-  {key: "today", label: "Today", lobe: "Motor cortex · action", ax: 0.5, ay: 0.215, gap: 0, nudge: [0, 0], scale: 1.3, tilt: -3, at: [0.035, 0.37]},
-  {key: "ideas", label: "Ideas", lobe: "Frontal lobe · planning", ax: 0.24, ay: 0.36, gap: 0.2, nudge: [-10, -80], scale: 0.95, tilt: 2.5},
-  {key: "comments", label: "Comments", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.015, nudge: [-110, 36], scale: 1.12, tilt: -1.5},
-  {key: "calendar", label: "Calendar", lobe: "Hippocampus · memory", ax: 0.53, ay: 0.6, gap: 0, nudge: [0, 0], scale: 0.82, tilt: 1.5, at: [0.025, 0.6]},
-  {key: "performance", label: "Performance", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.15, nudge: [70, -40], scale: 1.0, tilt: 3.5},
-  {key: "videos", label: "Videos", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.05, nudge: [-6, 110], scale: 1.4, tilt: -2},
-  {key: "settings", label: "Settings", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.24, nudge: [110, -30], scale: 0.74, tilt: 2},
+  // Each section is an AGENT sitting on the part of the brain that does its job (side profile: front is left).
+  // Its sub-agents orbit its node (ext_nether.js). Placed by hand, deliberately uneven: gap = distance outside
+  // the brain, nudge = px offset, scale = type size, tilt = degrees. ax/ay match orchestrator.AGENTS.
+  {key: "publishing", label: "Publishing", lobe: "Motor cortex · action", ax: 0.47, ay: 0.22, gap: 0, nudge: [0, 0], scale: 0.9, tilt: 2.5, at: [0.2, 0.13]},
+  {key: "intelligence", label: "Intelligence", lobe: "Frontal lobe · planning", ax: 0.3, ay: 0.4, gap: 0, nudge: [0, 0], scale: 1.05, tilt: -3, at: [0.035, 0.37]},
+  {key: "content", label: "Content", lobe: "Temporal lobe · language", ax: 0.36, ay: 0.64, gap: 0.015, nudge: [-110, 36], scale: 1.12, tilt: -1.5},
+  {key: "business", label: "Business", lobe: "Limbic system · relationships", ax: 0.53, ay: 0.6, gap: 0, nudge: [0, 0], scale: 0.82, tilt: 1.5, at: [0.025, 0.6]},
+  {key: "analytics", label: "Analytics", lobe: "Parietal lobe · numbers", ax: 0.7, ay: 0.29, gap: 0.15, nudge: [70, -40], scale: 1.0, tilt: 3.5},
+  {key: "production", label: "Production", lobe: "Occipital lobe · vision", ax: 0.85, ay: 0.46, gap: 0.05, nudge: [-6, 110], scale: 1.2, tilt: -2},
+  {key: "control", label: "Control", lobe: "Cerebellum · coordination", ax: 0.74, ay: 0.72, gap: 0.24, nudge: [110, -30], scale: 0.74, tilt: 2},
 ];
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 async function brainData() {
   const safe = p => get(p).catch(() => null);
-  const [ch, today, vids, cal, ideas, com, health] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
-    "/api/calendar", "/api/ideas", "/api/comments", "/api/health"].map(safe));
+  const [ch, today, vids, cal, ideas, com, health, sys, dr] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
+    "/api/calendar", "/api/ideas", "/api/comments", "/api/health", "/api/system", "/api/drafts"].map(safe));
   const count = s => (vids || []).filter(v => v.stage === s).length;
   const next = (cal?.items || []).find(i => i.state === "scheduled");
   const openIdeas = (ideas?.sections || []).flatMap(s => s.items).filter(i => !i.made && !i.dismissed).length;
   const waitingC = (com?.comments || []).filter(c => !c.done).length;
   const bad = (health || []).filter(h => !h.ok);
-  const nToday = today?.cards?.length || 0;
+  const nDraft = dr?.drafts?.length || 0, failed = (sys?.agents || []).filter(a => a.state === "failed").map(a => a.name);
   return {
-    ch,
+    ch, today,
     cap: {
-      today: [nToday ? `${nToday} thing${nToday > 1 ? "s" : ""} to tick off` : "All caught up", nToday > 0],
-      ideas: [ideas?.next ? `Up next: ${ideas.next.hook}` : `${openIdeas} ideas, ranked by real demand`, false],
-      videos: [`${count("live")} live · ${count("scheduled")} scheduled · ${count("ready")} ready`, count("ready") > 0],
-      comments: [waitingC ? `${waitingC} waiting for a reply` : "Nobody waiting", waitingC > 0],
-      calendar: [next ? `Next: ${PLAT[next.platform]} ${new Date(next.at).toLocaleString(undefined, {weekday: "short", hour: "numeric", minute: "2-digit"})}` : "Nothing queued", false],
-      performance: [ch?.ready ? `${fmt(ch.channel.views)} YouTube views` : "No numbers yet", false],
-      settings: [bad.length ? `${bad.map(b => b.name.split(" (")[0]).join(", ")} need${bad.length > 1 ? "" : "s"} a look` : "Every connection working", bad.length > 0],
+      intelligence: [ideas?.next ? `Up next: ${ideas.next.hook}` : `${openIdeas} ideas, ranked by real demand`, false],
+      content: [dr?.busy ? `Writing: ${dr.busy.replace(/^drafting /, "")}` : nDraft ? `${nDraft} script${nDraft > 1 ? "s" : ""} to approve` : "Draft a video from any idea", nDraft > 0],
+      production: [`${count("live")} live · ${count("scheduled")} scheduled · ${count("ready")} ready`, count("ready") > 0],
+      publishing: [next ? `Next: ${PLAT[next.platform]} ${new Date(next.at).toLocaleString(undefined, {weekday: "short", hour: "numeric", minute: "2-digit"})}` : "Nothing queued", false],
+      analytics: [ch?.ready ? `${fmt(ch.channel.views)} YouTube views` : "No numbers yet", false],
+      business: [waitingC ? `${waitingC} comment${waitingC > 1 ? "s" : ""} waiting` : "Nobody waiting", waitingC > 0],
+      control: [failed.length ? `${failed.join(", ")} need${failed.length > 1 ? "" : "s"} a look` : bad.length ? `${bad.map(b => b.name.split(" (")[0]).join(", ")} need${bad.length > 1 ? "" : "s"} a look` : "Every agent and connection working", failed.length + bad.length > 0],
     },
   };
 }
@@ -44,7 +44,9 @@ async function pageBrain() {
   document.body.classList.add("on-brain");
   main.innerHTML = `<div class="brain-stage" id="stage">
     <header class="brain-top"><span class="wm">NETHERMIND</span><span class="ed">The brain · ${esc(new Date().toLocaleDateString(undefined, {weekday: "long", day: "numeric", month: "long"}))}</span>
-      <span class="hint">Drag to turn · scroll to zoom · shift-drag to move · double-click to reset</span>
+      <button class="nx-status" id="nx-status" data-go="control" title="NETHER: every agent's state — open Control"><span class="nx-dot"></span><b>NETHER</b><span>connecting…</span></button>
+      <span class="hint">Drag to turn · scroll to zoom · click a node</span>
+      <button class="today-pill" id="today-pill" data-go="today">Today</button>
       <button class="ask" id="brain-ask">Ask the brain <kbd>⌘K</kbd></button></header>
     <canvas class="brain-net" id="bnet" role="img" aria-label="Nethermind's brain: a living network of glowing neurons"></canvas>
     <svg class="synapses" id="syn" aria-hidden="true"></svg>
@@ -53,6 +55,9 @@ async function pageBrain() {
   </div>`;
   $("#brain-ask").onclick = () => palette();
   const data = await brainData();
+  const nT = data.today?.cards?.length || 0;                 // you: the one place every agent hands work to
+  $("#today-pill").innerHTML = nT ? `Today <b>${nT}</b> need${nT > 1 ? "" : "s"} you` : "Today · all caught up";
+  $("#today-pill").classList.toggle("hot", nT > 0);
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
     return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}" style="--s:${n.scale};--tilt:${n.tilt}deg">

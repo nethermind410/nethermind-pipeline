@@ -2,12 +2,7 @@
 /* Retention & Episodes — hook/pacing checklist beside real watch time, TikTok cuts, episode builds.
    Uses the shared helpers from app.js ($, esc, get, post, toast, sheet, main). */
 (() => {
-  const nav = document.createElement("button");
-  nav.className = "nav"; nav.dataset.go = "retention";
-  nav.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>Retention`;
-  const settings = document.querySelector('.nav[data-go="settings"]');
-  settings ? settings.before(nav) : document.querySelector(".side").append(nav);
-
+  // lives under Analytics → Retention (ext_nether.js hubs); no nav button of its own
   const bar = (score) => `<span class="rt-score"><i style="width:${score * 10}%"></i></span><b>${score}/10</b>`;
   const real = (r) => !r ? `<span class="rt-none">not posted</span>`
     : `${Number(r.views).toLocaleString()} views${r.avg_watch != null ? ` · <b>${r.avg_watch}s</b> avg watch` : ""}`;
@@ -61,5 +56,4 @@
   });
 
   window.PAGES.retention = pageRetention;
-  if (location.hash.slice(1) === "retention") route();
 })();

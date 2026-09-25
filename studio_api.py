@@ -77,7 +77,9 @@ def video(vid):
     posts = studio_channel.true_posts(title0, stats.get("videos", {}).get(vid, []))
     sched = [s for s in stats.get("scheduled", []) if s.get("video") == vid]
     rendered, qa = (OUT / f"{f}.mp4").exists(), (OUT / f"{vid}_qa_contact.jpg").exists()
-    if [p for p in posts if p.get("sentAt")] and (rec or stats.get("videos", {}).get(vid)):
+    if cfg.get("draft"):
+        stage = "draft"                     # a script the Content agent wrote, waiting for your approval
+    elif [p for p in posts if p.get("sentAt")] and (rec or stats.get("videos", {}).get(vid)):
         stage = "live"
     elif rec or sched:
         stage = "scheduled"
@@ -127,6 +129,9 @@ def today():
     ticking it (done.json) hides it. Cards also disappear when the real thing happens."""
     done, cards, vids = done_map(), [], videos()
     for v in vids:
+        if v["stage"] == "draft":
+            cards.append({"key": f"draft:{v['id']}", "kind": "draft", "video": v["id"], "title": v["title"],
+                          "thumb": None, "text": "— the script is drafted. Read it, edit any line, and approve it to build."})
         if v["stage"] == "ready" and not v["feedback"]:
             cards.append({"key": f"ready:{v['id']}", "kind": "ready", "video": v["id"], "title": v["title"],
                           "thumb": v["thumb"], "text": "is ready for you to review.",
@@ -151,6 +156,15 @@ def today():
                               "thumb": v["thumb"], "text": "is live on YouTube. Finish it:", "steps": steps,
                               "tags": pkg.get("youtube_tags"), "comment": pkg.get("pinned_comment"),
                               "link": v["youtube_edit"], "watch": v["youtube_url"]})
+    try:                                    # the daily run went quiet: say so instead of silently skipping a day
+        import orchestrator
+        last = orchestrator.last("control", "daily")
+        if last and (datetime.datetime.now().astimezone() - parse_dt(last["started"])).total_seconds() > 26 * 3600:
+            cards.append({"key": f"missed:{last['started'][:10]}", "kind": "missed", "video": "", "title": "The daily run",
+                          "thumb": None, "text": f"hasn't run since {when(last['started'])}. Is the Mac asleep at 7:00? "
+                                                 "Control → Daily run → Run now."})
+    except Exception:
+        pass
     cards = [c for c in cards if c["key"] not in done]
     ranked = sorted([v for v in vids if v["views"]], key=lambda v: -v["views"])
     highlight = None
