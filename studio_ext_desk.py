@@ -671,6 +671,22 @@ def d_settings():
             "actions": [{"label": "Open Settings", "go": "settings", "primary": True}]}
 
 
+def d_engines():
+    import llm
+    s, u = llm.status(), llm.usage()
+    rows = [row(v["what"], " → ".join(llm.ENGINES[e]["name"] for e in v["chain"]), "web" if v["web"] else None) for v in s["jobs"].values()]
+    eng = [row(llm.ENGINES[k]["name"], f"{b['ok']} answered · {b['failed']} failed · ${b['cost']:.2f}", f"{b['calls']} calls",
+               "warn" if b["failed"] > b["ok"] else None) for k, b in u["engines"].items()]
+    share = u["claude_share"]
+    return {"question": "Is Claude doing only the jobs that need it — and what does the writing cost?",
+            "stats": [{"k": "Claude's share (7 days)", "v": f"{share:.0%}" if share is not None else "—"},
+                      {"k": "API spend (7 days)", "v": f"${u['cost']:.2f}"},
+                      {"k": "Preset", "v": (s["presets"].get(s["preset"]) or {}).get("name", "Custom")}],
+            "panels": [panel("Who writes what (first engine, then its fallbacks)", rows, ""),
+                       panel("Last 7 days by engine", eng, "Nothing written yet this week.")],
+            "actions": [{"label": "Open AI engines", "go": "engines", "primary": True}]}
+
+
 DESKS = {("intelligence", "ideas"): d_ideas, ("intelligence", "demand"): d_demand, ("intelligence", "competitors"): d_competitors,
          ("intelligence", "fit"): d_fit, ("intelligence", "rights"): d_rights, ("intelligence", "sources"): d_sources,
          ("content", "research"): d_research, ("content", "script"): d_script, ("content", "packaging"): d_packaging,
@@ -683,7 +699,8 @@ DESKS = {("intelligence", "ideas"): d_ideas, ("intelligence", "demand"): d_deman
          ("analytics", "stats"): d_stats, ("analytics", "learning"): d_learning,
          ("business", "community"): d_community, ("business", "monetisation"): d_monetisation,
          ("business", "affiliates"): d_affiliates, ("business", "sponsors"): d_sponsors,
-         ("control", "tasks"): d_tasks, ("control", "daily"): d_daily, ("control", "settings"): d_settings}
+         ("control", "tasks"): d_tasks, ("control", "daily"): d_daily, ("control", "settings"): d_settings,
+         ("control", "engines"): d_engines}
 
 
 def desk(agent, sub):

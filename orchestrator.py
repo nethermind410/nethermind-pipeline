@@ -73,7 +73,8 @@ AGENTS = {
                 "ax": 0.74, "ay": 0.72, "subs": {
         "tasks": ("Task log", "agents", "Every task every agent ran — what broke, and Retry."),
         "daily": ("Daily run", "agents", "The 7:00 run: refresh, learn, draft the next video."),
-        "settings": ("Settings", "settings", "Connections and keys, and whether each one works.")}},
+        "settings": ("Settings", "settings", "Connections and keys, and whether each one works."),
+        "engines": ("AI engines", "engines", "Which engine writes each job — Claude, an API key or a free local model — with automatic fallback.")}},
 }
 
 # Studio's job buttons → (agent, sub-agent). build/build_nofetch report themselves from build.sh.

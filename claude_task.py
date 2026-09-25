@@ -37,13 +37,14 @@ def replies(thread_id):
     c = next((x for x in yt.get("comments", []) if x["id"] == thread_id), None) or sys.exit("Comment not found; refresh first.")
     pkg = next((json.loads(p.read_text()) for p in (HERE / "packaging").glob("*.json")
                 if json.loads(p.read_text()).get("title", "")[:40].lower() == c["video_title"][:40].lower()), {})
-    out = ask(f"""You write replies for Nethermind, a faceless YouTube Shorts channel about Marvel history, space and weird animals.
+    import llm
+    out = llm.ask("replies", f"""You write replies for Nethermind, a faceless YouTube Shorts channel about Marvel history, space and weird animals.
 Voice: direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one).
 Video: "{c['video_title']}". What the video covers: {pkg.get('youtube_description', '')[:600]}
 Comment by {c['author']}: "{c['text']}"
 Write 2 different replies (each under 220 characters). Only state facts that are in the video description above;
 if the comment asks something you can't verify from it, say you'll look into it. Reply with ONLY JSON:
-{{"replies": ["...", "..."]}}""", [])
+{{"replies": ["...", "..."]}}""", check=llm.check_replies)
     drafts = json.loads((OUT / "comment_drafts.json").read_text()) if (OUT / "comment_drafts.json").exists() else {}
     drafts[thread_id] = out["replies"][:2]
     (OUT / "comment_drafts.json").write_text(json.dumps(drafts, indent=1))

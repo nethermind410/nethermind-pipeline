@@ -24,7 +24,11 @@ ID_RE = re.compile(r"^[a-z0-9_]{3,48}$")
 
 
 # ------------------------------------------------------------------ Claude
-def ask(prompt, tools=(), timeout=900):
+def ask(prompt, tools=(), timeout=900, job=None, check=None):
+    """Writing goes through llm.py, which picks the engine for this job (Claude subscription by default)."""
+    if job:
+        import llm
+        return llm.ask(job, prompt, tools, timeout, check)
     env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
     env["PATH"] = f"{Path.home()}/.local/bin:" + env.get("PATH", "/usr/bin:/bin")
     try:
@@ -111,7 +115,8 @@ Reply with ONLY this JSON:
   "sources_for_description": ["Publisher (Title)"]}}
 Use kind "real" for real animals, people, places, science and public-domain history; "ai" only for comic,
 anime or game-character beats. At least 5 facts."""
-    r = ask(prompt, ["WebSearch", "WebFetch"])
+    import llm
+    r = ask(prompt, ["WebSearch", "WebFetch"], job="research", check=llm.check_research)
     if len(r.get("facts") or []) < 3:
         raise RuntimeError("The research came back with fewer than 3 sourced facts — the topic may be too thin to verify.")
     return r
@@ -145,7 +150,8 @@ Rules for the config:
   next video from these open ideas (the one that follows best):
 {ideas}
 Reply with ONLY the JSON config."""
-    return ask(prompt)
+    import llm
+    return ask(prompt, job="script", check=llm.check_script)
 
 
 def write_packaging(cfg, facts):
@@ -167,7 +173,8 @@ Reply with ONLY this JSON:
   "instagram_caption": "starts 'Send this to the ...', ≤220 chars, 3 hashtags incl #nethermind",
   "pinned_comment": "a question that makes people answer",
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 2, "cx": 0.5, "cy": 0.4, "zoom": 1.0}}}}"""
-    return ask(prompt)
+    import llm
+    return ask(prompt, job="packaging", check=llm.check_packaging_short)
 
 
 # ------------------------------------------------------------------ checks + files

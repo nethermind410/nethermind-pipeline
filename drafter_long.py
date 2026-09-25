@@ -68,7 +68,8 @@ Reply with ONLY this JSON:
   "sources_for_description": ["Publisher (Title)"]}}
 {"Exactly 5 chapters, one per tier, surface to bottom, with the entries in each." if is_iceberg(topic, style) else "5–7 chapters."} At least 15 facts. Prefer real public-domain photos (kind "real"); AI art only for comic, anime or game
 character beats, archetype/pose/palette only — never a named character, costume or logo."""
-    r = ask(prompt, ["WebSearch", "WebFetch"], timeout=1500)
+    import llm
+    r = ask(prompt, ["WebSearch", "WebFetch"], timeout=1500, job="research", check=llm.check_research)
     if len(r.get("facts") or []) < 8 or len(r.get("outline") or []) < 3:
         raise RuntimeError("The research came back too thin for a long-form (under 8 sourced facts or 3 chapters).")
     return r
@@ -108,7 +109,8 @@ read on their own, must work as a 40–60 second Short with the chapter's hook t
 chapter is its cold open: 8 words or fewer, leading with the number or the claim (the swipe comes in 2 seconds). At most
 {MAX_AI_IMAGES} AI images in the whole episode; reuse each image on 2–4 consecutive beats with different zoom/centre.
 Reply with ONLY the JSON."""
-    return ask(prompt, timeout=1500)
+    import llm
+    return ask(prompt, timeout=1500, job="episode", check=llm.check_episode)
 
 
 def write_packaging(ep, facts):
@@ -127,7 +129,8 @@ Reply with ONLY this JSON:
   "pinned_comment": "a question that makes people answer",
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 1, "cx": 0.5, "cy": 0.4, "zoom": 1.0}},
   "thumbnail_options": [{{"lines": ["..."], "accent": 1}}, {{"lines": ["..."], "accent": 1}}]}}"""
-    return ask(prompt)
+    import llm
+    return ask(prompt, job="packaging", check=llm.check_packaging_long)
 
 
 # ------------------------------------------------------------------ checks + files

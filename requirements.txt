@@ -18,3 +18,6 @@ python-dotenv
 # Optional / not used by the default GitHub Actions workflow:
 # google-genai      — only for gen_visuals.py (hero configs' Gemini art)
 # elevenlabs        — only if tts_elevenlabs.py's fallback path is called
+
+# Optional: AI engines beyond the Claude subscription (Control → AI engines)
+anthropic        # Anthropic API key engine

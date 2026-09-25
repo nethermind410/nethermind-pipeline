@@ -46,7 +46,7 @@
   const HUBS = {intelligence: [["brief", "Brief"], ["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
     production: [["videos", "Videos"]], publishing: [["calendar", "Calendar"]],
     analytics: [["performance", "Performance"], ["retention", "Retention"]],
-    business: [["money", "Money"], ["comments", "Comments"], ["channel", "Channel"]], control: [["agents", "Task log"], ["settings", "Settings"]]};
+    business: [["money", "Money"], ["comments", "Comments"], ["channel", "Channel"]], control: [["agents", "Task log"], ["settings", "Settings"], ["engines", "AI engines"]]};
   const OWNER = Object.fromEntries(Object.entries(HUBS).flatMap(([a, tabs]) => tabs.map(([r]) => [r, a])));
   Object.assign(OWNER, {draft: "content", video: "production"});
   const FLOW = {intelligence: "content", content: "production", production: "publishing", publishing: "analytics",
