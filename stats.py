@@ -52,29 +52,94 @@ def load_packaging():
     return keys
 
 
+STOP = set("the a an of in on is are was were to for and or it its this that with at by from be has have had your you "
+           "why how what who can could would still we our they them not just his her their one more than into out about "
+           "follow send friend thinks know nethermind shorts".split())
+
+
+def words(s):
+    return {w for w in re.findall(r"[a-z0-9]+", (s or "").lower()) if len(w) > 2 and w not in STOP}
+
+
+def load_fuzzy():
+    """Each video's distinctive words (title + description + captions) for posts whose text was edited by hand."""
+    docs = {}
+    for p in (HERE / "cfg").glob("*.json"):                # every video: its script, plus packaging when it has one
+        if p.stem.startswith(("_", "test")) or p.stem.endswith("_tiktok") or "__" in p.stem:
+            continue
+        try:
+            c = json.loads(p.read_text())
+        except Exception:
+            continue
+        if c.get("draft"):
+            continue
+        text = " ".join(s.get("text", "") for s in c.get("segments", [])) + " " + p.stem.replace("_", " ")
+        pk = HERE / "packaging" / f"{p.stem}.json"
+        if pk.exists():
+            d = json.loads(pk.read_text())
+            text += " " + " ".join(str(d.get(f, "")) for f in ("title", "youtube_description", "tiktok_caption",
+                                                                "instagram_caption", "youtube_tags"))
+        docs[p.stem] = words(text)
+    df = {}
+    for ws in docs.values():
+        for w in ws:
+            df[w] = df.get(w, 0) + 1
+    return docs, df
+
+
+def fuzzy_match(text, docs, df):
+    """Link a post to a video only when its rare shared words clearly point at one video."""
+    pw = words(text)
+    scores = sorted(((sum(1 / df[w] for w in pw & ws), vid) for vid, ws in docs.items()), reverse=True)
+    if not scores:
+        return None
+    best, vid = scores[0]
+    runner = scores[1][0] if len(scores) > 1 else 0
+    return vid if best >= 3.5 and best >= 2.0 * runner else None     # tuned on real posts: precise beats greedy
+
+
+def siblings(nodes, match, hours=3):
+    """A video goes out to every platform together: an unmatched post takes the video of the posts on OTHER
+    platforms sent within `hours` of it — only when they all agree."""
+    import datetime
+    at = lambda n: datetime.datetime.fromisoformat(n["sentAt"].replace("Z", "+00:00"))
+    out = dict(match)
+    for n in nodes:
+        if match.get(n["id"]):
+            continue
+        near = {match[o["id"]] for o in nodes if match.get(o["id"]) and o["channelService"] != n["channelService"]
+                and abs((at(o) - at(n)).total_seconds()) <= hours * 3600}
+        if len(near) == 1:
+            out[n["id"]] = near.pop()
+    return out
+
+
 def main():
     env = buffer_post.load_env()
     org = gql(env, "{ account { organizations { id } } }")["account"]["organizations"][0]["id"]
     keys = load_packaging()
+    fuzzy = load_fuzzy()
     posted = json.loads((HERE / "out" / "posted.json").read_text()) if (HERE / "out" / "posted.json").exists() else {}
     by_id = {pid: vid for vid, rec in posted.items() if isinstance(rec, dict)
              for pid in rec.get("posts", {}).values()}
-    videos, unmatched, after = {}, 0, None
+    videos, unmatched, after, nodes = {}, 0, None, []
     for _ in range(10):  # up to 500 posts
         page = gql(env, QUERY, {"o": org, "after": after})["posts"]
-        for e in page["edges"]:
-            n = e["node"]
-            vid = by_id.get(n["id"]) or keys.get(norm(n["text"]))
-            if not vid:
-                unmatched += 1
-                continue
-            m = {x["type"]: x["value"] for x in (n.get("metrics") or [])}
-            videos.setdefault(vid, []).append({
-                "platform": n["channelService"], "sentAt": n["sentAt"], "url": n["externalLink"],
-                **{k: m.get(k) for k in KEEP}})
+        nodes += [e["node"] for e in page["edges"]]
         if not page["pageInfo"]["hasNextPage"]:
             break
         after = page["pageInfo"]["endCursor"]
+    match = {n["id"]: by_id.get(n["id"]) or keys.get(norm(n["text"])) or fuzzy_match(n["text"], *fuzzy) for n in nodes}
+    match = siblings(nodes, match)
+    for n in nodes:
+        vid = match.get(n["id"])
+        if not vid:
+            unmatched += 1
+            continue
+        m = {x["type"]: x["value"] for x in (n.get("metrics") or [])}
+        videos.setdefault(vid, []).append({
+            "platform": n["channelService"], "sentAt": n["sentAt"], "url": n["externalLink"],
+            **{k: m.get(k) for k in KEEP}})
     sched = gql(env, QUERY.replace("status: [sent]", "status: [scheduled]").replace("direction: desc", "direction: asc"),
                 {"o": org, "after": None})["posts"]["edges"]
     scheduled = [{"id": e["node"]["id"], "video": by_id.get(e["node"]["id"]) or keys.get(norm(e["node"]["text"])) or "unknown",
