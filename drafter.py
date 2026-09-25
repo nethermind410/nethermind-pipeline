@@ -274,7 +274,7 @@ def draft(topic, notes=None, vid=None):
         save(vid, cfg, pkg, record)
         nether.finish(parent, {"id": vid, "title": pkg["title"], "retention": score})
         return vid
-    except Exception as e:
+    except (Exception, SystemExit) as e:                # never leave a task stuck on "working"
         if cur:
             nether.fail(cur, f"{type(e).__name__}: {e}")
         nether.fail(parent, f"{type(e).__name__}: {e}")

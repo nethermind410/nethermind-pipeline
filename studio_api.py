@@ -156,6 +156,16 @@ def today():
                               "thumb": v["thumb"], "text": "is live on YouTube. Finish it:", "steps": steps,
                               "tags": pkg.get("youtube_tags"), "comment": pkg.get("pinned_comment"),
                               "link": v["youtube_edit"], "watch": v["youtube_url"]})
+    try:                                    # Intelligence scored ideas: your call decides what's drafted next
+        import learning
+        open_cards = [c for c in learning._cards() if not c.get("decision")]
+        if open_cards:
+            best = max(open_cards, key=lambda c: c.get("score", 0))
+            cards.append({"key": f"intel:{len(open_cards)}:{best['slug'][:30]}", "kind": "intel", "video": "", "thumb": None,
+                          "title": f"{len(open_cards)} scorecard{'s' if len(open_cards) > 1 else ''}",
+                          "text": f"need your call — best: “{best['topic'][:70]}” ({best['score']}/100). Make it, or not for us?"})
+    except Exception:
+        pass
     try:                                    # the daily run went quiet: say so instead of silently skipping a day
         import orchestrator
         last = orchestrator.last("control", "daily")

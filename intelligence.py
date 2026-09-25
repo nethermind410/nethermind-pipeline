@@ -207,7 +207,7 @@ def investigate(topic):
                 found[key] = {"fit": scout_fit, "rights": scout_rights, "sources": scout_sources}[key](topic)
             out = {k: v for k, v in found[key].items() if k != "videos"}
             nether.finish(tid, out)
-        except Exception as e:
+        except (Exception, SystemExit) as e:          # youtube.py exits when the key is missing — contain it
             errors[key] = f"{type(e).__name__}: {e}"
             nether.fail(tid, errors[key])
     taste = scout_taste(topic)

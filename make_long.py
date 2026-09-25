@@ -219,7 +219,7 @@ def main(path, preview=False):
         nether.finish(parent, {"video": f"out/{vid}.mp4", "length": ts(total), "chapters": lines})
         print(f"\nDONE out/{vid}.mp4  ({ts(total)})\n" + "\n".join(lines))
         return vid
-    except Exception as e:
+    except (Exception, SystemExit) as e:                # never leave a task stuck on "working"
         if cur:
             nether.fail(cur, f"{type(e).__name__}: {e}")
         nether.fail(parent, f"{type(e).__name__}: {e}")

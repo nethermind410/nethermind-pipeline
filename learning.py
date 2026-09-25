@@ -215,7 +215,7 @@ def run():
         write_learnings(ls)
         nether.finish(tid, {"linked": made, "weights": w, "lessons": ls})
         return {"linked": made, "weights": w, "lessons": ls}
-    except Exception as e:
+    except (Exception, SystemExit) as e:
         nether.fail(tid, f"{type(e).__name__}: {e}")
         raise
 

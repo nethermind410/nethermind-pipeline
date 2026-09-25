@@ -83,6 +83,7 @@ async function pageToday() {
     let body = `<div class="t">${esc(c.title)}</div><div class="s">${esc(c.text)}</div>`;
     let actions = c.kind === "draft" ? `<button class="btn primary small" data-go="draft/${esc(c.video)}">Read &amp; approve</button>` :
                   c.kind === "missed" ? `<button class="btn primary small" data-go="control">Open Control</button>` :
+                  c.kind === "intel" ? `<button class="btn primary small" data-go="investigate">Give your call</button>` :
                   c.kind === "ready" ? `<button class="btn primary small" data-open="${esc(c.video)}">Review</button>` :
                   `<button class="btn small" data-open="${esc(c.video)}">Open</button>`;
     if (c.steps) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """daily.py — the Control agent's daily run (7:00 via launchd; see install_daily.sh).
 
-    python3 daily.py            refresh → learn → draft the next video → (Sundays) plan + render the weekly episode
+    python3 daily.py            refresh → learn → scout 3 ideas → draft the next video → (Sundays) plan + render the episode
     python3 daily.py --dry      say what it would draft, change nothing
 
 It never builds or posts: the draft waits in Today for your approval (Draft → you approve → build).
@@ -44,6 +44,27 @@ def pick_topic():
     return None, "no open ideas left"
 
 
+def scout_backlog(n=3):
+    """Investigate up to n open ideas that have no scorecard yet. A failing scout never stops the run."""
+    import studio_api, intelligence
+    have = {p.stem for p in (HERE / "out" / "intel").glob("*.json")} if (HERE / "out" / "intel").exists() else set()
+    done = []
+    for s in studio_api.ideas()["sections"]:
+        for i in s["items"]:
+            if len(done) >= n:
+                return done
+            if i["made"] or i["dismissed"] or intelligence.slug(i["hook"]) in have:
+                continue
+            try:
+                c = intelligence.investigate(i["hook"])
+                done.append(f"{c['score']}/100 {i['hook'][:60]}")
+            except (Exception, SystemExit) as e:
+                done.append(f"failed: {i['hook'][:40]} ({type(e).__name__})")
+                if "quota" in str(e).lower():
+                    return done
+    return done
+
+
 def main(dry=False):
     import drafter
     if dry:
@@ -63,6 +84,11 @@ def main(dry=False):
         r = subprocess.run(["./refresh.sh"], cwd=HERE, capture_output=True, text=True, timeout=900, env={"PY": PY, **__import__("os").environ})
         (nether.finish if r.returncode == 0 else nether.fail)(cur, (r.stdout + r.stderr)[-2000:])
         report["refresh"] = r.returncode == 0
+
+        cur = nether.begin("intelligence", "Scout 3 backlog ideas", sub="demand", parent=parent)
+        scouted = scout_backlog(3)                      # scorecards for you to call (YouTube quota only, no Claude)
+        nether.finish(cur, {"scouted": scouted})
+        report["scouted"] = scouted
 
         waiting = [d["id"] for d in drafter.drafts()]
         cur = nether.begin("content", "Draft the next video", sub="script", parent=parent)
@@ -96,7 +122,7 @@ def main(dry=False):
         cur = None
         nether.finish(parent, report)
         print(json.dumps(report, indent=1))
-    except Exception as e:
+    except (Exception, SystemExit) as e:                # never leave the run stuck on "working"
         if cur:
             nether.fail(cur, f"{type(e).__name__}: {e}")
         nether.fail(parent, f"{type(e).__name__}: {e}")
