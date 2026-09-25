@@ -77,7 +77,9 @@
 .hub-subs{display:flex;flex-wrap:wrap;gap:6px}
 
 /* ---- sub-agent sheet ---- */
-.nx-sheet{display:grid;gap:10px;min-width:min(520px,80vw)}
+.nx-sheet{display:grid;gap:10px;min-width:0}
+.sheet:has(.nx-sheet){width:min(600px,calc(100vw - 32px))}
+.nx-sheet>*{min-width:0}.nx-last{overflow:hidden}.nx-last .nx-err{max-width:100%}
 .nx-sheet h2{margin:0;font-size:24px}
 .nx-sheet p{margin:0;color:var(--muted)}
 .nx-last{display:grid;gap:4px;padding:10px 12px;border-radius:10px;background:var(--hover)}
@@ -139,3 +141,13 @@
 @media (max-width:900px){.nx-two{grid-template-columns:1fr}.nx-comps{grid-template-columns:1fr}}
 @media (max-width:600px){.nx-call,.nx-dailyc{flex-wrap:wrap}}
 .nx-review .head h1{font-size:clamp(30px,3.4vw,46px);line-height:1.05}
+
+/* ---- top bar: 8 menu items must fit any window; the page never scrolls sideways ---- */
+html,body{overflow-x:hidden}
+main{overflow-x:hidden}
+.side{max-width:100vw;box-sizing:border-box;overflow-x:auto;scrollbar-width:none}
+.side::-webkit-scrollbar{display:none}
+.side .nav{white-space:nowrap;flex:none}
+.side .kbd-hint{white-space:nowrap}
+@media (max-width:1400px){.side .home-link span{display:none}.side .nav{padding:6px 8px}.side{padding:14px 16px}}
+@media (max-width:1200px){.side .kbd-hint{font-size:0;gap:0;padding:6px 10px}.side .kbd-hint kbd{font-size:12px}.side .home-link{margin-right:6px}}
