@@ -723,3 +723,54 @@ def desk_path(rest):
 
 GET_PREFIX = {"/api/desk/": desk_path}
 POST = {"/api/desk/scout_backlog": scout_backlog}
+
+
+# ------------------------------------------------------------------ the week board (home screen)
+RANK = {"live": 5, "scheduled": 4, "ready": 3, "making": 2, "draft": 1}
+
+
+def week():
+    """This week at a glance: 7 Short slots (Mon–Sun) + 1 long-form, each at its furthest stage, and the streak.
+    A posted or scheduled Short sits on its day; anything still in the pipeline fills the next open days."""
+    import studio_api
+    today = datetime.date.today()
+    mon = today - datetime.timedelta(days=today.weekday())
+    days = [mon + datetime.timedelta(days=i) for i in range(7)]
+    local = lambda iso: studio_api.parse_dt(iso).astimezone().date() if studio_api.parse_dt(iso) else None
+    slots = {d: None for d in days}
+    pipeline, long, sent_days = [], None, set()
+    for v in studio_api.videos():
+        if v["id"].endswith("_tiktok") or v["stage"] == "earlier":
+            continue
+        if "__" in v["id"]:
+            v["title"] = title_of(v["id"])
+        dates = [local(p.get("sentAt")) for p in v["posts"] if p.get("sentAt")]
+        sent_days.update(d for d in dates if d)
+        if v.get("format") == "landscape":
+            if v["stage"] != "live" or any(d and d >= mon for d in dates):
+                if not long or RANK.get(v["stage"], 0) > RANK.get(long["stage"], 0):
+                    long = {"id": v["id"], "title": v["title"], "stage": v["stage"]}
+            continue
+        when = min([d for d in dates if d] + [local(s.get("dueAt")) for s in v["scheduled"] if local(s.get("dueAt"))], default=None)
+        if when in slots and not slots[when]:
+            slots[when] = {"id": v["id"], "title": v["title"], "stage": v["stage"]}
+        elif when is None and v["stage"] in ("draft", "making", "ready"):
+            pipeline.append({"id": v["id"], "title": v["title"], "stage": v["stage"], "planned": True})
+    for d in (EPS.glob("*.json") if not long else []):             # a long-form still at the script stage
+        e = J(d, {}) or {}
+        if e.get("draft"):
+            long = {"id": d.stem, "title": e.get("title", d.stem), "stage": "draft"}
+    pipeline.sort(key=lambda x: -RANK[x["stage"]])
+    for d in days:                                             # the pipeline fills today and the days ahead
+        if d >= today and not slots[d] and pipeline:
+            slots[d] = pipeline.pop(0)
+    streak, d = 0, today if today in sent_days else today - datetime.timedelta(days=1)
+    while d in sent_days:
+        streak, d = streak + 1, d - datetime.timedelta(days=1)
+    out = [{"date": d.isoformat(), "day": d.strftime("%a"), "today": d == today, "past": d < today, **(slots[d] or {})} for d in days]
+    return {"days": out, "long": long, "streak": streak,
+            "out": sum(1 for x in out if x.get("stage") in ("live", "scheduled")),
+            "left": len(pipeline)}
+
+
+GET = {"/api/week": week}

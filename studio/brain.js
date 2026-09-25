@@ -18,8 +18,8 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 async function brainData() {
   const safe = p => get(p).catch(() => null);
-  const [ch, today, vids, cal, ideas, com, health, sys, dr] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
-    "/api/calendar", "/api/ideas", "/api/comments", "/api/health", "/api/system", "/api/drafts"].map(safe));
+  const [ch, today, vids, cal, ideas, com, health, sys, dr, wk] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
+    "/api/calendar", "/api/ideas", "/api/comments", "/api/health", "/api/system", "/api/drafts", "/api/week"].map(safe));
   const count = s => (vids || []).filter(v => v.stage === s).length;
   const next = (cal?.items || []).find(i => i.state === "scheduled");
   const openIdeas = (ideas?.sections || []).flatMap(s => s.items).filter(i => !i.made && !i.dismissed).length;
@@ -27,7 +27,7 @@ async function brainData() {
   const bad = (health || []).filter(h => !h.ok);
   const nDraft = dr?.drafts?.length || 0, failed = (sys?.agents || []).filter(a => a.state === "failed").map(a => a.name);
   return {
-    ch, today,
+    ch, today, wk,
     cap: {
       intelligence: [ideas?.next ? `Up next: ${ideas.next.hook}` : `${openIdeas} ideas, ranked by real demand`, false],
       content: [dr?.busy ? `Writing: ${dr.busy.replace(/^drafting /, "")}` : nDraft ? `${nDraft} script${nDraft > 1 ? "s" : ""} to approve` : "Draft a video from any idea", nDraft > 0],
@@ -67,11 +67,32 @@ async function pageBrain() {
   $("#core").innerHTML = c?.ready ? `<button class="core-btn" data-neuron="home-core" title="Open your channel numbers">
       <span class="big">${(c.goals[0].value / c.goals[0].goal * 100).toFixed(1)}%</span>
       <span class="nc">of the way to monetisation · ${fmt(c.goals[0].value)} of 1,000 subscribers · ${fmt(c.goals[1].value)} of 10M Shorts views (estimate)</span></button>` : "";
+  if (data.wk) $("#core").insertAdjacentHTML("beforeend", weekBoard(data.wk));
   window.brainNet && window.brainNet.destroy();
   window.brainNet = NeuralBrain.mount($("#bnet"));
   brainNet.onView(lines);
   wire(data);
   window.onresize = () => document.body.classList.contains("on-brain") && wire(data);
+}
+
+/* the week: 7 Shorts + 1 long-form, each bead lit by how far its video has got. The cadence is the money. */
+const STAGE_WORD = {live: "live", scheduled: "scheduled", ready: "ready to post", making: "being made", draft: "script waiting for you"};
+function weekBoard(w) {
+  const bead = (x, long) => {
+    const st = x?.stage || (x && x.past ? "missed" : "open");
+    const tip = x?.stage ? `${x.day ? x.day + " · " : "Long-form · "}${x.title} — ${STAGE_WORD[st]}${x.planned ? " (lined up)" : ""}`
+      : long ? "Long-form — nothing yet this week: draft one in Content" : x.past ? `${x.day} — nothing went out` : `${x.day} — open slot: draft one`;
+    const go = x?.stage === "draft" ? `draft/${x.id}` : x?.id ? `video/${x.id}` : "make";
+    return `<button class="wk-bead ${long ? "long" : ""} ${st} ${x?.today ? "now" : ""}" data-go="${esc(go)}" title="${esc(tip)}" aria-label="${esc(tip)}">
+      <i></i>${long ? "<span>LONG</span>" : `<span>${esc(x.day[0])}</span>`}</button>`;
+  };
+  const prev = +(localStorage.getItem("nx-week-out") || 0), key = w.days[0].date;
+  let fresh = false;
+  try { fresh = localStorage.getItem("nx-week") === key && w.out > prev; localStorage.setItem("nx-week", key); localStorage.setItem("nx-week-out", w.out); } catch (e) {}
+  const longTxt = w.long ? `long-form ${STAGE_WORD[w.long.stage] || w.long.stage}` : "no long-form yet";
+  return `<div class="wk ${fresh ? "fresh" : ""}" aria-label="This week">
+    <div class="wk-row">${w.days.map(d => bead(d)).join("")}<span class="wk-sep"></span>${bead(w.long, true)}</div>
+    <div class="wk-cap"><b>${w.out}</b> of 7 out this week · ${longTxt}${w.streak ? ` · <b class="hot">${w.streak}-day streak</b>` : ""}</div></div>`;
 }
 
 const CORE = {key: "home-core", ax: 0.47, ay: 0.64};

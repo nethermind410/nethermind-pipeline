@@ -320,3 +320,24 @@ h2{letter-spacing:.14em}
 .desk-fail{border-color:var(--nx-fail)}
 .desk .nx-run{margin:0 0 12px}
 @media (max-width:640px){.desk-row{flex-wrap:wrap}.desk-hist{align-items:flex-start}}
+
+/* ---- the week board under the brain: 7 Shorts + 1 long-form ---- */
+.wk{display:grid;justify-items:center;gap:8px;margin-top:14px}
+.wk-row{display:flex;align-items:center;gap:10px}
+.wk-sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+.wk-bead{background:none;border:0;padding:0;cursor:pointer;display:grid;justify-items:center;gap:5px;color:var(--muted);font:600 10px var(--grotesk);letter-spacing:.08em}
+.wk-bead i{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(247,247,238,.22);display:block;transition:transform .2s,box-shadow .2s,background .2s}
+.wk-bead:hover i,.wk-bead:focus-visible i{transform:scale(1.25);border-color:var(--ink)}
+.wk-bead.now span{color:var(--ink)}.wk-bead.now i{outline:1px solid rgba(247,247,238,.35);outline-offset:3px}
+.wk-bead.draft i{border-style:dashed;border-color:var(--ink)}
+.wk-bead.making i{border-color:var(--ink);background:radial-gradient(circle,var(--ink) 0 2.5px,transparent 3px)}
+.wk-bead.ready i{border:4px solid var(--ink)}
+.wk-bead.scheduled i{background:var(--ink);border-color:var(--ink)}
+.wk-bead.live i{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px var(--accent)}
+.wk-bead.missed i{border-color:var(--nx-fail);background:linear-gradient(135deg,transparent 45%,var(--nx-fail) 45% 55%,transparent 55%)}
+.wk-bead.long i{width:22px;height:22px;border-radius:5px;transform:rotate(45deg)}
+.wk-bead.long:hover i{transform:rotate(45deg) scale(1.2)}
+.wk-cap{font:500 13px var(--grotesk);color:var(--muted)}.wk-cap b{color:var(--ink)}.wk-cap .hot{color:var(--accent)}
+.wk.fresh .wk-bead.live i,.wk.fresh .wk-bead.scheduled i{animation:wk-pop .9s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes wk-pop{0%{transform:scale(.2);box-shadow:0 0 0 var(--accent)}60%{transform:scale(1.5);box-shadow:0 0 28px var(--accent)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.wk.fresh .wk-bead i{animation:none}.wk-bead i{transition:none}}
