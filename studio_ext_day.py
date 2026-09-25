@@ -53,6 +53,12 @@ def day():
                            f"draft/{lg['id']}" if lg["stage"] == "draft" else f"video/{lg['id']}", "post"))
         seen.add(lg["id"])
     t = studio_api.today()
+    fin = [c for c in t["cards"] if c["kind"] == "finish"]
+    if fin:
+        left = sum(1 for c in fin for s in c.get("steps", []) if not s["done"])
+        steps.append(_step("finish:" + ",".join(sorted(c["video"] for c in fin))[:120], f"Finish {len(fin)} live video{'s' if len(fin) > 1 else ''} on YouTube",
+                           f"{left} small step{'s' if left != 1 else ''} in YouTube Studio — tags, pinned comment, playlist, Related video — "
+                           "each has a Copy button on the Today page.", "today", "finish"))
     for c in t["cards"]:
         vid = c.get("video") or ""
         if vid and vid in seen:
@@ -63,8 +69,7 @@ def day():
         elif k == "ready":
             steps.append(_step(c["key"], "Review a finished video", f"“{c['title']}” is ready — watch it and queue it for a coming day.", f"video/{vid}", "approve"))
         elif k == "finish":
-            left = [s["label"] for s in c.get("steps", []) if not s["done"]]
-            steps.append(_step(c["key"], "Finish a live video", f"“{c['title']}”: " + "; ".join(left[:3]), f"video/{vid}", "finish"))
+            continue                                   # grouped into one job above
         elif k == "queued":
             steps.append(_step(c["key"], "Check the queue", f"“{c['title']}” is waiting in Buffer — make sure the times look right.", f"video/{vid}", "finish"))
         elif k == "intel":

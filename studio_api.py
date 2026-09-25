@@ -193,7 +193,7 @@ def today():
             best = max(open_cards, key=lambda c: c.get("score", 0))
             cards.append({"key": f"intel:n{len(open_cards)}_{best['slug'][:40]}", "kind": "intel", "video": "", "thumb": None,
                           "title": f"{len(open_cards)} scorecard{'s' if len(open_cards) > 1 else ''}",
-                          "text": f"need your call — best: “{best['topic'][:70]}” ({best['score']}/100). Make it, or not for us?"})
+                          "text": f"{'needs' if len(open_cards) == 1 else 'need'} your call — best: “{best['topic'][:70]}” ({best['score']}/100). Make it, or not for us?"})
     except Exception:
         pass
     try:                                    # the daily run went quiet: say so instead of silently skipping a day

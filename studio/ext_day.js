@@ -12,7 +12,7 @@
   dock.className = "dayrun";
   dock.setAttribute("role", "region"); dock.setAttribute("aria-label", "Today's run");
   const ticked = () => (LS("nx-day") || {})[day?.date] || [];
-  const isDone = s => s.done || ticked().includes(s.key);
+  const isDone = s => s.done || (s.key !== "post" && ticked().includes(s.key));   // posting only clears for real
   const tick = key => { const all = LS("nx-day") || {}; const d = day.date; all[d] = [...new Set([...(all[d] || []), key])];
     Object.keys(all).forEach(k => { if (k !== d) delete all[k]; }); LS("nx-day", all); };
   const kindWord = {post: "Post", approve: "Approve", finish: "Finish", decide: "Decide", make: "Make", nice: "Community", fix: "Fix"};

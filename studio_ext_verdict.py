@@ -40,15 +40,18 @@ def v_today():
 
 
 def stale_videos():
-    import studio_api
+    """Never-posted videos that are in the way: anything off the channel's lanes (old space/ocean builds), at any age,
+    plus in-lane videos nobody has touched in 7+ days. Live and scheduled videos are never offered."""
+    import studio_api, intelligence
     out = []
     for v in studio_api.videos():
-        if v["stage"] not in ("making", "earlier") or v["id"].endswith("_tiktok") or "__" in v["id"]:
+        if v["stage"] not in ("making", "earlier", "ready") or v["id"].endswith("_tiktok") or "__" in v["id"] or v["posts"] or v["scheduled"]:
             continue
+        lane = intelligence.lane_of(v["title"] + " " + v["id"].replace("_", " "))
         p = CFG / f"{v['id']}.json"
-        if p.exists() and age_days(p) > 7:
-            import intelligence
-            out.append({"id": v["id"], "title": v["title"], "days": int(age_days(p)), "lane": intelligence.lane_of(v["title"] + " " + v["id"])})
+        old = p.exists() and age_days(p) > 7
+        if lane in OFF_LANES or old:
+            out.append({"id": v["id"], "title": v["title"], "days": int(age_days(p)) if p.exists() else 0, "lane": lane, "off": lane in OFF_LANES})
     return out
 
 
@@ -63,12 +66,14 @@ def v_videos():
         r = next(v for v in vs if v["stage"] == "ready")
         acts.append({"label": f"Post “{r['title'][:40]}”", "go": f"video/{r['id']}", "primary": True})
     if stale:
-        acts.append({"label": f"Archive {len(stale)} stale", "post": "/api/videos/archive", "body": {"ids": [s["id"] for s in stale]},
-                     "confirm": f"Move {len(stale)} videos that haven't moved in 7+ days out of the way? Their files go to cfg/archive/ — nothing is deleted."})
-    off = sum(1 for s in stale if s["lane"] in OFF_LANES)
-    one = len(stale) == 1
-    detail = (f"{len(stale)} {'hasn' if one else 'haven'}'t moved in 7+ days" + (f" ({off} {'is an' if off == 1 else 'are'} old space/ocean idea{'s' if off != 1 else ''})" if off else "")
-              + f" — finish {'it' if one else 'them'} or archive {'it' if one else 'them'}." if stale else "Nothing stuck.")
+        acts.append({"label": f"Archive {len(stale)} stale video{'s' if len(stale) != 1 else ''}", "post": "/api/videos/archive", "body": {"ids": [s["id"] for s in stale]},
+                     "confirm": "Archive these never-posted videos?\n\n" + "\n".join(f"• {s['title'][:70]}" for s in stale[:12])
+                                + ("\n…" if len(stale) > 12 else "") + "\n\nTheir files move to cfg/archive/ — nothing is deleted."})
+    off = sum(1 for s in stale if s["off"])
+    old = len(stale) - off
+    bits = ([f"{off} off-channel (old space/ocean) video{'s' if off != 1 else ''} never posted"] if off else []) + \
+           ([f"{old} in-lane video{'s' if old != 1 else ''} untouched for 7+ days"] if old else [])
+    detail = (" · ".join(bits) + " — archive them to clear the way (nothing is deleted).") if stale else "Nothing stuck."
     return V("What's ready, and what's stuck?", " · ".join(parts), detail, "warn" if stale or c("ready") else "good", acts)
 
 
