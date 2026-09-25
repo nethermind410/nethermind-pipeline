@@ -80,6 +80,13 @@ def day():
             steps.append(_step(f"comments:{n}", f"Reply to {n} comment{'s' if n > 1 else ''}", "Early replies turn viewers into regulars.", "comments", "nice"))
     except Exception:
         pass
+    try:                                   # one money step a day, until the setup list is done
+        import business
+        todo = next((s for s in business.money()["setup"] if not s["done"]), None)
+        if todo:
+            steps.append(_step(f"setup:{todo['key']}", f"One money step: {todo['title']}", todo["how"], "money", "nice"))
+    except Exception:
+        pass
     try:
         import orchestrator
         bad = [a["name"] for a in orchestrator.system()["agents"] if a["state"] == "failed"]

@@ -2,7 +2,7 @@
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const V = Date.now();
-const media = f => f ? `/media/${encodeURIComponent(f)}?v=${V}` : "";
+const media = f => !f ? "" : /^(\/|https?:)/.test(f) ? f : `/media/${encodeURIComponent(f)}?v=${V}`;
 const main = $("#main");
 const get = p => fetch(p).then(r => r.json());
 async function post(p, body) {
@@ -113,7 +113,7 @@ async function pageToday() {
 async function pageVideos() {
   const vs = await get("/api/videos");
   const tile = v => `<button class="tile" ${v.stage === "draft" ? `data-go="draft/${esc(v.id)}"` : `data-open="${esc(v.id)}"`}>
-      ${v.cover || v.thumb ? `<img src="${media(v.cover || v.thumb)}" alt="">` : `<div class="ph">No picture yet</div>`}
+      ${v.picture ? `<img src="${media(v.picture)}" alt="" loading="lazy">` : `<div class="ph">No picture yet</div>`}
       <div class="t">${esc(v.title)}</div>${pill(v.stage)}</button>`;
   const group = (name, list, open = true) => list.length ? (open
     ? `<h2>${name}</h2><div class="grid">${list.map(tile).join("")}</div>`

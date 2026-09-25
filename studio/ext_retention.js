@@ -23,16 +23,10 @@
           ${v.tiktok ? `<span class="k">TikTok cut</span><ul class="rt-list">${list(v.tiktok)}</ul>` : ""}</details>
         <div class="rt-actions"><button class="btn small" data-rt-cut="${esc(v.id)}">${v.tiktok ? "Remake TikTok cut" : "Make TikTok cut"}</button></div>
       </div>`).join("");
-    const eps = d.episodes.map(e => `<div class="card rt-card"><div class="rt-top"><b>${esc(e.title)}</b>
-        <span class="pill ${e.planned ? "live" : ""}">${e.planned ? "Planned" : "Not built"}</span></div>
-        <ol class="rt-ch">${e.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol>
-        <div class="rt-actions"><button class="btn small primary" data-rt-ep="${esc(e.id)}">Build Shorts + plan</button></div></div>`).join("");
     main.innerHTML = `<div class="page wide">
       <div class="head-row"><div class="head"><h1>Retention</h1>
-        <p>Hook and pacing checklist beside what viewers actually did${d.stats_updated ? ` (numbers from ${esc(d.stats_updated)})` : ""}.
-        The checklist is a guide, not a forecast — trust the real watch time.</p></div></div>
-      <h2>Episodes</h2>
-      ${eps || `<div class="card caught"><b>No episodes yet</b>Copy episodes/_example.json to start one: one research pass, one long-form, a Short per chapter.</div>`}
+        <p>Hook and pacing checklist beside what viewers actually did${d.stats_updated ? ` (numbers from ${esc(new Date(d.stats_updated).toLocaleString(undefined, {weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit"}))})` : ""}.
+        The checklist is a guide, not a forecast — trust the real watch time. Long-form episodes live in Content → Make.</p></div></div>
       <h2>Videos</h2><div class="rt-grid">${vids}</div></div>`;
   }
 

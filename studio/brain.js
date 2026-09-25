@@ -69,6 +69,7 @@ async function pageBrain() {
       <span class="big">${(M.pct * 100).toFixed(M.pct < 0.1 ? 1 : 0)}%</span>
       <span class="nc">of the way to ${P.next === "fan" ? "your first YouTube money" : "ad revenue"} · ${fmt(M.subs.value)} of ${fmt(M.subs.goal)} subscribers · next hurdle: ${esc(M.bottleneck)}</span></button>` : "";
   if (data.wk) $("#core").insertAdjacentHTML("beforeend", weekBoard(data.wk));
+  mondayRecap();
   window.brainNet && window.brainNet.destroy();
   window.brainNet = NeuralBrain.mount($("#bnet"));
   brainNet.onView(lines);
@@ -94,6 +95,27 @@ function weekBoard(w) {
   return `<div class="wk ${fresh ? "fresh" : ""}" aria-label="This week">
     <div class="wk-row">${w.days.map(d => bead(d)).join("")}<span class="wk-sep"></span>${bead(w.long, true)}</div>
     <div class="wk-cap"><b>${w.out}</b> of 7 out this week · ${longTxt}${w.streak ? ` · <b class="hot">${w.streak}-day streak</b>` : ""}</div></div>`;
+}
+
+/* Monday recap: last week in 30 seconds and this week's plan. Shows Monday–Wednesday until you close it. */
+async function mondayRecap(force) {
+  const day = new Date().getDay();                       // 1 = Monday
+  if (!force && !(day >= 1 && day <= 3)) return;
+  let r; try { r = await get("/api/recap"); } catch (e) { return; }
+  let seen = null; try { seen = localStorage.getItem("nx-recap"); } catch (e) {}
+  if (!force && seen === r.week) return;
+  const stage = $("#stage"); if (!stage || $(".recap", stage)) return;
+  stage.insertAdjacentHTML("beforeend", `<aside class="recap" aria-label="Last week">
+    <button class="recap-x" aria-label="Close">×</button>
+    <span class="k">Last week · ${esc(r.label)}</span>
+    <div class="recap-row"><div><b class="recap-big">${r.out}</b><span>video${r.out === 1 ? "" : "s"} out</span></div>
+      ${r.best ? `<button class="recap-best" data-go="video/${esc(r.best.id)}">${r.best.picture ? `<img src="${media(r.best.picture)}" alt="">` : ""}
+        <span><em>Best</em>${esc(r.best.title)}<i>${fmt(r.best.views)} views</i></span></button>` : ""}</div>
+    ${r.lesson ? `<p><em>Learned:</em> ${esc(r.lesson)}</p>` : ""}
+    <p><em>This week:</em> ${r.plan.short ? `next Short “${esc(r.plan.short)}”` : "no Short lined up — draft one"}${r.plan.long ? ` · long-form “${esc(r.plan.long)}”` : ""}.</p>
+    <div class="recap-acts"><button class="btn primary small" data-go="today">Plan the week</button></div></aside>`);
+  const el = $(".recap", stage);
+  $(".recap-x", el).onclick = () => { try { localStorage.setItem("nx-recap", r.week); } catch (e) {} el.remove(); };
 }
 
 const CORE = {key: "home-core", ax: 0.47, ay: 0.64};

@@ -193,6 +193,9 @@ class H(BaseHTTPRequestHandler):
         if path == "/api/music":                             # your own tracks for the interface's music player
             return self.send(200, {"tracks": sorted(p.name for p in MUSIC_DIR.glob("*") if p.suffix.lower() in TRACKS)
                                    if MUSIC_DIR.is_dir() else []})
+        m = re.fullmatch(r"/asset/([A-Za-z0-9_.\-]+\.(?:jpg|jpeg|png|webp))", path)   # a video's own artwork
+        if m and (HERE / "assets" / m[1]).is_file():
+            return self.send_file(HERE / "assets" / m[1], {"png": "image/png", "webp": "image/webp"}.get(m[1].rsplit(".", 1)[1], "image/jpeg"))
         m = re.fullmatch(r"/music/([^/]+)", path)
         if m and (MUSIC_DIR / m[1]).is_file() and (MUSIC_DIR / m[1]).suffix.lower() in TRACKS and (MUSIC_DIR / m[1]).resolve().parent == MUSIC_DIR.resolve():
             return self.send_file(MUSIC_DIR / m[1], TRACKS[(MUSIC_DIR / m[1]).suffix.lower()])

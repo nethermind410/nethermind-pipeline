@@ -51,7 +51,8 @@
     if (a === "close") { running = false; return render(); }
     const s = day.steps[i];
     if (a === "go") { window.nxSound?.play("tick"); go(s.go); return; }
-    if (a === "done") { tick(s.key); window.nxSound?.play("done"); }
+    if (a === "done") { tick(s.key); window.nxSound?.play("done");
+      if (/^setup:/.test(s.key)) post("/api/done", {key: s.key}).catch(() => {}); }        // a money step: tick it on the Money page too
     if (a === "done" || a === "skip" || a === "next") {
       const n = nextOpen(i);
       if (n < 0 || (a === "next" && i === day.steps.length - 1 && n <= i)) return finish();
@@ -107,5 +108,5 @@
     setInterval(() => { if (!document.hidden) { load(); watchOut(); } }, 45000);
     let t; window.addEventListener("hashchange", () => { clearTimeout(t); t = setTimeout(load, 1200); });
   });
-  window.nxDay = {celebrate, reload: load};
+  window.nxDay = {celebrate, reload: load, start() { if (!day) return; running = true; i = Math.max(0, nextOpen(-1)); render(); }};
 })();

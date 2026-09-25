@@ -65,6 +65,23 @@ def youtube_urls(posts):
     return None, None
 
 
+def picture(vid, cfg, posts):
+    """Something to show for every video: its cover/thumbnail, else YouTube's thumbnail once it's live,
+    else the first artwork it uses. A URL the page can use directly."""
+    for f in (f"{vid}_cover.jpg", f"{vid}_thumb.jpg"):
+        if (OUT / f).exists():
+            return f"/media/{f}"
+    for p in posts:
+        m = re.search(r"(?:v=|shorts/|youtu\.be/)([\w-]{11})", p.get("url") or "")
+        if p.get("platform") == "youtube" and m:
+            return f"https://i.ytimg.com/vi/{m[1]}/hqdefault.jpg"
+    for s in cfg.get("segments", []):
+        src = (s.get("vis") or {}).get("src")
+        if src and (HERE / "assets" / src).is_file():
+            return f"/asset/{src}"
+    return None
+
+
 def video(vid):
     cfg = jload(CFG / f"{vid}.json", {}) or {}
     pkg = jload(PKG / f"{vid}.json")
@@ -95,6 +112,7 @@ def video(vid):
         "id": vid, "title": title, "stage": stage, "file": f, "format": cfg.get("format", "vertical"),
         "thumb": f"{vid}_thumb.jpg" if (OUT / f"{vid}_thumb.jpg").exists() else None,
         "cover": f"{vid}_cover.jpg" if (OUT / f"{vid}_cover.jpg").exists() else None,
+        "picture": picture(vid, cfg, posts),
         "video": f"{f}.mp4" if rendered else None,
         "tiktok": f"{vid}_tiktok.mp4" if (OUT / f"{vid}_tiktok.mp4").exists() else None,
         "qa": f"{vid}_qa_contact.jpg" if qa else None,
@@ -118,6 +136,8 @@ FINISH_STEPS = [("tags", "Paste the tags into YouTube Studio"),
                 ("comment", "Post and pin the comment"),
                 ("playlist", "Add it to its series playlist and set an end screen (next video)"),
                 ("check", "Check the video plays and looks right")]
+SHORT_STEPS = [("related", "Set its Related video to this week's long-form (YouTube Studio → the Short → Related video) — "
+                            "Shorts viewers who tap through become watch hours")]
 LONG_STEPS = [("testcompare", "Test & Compare: add the 3 thumbnails (out/<id>_thumb, _thumb2, _thumb3)")]
 
 
@@ -136,26 +156,26 @@ def today():
                           "thumb": None, "text": "— the script is drafted. Read it, edit any line, and approve it to build."})
         if v["stage"] == "ready" and not v["feedback"]:
             cards.append({"key": f"ready:{v['id']}", "kind": "ready", "video": v["id"], "title": v["title"],
-                          "thumb": v["thumb"], "text": "is ready for you to review.",
+                          "thumb": v["picture"], "text": "is ready for you to review.",
                           "action": "Review"})
         if v["feedback"] and v["stage"] in ("ready", "making"):
             cards.append({"key": f"fixing:{v['id']}", "kind": "fixing", "video": v["id"], "title": v["title"],
-                          "thumb": v["thumb"], "text": "has your change notes. The next daily build will redo it."})
+                          "thumb": v["picture"], "text": "has your change notes. The next daily build will redo it."})
         if v["scheduled"]:
             steps = [{"key": f"queued:{v['id']}:{s['platform']}", "done": f"queued:{v['id']}:{s['platform']}" in done,
                       "label": f"{PLATFORMS.get(s['platform'], s['platform'])} · {when(s['dueAt'])}"} for s in v["scheduled"]]
             if not all(s["done"] for s in steps):
                 cards.append({"key": f"queued:{v['id']}", "kind": "queued", "video": v["id"], "title": v["title"],
-                              "thumb": v["thumb"], "text": "is waiting in Buffer's queue:", "steps": steps})
+                              "thumb": v["picture"], "text": "is waiting in Buffer's queue:", "steps": steps})
         week = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
         recent = [p for p in v["posts"] if p.get("platform") == "youtube" and (parse_dt(p.get("sentAt")) or week) > week]
         if recent:
             steps = [{"key": f"finish:{v['id']}:{k}", "label": label.replace("<id>", v["id"]), "done": f"finish:{v['id']}:{k}" in done}
-                     for k, label in FINISH_STEPS + (LONG_STEPS if v.get("format") == "landscape" else [])]
+                     for k, label in FINISH_STEPS + (LONG_STEPS if v.get("format") == "landscape" else SHORT_STEPS)]
             if not all(s["done"] for s in steps):
                 pkg = v["packaging"] or {}
                 cards.append({"key": f"finish:{v['id']}", "kind": "finish", "video": v["id"], "title": v["title"],
-                              "thumb": v["thumb"], "text": "is live on YouTube. Finish it:", "steps": steps,
+                              "thumb": v["picture"], "text": "is live on YouTube. Finish it:", "steps": steps,
                               "tags": pkg.get("youtube_tags"), "comment": pkg.get("pinned_comment"),
                               "link": v["youtube_edit"], "watch": v["youtube_url"]})
     try:                                    # a long-form episode script waiting for approval
@@ -229,7 +249,7 @@ def performance():
         m = studio_channel.yt_match(v["title"], [p for p in v["posts"] if p.get("platform") == "youtube"])
         series = [h["videos"][m["id"]] for h in studio_channel.history("youtube_history.jsonl")
                   if m and m["id"] in h.get("videos", {})]
-        rows.append({"id": vid, "title": v["title"], "thumb": v["thumb"], "views": v["views"],
+        rows.append({"id": vid, "title": v["title"], "thumb": v["picture"], "views": v["views"],
                      "series": series[-30:], "posts": v["posts"]})
     rows.sort(key=lambda r: -r["views"])
     import studio_channel
