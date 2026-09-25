@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """daily.py — the Control agent's daily run (7:00 via launchd; see install_daily.sh).
 
-    python3 daily.py            refresh → learn → scout 3 ideas → draft the next video → (Sundays) plan + render the episode
+    python3 daily.py            refresh → learn → scout 3 ideas → draft the next Short → (Sundays) draft the week's long-form
     python3 daily.py --dry      say what it would draft, change nothing
 
 It never builds or posts: the draft waits in Today for your approval (Draft → you approve → build).
@@ -91,6 +91,22 @@ def scout_backlog(n=3):
     return done
 
 
+def pick_long_topic():
+    """A long-form wants a big topic: an iceberg idea from the backlog first, else the best open idea."""
+    import studio_api
+    done = drafted_topics() | {_norm(json.loads(p.read_text()).get("draft", {}).get("topic", ""))
+                               for p in (HERE / "episodes").glob("*.json") if not p.stem.startswith("_")}
+    items = [(s["name"], i) for s in studio_api.ideas()["sections"] for i in s["items"]
+             if not i["made"] and not i["dismissed"] and _norm(i["hook"]) not in done]
+    for name, i in items:
+        if "iceberg" in i["hook"].lower() and any(k in (name + i["hook"]).lower() for k in ("marvel", "gaming", "game", "anime", "comic")):
+            return i["hook"], "an iceberg idea in your lanes"
+    for name, i in items:
+        if name.lower().startswith(("marvel", "anime", "gaming", "intelligence")):
+            return i["hook"], f"open idea ({name})"
+    return (items[0][1]["hook"], "first open idea") if items else (None, "no open ideas")
+
+
 def main(dry=False):
     import drafter
     if dry:
@@ -135,19 +151,18 @@ def main(dry=False):
                 if why.startswith("you pinned"):          # the pin is used up: tomorrow picks the next topic
                     import studio_api
                     studio_api.set_next("", "")
-        if datetime.date.today().weekday() == 6:
-            import episode
-            cur = nether.begin("content", "Plan the weekly episode", sub="episodes", parent=parent)
-            try:
-                eid = episode.weekly()
-                nether.finish(cur, {"episode": eid})
-                report["episode"] = eid
-                import make_long                        # Production renders it; you review before it posts
+        if datetime.date.today().weekday() == 6:          # Sundays: the week's long-form, written for your approval
+            import drafter_long
+            cur = nether.begin("content", "Draft the weekly long-form", sub="episodes", parent=parent)
+            if drafter_long.drafts():
+                nether.finish(cur, {"skipped": "a long-form is still waiting for your approval"})
+                report["long"] = "skipped — one is still waiting for you"
+            else:
+                topic, why = pick_long_topic()
+                nether.finish(cur, {"topic": topic, "why": why})
                 cur = None
-                report["long"] = make_long.main(str(HERE / "episodes" / f"{eid}.json"))
-            except ValueError as e:                     # too few Shorts this week isn't a failure of the run
-                nether.finish(cur, {"skipped": str(e)})
-                report["episode"] = str(e)
+                if topic:
+                    report["long"] = drafter_long.draft(topic)
         cur = None
         nether.finish(parent, report)
         print(json.dumps(report, indent=1))

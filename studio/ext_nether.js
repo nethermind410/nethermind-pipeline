@@ -156,7 +156,8 @@
     try {
       if (r.kind === "intel") toast((await post("/api/intel/run", {topic: r.topic})).reply);
       else if (r.kind === "draft") toast((await post("/api/make/draft", {topic: r.topic})).reply);
-      else if (r.kind === "redraft") toast((await post("/api/make/redraft", {id: r.id, notes: r.notes})).reply);
+      else if (r.kind === "redraft" || r.kind === "redraft_long") toast((await post("/api/make/redraft", {id: r.id, notes: r.notes})).reply);
+      else if (r.kind === "draft_long") toast((await post("/api/make/draft", {topic: r.topic, kind: "long"})).reply);
       else if (r.kind === "daily") toast((await post("/api/daily/run", {})).reply);
       else if (r.kind === "long") { toast((await post("/api/long/render", {id: r.id})).reply); watchLong(); }
       else if (r.action) runJob(r.action, r.id || "");
@@ -253,32 +254,42 @@
     clearInterval(wI); toast("Scorecard ready."); if (location.hash === "#investigate" || location.hash === "#intelligence") route(); }, 2500); }
 
   /* ---------- Content → Make: draft, approve, build ---------- */
+  let makeKind = "short";
+  const KINDS = {short: ["Short", "45–70s vertical · 3–6 min to draft"], long: ["Long-form", "10–12 min 16:9 episode in chapters · 8–15 min to draft"],
+                 iceberg: ["Iceberg", "long-form essay, 5 tiers of obscurity (e.g. The Marvel Iceberg)"]};
   async function pageMake() {
     const [d, ideas, L] = await Promise.all([get("/api/drafts"), get("/api/ideas").catch(() => ({sections: []})), get("/api/learning").catch(() => ({cards: []}))]);
     const picks = [];
     if (ideas.next) picks.push([ideas.next.hook, "pinned: make this next"]);
     L.cards.filter(c => c.decision?.choice === "make" && !c.made_as).slice(0, 3).forEach(c => picks.push([c.topic, `scorecard ${c.score}/100`]));
     (ideas.sections.find(s => s.name.startsWith("Intelligence picks"))?.items || []).filter(i => !i.dismissed).slice(0, 2).forEach(i => picks.push([i.hook, "Intelligence pick"]));
-    const seen = new Set(), uniq = picks.filter(([h]) => !seen.has(h) && seen.add(h)).slice(0, 5);
+    if (makeKind !== "short") ideas.sections.flatMap(s => s.items).filter(i => !i.made && !i.dismissed && /iceberg/i.test(i.hook)).slice(0, 3).forEach(i => picks.push([i.hook, "iceberg idea"]));
+    const seen = new Set(), uniq = picks.filter(([h]) => !seen.has(h) && seen.add(h)).slice(0, 6);
     const drafts = d.drafts.map(x => `<button class="card nx-draft" data-go="draft/${esc(x.id)}">
-        <div><b>${esc(x.title || x.topic)}</b><div class="nx-meta">${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"} · ${ago(x.at)}</div></div>
+        <div><b>${esc(x.title || x.topic)}</b> <span class="pill ${x.kind === "long" ? "scheduled" : ""}">${x.kind === "long" ? `Long-form · ${x.minutes} min` : "Short"}</span>
+          <div class="nx-meta">${x.kind === "long" ? `${x.chapters.length} chapters` : `${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"}`} · ${ago(x.at)}</div></div>
         <span class="btn small primary">Read &amp; approve</span></button>`).join("");
-    main.innerHTML = `<div class="page wide">
-      <div class="head-row"><div class="head"><h1>Make</h1><p>Content researches the facts, writes the script and packaging, then stops for you. Edit any line, approve it, and Production builds it. Nothing posts without you.</p></div></div>
-      <form class="card nx-run" id="nx-make"><input id="nx-mtopic" placeholder="What's the video about? e.g. The Kamehameha is named after a Hawaiian king" maxlength="160" ${d.busy ? "disabled" : ""}>
-        <button class="btn primary" ${d.busy ? "disabled" : ""}>${d.busy ? "Writing…" : "Draft it"}</button></form>
-      ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — research, script, packaging, check. Usually 3–6 minutes; watch it fire on the brain.</p>` : ""}
-      ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
-      <h2>Scripts waiting for you</h2>${drafts || `<div class="card caught"><b>Nothing waiting</b>Draft one above — or the daily run drafts the next one at 7:00.</div>`}
-      <h2>Weekly long-form</h2><div class="card nx-week"><p>Every Sunday the Episode planner turns the week's Shorts into one 16:9 episode, and Production renders it with chapter cards, real YouTube timestamps, a description with every chapter's sources, and a thumbnail. It waits in Production for your review — long-form posts to YouTube only.</p>
-        <div class="row-end"><button class="btn" id="nx-week">Plan this week's episode now</button></div></div>
-        ${d.episodes.map(e => `<div class="card nx-ep">
-          <div class="nx-head"><b>${esc(e.title)}</b><span class="pill ${e.rendered ? "live" : ""}">${e.rendering ? "Rendering…" : e.rendered ? "Rendered" : "Planned"}</span></div>
+    const longs = d.episodes.filter(e => e.kind === "long"), recaps = d.episodes.filter(e => e.kind !== "long");
+    const epCard = e => `<div class="card nx-ep">
+          <div class="nx-head"><b>${esc(e.title)}</b><span class="pill ${e.rendered ? "live" : ""}">${e.rendering ? "Rendering…" : e.rendered ? "Rendered" : e.kind === "long" ? "Approved" : "Planned"}</span>${e.style === "iceberg" ? `<span class="pill">Iceberg</span>` : ""}</div>
           <ol class="nx-chaps">${e.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol>
           ${e.timestamps ? `<pre class="rt-pre nx-ts">${esc(e.timestamps)}</pre>` : ""}
           <div class="row-end">${e.rendered ? `<button class="btn primary small" data-open="${esc(e.video)}">Review the video</button>` : ""}
-            <button class="btn small" data-nx-long="${esc(e.id)}" ${d.rendering ? "disabled" : ""}>${e.rendering ? "Rendering…" : e.rendered ? "Re-render" : "Render long-form"}</button>
-            ${e.plan ? `<details class="nx-plan"><summary>Script</summary><pre class="rt-pre">${esc(e.plan)}</pre></details>` : ""}</div></div>`).join("")}</div>`;
+            <button class="btn small" data-nx-long="${esc(e.id)}" ${d.rendering ? "disabled" : ""}>${e.rendering ? "Rendering…" : e.rendered ? "Re-render" : "Render"}</button>
+            ${e.kind === "long" ? (e.shorts.length ? `<span class="nx-meta">${e.shorts.length} Shorts cut</span>` : `<button class="btn small" data-nx-cut="${esc(e.id)}">Cut Shorts from chapters</button>`) : ""}
+            ${e.plan ? `<details class="nx-plan"><summary>Script</summary><pre class="rt-pre">${esc(e.plan)}</pre></details>` : ""}</div></div>`;
+    main.innerHTML = `<div class="page wide">
+      <div class="head-row"><div class="head"><h1>Make</h1><p>Content researches the facts, writes the script and packaging, then stops for you. Edit any line, approve it, and Production builds it. Nothing posts without you.</p></div></div>
+      <div class="nx-kind" role="radiogroup">${Object.entries(KINDS).map(([k, [l, sub]]) => `<button role="radio" aria-checked="${makeKind === k}" class="${makeKind === k ? "on" : ""}" data-nx-kind="${k}"><b>${l}</b><span>${sub}</span></button>`).join("")}</div>
+      <form class="card nx-run" id="nx-make"><input id="nx-mtopic" placeholder="${makeKind === "short" ? "What's the Short about? e.g. The Kamehameha is named after a Hawaiian king" : makeKind === "iceberg" ? "The iceberg: e.g. The Lost Marvel Games Iceberg" : "The episode: e.g. How Marvel almost went bankrupt — and the movie deal that saved it"}" maxlength="160" ${d.busy ? "disabled" : ""}>
+        <button class="btn primary" ${d.busy ? "disabled" : ""}>${d.busy ? "Writing…" : "Draft it"}</button></form>
+      ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — watch it fire on the brain.</p>` : ""}
+      ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
+      <h2>Scripts waiting for you</h2>${drafts || `<div class="card caught"><b>Nothing waiting</b>Draft one above — the daily run drafts a Short every morning and a long-form on Sundays.</div>`}
+      <h2>Long-form episodes</h2>${longs.map(epCard).join("") || `<div class="card caught"><b>No long-form yet</b>Pick Long-form or Iceberg above. Sundays, the daily run drafts one for you to approve.</div>`}
+      <details class="nx-recap"><summary>Recap: stitch this week's Shorts together (not a real long-form)</summary>
+        <div class="card nx-week"><p>Joins the week's finished Shorts with chapter cards. Useful as a compilation, not as the weekly episode.</p>
+        <div class="row-end"><button class="btn small" id="nx-week">Plan a recap</button></div></div>${recaps.map(epCard).join("")}</details></div>`;
     $("#nx-make").onsubmit = async e => { e.preventDefault(); make($("#nx-mtopic").value.trim()); };
     $("#nx-week").onclick = async () => { try { toast((await post("/api/episode/week", {})).reply); route(); } catch (err) { toast(err.message); } };
     if (d.busy) watchDraft();
@@ -286,10 +297,11 @@
   }
   let wL = null;
   function watchLong() { clearInterval(wL); wL = setInterval(async () => { const d = await get("/api/drafts"); if (d.rendering) return;
-    clearInterval(wL); refresh(); toast("Long-form finished — review it in Production.", {label: "Open", run: () => go("make")}); if (["#make", "#content"].includes(location.hash)) route(); }, 5000); }
+    clearInterval(wL); refresh(); toast("Long-form finished — review it.", {label: "Open", run: () => go("make")}); if (["#make", "#content"].includes(location.hash)) route(); }, 5000); }
   async function make(topic) {
     if (!topic) return;
-    try { toast((await post("/api/make/draft", {topic})).reply); watchDraft(); if (location.hash !== "#make") go("make"); else route(); }
+    const kind = makeKind === "short" ? "short" : "long", style = makeKind === "iceberg" ? "iceberg" : "";
+    try { toast((await post("/api/make/draft", {topic, kind, style})).reply); watchDraft(); if (location.hash !== "#make") go("make"); else route(); }
     catch (err) { toast(err.message); }
   }
   let wD = null;
@@ -301,39 +313,47 @@
     const id = location.hash.split("/")[1];
     const d = (await get("/api/drafts")).drafts.find(x => x.id === id);
     if (!d) { main.innerHTML = `<div class="page"><div class="caught"><b>That draft isn't waiting any more</b><button class="link" data-go="make">Back to Make</button></div></div>`; return; }
-    const r = d.research || {};
+    const long = d.kind === "long", r = d.research || {};
+    const words = d.lines.reduce((a, l) => a + l.text.split(/\s+/).length, 0);
     const facts = (r.facts || []).map(f => `<li>${esc(f.claim)} <a href="${esc(f.source_url)}" target="_blank" rel="noopener">${esc(f.source_title || "source")}</a></li>`).join("");
+    let lastChap = null;
+    const lineRows = d.lines.map((l, i) => {
+      const head = long && l.chapter !== lastChap ? `<h3 class="nx-chap">${esc(l.chapter)}</h3>` : ""; lastChap = l.chapter;
+      return `${head}<label class="nx-line ${l.long_only ? "long-only" : ""}" id="nx-line-${i}"><span class="nx-meta">${i + 1}${!long && i === 0 ? " · hook" : ""}${l.long_only && long ? " · long-form only" : ""}${l.hero ? ` · on screen: <b>${esc(l.hero.join(" "))}</b>` : ""}</span>
+            <textarea data-line="${esc(l.id)}" rows="2">${esc(l.text)}</textarea>
+            <span class="nx-vis">${esc(l.kind)}${l.visual ? ": " + esc(l.visual) : ""}</span></label>`; }).join("");
     main.innerHTML = `<div class="page wide nx-review">
       <button class="back" data-go="make">‹ Make</button>
-      <div class="head"><h1>${esc(d.title || d.topic)}</h1><p>Drafted ${ago(d.at)} from “${esc(d.topic)}”. Read it, edit any line, then approve — or send it back with notes.</p></div>
+      <div class="head"><h1>${esc(d.title || d.topic)}</h1><p>${long ? `Long-form · ${d.chapters.length} chapters · about ${d.minutes} minutes. ` : ""}Drafted ${ago(d.at)} from “${esc(d.topic)}”. Read it, edit any line, then approve — or send it back with notes.</p></div>
       <div class="nx-two"><div>
-        <div class="card nx-script"><div class="nx-head"><b>Script</b><span class="nx-meta">${d.lines.reduce((a, l) => a + l.text.split(/\s+/).length, 0)} words ≈ ${Math.round(d.lines.reduce((a, l) => a + l.text.split(/\s+/).length, 0) / 2.8)}s</span></div>
-          ${pacing(d.lines)}
-          ${d.lines.map((l, i) => `<label class="nx-line" id="nx-line-${i}"><span class="nx-meta">${i + 1}${i === 0 ? " · hook" : ""}${l.hero ? ` · on screen: <b>${esc(l.hero.join(" "))}</b>` : ""}</span>
-            <textarea data-line="${esc(l.id)}" rows="2">${esc(l.text)}</textarea>
-            <span class="nx-vis">${esc(l.kind)}${l.visual ? ": " + esc(l.visual) : ""}</span></label>`).join("")}
+        <div class="card nx-script"><div class="nx-head"><b>Script</b><span class="nx-meta">${words} words ≈ ${long ? (words / 168).toFixed(1) + " min" : Math.round(words / 2.8) + "s"}</span></div>
+          ${long ? `<ol class="nx-chaps">${d.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol><p class="nx-meta">Lines marked “long-form only” are left out when a chapter is cut into its own Short.</p>` : pacing(d.lines)}
+          ${lineRows}
           <div class="nx-meta">End card: ${esc(d.end.join(" · "))}</div>
           <div class="row-end"><button class="btn" id="nx-save">Save line edits</button></div></div>
         ${d.title_options.length ? `<div class="card nx-titles"><span class="k">Title</span>${[d.title, ...d.title_options].filter(Boolean).map((t, i) => `<label><input type="radio" name="nx-title" value="${esc(t)}" ${i === 0 ? "checked" : ""}> ${esc(t)}</label>`).join("")}</div>` : ""}
+        ${long && d.thumbnails?.length ? `<div class="card nx-titles"><span class="k">Thumbnail words · 3 options, rendered for YouTube's Test &amp; Compare</span>${d.thumbnails.map(th => `<div class="nx-thumbw">${(th.lines || []).map((w, i) => `<b class="${i === (th.accent ?? -1) ? "acc" : ""}">${esc(w)}</b>`).join(" ")}</div>`).join("")}</div>` : ""}
       </div><div>
-        <div class="card nx-approve"><button class="btn primary big" id="nx-approve">Approve &amp; build</button>
-          <p class="nx-meta">Production fetches the photos, generates the art, renders the Short and its TikTok cut, runs QA and makes the thumbnail. You review the finished video before anything posts.</p>
+        <div class="card nx-approve"><button class="btn primary big" id="nx-approve">${long ? "Approve &amp; render" : "Approve &amp; build"}</button>
+          <p class="nx-meta">${long ? "Production fetches the real photos and art, renders the 16:9 episode with chapter cards, runs QA, fills in the real YouTube chapter timestamps and renders 3 thumbnails. 20–45 minutes. You review it before anything posts." : "Production fetches the photos, generates the art, renders the Short and its TikTok cut, runs QA and makes the thumbnail. You review the finished video before anything posts."}</p>
           <textarea id="nx-notes" rows="3" placeholder="Or: what should change? e.g. 'open on the 1 cell number', 'less about the comic, more about the worm'"></textarea>
           <div class="row-end"><button class="btn" id="nx-redraft">Redraft with notes</button><button class="btn danger" id="nx-discard">Discard</button></div></div>
         ${d.check ? `<div class="card nx-checkc"><span class="k">Hook &amp; retention check · ${d.check.score}/10</span><ul class="rt-list">${d.check.rows.map(([ok, m]) => `<li class="${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${esc(m)}</li>`).join("")}</ul></div>` : ""}
         <div class="card nx-research"><span class="k">Research · every line comes from these</span>
           ${r.angle ? `<p><b>${esc(r.angle)}</b></p>` : ""}
+          ${r.promise ? `<p class="nx-meta">Promise: ${esc(r.promise)}</p>` : ""}
           ${r.popular_version ? `<p class="nx-meta">Popular version: ${esc(r.popular_version)}<br>True version: ${esc(r.true_version || "")}</p>` : ""}
-          ${r.caveat ? `<p class="nx-meta">Caveat: ${esc(r.caveat)}</p>` : ""}
+          ${r.caveat ? `<p class="nx-meta">Caveat: ${esc(r.caveat)}</p>` : ""}${(r.caveats || []).map(c => `<p class="nx-meta">Caveat: ${esc(c)}</p>`).join("")}
           <ol class="nx-facts">${facts}</ol></div></div></div></div>`;
-    $("#nx-save").onclick = async () => { const lines = {}; main.querySelectorAll("[data-line]").forEach(t => lines[t.dataset.line] = t.value);
-      try { const x = await post("/api/script", {id, lines}); toast(x.changed.length ? `Saved ${x.changed.length} line${x.changed.length > 1 ? "s" : ""}.` : "No changes."); } catch (e) { toast(e.message); } };
+    const collect = () => { const lines = {}; main.querySelectorAll("[data-line]").forEach(t => lines[t.dataset.line] = t.value); return lines; };
+    const saveLines = lines => post(long ? "/api/make/lines" : "/api/script", {id, lines});
+    $("#nx-save").onclick = async () => { try { const x = await saveLines(collect()); toast(x.changed.length ? `Saved ${x.changed.length} line${x.changed.length > 1 ? "s" : ""}.` : "No changes."); } catch (e) { toast(e.message); } };
     $("#nx-approve").onclick = async () => {
-      const lines = {}; main.querySelectorAll("[data-line]").forEach(t => lines[t.dataset.line] = t.value);
       try {
-        await post("/api/script", {id, lines});
-        const t = main.querySelector("input[name=nx-title]:checked"); if (t && t.value !== d.title) await post("/api/choose_title", {id, title: t.value});
-        toast((await post("/api/make/approve", {id})).reply); runJob("build", id); go("production");
+        await saveLines(collect());
+        const t = main.querySelector("input[name=nx-title]:checked"); if (t && t.value !== d.title) await post("/api/choose_title", {id: d.title_pkg || id, title: t.value});
+        toast((await post("/api/make/approve", {id})).reply);
+        if (long) { watchLong(); go("make"); } else { runJob("build", id); go("production"); }
       } catch (e) { toast(e.message); } };
     $("#nx-redraft").onclick = async () => { try { toast((await post("/api/make/redraft", {id, notes: $("#nx-notes").value})).reply); watchDraft(); go("make"); } catch (e) { toast(e.message); } };
     $("#nx-discard").onclick = () => sheet(`<h3>Discard this draft?</h3><p>The script, packaging and research are deleted.</p><div class="row-end"><button class="btn" data-close>Keep it</button><button class="btn danger" id="nx-dd">Discard</button></div>`,
@@ -378,6 +398,9 @@
       if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
       return go(ag.dataset.agent); }
     const sl = t.closest("[data-scroll-line]"); if (sl) { const l = $("#nx-line-" + sl.dataset.scrollLine); if (l) { l.scrollIntoView({behavior: "smooth", block: "center"}); l.querySelector("textarea")?.focus(); } return; }
+    const kd = t.closest("[data-nx-kind]"); if (kd) { makeKind = kd.dataset.nxKind; return route(); }
+    const cut = t.closest("[data-nx-cut]");
+    if (cut) { e.stopPropagation(); try { toast((await post("/api/episode/shorts", {id: cut.dataset.nxCut})).reply); route(); } catch (err) { toast(err.message); } return; }
     const lg = t.closest("[data-nx-long]");
     if (lg) { e.stopPropagation(); try { toast((await post("/api/long/render", {id: lg.dataset.nxLong})).reply); watchLong(); route(); } catch (err) { toast(err.message); } return; }
     const mk = t.closest("[data-nx-make]"); if (mk) { e.stopPropagation(); return make(mk.dataset.nxMake); }

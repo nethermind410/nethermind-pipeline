@@ -237,3 +237,15 @@ h2{letter-spacing:.14em}
 .review.wide .player{position:static}
 .review.wide .player video{aspect-ratio:16/9;max-height:70vh}
 .tile img[src*="_long_"]{aspect-ratio:16/9}
+
+/* ---- Make: kind picker, long-form drafts ---- */
+.nx-kind{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nx-kind button{display:grid;gap:3px;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.nx-kind button span{font-size:12.5px;color:var(--muted)}
+.nx-kind button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--card))}
+.nx-chap{margin:14px 0 2px;font:700 13px var(--grotesk);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.nx-line.long-only textarea{border-left:3px solid color-mix(in srgb,var(--ink) 25%,transparent)}
+.nx-thumbw{display:flex;gap:6px;flex-wrap:wrap;font:800 15px var(--grotesk);letter-spacing:.02em}
+.nx-thumbw b.acc{color:var(--accent)}
+.nx-recap summary{cursor:pointer;color:var(--muted);font-size:14px;margin:8px 0}
+@media (max-width:700px){.nx-kind{grid-template-columns:1fr}}

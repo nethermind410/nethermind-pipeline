@@ -156,6 +156,14 @@ def today():
                               "thumb": v["thumb"], "text": "is live on YouTube. Finish it:", "steps": steps,
                               "tags": pkg.get("youtube_tags"), "comment": pkg.get("pinned_comment"),
                               "link": v["youtube_edit"], "watch": v["youtube_url"]})
+    try:                                    # a long-form episode script waiting for approval
+        import drafter_long
+        for d in drafter_long.drafts():
+            cards.append({"key": f"draft:{d['id'][:60]}", "kind": "draft", "video": d["id"], "thumb": None,
+                          "title": d["title"] or d["topic"],
+                          "text": f"— the {d['minutes']:.0f}-minute episode is drafted ({len(d['chapters'])} chapters). Read it and approve it to render."})
+    except Exception:
+        pass
     try:                                    # Intelligence scored ideas: your call decides what's drafted next
         import learning
         open_cards = [c for c in learning._cards() if not c.get("decision")]

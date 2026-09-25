@@ -175,13 +175,29 @@ def clean_cfg(cfg, vid):
     segs = cfg.get("segments") or []
     if not 5 <= len(segs) <= 14:
         raise ValueError(f"The script has {len(segs)} beats; it needs 5–14.")
+    segs = clean_segments(segs, vid)
+    segs[0]["hook"] = True
+    cfg.update(id=vid, file=vid, segments=segs)
+    cfg.setdefault("score", "deep")
+    cfg.setdefault("credit", "ART: AI-GEN (ORIGINAL) · IMAGES: CC BY / PD — SEE DESCRIPTION")
+    cfg.setdefault("palette", {"accent": [224, 41, 75], "accent2": [250, 204, 21]})
+    cfg.setdefault("hook", {"lines": [], "size": 140, "y": 600})
+    end = cfg.get("end") or {}
+    if not any("NEXT" in str(l) for l in end.get("lines", [])):
+        cfg["end"] = {"at": 1.4, "lines": ["SUBSCRIBE FOR MORE", "NEXT:", "MORE BURIED HISTORY"]}
+    return cfg
+
+
+def clean_segments(segs, vid, id_prefix=""):
+    """Validate beats and give new images names that can't clash with another video's. Shared by the Short and
+    long-form writers; an image defined (search or prompt) on any beat can be reused by later beats."""
     seen, rename = set(), {}
     defined = {str((s.get("vis") or {}).get("src")) for s in segs            # new images need a search or a prompt
                if (s.get("vis") or {}).get("real") or (s.get("vis") or {}).get("prompt")}   # on at least one beat
     for i, s in enumerate(segs):
-        sid = str(s.get("id") or f"s{i + 1}")
-        if not re.fullmatch(r"[a-z0-9_]{1,12}", sid) or sid in seen:
-            sid = f"s{i + 1}"
+        sid = str(s.get("id") or f"{id_prefix}s{i + 1}")
+        if not re.fullmatch(r"[a-z0-9_]{1,16}", sid) or sid in seen:
+            sid = f"{id_prefix}s{i + 1}"
         seen.add(sid); s["id"] = sid
         s["text"] = re.sub(r"\s+", " ", str(s.get("text") or "")).strip()
         if not s["text"] or len(s["text"]) > 400:
@@ -200,16 +216,7 @@ def clean_cfg(cfg, vid):
         s["vis"] = v
         s["gap"] = min(max(float(s.get("gap", 0.15)), 0.05), 0.4)
         s.pop("hook", None)
-    segs[0]["hook"] = True
-    cfg.update(id=vid, file=vid, segments=segs)
-    cfg.setdefault("score", "deep")
-    cfg.setdefault("credit", "ART: AI-GEN (ORIGINAL) · IMAGES: CC BY / PD — SEE DESCRIPTION")
-    cfg.setdefault("palette", {"accent": [224, 41, 75], "accent2": [250, 204, 21]})
-    cfg.setdefault("hook", {"lines": [], "size": 140, "y": 600})
-    end = cfg.get("end") or {}
-    if not any("NEXT" in str(l) for l in end.get("lines", [])):
-        cfg["end"] = {"at": 1.4, "lines": ["SUBSCRIBE FOR MORE", "NEXT:", "MORE BURIED HISTORY"]}
-    return cfg
+    return segs
 
 
 def new_id(topic):

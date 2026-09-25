@@ -31,7 +31,7 @@ def keep(seg):
 
 
 def clean_vis(v):
-    return {k: val for k, val in v.items() if k not in ("prompt", "real", "edit_from")}
+    return dict(v)      # keeps "real"/"prompt": fetch_real/gen_visuals make any missing image (existing ones are skipped)
 
 
 def short_title(title):
@@ -92,9 +92,14 @@ def assemble(ep):
             ice = blk
         cid = f"c{i + 1}"                        # by position: truncated names can collide (foo / foo_2)
         own = next((clean_vis(s["vis"]) for s in body if s["vis"].get("t") == "kb"), None)
-        card = {"id": f"{cid}_title", "dur": TITLE_CARD, "gap": 0.2, "vis": own or card_vis(clean_vis(body[0]["vis"]), first_still),
-                "hero": {"lines": wrap_title(ch.get("title", ch["id"])), "col": "a", "y": 660, "size": 118},
-                "sub": f"CHAPTER {i + 1}", "srt": ch.get("title", "")}
+        if ep.get("style") == "iceberg" and ep.get("iceberg") and i < len(ep["iceberg"]["tiers"]):
+            ice = ep["iceberg"]                                  # descend the iceberg: the tier label is the card
+            card = {"id": f"{cid}_title", "dur": TITLE_CARD + 0.8, "gap": 0.2, "vis": {"t": "ice", "tier": i},
+                    "srt": ch.get("title", "")}
+        else:
+            card = {"id": f"{cid}_title", "dur": TITLE_CARD, "gap": 0.2, "vis": own or card_vis(clean_vis(body[0]["vis"]), first_still),
+                    "hero": {"lines": wrap_title(ch.get("title", ch["id"])), "col": "a", "y": 660, "size": 118},
+                    "sub": f"CHAPTER {i + 1}", "srt": ch.get("title", "")}
         segs.append(card)
         marks.append((ch.get("title", ch["id"]), card["id"]))
         for s in body:
@@ -179,6 +184,16 @@ def thumb_for(ep, cfg, first, n):
 def package(ep, vid, cfg, marks, starts):
     chapters = [(0 if i == 0 else starts[sid], name) for i, (name, sid) in enumerate(marks)]
     lines = [f"{ts(t)} {name}" for t, name in chapters]
+    own = PKG / f"{vid}.json"
+    if own.exists() and json.loads(own.read_text()).get("drafted"):      # a written long-form: its own packaging
+        pkg = json.loads(own.read_text())
+        body = pkg.get("youtube_description_template") or pkg.get("youtube_description", "")
+        pkg["youtube_description_template"] = body
+        pkg["youtube_description"] = body.replace("{CHAPTERS}", "Chapters\n" + "\n".join(lines))
+        pkg["episode"] = ep["id"]
+        own.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
+        (HERE / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
+        return pkg, lines
     tags, srcs, titles = [], [], []
     for ch in ep["chapters"]:
         pk, src = sources_of(ch["id"], ep["id"])
@@ -231,6 +246,15 @@ def main(path, preview=False):
         got = reuse_narration(vid, reuse)
         nether.finish(cur, {"reused": got, "of": len(reuse)})
 
+        if not preview:
+            cur = nether.begin("production", "Visuals (real photos + art)", sub="visuals", parent=parent)
+            run([PY, "fetch_real.py", f"cfg/{vid}.json"], cur)
+            run([PY, "gen_visuals.py", f"cfg/{vid}.json"], cur)
+            missing = sorted({s["vis"]["src"] for s in cfg["segments"] if s["vis"].get("src") and not (HERE / "assets" / s["vis"]["src"]).exists()})
+            if missing:
+                raise RuntimeError(f"{len(missing)} image(s) still missing (daily AI-art limit or no photo found): " + ", ".join(missing[:6]))
+            nether.finish(cur)
+
         cur = nether.begin("production", "Render 16:9", sub="render", parent=parent)
         run([PY, "make_short.py", f"cfg/{vid}.json"] + (["--preview"] if preview else []), cur)
         nether.finish(cur)
@@ -248,9 +272,22 @@ def main(path, preview=False):
         pkg, lines = package(ep, vid, cfg, marks, starts)
         nether.finish(cur, {"chapters": lines, "length": ts(total)})
 
-        cur = nether.begin("production", "Thumbnail", sub="thumbnail", parent=parent)
+        cur = nether.begin("production", "Thumbnails (3 for Test & Compare)", sub="thumbnail", parent=parent)
         run([PY, "make_thumb.py", f"packaging/{vid}.json"], cur)
-        nether.finish(cur)
+        made = 1
+        for i, opt in enumerate(pkg.get("thumbnail_options", [])[:2], start=2):
+            tmp = PKG / f"{vid}_t{i}.json"             # make_thumb names its output after the packaging file
+            tmp.write_text(json.dumps({**pkg, "thumbnail": {**pkg.get("thumbnail", {}), **opt}}, ensure_ascii=False))
+            try:
+                run([PY, "make_thumb.py", str(tmp.relative_to(HERE))], cur)
+                for kind in ("thumb", "cover"):
+                    src = OUT / f"{vid}_t{i}_{kind}.jpg"
+                    if src.exists():
+                        src.replace(OUT / f"{vid}_{kind}{i}.jpg")
+                made += 1
+            finally:
+                tmp.unlink(missing_ok=True)
+        nether.finish(cur, {"thumbnails": made})
         cur = None
         nether.finish(parent, {"video": f"out/{vid}.mp4", "length": ts(total), "chapters": lines})
         print(f"\nDONE out/{vid}.mp4  ({ts(total)})\n" + "\n".join(lines))
