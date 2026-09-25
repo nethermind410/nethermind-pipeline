@@ -5,11 +5,18 @@ const V = Date.now();
 const media = f => !f ? "" : /^(\/|https?:)/.test(f) ? f : `/media/${encodeURIComponent(f)}?v=${V}`;
 const main = $("#main");
 const get = p => fetch(p).then(r => r.json());
+// the button you just pressed shows it's working until the server answers (so nothing ever feels ignored)
+let pressed = null, pressedAt = 0;
+document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest("button,.btn"); if (b) { pressed = b; pressedAt = Date.now(); } }, true);
 async function post(p, body) {
-  const r = await fetch(p, {method: "POST", headers: {"Content-Type": "application/json", "X-Studio": "1"}, body: JSON.stringify(body)});
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.error || j.reply || "Something went wrong.");
-  return j;
+  const b = Date.now() - pressedAt < 1500 ? pressed : null;
+  b?.classList.add("busy");
+  try {
+    const r = await fetch(p, {method: "POST", headers: {"Content-Type": "application/json", "X-Studio": "1"}, body: JSON.stringify(body)});
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || j.reply || "Something went wrong.");
+    return j;
+  } finally { b?.classList.remove("busy"); }
 }
 const fmt = n => Number(n || 0).toLocaleString();
 const PLAT = {youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram"};

@@ -119,7 +119,9 @@ window.NeuralBrain = (() => {
   const HOME = {yaw: 0, pitch: 0, zoom: 1, px: 0, py: 0};
 
   function mount(canvas) {
-    const ctx = canvas.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+    // a soft glow doesn't need full Retina resolution: 1.25× looks the same and draws ~60% fewer pixels
+    const ctx = canvas.getContext("2d"), dpr = Math.min(1.25, devicePixelRatio || 1);
+    let lastDraw = 0, slow = 0, frameGap = 1000 / 30;                           // idle: 30 fps; busier machines drop further
     let W = 0, H = 0, size = 0, ox = 0, oy = 0, fibres = null, raf = 0, alive = true, dirty = true;
     const view = {...HOME}, spin = {yaw: 0, pitch: 0}, listeners = [];
     const pulses = [], glows = new Map(), waves = [];
@@ -186,6 +188,9 @@ window.NeuralBrain = (() => {
       }
       if (tween) { const k = Math.min(1, (t - tween.t0) / 650), e = 1 - (1 - k) ** 3;
         Object.keys(HOME).forEach(p => view[p] = tween.from[p] + (HOME[p] - tween.from[p]) * e); dirty = true; if (k >= 1) tween = null; }
+      const active = dirty || waves.length || drag;                               // moving or firing: full speed
+      if (!active && t - lastDraw < frameGap) { raf = requestAnimationFrame(frame); return; }   // idle: skip this frame
+      lastDraw = t; const w0 = performance.now();
       if (dirty) render();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
       ctx.globalAlpha = 0.9 + 0.1 * Math.sin(t / 2000); ctx.drawImage(fibres, 0, 0, W, H); ctx.globalAlpha = 1;
@@ -217,6 +222,9 @@ window.NeuralBrain = (() => {
       }
       if (pulses.length > 40) pulses.splice(0, pulses.length - 40);
       ctx.globalCompositeOperation = "source-over";
+      const cost = performance.now() - w0;                                         // self-tuning: a slow machine gets fewer idle frames
+      slow = slow * 0.95 + (cost > 14 ? 1 : 0) * 0.05;
+      frameGap = slow > 0.5 ? 1000 / 15 : slow > 0.2 ? 1000 / 20 : 1000 / 30;
       raf = requestAnimationFrame(frame);
     }
 
