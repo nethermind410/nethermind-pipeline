@@ -355,7 +355,7 @@ def daily_and_tools():
     plist = Path.home() / "Library" / "LaunchAgents" / "com.nethermind.daily.plist"
     if d:
         age = (datetime.datetime.now().astimezone() - parse_dt(d["started"])).total_seconds() / 3600
-        out.append({"name": "Daily run (7:00)", "ok": age < 26 and d["status"] != "failed",
+        out.append({"name": "Daily run (7:00)", "ok": age < 26 and d["status"] != "failed" and plist.exists(),
                     "detail": f"Last ran {when(d['started'])} · {d['status']}" + ("" if plist.exists() else " · not installed: run ./install_daily.sh")})
     else:
         out.append({"name": "Daily run (7:00)", "ok": plist.exists(),
