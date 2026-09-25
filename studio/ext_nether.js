@@ -254,30 +254,45 @@
   /* ---------- Business → Money ---------- */
   async function pageMoney() {
     const m = await get("/api/money"), s = m.settings;
-    const meter = (label, value, goal, note, eta) => { const pct = Math.min(100, value / goal * 100);
-      return `<div class="nx-meter"><div class="nx-head"><b>${esc(label)}</b><span class="nx-meta">${fmt(value)} of ${fmt(goal)} · ${pct.toFixed(pct < 1 ? 2 : 0)}%</span></div>
-        <span class="nx-mbar" role="img" aria-label="${esc(label)}: ${pct.toFixed(1)}%"><i style="width:${Math.max(pct, 0.6)}%"></i></span>
-        <span class="nx-meta">${esc(note || "")}${eta ? ` · at this pace: ${esc(eta)}` : ""}</span></div>`; };
-    const g = Object.fromEntries((m.goals || []).map(x => [x.key, x]));
-    const routes = g.subs ? `
-      <div class="nx-two nx-routes"><div class="card nx-route"><span class="k">Route 1 · Shorts</span>
-          ${meter("Subscribers", g.subs.value, g.subs.goal, g.subs.note, g.subs.eta)}${g.views ? meter("Shorts views, 90 days", g.views.value, g.views.goal, g.views.note, g.views.eta) : ""}</div>
-        <div class="card nx-route"><span class="k">Route 2 · Long-form</span>
-          ${meter("Subscribers", g.subs.value, g.subs.goal, "Same 1,000.", g.subs.eta)}
-          ${meter("Watch hours, 12 months", m.watch_hours_est, m.watch_goal, `Rough estimate from ${m.long_videos} long-form video${m.long_videos === 1 ? "" : "s"} at a typical 35% view duration — Studio → Earn has the real number.`)}</div></div>
-      <p class="nx-meta">Shorts pay ~$0.01–0.10 per 1,000 views; long-form pays far more per view. That's why the weekly episode matters.</p>`
-      : `<div class="card caught"><b>No channel numbers yet</b>Refresh numbers in Analytics.</div>`;
-    const streams = m.streams.map(x => `<li><span class="pill ${x.on ? "live" : ""}">${x.on ? "On" : "Not set up"}</span> <b>${esc(x.name)}</b> <span class="nx-meta">— ${esc(x.how)}</span></li>`).join("");
+    const P = m.plan || {};
+    const unit = r => fmt(r.value);
+    const perDay = v => !v ? "0" : v < 10 ? v.toFixed(1) : fmt(Math.round(v));
+    const bar = r => `<div class="mo-req ${r.done ? "done" : ""}"><div class="mo-rh"><span>${r.done ? "✓ " : ""}${esc(r.label)}</span><b>${unit(r)} <em>/ ${fmt(r.goal)}</em></b></div>
+      <span class="mo-bar" role="img" aria-label="${esc(r.label)}: ${(r.pct * 100).toFixed(1)}%"><i style="width:${Math.max(r.pct * 100, 0.8).toFixed(1)}%"></i></span>
+      ${r.need_day ? `<span class="nx-meta">You: ${perDay(r.have_day)}/day · needed: ${perDay(r.need_day)}/day${r.unit === "hours" ? " (watch hours)" : ""}</span>`
+        : r.eta ? `<span class="nx-meta">At this pace: ${esc(r.eta)}</span>` : ""}</div>`;
+    const stone = (M, n) => `<div class="card mo-stone ${M.key === P.next ? "next" : ""} ${M.done ? "done" : ""}">
+      <div class="mo-sh"><span class="mo-n">${M.done ? "✓" : n}</span><div><span class="k">${M.key === P.next ? "Next milestone" : M.done ? "Reached" : "After that"}</span>
+        <h3>${esc(M.name)}</h3><p class="nx-meta">${esc(M.pays)}</p></div><span class="mo-pct">${(M.pct * 100).toFixed(M.pct < 0.1 ? 1 : 0)}%</span></div>
+      ${bar(M.subs)}
+      <div class="mo-or"><span class="k">plus one of</span></div>
+      <div class="mo-routes">${[M.views, M.hours].map(r => `<div class="${(M.route === "hours") === (r === M.hours) ? "best" : ""}">${bar(r)}</div>`).join("")}</div>
+      ${M.done ? "" : `<p class="mo-block">Holding it back: <b>${esc(M.bottleneck)}</b></p>`}</div>`;
+    const road = P.ready ? `
+      <div class="mo-hero card"><div><span class="k">Where you are</span>
+          <h2>${esc(P.next === "fan" ? "On the way to your first YouTube money" : "On the way to ad revenue")}</h2>
+          <p>${esc(P.tip)}</p></div>
+        <div class="mo-track" aria-label="The road">${["Now", "First money · 500 subs", "Ad revenue · 1,000 subs"].map((x, i) => {
+          const on = i === 0 || (i === 1 ? P.first.done : P.ads.done), cur = (i === 1 && P.next === "fan") || (i === 2 && P.next === "ads");
+          return `<span class="mo-dot ${on ? "on" : ""} ${cur ? "cur" : ""}"><i></i>${esc(x)}</span>`; }).join('<span class="mo-line"></span>')}</div></div>
+      <div class="nx-two mo-stones">${stone(P.first, 1)}${stone(P.ads, 2)}</div>
+      <p class="mo-rule ${P.rule_change.before ? "" : "past"}"><b>${P.rule_change.before ? "Heads up:" : "Note:"}</b> ${esc(P.rule_change.say)}</p>
+      <p class="nx-meta">Watch hours are estimated from public views × length at a typical 35% viewed; YouTube Studio → Earn has the exact figures. Views and hours never combine — you qualify on one or the other.</p>`
+      : `<div class="card caught"><b>No channel numbers yet</b>Refresh numbers in Analytics and the road fills in.</div>`;
+    const streams = m.streams.map(x => `<div class="mo-stream ${x.on ? "on" : ""}"><span class="pill ${x.on ? "live" : ""}">${x.on ? "On" : x.name.startsWith("Ads") ? "Not yet — see the road" : "Not set up"}</span><b>${esc(x.name)}</b><span class="nx-meta">${esc(x.how)}</span></div>`).join("");
     const setup = m.setup.map(x => `<li class="${x.done ? "on" : ""}"><button class="check ${x.done ? "on" : ""}" data-step="setup:${esc(x.key)}" aria-pressed="${x.done}" aria-label="Done: ${esc(x.title)}"></button>
         <div><b>${esc(x.title)}</b><div class="nx-meta">${esc(x.how)}</div></div></li>`).join("");
     const linkLines = (s.links || []).map(l => `${l.label} | ${l.url}${l.lanes?.length ? " | " + l.lanes.join(",") : ""}`).join("\n");
     main.innerHTML = `<div class="page wide">
-      <div class="head-row"><div class="head"><h1>Money</h1><p>Two ways YouTube starts paying, and the income that doesn't wait for it — ads are only 30–50% of a successful faceless channel's money.</p></div>
+      <div class="head-row"><div class="head"><h1>Money</h1><p>The road to getting paid by YouTube, and the money that doesn't wait for it.</p></div>
         <button class="btn" id="nx-kit">Build media kit</button></div>
-      <h2>Getting paid by YouTube</h2>${routes}
-      <h2>Income streams</h2><div class="card nx-streams"><ul>${streams}</ul></div>
-      <div class="nx-two"><div>
-        <h2>Links in every description</h2>
+      ${road}
+      <h2>Money you can make now</h2><p class="nx-meta">Ads are only 30–50% of a successful faceless channel's income. These don't need YouTube's permission.</p>
+      <div class="mo-streams">${streams}</div>
+      <div class="mo-setup">
+        <h2>One-time setup</h2><div class="card nx-setup"><ul>${setup}</ul></div>
+      </div>
+        <details class="mo-details"><summary><h2>Links in every description</h2></summary>
         <form class="card nx-bform" id="nx-bform">
           <label><span class="k">Amazon Associates tag</span><input name="amazon_tag" value="${esc(s.amazon_tag)}" placeholder="e.g. nethermind-20"></label>
           <label><span class="k">Newsletter signup link</span><input name="newsletter_url" value="${esc(s.newsletter_url)}" placeholder="https://…"></label>
@@ -285,10 +300,8 @@
           <label><span class="k">Other links — one per line: Label | https://… | lanes (optional, e.g. marvel,anime)</span><textarea name="links" rows="3">${esc(linkLines)}</textarea></label>
           <label><span class="k">Affiliate disclosure (Amazon and the FTC require it)</span><input name="disclosure" value="${esc(s.disclosure)}"></label>
           <div class="row-end"><button class="btn primary">Save &amp; update unposted videos</button></div>
-          <p class="nx-meta">Each video gets a search link for its own source material (e.g. the collected editions it talks about). Posted videos keep what went out.</p></form>
-      </div><div>
-        <h2>One-time setup</h2><div class="card nx-setup"><ul>${setup}</ul></div>
-      </div></div></div>`;
+          <p class="nx-meta">Each video gets a search link for its own source material (e.g. the collected editions it talks about). Posted videos keep what went out.</p></form></details>
+    </div>`;
     $("#nx-bform").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target);
       const links = String(f.get("links") || "").split("\n").map(l => l.split("|").map(x => x.trim())).filter(p => p[1])
         .map(([label, url, lanes]) => ({label, url, lanes: (lanes || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean)}));

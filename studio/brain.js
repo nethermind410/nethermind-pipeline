@@ -18,8 +18,8 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 async function brainData() {
   const safe = p => get(p).catch(() => null);
-  const [ch, today, vids, cal, ideas, com, health, sys, dr, wk] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
-    "/api/calendar", "/api/ideas", "/api/comments", "/api/health", "/api/system", "/api/drafts", "/api/week"].map(safe));
+  const [ch, today, vids, cal, ideas, com, health, sys, dr, wk, plan] = await Promise.all(["/api/channel", "/api/today", "/api/videos",
+    "/api/calendar", "/api/ideas", "/api/comments", "/api/health", "/api/system", "/api/drafts", "/api/week", "/api/money/plan"].map(safe));
   const count = s => (vids || []).filter(v => v.stage === s).length;
   const next = (cal?.items || []).find(i => i.state === "scheduled");
   const openIdeas = (ideas?.sections || []).flatMap(s => s.items).filter(i => !i.made && !i.dismissed).length;
@@ -27,7 +27,7 @@ async function brainData() {
   const bad = (health || []).filter(h => !h.ok);
   const nDraft = dr?.drafts?.length || 0, failed = (sys?.agents || []).filter(a => a.state === "failed").map(a => a.name);
   return {
-    ch, today, wk,
+    ch, today, wk, plan,
     cap: {
       intelligence: [ideas?.next ? `Up next: ${ideas.next.hook}` : `${openIdeas} ideas, ranked by real demand`, false],
       content: [dr?.busy ? `Writing: ${dr.busy.replace(/^drafting /, "")}` : nDraft ? `${nDraft} script${nDraft > 1 ? "s" : ""} to approve` : "Draft a video from any idea", nDraft > 0],
@@ -64,9 +64,10 @@ async function pageBrain() {
       <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(n.lobe)}</span></button>`;
   }).join("");
   const c = data.ch;
-  $("#core").innerHTML = c?.ready ? `<button class="core-btn" data-neuron="home-core" title="Open your channel numbers">
-      <span class="big">${(c.goals[0].value / c.goals[0].goal * 100).toFixed(1)}%</span>
-      <span class="nc">of the way to monetisation · ${fmt(c.goals[0].value)} of 1,000 subscribers · ${fmt(c.goals[1].value)} of 10M Shorts views (estimate)</span></button>` : "";
+  const P = data.plan, M = P?.ready ? P[P.next === "fan" ? "first" : "ads"] : null;   // the next milestone, not just subscribers
+  $("#core").innerHTML = M ? `<button class="core-btn" data-neuron="home-core" title="Open Money: the road to getting paid">
+      <span class="big">${(M.pct * 100).toFixed(M.pct < 0.1 ? 1 : 0)}%</span>
+      <span class="nc">of the way to ${P.next === "fan" ? "your first YouTube money" : "ad revenue"} · ${fmt(M.subs.value)} of ${fmt(M.subs.goal)} subscribers · next hurdle: ${esc(M.bottleneck)}</span></button>` : "";
   if (data.wk) $("#core").insertAdjacentHTML("beforeend", weekBoard(data.wk));
   window.brainNet && window.brainNet.destroy();
   window.brainNet = NeuralBrain.mount($("#bnet"));
@@ -209,7 +210,7 @@ document.addEventListener("pointerout", e => {
 document.addEventListener("click", async e => {
   const n = e.target.closest && e.target.closest("[data-neuron]"); if (!n) return;
   e.stopPropagation();
-  const key = n.dataset.neuron, target = key === "home-core" ? "channel" : key;
+  const key = n.dataset.neuron, target = key === "home-core" ? "money" : key;
   if (REDUCED) return go(target);
   const l = $("#l-" + key);
   if (l) { l.style.strokeDashoffset = 0; await pulse(l.getAttribute("d"), 480); }

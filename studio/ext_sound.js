@@ -6,7 +6,8 @@
    window.nxSound.play("tick" | "handoff" | "done" | "celebrate")   window.nxSound.music.toggle() */
 (() => {
   const LS = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
-  const S = {sfx: LS("nx-sfx") === "1", vol: +(LS("nx-vol") || 0.5), src: LS("nx-src") || "drift", on: LS("nx-music") === "1"};
+  const S = {sfx: LS("nx-sfx") === "1", vol: +(LS("nx-vol") || 0.5), src: LS("nx-src") || "drift", on: LS("nx-music") === "1",
+             drums: LS("nx-drums") !== "0"};
   let ctx = null, master = null, sfxBus = null, musicBus = null;
   function audio() {
     if (ctx) { if (ctx.state === "suspended") ctx.resume(); return ctx; }
@@ -69,17 +70,58 @@
       const t = c.currentTime;
       voices.forEach((v, i) => v.oscs.forEach(o => o.frequency.setTargetAtTime(hz(CHORDS[k][i]), t, 1.6)));
     };
-    const chordT = setInterval(step, 9000);
+    const chordT = setInterval(step, 9000);          // = 3 bars at 80 BPM, so chords land on the downbeat
+    const kit = drums(c, out, () => CHORDS[k][0]);
     const pluck = () => {                            // sparse plucks: a few notes per chord, sometimes none
       if (Math.random() < 0.55) note(hz(PENTA[Math.floor(Math.random() * PENTA.length)]), c.currentTime + 0.05, 2.8,
         {gain: 0.035, type: "triangle", bus: out, wet: 0.9, attack: 0.01});
     };
     const pluckT = setInterval(pluck, 1700);
-    drift = {stop() {
+    drift = {kit, stop() {
       const t = c.currentTime; out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(out.gain.value, t); out.gain.linearRampToValueAtTime(0, t + 1.5);
-      clearInterval(chordT); clearInterval(pluckT);
+      clearInterval(chordT); clearInterval(pluckT); kit.stop();
       setTimeout(() => { voices.forEach(v => v.oscs.forEach(o => o.stop())); lfo.stop(); out.disconnect(); }, 1700);
     }};
+  }
+
+  /* ---------- drums: a slow, swung lo-fi beat + a soft bass on the chord root ---------- */
+  // 80 BPM, 16 steps a bar, swing on the off-16ths. Kick/snare/hat are synthesised (sine drop, filtered noise).
+  let noiseBuf = null;
+  const noise = c => { if (noiseBuf) return noiseBuf; noiseBuf = c.createBuffer(1, c.sampleRate, c.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return noiseBuf; };
+  const KICK = [1, 0, 0, 0, 0, 0, 0, .55, 0, 0, 1, 0, 0, 0, 0, 0], SNARE = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, .25];
+  const HAT = [.7, .25, .5, .3, .7, .25, .5, .45, .7, .25, .5, .3, .7, .3, .55, .35];
+  function drums(c, bus, root) {
+    const g = c.createGain(); g.gain.value = S.drums ? 1 : 0; g.connect(bus);
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; lp.connect(g);   // a little lo-fi softness
+    const sixteenth = 60 / 80 / 4, swing = sixteenth * 0.2;
+    let stepN = 0, next = c.currentTime + 60 / 80 * 4;               // come in after one bar of pads
+    const hit = {
+      kick(t, v) { const o = c.createOscillator(), e = c.createGain(); o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+        e.gain.setValueAtTime(0.55 * v, t); e.gain.exponentialRampToValueAtTime(0.001, t + 0.42); o.connect(e); e.connect(lp); o.start(t); o.stop(t + 0.45); },
+      snare(t, v) { const n = c.createBufferSource(); n.buffer = noise(c); const f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1900; f.Q.value = 0.8;
+        const e = c.createGain(); e.gain.setValueAtTime(0.28 * v, t); e.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        n.connect(f); f.connect(e); e.connect(lp); const w = c.createGain(); w.gain.value = 0.35; e.connect(w); w.connect(reverb()); n.start(t, Math.random() * 0.5); n.stop(t + 0.25);
+        const o = c.createOscillator(), oe = c.createGain(); o.frequency.value = 185; oe.gain.setValueAtTime(0.12 * v, t); oe.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+        o.connect(oe); oe.connect(lp); o.start(t); o.stop(t + 0.12); },
+      hat(t, v) { const n = c.createBufferSource(); n.buffer = noise(c); const f = c.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 7500;
+        const e = c.createGain(); e.gain.setValueAtTime(0.07 * v, t); e.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+        n.connect(f); f.connect(e); e.connect(lp); n.start(t, Math.random() * 0.5); n.stop(t + 0.06); },
+      bass(t, m) { const o = c.createOscillator(), e = c.createGain(), f = c.createBiquadFilter(); o.type = "triangle"; o.frequency.value = hz(m - 12);
+        f.type = "lowpass"; f.frequency.value = 400; e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.16, t + 0.02); e.gain.exponentialRampToValueAtTime(0.001, t + 1.1);
+        o.connect(f); f.connect(e); e.connect(g); o.start(t); o.stop(t + 1.2); },
+    };
+    const timer = setInterval(() => {                 // look-ahead scheduler: steady timing even when the page is busy
+      while (next < c.currentTime + 0.12) {
+        const s = stepN % 16, t = next + (s % 2 ? swing : 0), human = 0.85 + Math.random() * 0.3;
+        if (KICK[s] && (KICK[s] === 1 || Math.random() < KICK[s])) hit.kick(t, KICK[s] === 1 ? 1 : 0.7);
+        if (SNARE[s] && (SNARE[s] === 1 || Math.random() < SNARE[s])) hit.snare(t, SNARE[s] === 1 ? 1 : 0.35);
+        if (Math.random() < 0.92) hit.hat(t, HAT[s] * human);
+        if (s === 0 || s === 10) hit.bass(t, root());
+        stepN++; next += sixteenth;
+      }
+    }, 25);
+    return {stop() { clearInterval(timer); }, set(on) { g.gain.setTargetAtTime(on ? 1 : 0, c.currentTime, 0.3); }};
   }
 
   /* ---------- your own tracks (music/ folder) ---------- */
@@ -114,6 +156,7 @@
     <div class="snd-panel" hidden>
       <div class="snd-row"><button class="btn small primary" data-snd="play">Play</button><span class="snd-title"></span></div>
       <label class="snd-row"><span class="k">Music</span><select data-snd="src"></select></label>
+      <label class="snd-row snd-check"><input type="checkbox" data-snd="drums"> Drums <span class="nx-meta">(a slow lo-fi beat under Nether drift)</span></label>
       <label class="snd-row"><span class="k">Volume</span><input type="range" min="0" max="1" step="0.05" data-snd="vol"></label>
       <label class="snd-row snd-check"><input type="checkbox" data-snd="sfx"> Interface sounds <span class="nx-meta">(hand-offs, done, a video going live)</span></label>
       <p class="nx-meta">Add your own tracks: put .mp3 or .m4a files in the pipeline's <b>music</b> folder.</p></div>`;
@@ -123,7 +166,7 @@
     $(".snd-now", chip).textContent = music.playing ? music.now() : "Music";
     $("[data-snd=play]", chip).textContent = music.playing ? "Pause" : "Play";
     $(".snd-title", chip).textContent = music.playing ? music.now() : "Off";
-    $("[data-snd=vol]", chip).value = S.vol; $("[data-snd=sfx]", chip).checked = S.sfx;
+    $("[data-snd=vol]", chip).value = S.vol; $("[data-snd=sfx]", chip).checked = S.sfx; $("[data-snd=drums]", chip).checked = S.drums;
     const sel = $("[data-snd=src]", chip);
     sel.innerHTML = `<option value="drift">Nether drift (generative)</option>` +
       (tracks.length ? `<option value="files">Your tracks — shuffle</option>` + tracks.map(t => `<option value="${esc(t)}">${esc(t.replace(/\.[a-z0-9]+$/i, ""))}</option>`).join("") : "");
@@ -138,6 +181,7 @@
     const t = e.target.dataset.snd;
     if (t === "vol") { S.vol = +e.target.value; LS("nx-vol", S.vol); if (musicBus) musicBus.gain.setTargetAtTime(S.vol * 0.5, ctx.currentTime, 0.1); }
     if (t === "sfx") { S.sfx = e.target.checked; LS("nx-sfx", S.sfx ? "1" : "0"); if (S.sfx) play("done"); }
+    if (t === "drums") { S.drums = e.target.checked; LS("nx-drums", S.drums ? "1" : "0"); drift?.kit.set(S.drums); }
     if (t === "src") { S.src = e.target.value; LS("nx-src", S.src); if (music.playing) music.start(); }
   });
   document.addEventListener("click", e => { if (!chip.contains(e.target) && chip.classList.contains("open")) { chip.classList.remove("open"); ui(); } });

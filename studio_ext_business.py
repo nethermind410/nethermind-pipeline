@@ -37,5 +37,5 @@ def kit(body):
         raise ValueError(str(e))
 
 
-GET = {"/api/money": business.money}
+GET = {"/api/money": business.money, "/api/money/plan": business.plan}
 POST = {"/api/business/settings": settings, "/api/business/links": links, "/api/business/kit": kit}

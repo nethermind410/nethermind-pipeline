@@ -341,3 +341,44 @@ h2{letter-spacing:.14em}
 .wk.fresh .wk-bead.live i,.wk.fresh .wk-bead.scheduled i{animation:wk-pop .9s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes wk-pop{0%{transform:scale(.2);box-shadow:0 0 0 var(--accent)}60%{transform:scale(1.5);box-shadow:0 0 28px var(--accent)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.wk.fresh .wk-bead i{animation:none}.wk-bead i{transition:none}}
+
+/* ---- Money: the road to getting paid ---- */
+.mo-hero{display:grid;gap:18px;padding:22px 24px;margin-bottom:14px}
+.mo-hero h2{margin:4px 0 6px;font:700 24px/1.2 var(--grotesk);letter-spacing:-.01em;text-transform:none}
+.mo-hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;max-width:760px}
+.mo-track{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mo-dot{display:flex;align-items:center;gap:8px;font:600 12.5px var(--grotesk);color:var(--muted);white-space:nowrap}
+.mo-dot i{width:12px;height:12px;border-radius:50%;border:2px solid rgba(247,247,238,.3)}
+.mo-dot.on i{background:#34C759;border-color:#34C759}.mo-dot.on{color:var(--ink)}
+.mo-dot.cur i{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent);animation:nx-pulse 2s infinite}.mo-dot.cur{color:var(--ink)}
+.mo-line{flex:1;min-width:24px;height:1px;background:var(--line)}
+.mo-stones{align-items:stretch}
+.mo-stone{display:flex;flex-direction:column;gap:12px;padding:18px 20px}
+.mo-stone.next{border-color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.mo-stone.done{border-color:#34C759}
+.mo-sh{display:flex;gap:12px;align-items:flex-start}.mo-sh>div{flex:1;min-width:0}
+.mo-sh h3{margin:2px 0;font:700 19px var(--grotesk)}.mo-sh p{margin:0}
+.mo-n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;border:1.5px solid var(--line);font:700 14px var(--grotesk)}
+.mo-stone.next .mo-n{background:var(--accent);border-color:var(--accent);color:#fff}.mo-stone.done .mo-n{background:#34C759;border-color:#34C759;color:#000}
+.mo-pct{font:800 26px var(--grotesk);letter-spacing:-.03em}
+.mo-req{display:grid;gap:5px}.mo-rh{display:flex;justify-content:space-between;gap:10px;font-size:13.5px}
+.mo-rh b{white-space:nowrap}.mo-rh em{font-style:normal;color:var(--muted);font-weight:500}
+.mo-bar{display:block;height:8px;border-radius:99px;background:var(--hover);overflow:hidden}
+.mo-bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.mo-req.done .mo-bar i{background:#34C759}
+.mo-or{display:flex;align-items:center;gap:10px}.mo-or::before,.mo-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.mo-or .k{color:var(--muted);font:600 11px var(--grotesk);letter-spacing:.08em;text-transform:uppercase}
+.mo-routes{display:grid;gap:12px}
+.mo-routes>div{padding:10px 12px;border-radius:10px;border:1px solid transparent}
+.mo-routes>div.best{border-color:var(--line);background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.mo-block{margin:0;font-size:13.5px;color:var(--muted)}.mo-block b{color:var(--ink)}
+.mo-rule{margin:14px 0 4px;padding:10px 14px;border-left:3px solid var(--nx-fail);background:color-mix(in srgb,var(--nx-fail) 8%,transparent);border-radius:6px;font-size:13.5px;line-height:1.5}
+.mo-rule.past{border-color:var(--line);background:none}
+.mo-streams{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0 18px}
+.mo-stream{display:grid;gap:6px;align-content:start;border:1px solid var(--line);border-radius:12px;padding:14px}
+.mo-stream.on{border-color:#34C759}.mo-stream .pill{justify-self:start}
+.mo-details summary{cursor:pointer;list-style:none}.mo-details summary::-webkit-details-marker{display:none}
+.mo-details summary h2{display:inline}.mo-details summary::after{content:" ›";color:var(--muted)}.mo-details[open] summary::after{content:" ⌄"}
+.mo-hero h2{color:var(--ink)}
+.mo-setup .nx-setup ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:4px 24px}
+.mo-details{margin:18px 0 40px}

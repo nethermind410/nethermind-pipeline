@@ -587,13 +587,16 @@ def d_community():
 def d_monetisation():
     import business
     m = business.money()
-    rows = [row(g.get("label", g.get("name", "")), "", f"{n(g['value'])} / {n(g['goal'])}", "good" if g["value"] >= g["goal"] else None) for g in m["goals"]]
-    rows.append(row("Watch hours (long-form, estimate)", f"{m['long_videos']} long video(s) · 35% average view assumed",
-                    f"{n(m['watch_hours_est'])} / 4,000"))
-    return {"question": "How close is the channel to getting paid?",
-            "stats": [{"k": "Streams on", "v": f"{sum(1 for s in m['streams'] if s['on'])} of {len(m['streams'])}"}],
-            "panels": [panel("YouTube Partner Program", rows, ""),
-                       panel("Revenue streams", [row(s["name"], s["how"], "on" if s["on"] else "off", "good" if s["on"] else "warn") for s in m["streams"]], "")],
+    P, rows = m["plan"], []
+    if P.get("ready"):
+        for M in (P["first"], P["ads"]):
+            rows.append(row(f"{M['name']} — {M['pays']}", "Reached" if M["done"] else f"Holding it back: {M['bottleneck']}",
+                            f"{M['pct']:.0%}", "good" if M["done"] else "warn" if M["key"] == P["next"] else None))
+    return {"question": "How close is the channel to getting paid — and what's holding it back?",
+            "stats": [{"k": "Next", "v": ("First money (500 subs)" if P.get("next") == "fan" else "Ad revenue") if P.get("ready") else "—"},
+                      {"k": "Streams on", "v": f"{sum(1 for s in m['streams'] if s['on'])} of {len(m['streams'])}"}],
+            "panels": [panel("The road", rows, "Refresh numbers first.", P.get("tip", "")),
+                       panel("Money you can make now", [row(s["name"], s["how"], "on" if s["on"] else "off", "good" if s["on"] else "warn") for s in m["streams"]], "")],
             "actions": [{"label": "Open Money", "go": "money", "primary": True}]}
 
 

@@ -144,14 +144,76 @@ def money():
     s, done = settings(), studio_api.done_map()
     streams = [
         {"name": "Ads (YouTube Partner Program)", "on": bool(goals) and all(g["value"] >= g["goal"] for g in goals[:1]),
-         "how": "1,000 subscribers + 10M Shorts views in 90 days, or 4,000 watch hours in 12 months (long-form)."},
+         "how": "1,000 subscribers + {:,} watch hours or {:g}M Shorts views — see the road above.".format(ad_bar()[0], ad_bar()[1] / 1e6)},
         {"name": "Affiliate links", "on": bool(s["amazon_tag"] or s["links"]), "how": "Every description links the source material it covers."},
         {"name": "Newsletter", "on": bool(s["newsletter_url"]), "how": "Owned audience; sponsors pay per subscriber even when small."},
         {"name": "Sponsors", "on": bool(s["sponsor_email"]), "how": "Build media kit (top right) makes a one-page kit from your real numbers."},
     ]
-    return {"goals": goals, "watch_hours_est": est_hours, "watch_goal": 4000, "long_videos": len(longs),
+    return {"plan": plan(), "goals": goals, "watch_hours_est": est_hours, "watch_goal": 4000, "long_videos": len(longs),
             "streams": streams, "settings": s,
             "setup": [{"key": k, "title": t, "how": h, "done": f"setup:{k}" in done} for k, t, h in SETUP]}
+
+
+# YouTube Partner Program thresholds (announced 10 Aug 2026: ad-revenue bars double for NEW applicants from 1 Feb 2027;
+# fan funding / Shopping stays at 500 subs + 3,000 hours or 3M Shorts views)
+YPP_CHANGE = datetime.date(2027, 2, 1)
+
+
+def ad_bar(today=None):
+    today = today or datetime.date.today()
+    return (4000, 10_000_000) if today < YPP_CHANGE else (8000, 20_000_000)
+
+
+def plan():
+    """The road to getting paid, in plain numbers: two milestones, what's blocking each, and what moves it fastest."""
+    import studio_api, studio_channel
+    ch = studio_channel.channel()
+    if not ch.get("ready"):
+        return {"ready": False}
+    yt = studio_api.jload(OUT / "youtube.json", {}) or {}
+    g = {x["key"]: x for x in ch["goals"]}
+    subs, sub_day = g["subs"]["value"], g["subs"].get("per_day")
+    views90 = g["views"]["value"]
+    longs = [v for v in yt.get("videos", []) if v.get("seconds", 0) > 180]
+    hours = sum(v.get("views", 0) * v.get("seconds", 0) * 0.35 for v in longs) / 3600
+    avg_long = (sum(v.get("views", 0) for v in longs) / len(longs)) if longs else None
+    ep_hours = (avg_long or 1000) * 600 * 0.35 / 3600          # one 10-minute episode at your average (or 1,000) views
+    shorts_day, hours_day = views90 / 90, hours / 365
+    before = datetime.date.today() < YPP_CHANGE
+    ad_h, ad_v = ad_bar()
+
+    def req(label, value, goal, unit, need_day=None, have_day=None, eta=None):
+        return {"label": label, "value": round(value), "goal": goal, "unit": unit, "pct": min(1, value / goal) if goal else 0,
+                "done": value >= goal, "need_day": need_day, "have_day": have_day, "eta": eta}
+
+    def milestone(key, name, pays, sub_goal, h_goal, v_goal):
+        s = req(f"{sub_goal:,} subscribers", subs, sub_goal, "subs", None, sub_day,
+                g["subs"].get("eta") if sub_goal == 1000 else None)
+        h = req(f"{h_goal:,} watch hours (long-form, 12 months)", hours, h_goal, "hours", h_goal / 365, hours_day)
+        v = req(f"{v_goal / 1e6:g}M Shorts views (90 days)", views90, v_goal, "views", v_goal / 90, shorts_day)
+        route = max((h, v), key=lambda r: r["pct"])
+        block = min((s, route), key=lambda r: r["pct"])
+        return {"key": key, "name": name, "pays": pays, "subs": s, "hours": h, "views": v, "route": "hours" if route is h else "views",
+                "pct": min(s["pct"], route["pct"]), "done": s["done"] and route["done"], "bottleneck": block["label"]}
+
+    first = milestone("fan", "First money", "Channel memberships, Super Thanks/Chat, YouTube Shopping", 500, 3000, 3_000_000)
+    ads = milestone("ads", "Ad revenue", "A share of the ads on your videos (Shorts and long-form)", 1000, ad_h, ad_v)
+    nxt = first if not first["done"] else ads
+    # the fastest road: whichever route is closer to its daily need
+    r_h = hours_day / (nxt["hours"]["goal"] / 365) if nxt["hours"]["goal"] else 0
+    r_v = shorts_day / (nxt["views"]["goal"] / 90) if nxt["views"]["goal"] else 0
+    eps = max(0, (nxt["hours"]["goal"] - hours)) / ep_hours if ep_hours else None
+    if r_h >= r_v:
+        tip = (f"Long-form is your fastest road: a 10-minute episode at {'your average ' + format(round(avg_long), ',') if avg_long else '1,000'} "
+               f"views earns about {ep_hours:,.0f} watch hours — about {eps:,.0f} of those gets you to {nxt['hours']['goal']:,} hours.")
+    else:
+        tip = (f"Shorts are your fastest road: you average {shorts_day:,.0f} Shorts views a day; "
+               f"{nxt['name'].lower()} needs {nxt['views']['goal'] / 90:,.0f} a day, every day, for 90 days.")
+    return {"ready": True, "subs": subs, "first": first, "ads": ads, "next": nxt["key"], "tip": tip,
+            "rule_change": {"date": YPP_CHANGE.isoformat(), "before": before,
+                            "say": ("From 1 Feb 2027 new channels need double for ad revenue: 8,000 watch hours or 20M Shorts views. "
+                                    "Channels already in the programme keep their place; the first-money tier doesn't change.") if before else
+                                   "Since 1 Feb 2027 new channels need 8,000 watch hours or 20M Shorts views for ad revenue."}}
 
 
 def media_kit():
