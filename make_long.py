@@ -74,7 +74,7 @@ def assemble(ep):
     segs, marks, reuse, ice, skipped = [], [], [], None, []
     for s in ep.get("intro", []):
         if keep(s):
-            segs.append({**s, "id": f"intro_{s['id']}", "vis": card_vis(clean_vis(s["vis"]), first_still)})
+            segs.append({**s, "id": f"intro_{s['id']}", "src_id": s["id"], "vis": card_vis(clean_vis(s["vis"]), first_still)})
     if segs:
         marks.append(("Intro", segs[0]["id"]))
     for i, ch in enumerate(ep["chapters"]):
@@ -104,12 +104,12 @@ def assemble(ep):
         marks.append((ch.get("title", ch["id"]), card["id"]))
         for s in body:
             n = {k: v for k, v in s.items() if k not in ("hook", "in")}
-            n["id"], n["vis"] = f"{cid}_{s['id']}", clean_vis(s["vis"])
+            n["id"], n["src_id"], n["vis"] = f"{cid}_{s['id']}", s["id"], clean_vis(s["vis"])
             segs.append(n)
             reuse.append((n["id"], s["id"], s.get("text", ""), [ch["id"], f"{ep['id']}__{ch['id']}"]))
     outro = [s for s in ep.get("outro", []) if keep(s)]
     for s in outro:
-        segs.append({**s, "id": f"outro_{s['id']}", "vis": card_vis(clean_vis(s["vis"]), last_still)})
+        segs.append({**s, "id": f"outro_{s['id']}", "src_id": s["id"], "vis": card_vis(clean_vis(s["vis"]), last_still)})
     if outro:
         marks.append(("Outro", segs[-len(outro)]["id"]))
     if len(marks) < 3:
@@ -246,7 +246,9 @@ def main(path, preview=False):
 
         cur = nether.begin("production", "Narration (reuse the Shorts' voice)", sub="render", parent=parent)
         got = reuse_narration(vid, reuse)
-        nether.finish(cur, {"reused": got, "of": len(reuse)})
+        import voice                                    # your recordings win over any cached Kokoro line
+        mine = voice.apply(CFG / f"{vid}.json")
+        nether.finish(cur, {"reused": got, "of": len(reuse), "your_voice": mine})
 
         if not preview:
             cur = nether.begin("production", "Visuals (real photos + art)", sub="visuals", parent=parent)

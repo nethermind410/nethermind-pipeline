@@ -276,3 +276,10 @@ h2{letter-spacing:.14em}
 .nx-bform label{display:grid;gap:4px}
 .nx-bform input,.nx-bform textarea{background:var(--hover);border:1px solid transparent;border-radius:8px;color:var(--ink);padding:8px 10px;font:400 14px var(--grotesk)}
 .nx-bform input:focus,.nx-bform textarea:focus{border-color:var(--accent);outline:none}
+
+/* ---- your voice ---- */
+.nx-voicebar{display:grid;gap:2px;padding:10px 12px;border-radius:10px;background:var(--hover)}
+.nx-lfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.nx-voice{display:inline-flex;align-items:center;gap:8px;font-size:12.5px}
+.nx-mine{color:#34C759;font-weight:600}
+[data-rec].recording{background:var(--accent);color:var(--on-accent);animation:nx-pulse 1s infinite}

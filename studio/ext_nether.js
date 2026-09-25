@@ -407,13 +407,16 @@
       const head = long && l.chapter !== lastChap ? `<h3 class="nx-chap">${esc(l.chapter)}</h3>` : ""; lastChap = l.chapter;
       return `${head}<label class="nx-line ${l.long_only ? "long-only" : ""}" id="nx-line-${i}"><span class="nx-meta">${i + 1}${!long && i === 0 ? " · hook" : ""}${l.long_only && long ? " · long-form only" : ""}${l.hero ? ` · on screen: <b>${esc(l.hero.join(" "))}</b>` : ""}</span>
             <textarea data-line="${esc(l.id)}" rows="2">${esc(l.text)}</textarea>
-            <span class="nx-vis">${esc(l.kind)}${l.visual ? ": " + esc(l.visual) : ""}</span></label>`; }).join("");
+            <span class="nx-lfoot"><span class="nx-vis">${esc(l.kind)}${l.visual ? ": " + esc(l.visual) : ""}</span>
+              <span class="nx-voice" data-vline="${esc(l.id)}"><span class="nx-vstat"></span><button type="button" class="btn small" data-rec="${esc(l.id)}">● Record</button></span></span></label>`; }).join("");
     main.innerHTML = `<div class="page wide nx-review">
       <button class="back" data-go="make">‹ Make</button>
       <div class="head"><h1>${esc(d.title || d.topic)}</h1><p>${long ? `Long-form · ${d.chapters.length} chapters · about ${d.minutes} minutes. ` : ""}Drafted ${ago(d.at)} from “${esc(d.topic)}”. Read it, edit any line, then approve — or send it back with notes.</p></div>
       <div class="nx-two"><div>
         <div class="card nx-script"><div class="nx-head"><b>Script</b><span class="nx-meta">${words} words ≈ ${long ? (words / 168).toFixed(1) + " min" : Math.round(words / 2.8) + "s"}</span></div>
           ${long ? `<ol class="nx-chaps">${d.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol><p class="nx-meta">Lines marked “long-form only” are left out when a chapter is cut into its own Short.</p>` : pacing(d.lines)}
+          <div class="nx-voicebar"><b>🎙 Your voice (optional)</b> <span class="nx-meta" id="nx-vcount"></span>
+            <span class="nx-meta">Record any line in your own voice — it replaces the AI voice for that line. YouTube treats a real voice as the clearest sign of original work.</span></div>
           ${lineRows}
           <div class="nx-meta">End card: ${esc(d.end.join(" · "))}</div>
           <div class="row-end"><button class="btn" id="nx-save">Save line edits</button></div></div>
@@ -432,6 +435,7 @@
           ${r.caveat ? `<p class="nx-meta">Caveat: ${esc(r.caveat)}</p>` : ""}${(r.caveats || []).map(c => `<p class="nx-meta">Caveat: ${esc(c)}</p>`).join("")}
           <ol class="nx-facts">${facts}</ol></div></div></div></div>`;
     const collect = () => { const lines = {}; main.querySelectorAll("[data-line]").forEach(t => lines[t.dataset.line] = t.value); return lines; };
+    voiceStatus(id, collect);
     const saveLines = lines => post(long ? "/api/make/lines" : "/api/script", {id, lines});
     $("#nx-save").onclick = async () => { try { const x = await saveLines(collect()); toast(x.changed.length ? `Saved ${x.changed.length} line${x.changed.length > 1 ? "s" : ""}.` : "No changes."); } catch (e) { toast(e.message); } };
     $("#nx-approve").onclick = async () => {
@@ -445,6 +449,53 @@
     $("#nx-discard").onclick = () => sheet(`<h3>Discard this draft?</h3><p>The script, packaging and research are deleted.</p><div class="row-end"><button class="btn" data-close>Keep it</button><button class="btn danger" id="nx-dd">Discard</button></div>`,
       (el, close) => { $("#nx-dd", el).onclick = async () => { close(); try { toast((await post("/api/make/discard", {id})).reply); go("make"); } catch (e) { toast(e.message); } }; });
   }
+
+  /* ---------- your voice: record a line in the browser ---------- */
+  let rec = null;
+  async function voiceStatus(owner, collect) {
+    const lines = collect(), st = await post("/api/voice/status", {owner, lines}).catch(() => ({}));
+    const ids = Object.keys(lines), n = ids.filter(i => st[i] === "ok").length, c = $("#nx-vcount");
+    if (c) c.textContent = `${n} of ${ids.length} lines recorded`;
+    ids.forEach(i => { const box = main.querySelector(`[data-vline="${CSS.escape(i)}"]`); if (!box) return;
+      const s = st[i], el = $(".nx-vstat", box);
+      el.innerHTML = s === "ok" ? `<span class="nx-mine">✓ your voice</span><button type="button" class="link" data-vplay="${esc(i)}">play</button> <button type="button" class="link" data-vdel="${esc(i)}">remove</button>`
+        : s === "stale" ? `<span class="bad">line changed — record again</span>` : "";
+      $("[data-rec]", box).textContent = s ? "● Re-record" : "● Record"; });
+    main.dataset.vowner = owner;
+  }
+  document.addEventListener("click", async e => {
+    const owner = main.dataset.vowner;
+    const r = e.target.closest("[data-rec]");
+    if (r && owner) {
+      e.preventDefault();
+      if (rec && rec.line === r.dataset.rec) { rec.mr.stop(); return; }
+      if (rec) return toast("Finish the recording that's running first.");
+      if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder)
+        return toast(`This window can't use the microphone. Open ${location.origin}/${location.hash} in Safari or Chrome to record.`);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}});
+        const mr = new MediaRecorder(stream), chunks = [], line = r.dataset.rec;
+        mr.ondataavailable = ev => ev.data.size && chunks.push(ev.data);
+        mr.onstop = async () => {
+          stream.getTracks().forEach(t => t.stop()); r.classList.remove("recording"); rec = null;
+          const blob = new Blob(chunks, {type: mr.mimeType || "audio/webm"});
+          const data = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
+          const text = main.querySelector(`[data-line="${CSS.escape(line)}"]`)?.value || "";
+          try { const x = await post("/api/voice/save", {owner, line, text, data, mime: blob.type}); toast(`Saved — ${x.seconds}s in your voice.`); }
+          catch (err) { toast(err.message); }
+          voiceStatus(owner, () => { const l = {}; main.querySelectorAll("[data-line]").forEach(t => l[t.dataset.line] = t.value); return l; });
+        };
+        mr.start(); rec = {mr, line}; r.classList.add("recording"); r.textContent = "■ Stop";
+        toast("Recording — read the line, then press Stop.");
+      } catch (err) { toast("Microphone blocked: allow it for this page, or open it in Safari/Chrome."); }
+      return;
+    }
+    const pl = e.target.closest("[data-vplay]");
+    if (pl && owner) { e.preventDefault(); try { new Audio((await post("/api/voice/play", {owner, line: pl.dataset.vplay})).data).play(); } catch (err) { toast(err.message); } return; }
+    const dl = e.target.closest("[data-vdel]");
+    if (dl && owner) { e.preventDefault(); await post("/api/voice/delete", {owner, line: dl.dataset.vdel}); toast("Removed — the AI voice reads this line.");
+      voiceStatus(owner, () => { const l = {}; main.querySelectorAll("[data-line]").forEach(t => l[t.dataset.line] = t.value); return l; }); }
+  }, true);
 
   /* ---------- Control → Task log ---------- */
   async function pageAgents() {

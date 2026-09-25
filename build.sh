@@ -39,6 +39,9 @@ step "tiktok config (retention cut)"
 # follow end card. Tag beats "in": ["short"] in cfg/<id>.json to leave them out.
 $PY retention.py tiktok "cfg/$ID.json" --max 35 | sed -n '/_tiktok.json  —/,$p;/^!/,/re-run/p'
 
+step "narration (your voice where recorded)"
+$PY voice.py apply "cfg/$ID.json"
+
 for C in "$ID" "${ID}_tiktok"; do
   if [[ "$C" == *_tiktok ]]; then
     # reuse the main narration: only beats the cut splits get re-narrated
