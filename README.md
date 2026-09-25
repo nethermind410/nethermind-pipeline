@@ -57,6 +57,18 @@ every time, not just when the exit code is non-zero.
 
 Four scaffolds: `fact` (narrated story, public-domain or generated stills), `ice` (iceberg chart — needs no media at all, the chart is drawn in code), `creature` (animal reveal), `hero` (superhero trivia — Gemini-generated art only, see "Visuals" below).
 
+## NETHER — agents that run the pipeline, and learn
+
+Six agents own every job: **Intelligence** (finds topics), **Content** (scripts, hooks, packaging), **Production** (builds), **Publishing** (Buffer), **Analytics** (numbers + learning loop), **Business** (comments, money). Each has sub-agents; every job is a task in `out/nether.db` with its steps, errors and a Retry. They glow on the brain — crimson while working, amber when one needs you — and the **Agents** page shows exactly which step broke.
+
+```bash
+python3 orchestrator.py                          # every agent's state + recent tasks
+python3 intelligence.py "wolverine vs axolotl"   # 5 scouts → a scorecard out of 100 (also: Studio → Intelligence)
+python3 learning.py                              # link scorecards to posted videos, re-weight, update LEARNINGS.md
+```
+
+**Collaboration:** each scorecard waits for your call — *Make it* (adds it to TOPICS.md → Intelligence picks) or *Not for us* — with a reason. Your calls become the "Your taste" part of later scorecards in that lane. **Learning:** once a video made from a scorecard is posted, the scorecard becomes a checked prediction; each part of the score is re-weighted (max ±25% a run, needs 2+ videos each side) by whether it really went with more views. `refresh.sh` runs the learning loop after every stats refresh; lessons land in the auto block of LEARNINGS.md, which the daily build reads.
+
 ## Long-form episode → Shorts → TikTok
 
 ```bash

@@ -15,7 +15,15 @@ if [[ -z "$ID" || ! "$ID" =~ ^[a-z0-9_]+$ || ! -f "cfg/$ID.json" ]]; then
 fi
 PY="${PY:-.venv/bin/python}"   # CI sets PY=python3
 command -v "$PY" >/dev/null || { echo "missing $PY — see README (.venv)"; exit 1; }
-step() { echo; echo "=== $1  $(date +%T)"; }
+# report to NETHER (orchestrator.py): one Production task per build, one step per stage,
+# so a failure shows which stage broke and its last lines. Reporting never stops a build.
+mkdir -p out/logs; LOG="out/logs/build_$ID.log"; : > "$LOG"
+exec > >(tee -a "$LOG") 2>&1
+RETRY=$([[ "${2:-}" == "--no-fetch" ]] && echo build_nofetch || echo build)
+TASK=$($PY orchestrator.py begin production "Build $ID" --video "$ID" --retry "{\"action\":\"$RETRY\",\"id\":\"$ID\"}" 2>/dev/null || true)
+finish() { code=$?; [[ -n "$TASK" ]] && $PY orchestrator.py end "$TASK" "$code" "$LOG" 2>/dev/null || true; exit $code; }
+trap finish EXIT
+step() { echo; echo "=== $1  $(date +%T)"; [[ -n "$TASK" ]] && $PY orchestrator.py step "$TASK" "$1" 2>/dev/null || true; }
 
 if [[ "${2:-}" != "--no-fetch" ]]; then
   step "real photos (fetch_real)";   $PY fetch_real.py "cfg/$ID.json"

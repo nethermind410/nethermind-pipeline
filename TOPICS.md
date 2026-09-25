@@ -86,6 +86,11 @@ Same rules as Marvel: no official art, stills or clips — Gemini art by archety
 
 Marvel/comics averages ~1,400 YouTube views per Short vs ~800 for space/ocean (Buffer, 8–24 Sep 2026). Suggested weekly mix while that holds: **3 Marvel/comics · 1 anime · 1 gaming · 1 science-crossover** ("the power that's real biology"). Re-check the split against `stats.py` monthly — move slots toward whatever lane wins.
 
+## Intelligence picks — topics you said "make it" to in Studio
+
+| Hook | Format | Verify at |
+|---|---|---|
+
 ## Made — already turned into videos
 
 | Hook | Format | Verify at |

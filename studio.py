@@ -15,6 +15,7 @@ from urllib.parse import unquote
 import studio_api as api
 import studio_channel as chan
 import studio_create as create
+import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
 OUT, CFG = HERE / "out", HERE / "cfg"
@@ -60,6 +61,13 @@ JARVIS = "http://127.0.0.1:8765/ask"
 def run_job(action, vid):
     cmd = ACTIONS[action](vid)
     code = 1
+    task = None                                    # NETHER: this job is a task of the agent that owns it
+    if action in nether.STUDIO_ACTIONS:            # (builds report their own steps from build.sh)
+        agent, sub = nether.STUDIO_ACTIONS[action]
+        try:
+            task = nether.begin(agent, JOB["label"], sub=sub, video=vid or None, retry={"action": action, "id": vid})
+        except Exception:
+            pass
     try:
         p = subprocess.Popen(cmd, cwd=HERE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
         for line in p.stdout:
@@ -72,6 +80,11 @@ def run_job(action, vid):
     finally:
         with LOCK:
             JOB.update(done=True, code=code, friendly=api.friendly(JOB["log"], code))
+        if task:
+            try:
+                nether.end(task, code, (JOB["friendly"] + "\n\n" if code and JOB["friendly"] else "") + JOB["log"])
+            except Exception:
+                pass
         if action == "post_live" and code == 0:
             api.set_done(f"ready:{vid}")
         if action in ("build", "build_nofetch") and code == 0:

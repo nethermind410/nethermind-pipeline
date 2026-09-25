@@ -5,7 +5,7 @@
     .venv/bin/python backup.py --if-due   only if today's backup is missing (the app runs this daily)
 
 Backs up: cfg/, packaging/, LEARNINGS.md, TOPICS.md, inspiration/, out/*.json, out/*.jsonl, out/daily/,
-out/feedback/, out/digest/. Never videos, assets, voice files or .env (those are re-makeable or secret).
+out/feedback/, out/digest/, out/intel/, out/learning/, out/nether.db. Never videos, assets, voice files or .env (those are re-makeable or secret).
 Writes a summary to out/backups.json.
 """
 import datetime, json, sys, zipfile
@@ -19,14 +19,15 @@ KEEP = 14
 
 
 def files():
-    for d in ("cfg", "packaging", "inspiration", "out/daily", "out/feedback", "out/digest"):
+    for d in ("cfg", "packaging", "inspiration", "out/daily", "out/feedback", "out/digest",
+              "out/intel", "out/learning"):   # NETHER scorecards + your decisions: what it has learned
         p = HERE / d
         if p.is_dir():
             yield from (f for f in sorted(p.rglob("*")) if f.is_file() and f.name != ".env" and not f.name.startswith("."))
     for name in ("LEARNINGS.md", "TOPICS.md"):
         if (HERE / name).is_file():
             yield HERE / name
-    for pat in ("*.json", "*.jsonl"):
+    for pat in ("*.json", "*.jsonl", "nether.db"):
         yield from sorted(OUT.glob(pat))
 
 
