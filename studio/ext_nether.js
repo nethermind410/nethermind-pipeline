@@ -10,6 +10,39 @@
   const STATE = {working: "Working", failed: "Needs you", ready: "Ready"};
   const ago = iso => { if (!iso) return ""; const s = (Date.now() - new Date(iso)) / 1000;
     return s < 90 ? "just now" : s < 5400 ? `${Math.round(s / 60)} min ago` : s < 129600 ? `${Math.round(s / 3600)} h ago` : `${Math.round(s / 86400)} d ago`; };
+  /* ---------- small visuals ---------- */
+  const RUN = {complete: "done", failed: "failed", cancelled: "cancelled"};
+  // run history: one dot per recent task, oldest → newest; status is also in the tooltip and the text beside it
+  const pips = (recent = [], label = "Recent runs") => recent.length ? `<span class="nx-pips" role="img" aria-label="${label}: ${recent.map(r => RUN[r.status] || r.status).join(", ")}">${
+    recent.map(r => `<i class="${esc(r.status)}" title="${esc(r.title)} — ${RUN[r.status] || esc(r.status)} ${ago(r.finished)}"></i>`).join("")}</span>` : "";
+  // an agent as a tiny neuron: its core + one dot per sub-agent, coloured by state (hl = the sub-agent in focus)
+  function glyph(a, hl, size = 40) {
+    const c = size / 2, n = a.subs.length, r = size * 0.36;
+    const subs = a.subs.map((s, i) => { const t = -Math.PI / 2 + (i / n) * Math.PI * 2, x = c + Math.cos(t) * r, y = c + Math.sin(t) * r;
+      return `<line x1="${c}" y1="${c}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="${s.state}"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${s.key === hl ? 3.6 : 2.3}" class="${s.state}${s.key === hl ? " hl" : ""}"/>`; }).join("");
+    return `<svg class="nx-glyph ${a.state}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${subs}<circle cx="${c}" cy="${c}" r="${size * 0.12}" class="core"/></svg>`;
+  }
+  // a multi-step task as a connected pipeline; the step that broke is amber and named
+  function pipeline(steps) {
+    if (!steps.length) return "";
+    return `<ol class="nx-pipe">${steps.map(s => `<li class="${esc(s.status)}" title="${esc(s.title)} — ${esc(s.status)}"><i></i><span>${esc(s.title)}</span></li>`).join("")}</ol>`;
+  }
+  // the score inside a ring (0–100)
+  function ring(score, cls) {
+    const R = 26, C = 2 * Math.PI * R, f = Math.max(0, Math.min(1, score / 100));
+    return `<span class="nx-ring ${cls}" role="img" aria-label="Score ${score} out of 100"><svg viewBox="0 0 64 64" width="64" height="64">
+      <circle cx="32" cy="32" r="${R}" class="track"/><circle cx="32" cy="32" r="${R}" class="val" stroke-dasharray="${(C * f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 32 32)"/></svg><b>${score}</b></span>`;
+  }
+  // pacing: one bar per spoken line, width = its time on screen; the 3s hook window and long holds marked
+  function pacing(lines) {
+    const secs = lines.map(l => l.text.split(/\s+/).filter(Boolean).length / 2.8 + 0.15), total = secs.reduce((a, b) => a + b, 0) || 1;
+    const long = secs.filter(s => s > 6).length;
+    return `<div class="nx-pace"><div class="nx-pace-bar">${lines.map((l, i) => `<button class="nx-seg ${i === 0 ? "hook" : ""} ${secs[i] > 6 ? "long" : ""}" style="flex:${secs[i].toFixed(2)}" data-scroll-line="${i}"
+        title="Line ${i + 1} · ${secs[i].toFixed(1)}s${secs[i] > 6 ? " — one picture held over 6s" : ""}: ${esc(l.text)}">${l.hero ? `<em>${esc(l.hero.join(" "))}</em>` : ""}</button>`).join("")}
+        <span class="nx-pace-mark" style="left:${Math.min(100, 3 / total * 100).toFixed(1)}%"><span>3s</span></span></div>
+      <div class="nx-pace-axis"><span>0s</span><span class="nx-meta">${lines.length} lines · hook in <b>crimson</b>${long ? ` · <span class="bad">${long} held over 6s</span>` : " · no long holds"} · on-screen numbers above their line</span><span>${total.toFixed(0)}s</span></div></div>`;
+  }
+
   const HUBS = {intelligence: [["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
     production: [["videos", "Videos"]], publishing: [["calendar", "Calendar"]],
     analytics: [["performance", "Performance"], ["retention", "Retention"]],
@@ -133,14 +166,15 @@
     const a = sys.agents.find(x => x.key === akey), s = a?.subs.find(x => x.key === skey); if (!s) return;
     const tasks = await get("/api/tasks").catch(() => []);
     const owner = s.last && tasks.find(t => t.id === s.last.id || t.steps.some(x => x.id === s.last.id));
-    sheet(`<div class="nx-sheet"><div class="nx-head"><span class="nx-state ${s.state}"></span><span class="nx-meta">${esc(a.name)} agent · ${esc(a.lobe)}</span></div>
+    sheet(`<div class="nx-sheet"><div class="nx-head">${glyph(a, s.key, 34)}<span class="nx-meta">${esc(a.name)} agent · ${esc(a.lobe)} · <span class="st-${s.state}">${STATE[s.state]}</span></span></div>
       <h2>${esc(s.name)}</h2><p>${esc(s.what)}</p>
+      ${s.recent.length ? `<div class="nx-hist"><span class="k">Last ${s.recent.length} runs</span>${pips(s.recent, s.name + " runs")}</div>` : ""}
       <div class="nx-last">${s.last ? `<span class="k">Last task</span><b>${esc(s.last.title)}</b> <span class="nx-meta">${esc(s.last.status)} ${ago(s.last.finished)}</span>
         ${s.last.error ? `<pre class="nx-err">${esc(s.last.error.split("\n").slice(-10).join("\n"))}</pre>` : ""}` : `<span class="nx-meta">Hasn't run yet.</span>`}</div>
       <div class="row-end">${owner && owner.status === "failed" && owner.retry ? `<button class="btn primary" id="nx-sr">Retry</button>` : ""}
         ${s.page ? `<button class="btn ${owner && owner.status === "failed" ? "" : "primary"}" data-go="${esc(s.page)}" data-close>Open ${esc(s.name)}</button>` : ""}
         <button class="btn" data-go="${esc(akey)}" data-close>${esc(a.name)} hub</button><button class="btn" data-close>Close</button></div></div>`,
-      (el, close) => { const b = $("#nx-sr", el); if (b) b.onclick = () => { close(); retry(owner); }; });
+      (el, close) => { el.classList.add("nx-wide"); const b = $("#nx-sr", el); if (b) b.onclick = () => { close(); retry(owner); }; });
   }
 
   /* ---------- hubs: every page lives inside the agent that owns it ---------- */
@@ -150,8 +184,9 @@
     const page = main.firstElementChild; if (!page || !sys || page.querySelector(".hub")) return;
     const a = sys.agents.find(x => x.key === akey); if (!a) return;
     const tabs = HUBS[akey] || [];
+    page.classList.add("in-hub");
     page.insertAdjacentHTML("afterbegin", `<div class="hub">
-      <div class="hub-top"><span class="nx-state ${a.state}"></span><b>${esc(a.name.toUpperCase())}</b><span class="nx-meta">${esc(a.lobe)} · ${esc(a.role)} · ${STATE[a.state]}</span></div>
+      <div class="hub-top">${glyph(a)}<div><b>${esc(a.name.toUpperCase())}</b><div class="nx-meta">${esc(a.lobe)} · ${esc(a.role)} · <span class="st-${a.state}">${STATE[a.state]}</span></div></div>${pips(a.recent)}</div>
       ${tabs.length > 1 ? `<div class="hub-tabs">${tabs.map(([r, l]) => `<button class="${r === routeName ? "on" : ""}" data-go="${r}">${l}</button>`).join("")}</div>` : ""}
       <div class="hub-subs">${a.subs.map(s => `<button class="nx-chip ${s.state}" data-sub="${akey}:${s.key}" title="${esc(s.what)}">${esc(s.name)}</button>`).join("")}</div></div>`);
   }
@@ -184,7 +219,7 @@
          <button class="btn small" data-nx-decide="skip" data-slug="${esc(c.slug)}">Not for us</button></div>`;
     const top = (c.evidence?.demand?.top || []).slice(0, 3).map(v => `<li><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.title)}</a> <span class="nx-meta">${esc(v.channel)} · ${fmt(v.views)}</span></li>`).join("");
     return `<div class="card nx-score">
-      <div class="nx-head"><span class="nx-big ${c.score >= 70 ? "good" : c.score >= 50 ? "ok" : "low"}">${c.score}</span>
+      <div class="nx-head">${ring(c.score, c.score >= 70 ? "good" : c.score >= 50 ? "ok" : "low")}
         <div><b>${esc(c.topic)}</b><div class="nx-meta">${esc(c.verdict)} · ${esc(c.lane)} · ${ago(c.at)}</div></div></div>
       <div class="nx-comps">${comps}</div>
       <ul class="nx-reasons">${c.reasons.map(r => `<li>${esc(r)}</li>`).join("")}${Object.entries(c.failed || {}).map(([k, e]) => `<li class="bad">${esc(k)} scout failed: ${esc(e)}</li>`).join("")}</ul>
@@ -261,7 +296,8 @@
       <div class="head"><h1>${esc(d.title || d.topic)}</h1><p>Drafted ${ago(d.at)} from “${esc(d.topic)}”. Read it, edit any line, then approve — or send it back with notes.</p></div>
       <div class="nx-two"><div>
         <div class="card nx-script"><div class="nx-head"><b>Script</b><span class="nx-meta">${d.lines.reduce((a, l) => a + l.text.split(/\s+/).length, 0)} words ≈ ${Math.round(d.lines.reduce((a, l) => a + l.text.split(/\s+/).length, 0) / 2.8)}s</span></div>
-          ${d.lines.map((l, i) => `<label class="nx-line"><span class="nx-meta">${i + 1}${i === 0 ? " · hook" : ""}${l.hero ? ` · on screen: <b>${esc(l.hero.join(" "))}</b>` : ""}</span>
+          ${pacing(d.lines)}
+          ${d.lines.map((l, i) => `<label class="nx-line" id="nx-line-${i}"><span class="nx-meta">${i + 1}${i === 0 ? " · hook" : ""}${l.hero ? ` · on screen: <b>${esc(l.hero.join(" "))}</b>` : ""}</span>
             <textarea data-line="${esc(l.id)}" rows="2">${esc(l.text)}</textarea>
             <span class="nx-vis">${esc(l.kind)}${l.visual ? ": " + esc(l.visual) : ""}</span></label>`).join("")}
           <div class="nx-meta">End card: ${esc(d.end.join(" · "))}</div>
@@ -293,22 +329,21 @@
   }
 
   /* ---------- Control → Task log ---------- */
-  const stepRow = s => `<li class="nx-step ${s.status}"><span class="nx-sd"></span><span>${esc(s.title)}${s.agent ? ` <span class="nx-meta">· ${esc(s.agent)}</span>` : ""}</span>
-      <span class="nx-meta">${s.status === "working" ? "working…" : esc(s.status)}</span>
-      ${s.error ? `<pre class="nx-err">${esc(s.error.split("\n").slice(-8).join("\n"))}</pre>` : ""}</li>`;
   async function pageAgents() {
     const [s, tasks] = await Promise.all([get("/api/system"), get("/api/tasks")]);
     sys = s;
     const daily = tasks.find(t => t.agent === "control" && t.sub === "daily");
     const agents = s.agents.map(a => `<div class="card nx-card ${a.state}">
-        <div class="nx-head"><span class="nx-state ${a.state}"></span><button class="link" data-go="${a.key}"><b>${esc(a.name)}</b></button><span class="nx-meta">${STATE[a.state]}${a.active ? ` · ${a.active} active` : ""}</span></div>
+        <div class="nx-head">${glyph(a)}<div><button class="link" data-go="${a.key}"><b>${esc(a.name)}</b></button><div class="nx-meta st-${a.state}">${STATE[a.state]}${a.active ? ` · ${a.active} active` : ""}</div></div>${pips(a.recent)}</div>
         <p class="nx-role">${esc(a.lobe)} · ${esc(a.role)}</p>
         <div class="nx-subs">${a.subs.map(x => `<button class="nx-chip ${x.state}" data-sub="${a.key}:${x.key}">${esc(x.name)}</button>`).join("")}</div></div>`).join("");
     const rows = tasks.map(t => `<div class="card nx-task ${t.status}">
         <div class="nx-head"><span class="nx-state ${t.status === "working" ? "working" : t.status === "failed" ? "failed" : "ready"}"></span>
           <b>${esc(t.title)}</b><span class="pill">${esc(t.agent)}</span><span class="nx-meta">${esc(t.status)} · ${ago(t.finished || t.started)}</span>
           <span class="nx-actions">${t.retry && ["failed", "cancelled"].includes(t.status) ? `<button class="btn small primary" data-nx-retry="${t.id}">Retry</button>` : ""}${t.status === "working" ? `<button class="btn small" data-nx-cancel="${t.id}">Cancel</button>` : ""}</span></div>
-        ${t.steps.length ? `<ol class="nx-steps">${t.steps.map(x => stepRow({...x, agent: x.agent !== t.agent ? x.agent : ""})).join("")}</ol>` : t.error ? `<pre class="nx-err">${esc(t.error.split("\n").slice(-8).join("\n"))}</pre>` : ""}
+        ${pipeline(t.steps)}
+        ${(() => { const bad = t.steps.find(x => x.status === "failed"); const e = (bad && bad.error) || (t.status === "failed" && t.error);
+           return e ? `<pre class="nx-err">${bad ? `<b>${esc(bad.title)}</b>\n` : ""}${esc(e.split("\n").slice(-8).join("\n"))}</pre>` : ""; })()}
       </div>`).join("");
     window._nxTasks = tasks;
     main.innerHTML = `<div class="page wide">
@@ -330,6 +365,7 @@
     if (ag) { e.stopPropagation(); const a = sys?.agents.find(x => x.key === ag.dataset.agent);
       if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
       return go(ag.dataset.agent); }
+    const sl = t.closest("[data-scroll-line]"); if (sl) { const l = $("#nx-line-" + sl.dataset.scrollLine); if (l) { l.scrollIntoView({behavior: "smooth", block: "center"}); l.querySelector("textarea")?.focus(); } return; }
     const mk = t.closest("[data-nx-make]"); if (mk) { e.stopPropagation(); return make(mk.dataset.nxMake); }
     const r = t.closest("[data-nx-retry]");
     if (r) { const task = (window._nxTasks || []).find(x => x.id === +r.dataset.nxRetry); if (task) { await retry(task); setTimeout(route, 900); } return; }

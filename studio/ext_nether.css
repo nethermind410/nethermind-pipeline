@@ -151,3 +151,78 @@ main{overflow-x:hidden}
 .side .kbd-hint{white-space:nowrap}
 @media (max-width:1400px){.side .home-link span{display:none}.side .nav{padding:6px 8px}.side{padding:14px 16px}}
 @media (max-width:1200px){.side .kbd-hint{font-size:0;gap:0;padding:6px 10px}.side .kbd-hint kbd{font-size:12px}.side .home-link{margin-right:6px}}
+
+/* ---- tighter pages: inside an agent hub the agent header carries the context ---- */
+.page.in-hub{gap:18px}
+.in-hub>.head h1,.in-hub .head-row .head h1{font-size:clamp(32px,3.2vw,46px);line-height:1.05;letter-spacing:-.03em}
+.in-hub>.head p,.in-hub .head-row .head p{font-size:15px;max-width:68ch}
+.hub{padding-bottom:12px}
+.hub-top{gap:12px}
+.hub-top>div{display:grid;gap:2px}
+.hub-top .nx-pips{margin-left:auto}
+.st-working{color:var(--accent)}.st-failed{color:var(--nx-fail)}
+.card{transition:border-color .2s}
+.nx-card:hover,.nx-task:hover,.nx-score:hover{border-color:color-mix(in srgb,var(--ink) 16%,transparent)}
+.nx-card,.nx-task,.nx-score,.nx-draft{border:1px solid var(--line)}
+h2{letter-spacing:.14em}
+
+/* ---- pop-up width without relying on :has() (Safari-safe) ---- */
+.sheet.nx-wide{width:min(600px,calc(100vw - 32px))}
+.nx-hist{display:flex;align-items:center;gap:10px}
+
+/* ---- agent glyph ---- */
+.nx-glyph{flex:none;overflow:visible}
+.nx-glyph line{stroke:rgba(247,247,238,.22);stroke-width:1}
+.nx-glyph line.working{stroke:var(--nx-work)}.nx-glyph line.failed{stroke:var(--nx-fail)}
+.nx-glyph circle{fill:#000;stroke:var(--nx-ready);stroke-width:1}
+.nx-glyph circle.working{fill:var(--nx-work);stroke:var(--nx-work);animation:nx-pulse 1s infinite}
+.nx-glyph circle.failed{fill:var(--nx-fail);stroke:var(--nx-fail)}
+.nx-glyph circle.hl{stroke:var(--ink);stroke-width:1.6}
+.nx-glyph .core{fill:var(--ink);stroke:none}
+.nx-glyph.working .core{fill:var(--nx-work);animation:nx-pulse 1.2s infinite}
+.nx-glyph.failed .core{fill:var(--nx-fail)}
+
+/* ---- run history dots (status palette; the status is also in each dot's tooltip) ---- */
+.nx-pips{display:inline-flex;gap:3px;align-items:center}
+.nx-pips i{width:8px;height:8px;border-radius:2px;background:var(--faint)}
+.nx-pips i.complete{background:#34C759}.nx-pips i.failed{background:var(--nx-fail)}.nx-pips i.cancelled{background:var(--faint)}
+
+/* ---- task pipeline ---- */
+.nx-pipe{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;row-gap:10px}
+.nx-pipe li{display:grid;justify-items:start;gap:5px;position:relative;padding-right:18px;min-width:0;max-width:190px}
+.nx-pipe li i{width:10px;height:10px;border-radius:50%;background:var(--faint);position:relative;z-index:1}
+.nx-pipe li:not(:last-child)::after{content:"";position:absolute;left:10px;right:0;top:4.5px;height:1px;background:var(--line)}
+.nx-pipe li.complete i{background:#34C759}.nx-pipe li.complete:not(:last-child)::after{background:color-mix(in srgb,#34C759 45%,transparent)}
+.nx-pipe li.working i{background:var(--nx-work);box-shadow:0 0 8px var(--nx-work);animation:nx-pulse 1s infinite}
+.nx-pipe li.failed i{background:var(--nx-fail);box-shadow:0 0 8px var(--nx-fail)}
+.nx-pipe li.cancelled i{background:transparent;border:1px solid var(--faint)}
+.nx-pipe li span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.nx-pipe li.failed span{color:var(--nx-fail);font-weight:600}
+.nx-pipe li.working span{color:var(--ink)}
+.nx-err b{color:var(--nx-fail)}
+
+/* ---- score ring ---- */
+.nx-ring{position:relative;width:64px;height:64px;flex:none;display:grid;place-items:center}
+.nx-ring svg{position:absolute;inset:0}
+.nx-ring .track{fill:none;stroke:var(--hover);stroke-width:5}
+.nx-ring .val{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round}
+.nx-ring.good .val{stroke:#34C759}.nx-ring.low .val{stroke:var(--faint)}
+.nx-ring b{font:800 20px/1 var(--grotesk);letter-spacing:-.03em}
+
+/* ---- pacing strip ---- */
+.nx-pace{display:grid;gap:6px;margin:4px 0 6px}
+.nx-pace-bar{position:relative;display:flex;gap:2px;height:26px;padding-top:14px}
+.nx-seg{position:relative;border:0;border-radius:4px;background:color-mix(in srgb,var(--ink) 22%,transparent);cursor:pointer;min-width:6px;padding:0}
+.nx-seg:hover{background:color-mix(in srgb,var(--ink) 45%,transparent)}
+.nx-seg.hook{background:var(--accent)}
+.nx-seg.long{background:repeating-linear-gradient(45deg,var(--nx-fail) 0 3px,color-mix(in srgb,var(--nx-fail) 45%,transparent) 3px 6px)}
+.nx-seg em{position:absolute;bottom:calc(100% + 2px);left:0;font:700 10px var(--grotesk);font-style:normal;letter-spacing:.06em;color:var(--ink);white-space:nowrap}
+.nx-pace-mark{position:absolute;top:8px;bottom:-4px;width:0;border-left:1px dashed var(--ink);opacity:.7;pointer-events:none}
+.nx-pace-mark span{position:absolute;top:-10px;left:3px;font-size:10px;color:var(--muted)}
+.nx-pace-axis{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted)}
+.nx-pace-axis b{color:var(--accent);font-weight:600}
+.nx-line{scroll-margin:120px}
+/* failed ≠ done by shape too, not colour alone (green/amber are close for red-green colour blindness) */
+.nx-pips i.failed{transform:rotate(45deg) scale(.9);border-radius:1px}
+.nx-pipe li.failed i{border-radius:2px;transform:rotate(45deg)}
+.nx-pipe li.cancelled i{border-radius:2px}

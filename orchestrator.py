@@ -227,6 +227,13 @@ def system():
                 latest[(r["agent"], r["sub"])] = dict(r)
             if r["status"] == "working":
                 latest[(r["agent"], "__working")] = latest.get((r["agent"], "__working"), 0) + 1
+        hist, subhist = {}, {}                          # run history for the dots: oldest → newest
+        for r in c.execute("SELECT id, agent, sub, parent, status, title, finished FROM tasks WHERE status != 'working' ORDER BY id"):
+            rec = {"id": r["id"], "status": r["status"], "title": r["title"], "finished": r["finished"]}
+            if r["parent"] is None:
+                hist.setdefault(r["agent"], []).append(rec)
+            if r["sub"]:
+                subhist.setdefault((r["agent"], r["sub"]), []).append(rec)
         top = {r["agent"]: dict(r) for r in c.execute(
             "SELECT * FROM tasks WHERE id IN (SELECT MAX(id) FROM tasks WHERE parent IS NULL GROUP BY agent)")}
         counts = dict(c.execute("SELECT status, COUNT(*) FROM tasks WHERE parent IS NULL GROUP BY status").fetchall())
@@ -242,11 +249,12 @@ def system():
         for sk, (name, page, what) in a["subs"].items():
             rec = latest.get((key, sk))
             subs.append({"key": sk, "name": name, "page": page, "what": what, "state": state(rec),
+                         "recent": subhist.get((key, sk), [])[-8:],
                          "last": {k: rec[k] for k in ("id", "title", "status", "finished", "error")} if rec else None})
         last = top.get(key)
         st = "working" if latest.get((key, "__working")) else state(last)
         agents.append({"key": key, "name": a["name"], "lobe": a["lobe"], "role": a["role"], "ax": a["ax"], "ay": a["ay"], "state": st,
-                       "active": latest.get((key, "__working"), 0), "subs": subs,
+                       "active": latest.get((key, "__working"), 0), "subs": subs, "recent": hist.get(key, [])[-10:],
                        "last": {k: last[k] for k in ("id", "title", "status", "finished")} if last else None})
     return {"online": True, "agents": agents, "counts": {s: counts.get(s, 0) for s in
                                                           ("working", "complete", "failed", "cancelled")}}
