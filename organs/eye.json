@@ -1,0 +1,40 @@
+{
+ "name": "eye",
+ "title": "Eye",
+ "blurb": "Seeing: light in through the cornea, an image on the retina, a signal down the optic nerve.",
+ "center": [0.55, 0.47],
+ "fit": [0.9, 1.42],
+ "sample": {"n": 2900, "x": [0.15, 0.8], "y": [0.18, 0.6], "keep": [0.08, 0.92], "band": 0.16},
+ "rim": {"tries": 14000, "max": 3500, "x": [0.15, 0.8], "y": [0.18, 0.6], "d": 0.012, "p": 0.6},
+ "parts": [
+  {"id": 0, "name": "globe", "poly": [[0.8, 0.47], [0.784, 0.562], [0.737, 0.644], [0.665, 0.704], [0.577, 0.736], [0.483, 0.736], [0.395, 0.704], [0.323, 0.644], [0.276, 0.562], [0.26, 0.47], [0.276, 0.378], [0.323, 0.296], [0.395, 0.236], [0.483, 0.204], [0.577, 0.204], [0.665, 0.236], [0.737, 0.296], [0.784, 0.378]], "body": [0.53, 0.47, 0.27, 0.27, 0.27], "fold": {"type": "radial", "k": [0.8, 0.47, 30, 22, 0.9]}},
+  {"id": 1, "name": "cornea", "poly": [[0.3, 0.33], [0.235, 0.37], [0.205, 0.42], [0.198, 0.47], [0.205, 0.52], [0.235, 0.57], [0.3, 0.61], [0.34, 0.47]], "body": [0.29, 0.47, 0.1, 0.16, 0.14], "fold": {"type": "rings", "k": [0.31, 0.47, 150, 0, 0]}},
+  {"id": 2, "name": "optic nerve", "poly": [[0.77, 0.425], [0.84, 0.42], [0.91, 0.425], [0.935, 0.47], [0.91, 0.515], [0.84, 0.52], [0.77, 0.515]], "body": [0.85, 0.47, 0.2, 0.1, 0.045], "fold": {"type": "ridges", "k": [150, 20, 0.6]}}
+ ],
+ "interior": {
+  "arcs": [{"name": "iris", "n": 420, "x": [0.3, 0.0], "y": [0.35, 0.0, 0.24], "jitter": 0.012, "thick": [0.004, 0.0], "z": 0.34}],
+  "blobs": [{"name": "lens", "n": 220, "c": [0.335, 0.47], "r": [0.03, 0.075], "z": [0.0, 0.06]}],
+  "mesh": 0.0006
+ },
+ "regions": {
+  "cornea": {"label": "Cornea", "role": "the window out", "ax": 0.215, "ay": 0.47},
+  "iris": {"label": "Iris", "role": "what gets in", "ax": 0.29, "ay": 0.37},
+  "lens": {"label": "Lens", "role": "focus", "ax": 0.35, "ay": 0.57},
+  "retina": {"label": "Retina", "role": "the image", "ax": 0.6, "ay": 0.24},
+  "macula": {"label": "Macula", "role": "sharp detail", "ax": 0.75, "ay": 0.34},
+  "choroid": {"label": "Choroid", "role": "nourishment", "ax": 0.66, "ay": 0.67},
+  "nerve": {"label": "Optic nerve", "role": "the signal onward", "ax": 0.87, "ay": 0.47},
+  "vitreous": {"label": "Vitreous body", "role": "the centre", "ax": 0.5, "ay": 0.5}
+ },
+ "sections": {
+  "publishing": "cornea",
+  "intelligence": "iris",
+  "content": "lens",
+  "production": "retina",
+  "analytics": "macula",
+  "business": "choroid",
+  "control": "nerve",
+  "home-core": "vitreous"
+ },
+ "labels": {}
+}

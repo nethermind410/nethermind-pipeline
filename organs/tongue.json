@@ -1,0 +1,39 @@
+{
+ "name": "tongue",
+ "title": "Tongue",
+ "blurb": "Taste and speech: sensed at the root, shaped along the body, delivered at the tip.",
+ "center": [0.525, 0.48],
+ "fit": [0.9, 1.3],
+ "sample": {"n": 2900, "x": [0.3, 0.45], "y": [0.14, 0.68], "keep": [0.08, 0.92], "band": 0.16},
+ "rim": {"tries": 14000, "max": 3500, "x": [0.3, 0.45], "y": [0.14, 0.68], "d": 0.012, "p": 0.6},
+ "minHalf": 0.014,
+ "parts": [
+  {"id": 0, "name": "tongue", "poly": [[0.36, 0.2], [0.45, 0.16], [0.525, 0.155], [0.6, 0.16], [0.69, 0.2], [0.72, 0.3], [0.71, 0.45], [0.68, 0.6], [0.63, 0.72], [0.575, 0.79], [0.525, 0.805], [0.475, 0.79], [0.42, 0.72], [0.37, 0.6], [0.34, 0.45], [0.33, 0.3]], "body": [0.525, 0.48, 0.25, 0.42, 0.1], "fold": {"type": "papillae", "k": [140, 60, 0.8]}, "splits": [{"id": 2, "name": "root", "curve": [0.35, 0, 0, 0], "above": true, "fold": {"type": "papillae", "k": [75, 30, 0.6]}}, {"id": null, "name": "median sulcus", "axis": "x", "curve": [0.525, 0, 0, 0], "gap": [0.36, 0.68, 0.006]}, {"id": 5, "name": "tip", "curve": [0.68, 0, 0, 0], "fold": {"type": "papillae", "k": [170, 60, 0.8]}}, {"id": 1, "name": "left body", "axis": "x", "curve": [0.525, 0, 0, 0], "above": true}]}
+ ],
+ "interior": {
+  "arcs": [{"name": "vallate papillae", "n": 170, "x": [0.41, 0.23], "y": [0.37, -0.045, 0.0], "jitter": 0.006, "thick": [0.008, 0.0], "z": 0.2}, {"name": "lingual septum", "n": 260, "x": [0.525, 0.0], "y": [0.3, 0.0, 0.42], "jitter": 0.01, "thick": [0.004, 0.0], "z": 0.12}],
+  "blobs": [],
+  "mesh": 0.0006
+ },
+ "regions": {
+  "vallate": {"label": "Vallate papillae", "role": "taste", "ax": 0.45, "ay": 0.33},
+  "body": {"label": "Body", "role": "shapes speech", "ax": 0.42, "ay": 0.52},
+  "border": {"label": "Lateral border", "role": "shaping", "ax": 0.69, "ay": 0.45},
+  "tip": {"label": "Tip", "role": "out into the world", "ax": 0.525, "ay": 0.77},
+  "fungiform": {"label": "Fungiform papillae", "role": "sensing", "ax": 0.63, "ay": 0.66},
+  "sulcus": {"label": "Median sulcus", "role": "balance", "ax": 0.535, "ay": 0.52},
+  "root": {"label": "Root", "role": "coordination", "ax": 0.525, "ay": 0.22},
+  "foramen": {"label": "Foramen caecum", "role": "the centre point", "ax": 0.525, "ay": 0.35}
+ },
+ "sections": {
+  "intelligence": "vallate",
+  "content": "body",
+  "production": "border",
+  "publishing": "tip",
+  "analytics": "fungiform",
+  "business": "sulcus",
+  "control": "root",
+  "home-core": "foramen"
+ },
+ "labels": {"business": {"at": [0.03, 0.7]}, "publishing": {"at": [0.03, 0.86]}, "analytics": {"nudge": [150, -80]}}
+}
