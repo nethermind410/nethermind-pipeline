@@ -154,6 +154,7 @@
   refresh();
 
   /* ---------- a sub-agent, up close ---------- */
+  window.nxRetry = t => retry(t);
   async function retry(t) {
     const r = t.retry || {};
     try {
@@ -193,7 +194,7 @@
       <div class="hub-subs">${a.subs.map(x => `<button class="nx-chip ${x.state} ${x.key === s.key ? "on" : ""}" data-sub="${akey}:${x.key}" title="${esc(x.what)}">${esc(x.name)}</button>`).join("")}</div>
       ${d.error ? `<div class="card caught"><b>Couldn't read this desk's data</b>${esc(d.error)}</div>` : ""}
       ${fail && fail === d.tasks[0] ? `<div class="card desk-fail"><b>Last run failed</b><pre class="nx-err">${esc((fail.error || "").split("\n").slice(-6).join("\n"))}</pre>
-        ${fail.retry ? `<button class="btn primary" data-nx-retry="${fail.id}">Retry</button>` : ""}</div>` : ""}
+        ${fail.retry ? `<button class="btn primary" data-nx-retry="${fail.id}">Retry</button>` : ""}<button class="btn small" data-fx-why="${fail.id}">Why? · Fix</button></div>` : ""}
       ${d.stats.length ? `<div class="desk-stats">${d.stats.map(x => `<div><span class="k">${esc(x.k)}</span><b>${esc(String(x.v))}</b></div>`).join("")}</div>` : ""}
       ${inputs.map(x => `<form class="card nx-run" data-desk-form="${d.actions.indexOf(x)}"><input placeholder="${esc(x.placeholder || "")}" maxlength="160" required><button class="btn primary">${esc(x.label)}</button></form>`).join("")}
       ${d.panels.map((p, pi) => `<section class="desk-panel"><h2>${esc(p.title)}</h2>${p.note ? `<p class="nx-meta">${esc(p.note)}</p>` : ""}
@@ -202,7 +203,7 @@
       ${d.tasks.length ? `<h2>Its last ${d.tasks.length} tasks</h2><div class="desk-rows">${d.tasks.map(t => `<div class="desk-row ${t.status === "failed" ? "bad" : ""}">
         <div class="desk-txt"><b>${esc(t.title)}</b><span class="nx-meta">${esc(t.video || "")} ${ago(t.finished || t.created)}${t.error ? " · " + esc(t.error.trim().split("\n").pop().slice(0, 160)) : ""}</span></div>
         <span class="desk-badge ${t.status === "complete" ? "good" : t.status === "failed" ? "bad" : ""}">${esc(RUN[t.status] || t.status)}</span>
-        ${t.status === "failed" && t.retry ? `<button class="btn small" data-nx-retry="${t.id}">Retry</button>` : ""}</div>`).join("")}</div>` : ""}</div>`;
+        ${t.status === "failed" && t.retry ? `<button class="btn small" data-nx-retry="${t.id}">Retry</button>` : ""}${t.status === "failed" ? `<button class="btn small" data-fx-why="${t.id}">Why? · Fix</button>` : ""}</div>`).join("")}</div>` : ""}</div>`;
     document.querySelectorAll(".nav").forEach(n => n.classList.toggle("on", n.dataset.go === akey));
     const doAct = async (x, extra = {}) => {
       try {
@@ -570,14 +571,14 @@
     const rows = tasks.map(t => `<div class="card nx-task ${t.status}">
         <div class="nx-head"><span class="nx-state ${t.status === "working" ? "working" : t.status === "failed" ? "failed" : "ready"}"></span>
           <b>${esc(t.title)}</b><span class="pill">${esc(t.agent)}</span><span class="nx-meta">${esc(t.status)} · ${ago(t.finished || t.started)}</span>
-          <span class="nx-actions">${t.retry && ["failed", "cancelled"].includes(t.status) ? `<button class="btn small primary" data-nx-retry="${t.id}">Retry</button>` : ""}${t.status === "working" ? `<button class="btn small" data-nx-cancel="${t.id}">Cancel</button>` : ""}</span></div>
+          <span class="nx-actions">${t.retry && ["failed", "cancelled"].includes(t.status) ? `<button class="btn small primary" data-nx-retry="${t.id}">Retry</button>` : ""}${t.status === "failed" ? `<button class="btn small" data-fx-why="${t.id}">Why? · Fix</button>` : ""}${t.status === "working" ? `<button class="btn small" data-nx-cancel="${t.id}">Cancel</button>` : ""}</span></div>
         ${pipeline(t.steps)}
         ${(() => { const bad = t.steps.find(x => x.status === "failed"); const e = (bad && bad.error) || (t.status === "failed" && t.error);
            return e ? `<pre class="nx-err">${bad ? `<b>${esc(bad.title)}</b>\n` : ""}${esc(e.split("\n").slice(-8).join("\n"))}</pre>` : ""; })()}
       </div>`).join("");
     window._nxTasks = tasks;
     main.innerHTML = `<div class="page wide">
-      <div class="head-row"><div class="head"><h1>Task log</h1><p>Every job is a task owned by an agent. When something breaks, the amber step shows where and why — retry it from here.</p></div>
+      <div class="head-row"><div class="head"><h1>Task log</h1><p>Every job is a task owned by an agent. When something breaks, the amber step shows where and why — retry it, or tap Why? · Fix to send it back to be fixed.</p><button class="link small" data-go="fixes">Fix tickets →</button></div>
         <div class="nx-counts"><span>${s.counts.working} working</span><span>${fmt(s.counts.complete)} done</span><span class="${s.counts.failed ? "bad" : ""}">${s.counts.failed} failed</span></div></div>
       <div class="card nx-dailyc"><div><b>Daily run</b> <span class="nx-meta">7:00 (+20:30 catch-up) · refresh → learn → scout 3 ideas → draft the next video · Sundays: plan + render the long-form</span>
         <div class="nx-meta">${daily ? `Last: ${esc(daily.status)} ${ago(daily.finished || daily.started)}` : "Hasn't run yet — install it once with ./install_daily.sh"}</div></div>

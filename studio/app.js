@@ -373,12 +373,12 @@ function watchJob(action, id) {
   clearInterval(polling);
   polling = setInterval(async () => {
     const j = await get("/api/job"); const a = $("#activity");
-    a.hidden = false; a.classList.toggle("busy", !j.done);
-    a.innerHTML = j.done ? (j.code === 0 ? "✓ " : "⚠ ") + esc(j.done && j.code === 0 ? "Finished: " + j.label : "Didn't finish: " + j.label) : `<span class="spin"></span>${esc(j.label)}…`;
-    a.onclick = () => sheet(`<h3>${esc(j.label)}</h3>${j.friendly ? `<p>${esc(j.friendly)}</p>` : ""}<details class="more" ${j.friendly ? "" : "open"}><summary>Details</summary><pre>${esc(j.log.slice(-6000) || "…")}</pre></details><div class="row-end"><button class="btn" data-close>Close</button></div>`);
+    a.hidden = false; a.classList.toggle("busy", !j.done); a.classList.toggle("err", j.done && j.code !== 0);
+    a.innerHTML = j.done ? (j.code === 0 ? "✓ " + esc("Finished: " + j.label) : `<b>Error</b> · ${esc(j.label)} didn't finish — tap to see why`) : `<span class="spin"></span>${esc(j.label)}…`;
+    a.onclick = () => j.done && j.code !== 0 && window.showFailure ? showFailure({job: true}) : sheet(`<h3>${esc(j.label)}</h3>${j.friendly ? `<p>${esc(j.friendly)}</p>` : ""}<details class="more" ${j.friendly ? "" : "open"}><summary>Details</summary><pre>${esc(j.log.slice(-6000) || "…")}</pre></details><div class="row-end"><button class="btn" data-close>Close</button></div>`);
     if (!j.done) return;
     clearInterval(polling);
-    if (j.code !== 0) { toast(j.friendly || "That didn't work.", {label: "Details", run: () => a.click()}); return route(); }
+    if (j.code !== 0) { toast(`Error: ${j.label} didn't finish.`, {label: "See why", run: () => a.click()}); return route(); }
     if (j.action === "post_live") {
       const due = [...j.log.matchAll(/Posting to (\w+)[\s\S]*?due (\S+)/g)].map(m => `${PLAT[m[1]] || m[1]} ${when(m[2])}`);
       toast("Scheduled" + (due.length ? ": " + due.join(" · ") : "."), {label: "Undo", run: () => runJob("undo", j.video)});

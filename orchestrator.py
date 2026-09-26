@@ -74,6 +74,7 @@ AGENTS = {
         "tasks": ("Task log", "agents", "Every task every agent ran — what broke, and Retry."),
         "daily": ("Daily run", "agents", "The 7:00 run: refresh, learn, draft the next video."),
         "settings": ("Settings", "settings", "Connections and keys, and whether each one works."),
+        "repair": ("Repair", "fixes", "Failures sent to fix: what broke, why, and a repair you approve before it's applied."),
         "engines": ("AI engines", "engines", "Which engine writes each job — Claude, an API key or a free local model — with automatic fallback.")}},
 }
 

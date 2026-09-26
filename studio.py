@@ -68,6 +68,8 @@ def run_job(action, vid):
         agent, sub = nether.STUDIO_ACTIONS[action]
         try:
             task = nether.begin(agent, JOB["label"], sub=sub, video=vid or None, retry={"action": action, "id": vid})
+            with LOCK:
+                JOB["task"] = task
         except Exception:
             pass
     try:
@@ -272,7 +274,7 @@ class H(BaseHTTPRequestHandler):
         with LOCK:
             if not JOB["done"]:
                 return self.send(409, {"error": f"Still busy: {JOB['label']}. Try again when it finishes."})
-            JOB.update(id=JOB["id"] + 1, action=action, video=vid, label=(LABELS[action] if action in FREE_ARG else f"{LABELS[action]} {vid}").strip(),
+            JOB.update(id=JOB["id"] + 1, action=action, video=vid, task=None, label=(LABELS[action] if action in FREE_ARG else f"{LABELS[action]} {vid}").strip(),
                        log="", done=False, code=None, friendly=None)
         threading.Thread(target=run_job, args=(action, vid), daemon=True).start()
         self.send(200, {"ok": True})

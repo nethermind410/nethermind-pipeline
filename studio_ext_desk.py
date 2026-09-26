@@ -654,7 +654,7 @@ def d_tasks():
             "panels": [panel("Failures this week", [row(f"{nether.AGENTS.get(t['agent'], {}).get('name', t['agent'])} · {t['title']}",
                                                         (t.get("error") or "").strip().splitlines()[-1][:200] if t.get("error") else "", "failed", "bad")
                                                     for t in bad], "Nothing failed this week.")],
-            "actions": [{"label": "Open Task log", "go": "agents", "primary": True}]}
+            "actions": [{"label": "Open Task log", "go": "agents", "primary": True}, {"label": "Fix tickets", "go": "fixes"}]}
 
 
 def d_daily():
@@ -696,6 +696,19 @@ def d_engines():
             "actions": [{"label": "Open AI engines", "go": "engines", "primary": True}]}
 
 
+def d_repair():
+    import repair
+    ts = repair.tickets()
+    st = {"open": ("filed", None), "working": ("repairing", None), "ready": ("review", "warn"), "nofix": ("no code change", None), "applied": ("applied", "good")}
+    return {"question": "What was sent back to be fixed — and is the repair ready for you?",
+            "stats": [{"k": "Open tickets", "v": sum(1 for t in ts if t["state"] in ("open", "working", "ready"))},
+                      {"k": "Ready to review", "v": sum(1 for t in ts if t["state"] == "ready")}],
+            "panels": [panel("Fix tickets", [row(f"#{t['n']} · {t['department']} · {t['title']}", t.get("summary") or t.get("error") or "",
+                                                 *st.get(t["state"], (t["state"], None))) for t in ts],
+                             "Nothing sent to fix. When a task fails, tap Why? · Fix and choose Send to fix.")],
+            "actions": [{"label": "Open fix tickets", "go": "fixes", "primary": True}]}
+
+
 DESKS = {("intelligence", "ideas"): d_ideas, ("intelligence", "demand"): d_demand, ("intelligence", "competitors"): d_competitors,
          ("intelligence", "fit"): d_fit, ("intelligence", "rights"): d_rights, ("intelligence", "sources"): d_sources,
          ("content", "research"): d_research, ("content", "script"): d_script, ("content", "packaging"): d_packaging,
@@ -709,7 +722,7 @@ DESKS = {("intelligence", "ideas"): d_ideas, ("intelligence", "demand"): d_deman
          ("business", "community"): d_community, ("business", "monetisation"): d_monetisation,
          ("business", "affiliates"): d_affiliates, ("business", "sponsors"): d_sponsors,
          ("control", "tasks"): d_tasks, ("control", "daily"): d_daily, ("control", "settings"): d_settings,
-         ("control", "engines"): d_engines}
+         ("control", "engines"): d_engines, ("control", "repair"): d_repair}
 
 
 def desk(agent, sub):
