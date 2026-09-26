@@ -203,3 +203,25 @@ body.on-brain main{padding:0;overflow:hidden}
 @media (max-width:820px){.brain-top .hint{display:none}.brain-top .hint+.ask{margin-left:auto}}
 /* the monetisation strip spans the page bottom: only its button takes the pointer, so labels under it hover instantly */
 .core{pointer-events:none}.core .core-btn{pointer-events:auto}
+
+/* ---------- v3.4: "What's next?" — one recommendation card under the header, calm, never covers the brain's core ---------- */
+#next-step{position:absolute;top:118px;left:50%;transform:translateX(-50%);z-index:3;width:min(400px,88vw);text-align:center}
+.ns-card{display:grid;gap:6px;padding:14px 20px 16px;border:1px solid rgba(224,41,75,.38);border-radius:14px;
+  background:rgba(0,0,0,.68);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ns-card.calm{padding:12px 20px;gap:3px}
+.ns-card.calm b{font:700 15px var(--grotesk)}
+.ns-card.calm span{font:400 13px var(--grotesk);color:var(--muted)}
+.ns-label{font:600 11px var(--grotesk);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ns-title{font:700 17px var(--grotesk);letter-spacing:-.01em}
+.ns-why{font:400 13px var(--grotesk);color:var(--muted);line-height:1.4}
+.ns-row{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:4px}
+.ns-more{background:none;border:0;color:var(--muted);font:500 12px var(--grotesk);text-decoration:underline;cursor:pointer;padding:0}
+.ns-more:hover{color:var(--ink)}
+@media (max-width:820px){#next-step{position:relative;top:auto;left:auto;transform:none;margin:16px auto 0;width:min(480px,calc(100vw - 32px))}}
+
+/* ---------- v3.4: the 4-item nav — badges keep their ids, Channel gets an in-page tab bar ---------- */
+.chan-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 24px 18px;max-width:1100px}
+.chan-tabs button{padding:7px 16px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--muted);font:500 13px var(--grotesk);cursor:pointer}
+.chan-tabs button:hover{color:var(--ink);border-color:var(--ink)}
+.chan-tabs button.on{background:var(--ink);color:#000;border-color:var(--ink)}
+@media (max-width:760px){.chan-tabs{padding:0 16px 14px}}
