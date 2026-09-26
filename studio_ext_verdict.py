@@ -176,8 +176,8 @@ def v_settings():
 def v_ideas():
     import intelligence
     items = desk.open_ideas()
-    off = [i for _, i in items if intelligence.lane_of(i["hook"]) in OFF_LANES]
-    lanes = sum(1 for _, i in items if intelligence.lane_of(i["hook"]) in desk.CHANNEL_LANES)
+    off = [i for s, i in items if desk.idea_lane(s, i["hook"]) in OFF_LANES]
+    lanes = sum(1 for s, i in items if desk.idea_lane(s, i["hook"]) in desk.CHANNEL_LANES)
     acts = [{"label": "Scout the next 3", "post": "/api/desk/scout_backlog", "body": {}, "primary": True}]
     if off:
         acts.append({"label": f"Dismiss {len(off)} off-lane ideas", "post": "/api/ideas/dismiss_offlane", "body": {},
@@ -232,8 +232,8 @@ def archive(body):
 def dismiss_offlane(body):
     import intelligence, studio_api
     n = 0
-    for _, i in desk.open_ideas():
-        if intelligence.lane_of(i["hook"]) in OFF_LANES:
+    for s, i in desk.open_ideas():
+        if desk.idea_lane(s, i["hook"]) in OFF_LANES:
             studio_api.set_done(f"idea:{i['slug']}")
             n += 1
     return {"ok": True, "reply": f"Dismissed {n} off-lane idea{'s' if n != 1 else ''}."}

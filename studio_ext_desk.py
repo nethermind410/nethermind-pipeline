@@ -52,6 +52,15 @@ def intel_row(c, badge, sub):
     return row(c["topic"], sub, badge, None, act={"label": "Scorecard", "go": "investigate"})
 
 
+def idea_lane(section, hook):
+    """An idea's lane: the section it sits in wins for the old backlogs (everything under Space is space), else its words."""
+    import intelligence
+    s = section.lower()
+    if s.startswith(("space", "ocean")):
+        return "space" if s.startswith("space") else "ocean"
+    return intelligence.lane_of(hook)
+
+
 def open_ideas():
     import studio_api
     return [(s["name"], i) for s in studio_api.ideas()["sections"] for i in s["items"] if not i["made"] and not i["dismissed"]]
@@ -93,10 +102,10 @@ def d_ideas():
         c = by.get(intelligence.slug(i["hook"]))
         items.append((c["score"] if c else -1, sec, i, c))
     order = CHANNEL_LANES + ["other", "space", "ocean"]            # unscouted: the channel's lanes first, old backlogs last
-    items.sort(key=lambda x: (-x[0], order.index(intelligence.lane_of(x[2]["hook"])) if intelligence.lane_of(x[2]["hook"]) in order else 9))
+    items.sort(key=lambda x: (-x[0], order.index(idea_lane(x[1], x[2]["hook"])) if idea_lane(x[1], x[2]["hook"]) in order else 9))
     rows = []
     for score, sec, i, c in items[:15]:
-        lane = intelligence.lane_of(i["hook"])
+        lane = idea_lane(sec, i["hook"])
         ice = "iceberg" in i["hook"].lower()
         if c:
             rows.append(row(i["hook"], f"{sec} · {c['verdict']}", f"{score}/100",
@@ -109,8 +118,8 @@ def d_ideas():
                             act={"label": "Scout", "post": "/api/intel/run", "body": {"topic": i["hook"]}}))
     scored = sum(1 for x in items if x[3])
     lanes = {}
-    for _, _, i, _ in items:
-        l = intelligence.lane_of(i["hook"])
+    for _, sec, i, _ in items:
+        l = idea_lane(sec, i["hook"])
         lanes[l] = lanes.get(l, 0) + 1
     return {"question": "Out of everything waiting, what should we make next — and is the backlog in the channel's lanes?",
             "stats": [{"k": "Open ideas", "v": len(items)}, {"k": "Scouted", "v": f"{scored} of {len(items)}"},
