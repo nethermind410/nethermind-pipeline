@@ -1,0 +1,11 @@
+{
+ "about": "Channels the Insights → Watchlist tab follows (edit here or in the app). Read-only: nothing is ever posted.",
+ "channels": [
+  {"handle": "@alsovanexx", "note": ""},
+  {"handle": "@Mandjtv", "note": "Pokémon-themed"},
+  {"handle": "@Neohereyt", "note": ""},
+  {"handle": "@Scalingwcontent", "note": "growth advice"},
+  {"handle": "@MinecraftCurios", "note": "Curios gaming network"},
+  {"handle": "@ValorantCurios", "note": "Curios gaming network"}
+ ]
+}

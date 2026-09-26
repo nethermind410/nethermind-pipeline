@@ -1,0 +1,49 @@
+/* Insights — Best times · Watchlist · From your comments. Black, crimson accent, Inter Tight (theme.css tokens). */
+.in-page{font-family:var(--grotesk)}
+.in-lead{margin:0;color:var(--muted);font-size:14px;max-width:760px}
+.in-sub{color:var(--muted);font-size:12.5px}
+.in-plats{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px}
+.in-plat{padding:16px 18px;display:grid;gap:10px;align-content:start}
+.in-ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.in-ph b{font-size:15px}
+.in-asof{margin-left:auto;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.in-verdict{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}
+.in-verdict.call{color:var(--ink)}.in-verdict.call::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin:0 7px 1px 0}
+.in-grid{display:grid;grid-template-columns:74px repeat(7,minmax(0,1fr));gap:3px;font-variant-numeric:tabular-nums}
+.in-dh{font-size:11px;font-weight:600;color:var(--muted);text-align:center;padding-bottom:2px}
+.in-bh{display:flex;flex-direction:column;justify-content:center;font-size:11.5px;line-height:1.15}
+.in-bh em{font-style:normal;color:var(--faint);font-size:10.5px}
+.in-cell{min-height:44px;background:var(--hover);border-radius:6px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:3px;padding:4px}
+.in-dot{display:block;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(224,41,75,.45);flex:none;transition:transform .15s}
+.in-dot.off{background:none;box-shadow:none;border:1.5px solid var(--accent);opacity:.7}
+.in-dot:hover,.in-dot:focus-visible{transform:scale(1.25)}
+.in-tbl{width:100%;font-size:13px}.in-tbl td,.in-tbl th{text-align:left;padding:6px 8px;vertical-align:top}
+.in-tbl tr.off td{color:var(--faint)}.in-tbl a{color:inherit}
+.in-general{padding:14px 18px}.in-general p{margin:6px 0 0;font-size:13.5px;color:var(--muted);line-height:1.5}
+.in-general .k{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.in-wbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.in-wbar>div:first-child{flex:1;min-width:180px}
+.in-add{display:flex;gap:6px}.in-add input{width:170px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px}
+.in-chs{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px}
+.in-ch{padding:16px 18px;display:grid;gap:10px;align-content:start}
+.in-ch-top{display:flex;align-items:center;gap:10px}.in-ch-top>div{flex:1;min-width:0}
+.in-ch-top img,.in-av{width:36px;height:36px;border-radius:50%;flex:none;background:var(--hover)}
+.in-ch-top a{color:inherit;text-decoration:none}.in-ch-top a:hover{color:var(--accent)}
+.in-meds{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}.in-meds b{color:var(--ink)}
+.in-miss{margin:0;font-size:13.5px;color:var(--muted)}
+.in-brk{display:grid;gap:2px}.in-brk .k{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.in-brk a{display:grid;grid-template-columns:52px 1fr;column-gap:10px;padding:7px 8px;border-radius:8px;color:inherit;text-decoration:none}
+.in-brk a:hover{background:var(--hover)}
+.in-brk a b{grid-row:span 2;color:var(--accent);font-size:17px;font-variant-numeric:tabular-nums;align-self:center}
+.in-brk a span{font-size:13.5px;line-height:1.3}.in-brk a em{font-style:normal;font-size:12px;color:var(--muted)}
+.in-brk-all{padding:8px 10px}
+.in-hot{color:var(--accent);font-weight:700}
+.in-ci-sec{display:grid;gap:10px}
+.in-ci blockquote{margin:0;padding:6px 0 6px 12px;border-left:2px solid var(--accent);font-size:13.5px;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.in-ci .src a{color:inherit}
+.in-why{font-size:12px;color:var(--muted)}
+@media (max-width:700px){
+  .in-plats,.in-chs{grid-template-columns:1fr}
+  .in-grid{grid-template-columns:52px repeat(7,minmax(0,1fr));gap:2px}
+  .in-bh em{display:none}.in-cell{min-height:36px;padding:2px}
+  .in-asof{margin-left:0;width:100%}
+  .in-add{flex:1}.in-add input{flex:1;width:auto;min-width:0}
+}
