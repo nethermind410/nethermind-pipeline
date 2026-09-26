@@ -130,3 +130,6 @@
 .mem-card.hypothesis{border-left-color:#FF9500}.mem-card.evidence{border-left-color:#FF8FA3}.mem-card.note{border-left-color:rgba(247,247,238,.4)}
 .mem-web text{font-size:14px;fill:rgba(247,247,238,.88)}.mem-web .section text{font-size:15px}
 .mem-web .mk-s{transform-box:fill-box;transform-origin:center}
+.bx-panel{padding-right:44px}
+.bx-x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:#0C0C0D;color:var(--ink);font:400 18px/1 var(--grotesk);cursor:pointer;display:grid;place-items:center}
+.bx-x:hover,.bx-x:focus-visible{border-color:var(--bx);color:#fff}

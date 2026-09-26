@@ -112,7 +112,7 @@
     const wrap = document.createElement("div"); wrap.className = "bx-sub";
     wrap.innerHTML = `<div class="bx-cluster ${reduced() ? "still" : ""}"></div><div class="bx-cap" hidden></div>`;
     const panel = document.createElement("aside"); panel.className = "bx-panel"; panel.setAttribute("aria-label", `${name}, up close`);
-    panel.innerHTML = `<span class="k">${esc(NeuralBrain.lobe(key) || nn.lobe)}</span><b class="t">${esc(name)}</b>
+    panel.innerHTML = `<button class="bx-x" aria-label="Back to the whole brain" title="Back to the whole brain (Esc)">×</button><span class="k">${esc(NeuralBrain.lobe(key) || nn.lobe)}</span><b class="t">${esc(name)}</b>
       <p class="bx-what">Looking inside…</p>
       <div class="bx-acts"><button class="btn primary small bx-open">Open ${esc(name)} →</button>
         <button class="btn small bx-back">Whole brain <kbd>Esc</kbd></button></div>`;
@@ -126,6 +126,7 @@
     place();
     panel.querySelector(".bx-open").onclick = () => go(key);
     panel.querySelector(".bx-back").onclick = () => close();
+    panel.querySelector(".bx-x").onclick = () => close();
     panel.querySelector(".bx-open").focus({preventScroll: true});
     const g = await gather(key);
     if (cur !== c) return;
@@ -157,6 +158,9 @@
     const b = e.target.closest?.(".bx-n"); if (!b || !cur) return;
     e.stopPropagation(); const it = cur.items[+b.dataset.bx]; if (it) go(it.go);
   }, true);
+  let down = null;                                      // a plain click on the brain (not a drag to turn it) also goes back
+  document.addEventListener("pointerdown", e => { down = e.target.id === "bnet" ? [e.clientX, e.clientY] : null; }, true);
+  document.addEventListener("pointerup", e => { if (cur && down && e.target.id === "bnet" && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) close(); down = null; }, true);
   document.addEventListener("keydown", e => { if (e.key === "Escape" && cur && !document.querySelector(".sheet, .palette:not([hidden])")) { e.preventDefault(); close(); } });
   let rz = 0;
   addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => {       // re-centre and re-grow at the new size
