@@ -1,0 +1,175 @@
+{
+ "id": "antarctica_iceberg_tiktok",
+ "file": "antarctica_iceberg_tiktok",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "rate": "+5%",
+ "palette": {
+  "accent": [
+   140,
+   200,
+   255
+  ],
+  "accent2": [
+   255,
+   180,
+   60
+  ]
+ },
+ "credit": "SOURCES: NASA / AWI / BAS / NOAA",
+ "score": "deep",
+ "cap_y": 1130,
+ "hook": {
+  "lines": [
+   [
+    "THE ANTARCTICA",
+    "w"
+   ],
+   [
+    "ICEBERG",
+    "a"
+   ]
+  ],
+  "size": 150,
+  "y": 700
+ },
+ "iceberg": {
+  "tiers": [
+   {
+    "label": "The Biggest Iceberg",
+    "depth": "3,500 KM²",
+    "col": "a"
+   },
+   {
+    "label": "The Buried Lake",
+    "depth": "4 KM DOWN",
+    "col": "a"
+   },
+   {
+    "label": "The Oldest Ice",
+    "depth": "1.2M YEARS OLD",
+    "col": "a2"
+   },
+   {
+    "label": "Blood Falls",
+    "depth": "1.5M YEARS SEALED",
+    "col": "a2"
+   },
+   {
+    "label": "The Volcano",
+    "depth": "ACTIVE SINCE 1972",
+    "col": "a2"
+   }
+  ]
+ },
+ "end": {
+  "at": 0.9,
+  "lines": [
+   "FOLLOW FOR",
+   "NEXT:",
+   "THE DEEP SEA ICEBERG"
+  ]
+ },
+ "segments": [
+  {
+   "id": "h",
+   "text": "Antarctica, from the surface down. It gets stranger every layer.",
+   "hook": true,
+   "vis": {
+    "t": "ice",
+    "tier": 0
+   },
+   "gap": 0.08,
+   "hero": {
+    "at": 0,
+    "lines": [
+     "3,500 KM²"
+    ],
+    "col": "a",
+    "y": 1440,
+    "size": 104
+   }
+  },
+  {
+   "id": "t1",
+   "text": "The surface. The world's largest iceberg calved in nineteen eighty six, then sat frozen to the seafloor for over thirty years before it finally drifted free.",
+   "vis": {
+    "t": "ice",
+    "tier": 0
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "3,500 KM²"
+    ],
+    "col": "a",
+    "y": 1440,
+    "size": 104
+   },
+   "gap": 0.08
+  },
+  {
+   "id": "t2",
+   "text": "Four kilometres down, Lake Vostok. A lake the size of Lake Ontario, sealed from sunlight for around fifteen million years.",
+   "vis": {
+    "t": "ice",
+    "tier": 1
+   },
+   "gap": 0.08
+  },
+  {
+   "id": "t3",
+   "text": "Deeper still, an ice core pulled up ice one point two million years old. A direct record of Earth's air from before humans existed.",
+   "vis": {
+    "t": "ice",
+    "tier": 2
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "1.2 MILLION",
+     "YEARS OLD"
+    ],
+    "col": "a2",
+    "y": 1440,
+    "size": 100
+   },
+   "gap": 0.08
+  },
+  {
+   "id": "t4",
+   "text": "Under Taylor Glacier, a pocket of ancient seawater has stayed sealed for a million and a half years. It is still red, and it still has life in it, with no sunlight, ever.",
+   "vis": {
+    "t": "ice",
+    "tier": 3
+   },
+   "gap": 0.08
+  },
+  {
+   "id": "t5",
+   "text": "And at the bottom of it all, an active volcano. Mount Erebus has held a lava lake since at least nineteen seventy two, one of only eight on Earth.",
+   "vis": {
+    "t": "ice",
+    "tier": 4
+   },
+   "hero": {
+    "at": 4,
+    "lines": [
+     "1 OF 8 ON EARTH"
+    ],
+    "col": "a2",
+    "y": 1440,
+    "size": 104
+   },
+   "gap": 0.08
+  },
+  {
+   "id": "e",
+   "text": "It also spits out eighty grams of gold dust a day. Antarctica has a volcano quietly raining gold, under all that ice.",
+   "vis": {
+    "t": "ice",
+    "tier": 4
+   },
+   "gap": 0.08
+  }
+ ]
+}

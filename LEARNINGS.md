@@ -25,3 +25,9 @@ Treat anything with fewer than ~3 comparable videos as a hunch, and say so.
 - Verify every fact against a source before scripting. Accuracy is the channel's whole defence.
 - Every video names the next one on its end card; the next build should keep that chain.
 - Never post automatically — the user reviews and posts.
+
+<!-- nether:auto — written by learning.py; edit above or below, not inside -->
+## NETHER learned (automatic)
+
+- Nothing learned yet: investigate topics in Studio and give each scorecard your call.
+<!-- /nether:auto -->
