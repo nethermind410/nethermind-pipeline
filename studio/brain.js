@@ -51,6 +51,7 @@ async function pageBrain() {
       <button class="today-pill" id="today-pill" data-go="today">Today</button>
       <button class="mem-link" data-go="memory" title="What NETHER has written down in LEARNINGS.md">Memory</button>
       <button class="ask" id="brain-ask">Ask the brain <kbd>⌘K</kbd></button></header>
+    <div class="next-step" id="next-step" aria-live="polite"></div>
     <canvas class="brain-net" id="bnet" role="img" aria-label="Nethermind's brain: a living network of glowing neurons"></canvas>
     <svg class="synapses" id="syn" aria-hidden="true"></svg>
     <nav class="neurons" id="neurons" aria-label="Sections"></nav>
@@ -62,6 +63,7 @@ async function pageBrain() {
   $("#today-pill").innerHTML = nT ? `Today <b>${nT}</b> need${nT > 1 ? "" : "s"} you` : "Today · all caught up";
   $("#today-pill").classList.toggle("hot", nT > 0);
   window.nxDay?.reload();                                   // then the same count as the dock
+  window.nxNext?.reload();                                  // the single "what's next" recommendation, server-derived
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
     return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}" style="--s:${n.scale};--tilt:${n.tilt}deg">
@@ -69,8 +71,9 @@ async function pageBrain() {
   }).join("");
   const c = data.ch;
   const P = data.plan, M = P?.ready ? P[P.next === "fan" ? "first" : "ads"] : null;   // the next milestone, not just subscribers
+  const pctFmt = v => v.toFixed(M.pct < 0.1 ? 1 : 0) + "%";
   $("#core").innerHTML = M ? `<button class="core-btn" data-neuron="home-core" title="Open Money: the road to getting paid">
-      <span class="big">${(M.pct * 100).toFixed(M.pct < 0.1 ? 1 : 0)}%</span>
+      <span class="big">${window.truth(c?.fetched ? M.pct * 100 : null, {source: "YouTube API", at: c?.fetched, fmt: pctFmt})}</span>
       <span class="nc">of the way to ${P.next === "fan" ? "your first YouTube money" : "ad revenue"} · ${fmt(M.subs.value)} of ${fmt(M.subs.goal)} subscribers · next hurdle: ${esc(M.bottleneck)}</span></button>` : "";
   if (data.wk) $("#core").insertAdjacentHTML("beforeend", weekBoard(data.wk));
   mondayRecap();
@@ -78,7 +81,8 @@ async function pageBrain() {
   window.brainNet = NeuralBrain.mount($("#bnet"));
   brainNet.onView(lines);
   wire(data);
-  window.onresize = () => document.body.classList.contains("on-brain") && wire(data);
+  positionNextStep();
+  window.onresize = () => { if (document.body.classList.contains("on-brain")) { wire(data); positionNextStep(); } };
 }
 
 /* the week: 7 Shorts + 1 long-form, each bead lit by how far its video has got. The cadence is the money. */
@@ -124,6 +128,22 @@ async function mondayRecap(force) {
 
 const CORE = {key: "home-core", ax: 0.47, ay: 0.64};
 const findN = key => key === CORE.key ? CORE : NEURONS.find(x => x.key === key);
+
+/* the "what's next" card sits under the header, but the neuron labels are hand-placed and move with
+   the viewport — so instead of a fixed offset, drop it just below whichever labels share its column. */
+function positionNextStep() {
+  const el = $("#next-step"), stage = $("#stage");
+  if (!el || !stage) return;
+  const S = stage.getBoundingClientRect();
+  if (S.width < 820) { el.style.top = ""; return; }               // mobile: CSS lays it out in the flow
+  const w = Math.min(400, S.width * 0.88), bandL = S.width / 2 - w / 2, bandR = S.width / 2 + w / 2;
+  let top = 118;
+  document.querySelectorAll(".neuron").forEach(n => {
+    const r = n.getBoundingClientRect(), l = r.left - S.left, right = r.right - S.left, bottom = r.bottom - S.top;
+    if (right > bandL && l < bandR) top = Math.max(top, bottom + 14);
+  });
+  el.style.top = Math.min(top, S.height * 0.42) + "px";
+}
 
 /* lay out neurons around the brain and draw the construction lines */
 function wire() {

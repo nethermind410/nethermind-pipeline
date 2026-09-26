@@ -214,7 +214,7 @@ function byPlatform(posts) {
   return m;
 }
 /* Donut: one arc per platform, 2px surface gaps between arcs, total in the middle. */
-function ring(parts, size = 132, label = "views") {
+function ring(parts, size = 132, label = "views", trust = null) {
   const total = PORDER.reduce((a, k) => a + (parts[k] || 0), 0);
   const r = size / 2 - 9, C = 2 * Math.PI * r, gap = total && PORDER.filter(k => parts[k]).length > 1 ? 3 : 0;
   let off = 0;
@@ -224,15 +224,20 @@ function ring(parts, size = 132, label = "views") {
       stroke-dashoffset="${-off}" data-tip="${PLAT[k]}: ${fmt(parts[k])} views (${pct(parts[k], total)}%)"><title>${PLAT[k]} ${pct(parts[k], total)}%</title></circle>`;
     off += len; return a;
   }).join("") : "";
+  const centerNum = trust ? window.truth(trust.at ? total : null, {source: trust.source, at: trust.at, fmt}) : fmt(total);
   return `<div class="ring" style="width:${size}px;height:${size}px">
     <svg viewBox="0 0 ${size} ${size}" role="img" aria-label="${fmt(total)} ${label}: ${PORDER.map(k => `${PLAT[k]} ${pct(parts[k] || 0, total)}%`).join(", ")}">
       <circle class="track" r="${r}" cx="${size / 2}" cy="${size / 2}"/>${arcs}</svg>
-    <div class="ring-mid"><b>${fmt(total)}</b><span>${total ? label : "no views yet"}</span></div></div>`;
+    <div class="ring-mid"><b>${centerNum}</b><span>${total ? label : "no views yet"}</span></div></div>`;
 }
-function legend(parts) {
+function legend(parts, trust) {
   const total = PORDER.reduce((a, k) => a + (parts[k] || 0), 0);
-  return `<ul class="legend">${PORDER.map(k => `<li class="${parts[k] ? "" : "zero"}"><i class="sw sw-${k}"></i><span>${PLAT[k]}</span>
-    <b>${pct(parts[k] || 0, total)}%</b><em>${fmt(parts[k] || 0)}</em></li>`).join("")}</ul>`;
+  return `<ul class="legend">${PORDER.map(k => {
+    const at = trust ? (k === "youtube" ? trust.youtube : trust.other) : null;
+    const val = trust ? window.truth(at ? (parts[k] || 0) : null, {source: k === "youtube" ? "YouTube API" : "Buffer", at, fmt}) : fmt(parts[k] || 0);
+    return `<li class="${parts[k] ? "" : "zero"}"><i class="sw sw-${k}"></i><span>${PLAT[k]}</span>
+    <b>${pct(parts[k] || 0, total)}%</b><em>${val}</em></li>`;
+  }).join("")}</ul>`;
 }
 let perfTab = "overview";
 async function pagePerformance() {
@@ -242,11 +247,13 @@ async function pagePerformance() {
   const tabs = [["overview", "Overview"], ...PORDER.map(k => [k, PLAT[k]])];
   const seg = `<div class="seg big" role="tablist">${tabs.map(([k, l]) => `<button role="tab" aria-selected="${perfTab === k}" class="${perfTab === k ? "on" : ""}" data-ptab="${k}">${k !== "overview" ? `<i class="sw sw-${k}"></i>` : ""}${l}</button>`).join("")}</div>`;
   let body = "";
+  const trust = {youtube: p.youtube_updated, other: p.updated};
+  const ringTrust = {source: "Buffer + YouTube", at: p.updated || p.youtube_updated};
   if (perfTab === "overview") {
     const cards = p.rows.map(r => { const b = byPlatform(r.posts); return `<button class="vcard card" data-open="${esc(r.id)}">
-        ${ring(b, 112)}<div class="vc-text"><div class="t">${esc(r.title)}</div>${legend(b)}
+        ${ring(b, 112, "views", ringTrust)}<div class="vc-text"><div class="t">${esc(r.title)}</div>${legend(b, trust)}
         <div class="trend">${spark(r.series, 160, 26)}<span>${r.series.length > 1 ? "views over time" : "trend builds daily"}</span></div></div></button>`; }).join("");
-    body = `<div class="card overall">${ring(all, 176, "total views")}<div><div class="k">Across every video</div>${legend(all)}
+    body = `<div class="card overall">${ring(all, 176, "total views", ringTrust)}<div><div class="k">Across every video</div>${legend(all, trust)}
         ${p.insight ? `<p class="why"><b>What's working:</b> ${esc(p.insight)}</p>` : ""}</div></div>
       <h2>Each video</h2><div class="vgrid">${cards || `<div class="caught">No numbers yet. Tap Refresh.</div>`}</div>`;
   } else {
@@ -258,16 +265,18 @@ async function pagePerformance() {
     const watch = rows.filter(x => x.averageTimeWatched != null);
     const max = Math.max(1, ...rows.map(x => x.views || 0));
     const tile = (label, val, sub = "") => `<div class="card stat"><span class="k">${label}</span><span class="v">${val}</span>${sub ? `<span class="k">${sub}</span>` : ""}</div>`;
+    const platAt = k === "youtube" ? p.youtube_updated : p.updated, platSrc = k === "youtube" ? "YouTube API" : "Buffer";
+    const truthNum = v => window.truth(platAt ? v : null, {source: platSrc, at: platAt, fmt});
     body = `<div class="stats">
-        ${tile("Views", fmt(views), `${pct(views, PORDER.reduce((a, q) => a + all[q], 0))}% of all your views`)}
+        ${tile("Views", truthNum(views), `${pct(views, PORDER.reduce((a, q) => a + all[q], 0))}% of all your views`)}
         ${tile("Videos posted", rows.length)}
-        ${tile("Average per video", fmt(rows.length ? Math.round(views / rows.length) : 0))}
+        ${tile("Average per video", truthNum(rows.length ? Math.round(views / rows.length) : 0))}
         ${tile("Engagement", views ? (eng / views * 100).toFixed(1) + "%" : "–", "likes, comments, shares, saves ÷ views")}
         ${watch.length ? tile("Average watch", (watch.reduce((a, x) => a + x.averageTimeWatched, 0) / watch.length).toFixed(1) + "s") : ""}
-        ${tile("Best video", rows[0] ? fmt(rows[0].views) : "–", rows[0] ? esc(rows[0].title) : "")}</div>
+        ${tile("Best video", rows[0] ? truthNum(rows[0].views) : "–", rows[0] ? esc(rows[0].title) : "")}</div>
       <div class="card table-wrap"><table><thead><tr><th>Video</th><th>Views</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Avg watch</th><th>Posted</th></tr></thead><tbody>
       ${rows.map(x => `<tr><td><button class="link" data-open="${esc(x.id)}">${esc(x.title)}</button></td>
-        <td class="barcell"><i class="bar sw-${k}" style="width:${Math.max(2, (x.views || 0) / max * 100)}%"></i><b>${fmt(x.views)}</b></td>
+        <td class="barcell"><i class="bar sw-${k}" style="width:${Math.max(2, (x.views || 0) / max * 100)}%"></i><b>${truthNum(x.views)}</b></td>
         <td>${fmt(x.reactions)}</td><td>${fmt(x.comments)}</td><td>${x.shares == null ? "–" : fmt(x.shares)}</td><td>${x.saves == null ? "–" : fmt(x.saves)}</td>
         <td>${x.averageTimeWatched == null ? "–" : x.averageTimeWatched + "s"}</td><td>${esc(when(x.sentAt))}</td></tr>`).join("") || `<tr><td colspan="8">Nothing posted to ${PLAT[k]} yet.</td></tr>`}
       </tbody></table></div>`;
@@ -434,8 +443,9 @@ function watchJob() {
 /* ---------- ⌘K palette ---------- */
 async function palette(prefill = "") {
   const vs = await get("/api/videos").catch(() => []);
-  const cmds = [["Today", () => go("today")], ["Videos", () => go("videos")], ["Performance", () => go("performance")],
-    ["Ideas", () => go("ideas")], ["Settings", () => go("settings")], ["Refresh numbers", () => runJob("stats", "")],
+  const cmds = [["Today", () => go("today")], ["Make", () => go("content")], ["Channel", () => go("analytics")],
+    ["Videos", () => go("videos")], ["Performance", () => go("performance")], ["Ideas", () => go("ideas")],
+    ["Settings", () => go("settings")], ["Refresh numbers", () => runJob("stats", "")],
     ...vs.map(v => [v.title, () => go("video/" + v.id)])];
   sheet(`<input id="pq" placeholder="Ask Jarvis, or type to jump…" aria-label="Ask or jump" value="${esc(prefill)}"><div class="hits" id="hits"></div><div class="answer" id="ans" hidden></div>`,
     (el, close) => {
@@ -468,16 +478,42 @@ async function palette(prefill = "") {
 window.PAGES = {today: pageToday, videos: pageVideos, performance: pagePerformance, ideas: pageIdeas, settings: pageSettings};
 let current = null;
 function go(r) { location.hash = r; }
+
+/* the top nav is 4 items — every route below still works at its own #hash (agent hubs, desks and
+   the brain/⌘K reach the rest); this just says which of the 4 a given route lights up. */
+const NAVGROUP = {
+  content: "make", production: "make", make: "make", videos: "make", draft: "make", video: "make",
+  analytics: "channel", publishing: "channel", business: "channel", comments: "channel", money: "channel",
+  calendar: "channel", performance: "channel", retention: "channel",
+  control: "settings", agents: "settings", settings: "settings", engines: "settings",
+  today: "today",
+};
+/* Channel = Analytics + Publishing + Business + Insights, switched with an in-page tab bar. */
+const CHANNEL_TABS = [["analytics", "Performance"], ["publishing", "Calendar"], ["business", "Business"], ["retention", "Insights"]];
+const CHAN_NORM = {performance: "analytics", calendar: "publishing", money: "business", comments: "business"};
+function channelBar(name) {
+  const active = CHAN_NORM[name] || name;
+  return `<div class="chan-tabs" role="tablist" aria-label="Channel">${CHANNEL_TABS.map(([r, l]) =>
+    `<button role="tab" aria-selected="${r === active}" class="${r === active ? "on" : ""}" data-go="${r}">${esc(l)}</button>`).join("")}</div>`;
+}
+
 async function route() {
   const r = location.hash.slice(1) || "home";
   const [name, id] = r.split("/");
-  document.querySelectorAll(".nav,.brandcard").forEach(n => n.classList.toggle("on", n.dataset.go === (name === "video" ? "videos" : name)));
+  const routeName = name === "video" ? "videos" : name;
+  const markNav = () => {   // runs last: an agent hub page (ext_nether.js) also toggles .nav by exact agent key, so ours must win
+    document.querySelectorAll(".nav").forEach(n => n.classList.toggle("on", !!NAVGROUP[n.dataset.go] && NAVGROUP[n.dataset.go] === NAVGROUP[routeName]));
+    document.querySelector(".brandcard")?.classList.toggle("on", routeName === "home");
+  };
+  markNav();
   if (name !== "home") document.body.classList.remove("on-brain");
   window.onRoute && window.onRoute(name);
   try {
     if (name === "video" && id) { current = await get("/api/video/" + encodeURIComponent(id)); await pageVideo(id); }
     else await (window.PAGES[name] || window.PAGES.home || pageToday)();
   } catch (e) { main.innerHTML = `<div class="page"><div class="caught"><b>Couldn't load this</b>${esc(e.message)}</div></div>`; }
+  markNav();
+  if (NAVGROUP[routeName] === "channel" && main.firstElementChild) main.insertAdjacentHTML("afterbegin", channelBar(routeName));
   window.nxDay?.reload();                          // the Today count comes from Today's run, so it matches everywhere
 }
 window.addEventListener("hashchange", () => { route(); main.scrollTop = 0; });
