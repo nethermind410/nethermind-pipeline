@@ -293,7 +293,7 @@
       <div class="head-row"><div class="head"><h1>Money</h1><p>The road to getting paid by YouTube, and the money that doesn't wait for it.</p></div>
         <button class="btn" id="nx-kit">Build media kit</button></div>
       ${road}
-      <h2>Money you can make now</h2><p class="nx-meta">Ads are only 30–50% of a successful faceless channel's income. These don't need YouTube's permission.</p>
+      <h2>Money you can make now</h2><p class="nx-meta">For many faceless channels, ads are just one revenue stream — typical splits vary and nothing here is guaranteed. These don't need YouTube's permission.</p>
       <div class="mo-streams">${streams}</div>
       <div class="mo-setup">
         <h2>One-time setup</h2><div class="card nx-setup"><ul>${setup}</ul></div>
@@ -495,6 +495,7 @@
           <textarea id="nx-notes" rows="3" placeholder="Or: what should change? e.g. 'open on the 1 cell number', 'less about the comic, more about the worm'"></textarea>
           <div class="row-end"><button class="btn" id="nx-redraft">Redraft with notes</button><button class="btn danger" id="nx-discard">Discard</button></div></div>
         ${d.check ? `<div class="card nx-checkc"><span class="k">Hook &amp; retention check · ${d.check.score}/10</span><ul class="rt-list">${d.check.rows.map(([ok, m]) => `<li class="${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${esc(m)}</li>`).join("")}</ul></div>` : ""}
+        ${d.policy_flags && d.policy_flags.length ? `<div class="card nx-checkc"><span class="k">Trademark/character check</span><ul class="rt-list">${d.policy_flags.map(m => `<li class="no">✗ ${esc(m)}</li>`).join("")}</ul><p class="nx-meta">Fix this before approving — AI art and thumbnails must stay archetype-only; narration may still name the character.</p></div>` : ""}
         <div class="card nx-research"><span class="k">Research · every line comes from these</span>
           ${r.angle ? `<p><b>${esc(r.angle)}</b></p>` : ""}
           ${r.promise ? `<p class="nx-meta">Promise: ${esc(r.promise)}</p>` : ""}

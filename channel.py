@@ -34,6 +34,7 @@ DEFAULTS = {
     "lanes": [],                           # lane ids the channel makes (see LANE_LIBRARY / custom_lanes)
     "off_lanes": [],                       # lane ids it has decided against (ideas there get flagged)
     "custom_lanes": {},                    # {id: {"label", "words": "space separated keywords", "copyright": bool}}
+    "custom_names": [],                    # extra trademarked names/marks to block in AI art & thumbnails (see BLOCKED_NAMES)
     "title_subjects": [],                  # words a good title names (title pre-check)
     "hashtag": "",                         # the channel's own hashtag, without # (added to every description)
     "subscribe_line": "",                  # long-form description sign-off
@@ -68,6 +69,45 @@ LANE_LIBRARY = {
     "creature": {"label": "Creatures / real biology", "copyright": False,
                  "words": "superpower superpowers animal creature species worm beetle frog bird insect spider snake lizard shrimp"},
 }
+# Trademarked characters and studio marks AI art / thumbnails must never depict by name, costume or logo
+# (narration may still mention them — commentary, not imagery). "custom_names" in channel.json adds more,
+# per channel; this base list is never removed, only added to.
+BLOCKED_NAMES = [
+    "spider-man", "spiderman", "spider man", "wolverine", "hulk", "iron man", "captain america", "thor",
+    "black panther", "black widow", "hawkeye", "avengers", "x-men", "xmen", "deadpool", "thanos", "loki",
+    "doctor strange", "scarlet witch", "groot", "rocket raccoon", "venom", "daredevil", "punisher",
+    "batman", "superman", "wonder woman", "the flash", "green lantern", "aquaman", "harley quinn", "joker",
+    "catwoman", "robin", "justice league", "teen titans",
+    "pikachu", "pokemon", "pokémon", "mario", "luigi", "princess peach", "bowser", "sonic the hedgehog",
+    "zelda", "link (nintendo)", "kirby", "donkey kong", "master chief", "pac-man", "pacman",
+    "naruto", "goku", "dragon ball", "one piece", "luffy", "attack on titan", "totoro", "pikmin",
+    "mickey mouse", "minnie mouse", "donald duck", "spongebob", "star wars", "darth vader", "luke skywalker",
+    "elsa", "frozen (disney)", "simba", "woody", "buzz lightyear",
+]
+_norm = lambda s: re.sub(r"[^a-z0-9]+", "", str(s or "").lower())
+_BLOCKED_NORM_BASE = {_norm(n) for n in BLOCKED_NAMES}
+
+
+def blocked_names():
+    """The base list plus this channel's own additions (channel.json "custom_names": [...])."""
+    extra = [str(n) for n in (get("custom_names") or []) if isinstance(n, str)]
+    return BLOCKED_NAMES + extra
+
+
+def blocked_name_in(text):
+    """The first blocked trademarked name/mark found in `text` (case/punctuation-insensitive substring
+    match on normalized alphanumerics — catches "Spider-Man", "spiderman", "SPIDER MAN"), or None.
+    Used to keep AI-art prompts and thumbnail text to archetypes only; narration may still name characters."""
+    norm = _norm(text)
+    if not norm:
+        return None
+    names = _BLOCKED_NORM_BASE | {_norm(n) for n in (get("custom_names") or []) if isinstance(n, str)}
+    for n in sorted(names, key=len, reverse=True):     # longest first so "spiderman" beats a shorter partial hit
+        if n and n in norm:
+            return n
+    return None
+
+
 _cache = {}
 
 

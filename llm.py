@@ -369,7 +369,13 @@ def check_episode(r):
 
 
 def check_packaging(r):
-    """Only what the pipeline needs; small slips are repaired rather than rejected (so good answers aren't wasted)."""
+    """Only what the pipeline needs; small slips are repaired rather than rejected (so good answers aren't wasted).
+    A trademarked character/mark in the title or thumbnail text is a hard reject, not a repair — AI art and
+    thumbnails must stay archetype-only (see channel.BLOCKED_NAMES); it's fine in narration/description text."""
+    for txt in [r.get("title")] + list((r.get("thumbnail") or {}).get("lines") or []):
+        hit = channel.blocked_name_in(txt or "")
+        if hit:
+            raise ValueError(f"title/thumbnail names a trademarked character/mark ({hit!r})")
     _need(isinstance(r.get("title"), str) and 10 <= len(r["title"].strip()) <= 120, "no usable title")
     d = str(r.get("youtube_description", "")).strip()
     _need(len(d) >= 80, "description is too short")

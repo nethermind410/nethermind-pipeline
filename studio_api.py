@@ -145,6 +145,7 @@ PLATFORMS = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instagram"}
 FINISH_STEPS = [("tags", "Paste the tags into YouTube Studio"),
                 ("comment", "Post and pin the comment"),
                 ("playlist", "Add it to its series playlist and set an end screen (next video)"),
+                ("disclosure", "Mark as altered or synthetic content in YouTube Studio (Details → Show more → Altered or synthetic content) — this video is narrated by TTS"),
                 ("check", "Check the video plays and looks right")]
 SHORT_STEPS = [("related", "Set its Related video to this week's long-form (YouTube Studio → the Short → Related video) — "
                             "Shorts viewers who tap through become watch hours")]
