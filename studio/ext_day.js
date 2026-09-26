@@ -34,7 +34,7 @@
       const d = isDone(s), open = n === i && !d;
       return `<div class="dr-row ${d ? "done" : ""} ${open ? "open" : ""}" data-dr-row="${n}">
         <button class="dr-rowhead" data-dr-toggle="${n}" ${d ? "disabled" : ""}>
-          <span class="dr-check">${d ? "✓" : ""}</span>
+          <span class="dr-check ${d ? "on" : ""}" ${d || s.key === "post" ? "" : `data-dr-tick="${n}" role="checkbox" aria-checked="false" aria-label="Mark done" title="Mark done"`}>${d ? "✓" : ""}</span>
           <span class="dr-rowtext"><span class="dr-kind ${s.kind}">${esc(kindWord[s.kind] || s.kind)}</span><b>${esc(s.title)}</b></span>
           ${d ? "" : `<span class="dr-chev">${open ? "⌄" : "›"}</span>`}
         </button>
@@ -43,7 +43,7 @@
       </div>`;
     };
     dock.innerHTML = `<div class="dr-card">
-      <div class="dr-top"><span class="k">Today · ${done} of ${steps.length} done</span>
+      <div class="dr-top"><span class="k"><b>Today</b><em>${done} of ${steps.length} done</em></span>
         <button class="dr-x" data-dr="close" aria-label="Close">×</button></div>
       <div class="dr-bar"><i style="width:${steps.length ? Math.round(done / steps.length * 100) : 0}%"></i></div>
       <div class="dr-list">${steps.map(row).join("")}</div></div>`;
@@ -55,7 +55,9 @@
     render();
   }
   dock.addEventListener("click", async e => {
-    const toggle = e.target.closest("[data-dr-toggle]");
+    const tk = e.target.closest("[data-dr-tick]");        // tick the circle: done without opening it
+    if (tk) { e.stopPropagation(); i = +tk.dataset.drTick; e = {target: dock.querySelector('[data-dr="done"]') || tk}; if (!dock.querySelector('[data-dr="done"]')) { render(); e.target = dock.querySelector('[data-dr="done"]'); } }
+    const toggle = !tk && e.target.closest("[data-dr-toggle]");
     if (toggle) { const n = +toggle.dataset.drToggle; if (isDone(day.steps[n])) return; i = i === n ? -1 : n; return render(); }
     const b = e.target.closest("[data-dr]"); if (!b) return;
     const a = b.dataset.dr;
