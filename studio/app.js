@@ -364,33 +364,50 @@ async function pageSettings() {
 }
 
 /* ---------- jobs ---------- */
-let polling = null;
+let polling = null, seenJob = 0;
 async function runJob(action, id, extra = {}) {
-  try { await post("/api/run", {action, id, ...extra}); } catch (e) { return toast(e.message); }
+  try { const r = await post("/api/run", {action, id, ...extra}); if (r.queued) toast(r.reply, {label: "See queue", run: showQueue}); }
+  catch (e) { return toast(e.message); }
   watchJob(action, id);
 }
-function watchJob(action, id) {
+/* the line of jobs: one runs at a time (renders need the whole Mac); the rest wait here and start by themselves */
+async function showQueue() {
+  const j = await get("/api/job");
+  sheet(`<h3>Job queue</h3><div class="q-list">
+    ${!j.done ? `<div class="q-row now"><span class="spin"></span><b>${esc(j.label)}</b><span class="s">running now</span></div>` : ""}
+    ${j.queue.map((q, i) => `<div class="q-row"><span class="q-n">${i + 1}</span><b>${esc(q.label)}</b>
+      <button class="icon" data-q="up:${q.qid}" aria-label="Move up" ${i ? "" : "disabled"}>↑</button><button class="icon" data-q="down:${q.qid}" aria-label="Move down" ${i < j.queue.length - 1 ? "" : "disabled"}>↓</button>
+      <button class="icon" data-q="remove:${q.qid}" aria-label="Remove">×</button></div>`).join("") || `<p class="s">Nothing waiting. Anything you start while a job runs lines up here and starts by itself.</p>`}</div>
+    <div class="row-end">${j.queue.length > 1 ? `<button class="btn" data-q="clear:0">Clear queue</button>` : ""}<button class="btn" data-close>Close</button></div>`, (el, close) =>
+    el.querySelectorAll("[data-q]").forEach(b => b.onclick = async () => {
+      const [op, qid] = b.dataset.q.split(":");
+      try { await post("/api/queue", {op, qid: +qid}); close(); if (op !== "clear") showQueue(); } catch (e) { toast(e.message); }
+    }));
+}
+function jobDone(j, a) {
+  if (j.code !== 0) return toast(`Error: ${j.label} didn't finish.`, {label: "See why", run: () => window.showFailure ? showFailure({job: true}) : a.click()});
+  if (j.action === "post_live") {
+    const due = [...j.log.matchAll(/Posting to (\w+)[\s\S]*?due (\S+)/g)].map(m => `${PLAT[m[1]] || m[1]} ${when(m[2])}`);
+    toast("Scheduled" + (due.length ? ": " + due.join(" · ") : "."), {label: "Undo", run: () => runJob("undo", j.video)});
+  } else if (j.action === "undo") toast("Taken back out of the queue.");
+  else if (j.action === "reschedule") toast("Moved.", lastMove ? {label: "Undo", run: () => { const m = lastMove; lastMove = null; runJob("reschedule", `${m.pid}|${m.back}`); }} : null);
+  else if (j.action === "replies") toast("Drafts ready.");
+  else if (j.action === "score") toast("Scored with vidIQ.");
+  else if (j.action === "demand") toast("Demand checked on YouTube.");
+  else if (j.action === "stats") toast("Numbers refreshed from YouTube and Buffer.");
+  else if (j.action === "post_dry") a.click();
+  else toast("Done: " + j.label);
+}
+function watchJob() {
   clearInterval(polling);
   polling = setInterval(async () => {
-    const j = await get("/api/job"); const a = $("#activity");
+    const j = await get("/api/job"); const a = $("#activity"), n = j.queue.length, more = n ? ` · <span class="q-badge">${n} queued</span>` : "";
     a.hidden = false; a.classList.toggle("busy", !j.done); a.classList.toggle("err", j.done && j.code !== 0);
-    a.innerHTML = j.done ? (j.code === 0 ? "✓ " + esc("Finished: " + j.label) : `<b>Error</b> · ${esc(j.label)} didn't finish — tap to see why`) : `<span class="spin"></span>${esc(j.label)}…`;
-    a.onclick = () => j.done && j.code !== 0 && window.showFailure ? showFailure({job: true}) : sheet(`<h3>${esc(j.label)}</h3>${j.friendly ? `<p>${esc(j.friendly)}</p>` : ""}<details class="more" ${j.friendly ? "" : "open"}><summary>Details</summary><pre>${esc(j.log.slice(-6000) || "…")}</pre></details><div class="row-end"><button class="btn" data-close>Close</button></div>`);
-    if (!j.done) return;
-    clearInterval(polling);
-    if (j.code !== 0) { toast(`Error: ${j.label} didn't finish.`, {label: "See why", run: () => a.click()}); return route(); }
-    if (j.action === "post_live") {
-      const due = [...j.log.matchAll(/Posting to (\w+)[\s\S]*?due (\S+)/g)].map(m => `${PLAT[m[1]] || m[1]} ${when(m[2])}`);
-      toast("Scheduled" + (due.length ? ": " + due.join(" · ") : "."), {label: "Undo", run: () => runJob("undo", j.video)});
-    } else if (j.action === "undo") toast("Taken back out of the queue.");
-    else if (j.action === "reschedule") toast("Moved.", lastMove ? {label: "Undo", run: () => { const m = lastMove; lastMove = null; runJob("reschedule", `${m.pid}|${m.back}`); }} : null);
-    else if (j.action === "replies") toast("Drafts ready.");
-    else if (j.action === "score") toast("Scored with vidIQ.");
-    else if (j.action === "demand") toast("Demand checked on YouTube.");
-    else if (j.action === "stats") toast("Numbers refreshed from YouTube and Buffer.");
-    else if (j.action === "post_dry") a.click();
-    else toast("Done: " + j.label);
-    route();
+    a.innerHTML = j.done ? (j.code === 0 ? "✓ " + esc("Finished: " + j.label) : `<b>Error</b> · ${esc(j.label)} didn't finish — tap to see why`) + more : `<span class="spin"></span>${esc(j.label)}…${more}`;
+    a.onclick = () => j.done && j.code !== 0 && window.showFailure ? showFailure({job: true}) : n || !j.done ? showQueue() : sheet(`<h3>${esc(j.label)}</h3>${j.friendly ? `<p>${esc(j.friendly)}</p>` : ""}<details class="more" ${j.friendly ? "" : "open"}><summary>Details</summary><pre>${esc(j.log.slice(-6000) || "…")}</pre></details><div class="row-end"><button class="btn" data-close>Close</button></div>`);
+    if (j.done && j.id !== seenJob) { seenJob = j.id; jobDone(j, a); route(); }
+    else if (!j.done && seenJob && j.id > seenJob + 1) { seenJob = j.id - 1; route(); }   // a queued job started after one we didn't see finish
+    if (j.done && !n) clearInterval(polling);
   }, 1000);
 }
 
@@ -496,4 +513,4 @@ $("#open-palette").onclick = () => palette();
 document.addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); palette(); } });
 
 window.addEventListener("load", route);
-get("/api/job").then(j => { if (!j.done) watchJob(j.action, j.video); });
+get("/api/job").then(j => { seenJob = j.done ? j.id : j.id - 1; if (!j.done || j.queue.length) watchJob(); });

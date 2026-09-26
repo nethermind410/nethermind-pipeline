@@ -7,7 +7,7 @@ Screens and their data come from studio_api.py; this file is routing, the one-at
 job runner (build / post / undo / stats), media serving with Range support, and the
 Jarvis proxy. Localhost only; state-changing requests need the X-Studio header.
 """
-import json, os, re, subprocess, sys, threading, webbrowser
+import datetime, json, os, re, subprocess, sys, threading, webbrowser
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import unquote
@@ -43,6 +43,23 @@ LABELS = {"build": "Making", "build_nofetch": "Re-making", "post_dry": "Checking
           "reschedule": "Moving the post"}
 JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True, "code": None, "friendly": None}
 LOCK = threading.Lock()
+QUEUE = []   # jobs waiting their turn: one runs at a time (renders need the whole Mac), the rest line up here
+QSEQ = [0]
+
+
+def label_for(action, vid):
+    return (LABELS[action] if action in FREE_ARG else f"{LABELS[action]} {vid}").strip()
+
+
+def start_job(action, vid):
+    """Start a job now. Caller holds LOCK and has checked nothing is running."""
+    JOB.update(id=JOB["id"] + 1, action=action, video=vid, task=None, label=label_for(action, vid),
+               log="", done=False, code=None, friendly=None)
+    threading.Thread(target=run_job, args=(action, vid), daemon=True).start()
+
+
+def queue_view():
+    return [{k: q[k] for k in ("qid", "action", "video", "label", "added")} for q in QUEUE]
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"), "/app.css": ("app.css", "text/css"),
           "/app.js": ("app.js", "text/javascript"), "/app2.js": ("app2.js", "text/javascript"),
           "/brain.js": ("brain.js", "text/javascript"), "/neural.js": ("neural.js", "text/javascript"), "/app3.js": ("app3.js", "text/javascript"), "/theme.css": ("theme.css", "text/css"), "/brain.jpg": ("brain.jpg", "image/jpeg"), "/icon.png": ("icon.png", "image/png")}
@@ -93,6 +110,10 @@ def run_job(action, vid):
             api.set_done(f"ready:{vid}")
         if action in ("build", "build_nofetch") and code == 0:
             api.set_done(f"ready:{vid}", False)  # a fresh build needs a fresh review
+        with LOCK:                               # next in line
+            if QUEUE and JOB["done"]:
+                q = QUEUE.pop(0)
+                start_job(q["action"], q["video"])
 
 
 def ask_jarvis(text):
@@ -191,7 +212,7 @@ class H(BaseHTTPRequestHandler):
             return self.send_file(create.INSP_DIR / m[1], {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "gif": "image/gif"}[m[1].rsplit(".", 1)[1]])
         if path == "/api/job":
             with LOCK:
-                return self.send(200, dict(JOB))
+                return self.send(200, {**JOB, "queue": queue_view()})
         if path == "/api/music":                             # your own tracks for the interface's music player
             return self.send(200, {"tracks": sorted(p.name for p in MUSIC_DIR.glob("*") if p.suffix.lower() in TRACKS)
                                    if MUSIC_DIR.is_dir() else []})
@@ -263,6 +284,21 @@ class H(BaseHTTPRequestHandler):
                 return self.send(200, api.add_idea(str(b.get("section", "")), b.get("hook", ""), b.get("format", ""), b.get("source", "")))
             except ValueError as e:
                 return self.send(400, {"error": str(e)})
+        if self.path == "/api/queue":                      # {"op": "remove"|"up"|"down"|"clear", "qid"}
+            op, qid = b.get("op"), b.get("qid")
+            with LOCK:
+                i = next((k for k, q in enumerate(QUEUE) if q["qid"] == qid), None)
+                if op == "clear":
+                    QUEUE.clear()
+                elif i is None:
+                    return self.send(400, {"error": "That job already started or left the queue."})
+                elif op == "remove":
+                    QUEUE.pop(i)
+                elif op == "up" and i > 0:
+                    QUEUE[i - 1], QUEUE[i] = QUEUE[i], QUEUE[i - 1]
+                elif op == "down" and i < len(QUEUE) - 1:
+                    QUEUE[i + 1], QUEUE[i] = QUEUE[i], QUEUE[i + 1]
+                return self.send(200, {"ok": True, "queue": queue_view()})
         if self.path != "/api/run":
             return self.send(404, {"error": "not found"})
         action, vid = b.get("action"), str(b.get("id", ""))
@@ -272,12 +308,16 @@ class H(BaseHTTPRequestHandler):
         if action == "post_live" and b.get("confirm") is not True:
             return self.send(400, {"error": "Confirm the schedule first."})
         with LOCK:
-            if not JOB["done"]:
-                return self.send(409, {"error": f"Still busy: {JOB['label']}. Try again when it finishes."})
-            JOB.update(id=JOB["id"] + 1, action=action, video=vid, task=None, label=(LABELS[action] if action in FREE_ARG else f"{LABELS[action]} {vid}").strip(),
-                       log="", done=False, code=None, friendly=None)
-        threading.Thread(target=run_job, args=(action, vid), daemon=True).start()
-        self.send(200, {"ok": True})
+            if JOB["done"] and not QUEUE:
+                start_job(action, vid)
+                return self.send(200, {"ok": True, "queued": 0})
+            if (not JOB["done"] and JOB["action"] == action and JOB["video"] == vid) or any(q["action"] == action and q["video"] == vid for q in QUEUE):
+                return self.send(200, {"ok": True, "queued": -1, "reply": f"{label_for(action, vid)} is already lined up."})
+            QSEQ[0] += 1
+            QUEUE.append({"qid": QSEQ[0], "action": action, "video": vid, "label": label_for(action, vid),
+                          "added": datetime.datetime.now().astimezone().isoformat(timespec="seconds")})
+            n = len(QUEUE)
+        self.send(200, {"ok": True, "queued": n, "reply": f"Queued — {label_for(action, vid)} starts after {'the current job' if n == 1 else f'{n - 1} other' + ('s' if n > 2 else '') + ' in line'}."})
 
 
 def serve(open_browser=True):
