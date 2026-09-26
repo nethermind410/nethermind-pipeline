@@ -91,7 +91,36 @@ Target 45–70 seconds of narration (about 125–190 words in total)."""
 
 
 # ------------------------------------------------------------------ steps
-def research(topic):
+RESEARCH = HERE / "out" / "research"      # research is done ahead of time (the daily run) and reused when you draft
+FRESH_DAYS = 21
+
+
+def cached_research(topic):
+    p = RESEARCH / f"{slug(topic)}.json"
+    try:
+        r = json.loads(p.read_text())
+    except Exception:
+        return None
+    age = (datetime.datetime.now().astimezone() - datetime.datetime.fromisoformat(r["at"])).days
+    return r["research"] if age <= FRESH_DAYS and r.get("topic") == topic else None
+
+
+def research(topic, fresh=False):
+    """Sourced research for a topic — from the pre-generated cache when it's under three weeks old."""
+    if not fresh:
+        hit = cached_research(topic)
+        if hit:
+            return hit
+    r = _research(topic)
+    RESEARCH.mkdir(parents=True, exist_ok=True)
+    tmp = RESEARCH / f".{slug(topic)}.json.part"
+    tmp.write_text(json.dumps({"topic": topic, "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "research": r},
+                              indent=1, ensure_ascii=False))
+    tmp.replace(RESEARCH / f"{slug(topic)}.json")
+    return r
+
+
+def _research(topic):
     prompt = f"""You are the Researcher for Nethermind. Research this video topic with web search and fetch:
 "{topic}"
 
@@ -262,8 +291,9 @@ def draft(topic, notes=None, vid=None):
             facts = record["research"]
             nether.finish(cur, {"reused": True})
         else:
-            facts = research(topic)
-            nether.finish(cur, {"facts": len(facts["facts"]), "angle": facts.get("angle")})
+            pre = cached_research(topic)
+            facts = pre or research(topic)
+            nether.finish(cur, {"facts": len(facts["facts"]), "angle": facts.get("angle"), "reused": bool(pre)})
         record["research"] = facts
 
         cur = nether.begin("content", "Write the script", sub="script", parent=parent)

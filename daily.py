@@ -165,6 +165,17 @@ def main(dry=False):
                 if why.startswith("you pinned"):          # the pin is used up: tomorrow picks the next topic
                     import studio_api
                     studio_api.set_next("", "")
+        cur = nether.begin("content", "Research tomorrow's topic ahead", sub="research", parent=parent)
+        try:                                            # tomorrow's draft starts from finished research
+            nxt, _ = pick_topic(skip=[t for t in (locals().get("cur_topic"),) if t])   # not the one just drafted
+            if nxt and not drafter.cached_research(nxt):
+                f = drafter.research(nxt)
+                nether.finish(cur, {"topic": nxt, "facts": len(f["facts"])})
+                report["researched"] = nxt
+            else:
+                nether.finish(cur, {"skipped": "already researched" if nxt else "no next topic"})
+        except Exception as e:                          # never stops the run
+            nether.fail(cur, str(e))
         if datetime.date.today().weekday() == 6:          # Sundays: the week's long-form, written for your approval
             import drafter_long
             cur = nether.begin("content", "Draft the weekly long-form", sub="episodes", parent=parent)

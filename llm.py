@@ -140,15 +140,20 @@ def _json(text, who):
         raise EngineError(f"{who}'s JSON didn't parse ({e.msg}).")
 
 
-def _claude(prompt, tools, timeout, cfg):
+# On the Claude subscription, lighter jobs run on lighter models so the plan's limit lasts; the script keeps the default.
+CLAUDE_MODEL = {"research": "sonnet", "packaging": "sonnet", "titles": "sonnet", "replies": "haiku"}
+
+
+def _claude(prompt, tools, timeout, cfg, job=None):
     import shutil
     e = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
     e["PATH"] = f"{Path.home()}/.local/bin:" + e.get("PATH", "/usr/bin:/bin")     # the subscription, never the API key
     if not shutil.which("claude", path=e["PATH"]):
         raise NotSetUp("The claude command isn't installed on this Mac.")
     try:
+        m = cfg.get("model") or CLAUDE_MODEL.get(job)
         r = subprocess.run(["claude", "-p", prompt, "--output-format", "json", "--permission-prompts", "none",
-                            "--allowedTools", ",".join(["ToolSearch", *tools])],
+                            "--allowedTools", ",".join(["ToolSearch", *tools]), *(["--model", m] if m else [])],
                            capture_output=True, text=True, timeout=timeout, env=e, cwd=HERE)
     except subprocess.TimeoutExpired:
         raise EngineError(f"Claude took longer than {timeout // 60} minutes.")
@@ -247,10 +252,10 @@ def _openai_compatible(prompt, tools, timeout, cfg, local=False):
                                                                          "cost": 0.0 if local else None}
 
 
-def call(engine, prompt, tools=(), timeout=900):
+def call(engine, prompt, tools=(), timeout=900, job=None):
     cfg = settings()["engines"].get(engine, {})
     if engine == "claude":
-        return _claude(prompt, tools, timeout, cfg)
+        return _claude(prompt, tools, timeout, cfg, job)
     if engine == "anthropic":
         return _anthropic(prompt, tools, timeout, cfg)
     if engine == "openai":
@@ -278,7 +283,7 @@ def ask(job, prompt, tools=(), timeout=900, check=None):
         t0 = time.time()
         row = {"at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "job": job, "engine": engine, "fallback": i > 0}
         try:
-            result, meta = call(engine, prompt, tools, timeout)
+            result, meta = call(engine, prompt, tools, timeout, job)
         except NotSetUp as e:
             errors.append(f"{ENGINES[engine]['name']}: {e}")
             continue
