@@ -58,6 +58,7 @@
   async function refresh() {
     let s; try { s = await get("/api/system"); } catch (e) { return; }
     handoffs(s); sys = s;
+    window.dispatchEvent(new CustomEvent("nx-system", {detail: s}));   // ext_brain: working agents pulse their region
     const failed = s.agents.filter(a => a.state === "failed").length;
     const bc = $("#count-control"); if (bc) { bc.hidden = !failed; bc.textContent = failed; }
     get("/api/drafts").then(d => { const b = $("#count-content"); if (b) { b.hidden = !d.drafts.length; b.textContent = d.drafts.length; } }).catch(() => {});
@@ -594,8 +595,9 @@
     const sub = t.closest("[data-sub]"); if (sub) { e.stopPropagation(); const [a, s] = sub.dataset.sub.split(":"); return go(`desk/${a}/${s}`); }
     const ag = t.closest(".nx-agent");
     if (ag) { e.stopPropagation(); const a = sys?.agents.find(x => x.key === ag.dataset.agent);
-      if (a && window.brainNet && !matchMedia("(prefers-reduced-motion: reduce)").matches) await brainNet.fire(a.ax, a.ay);
-      return go(ag.dataset.agent); }
+      const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (a && window.brainNet && !still) { brainNet.fire(a.ax, a.ay); await new Promise(r => setTimeout(r, window.nxSub ? 180 : 900)); }
+      return window.nxSub ? nxSub.open(ag.dataset.agent) : go(ag.dataset.agent); }
     const sl = t.closest("[data-scroll-line]"); if (sl) { const l = $("#nx-line-" + sl.dataset.scrollLine); if (l) { l.scrollIntoView({behavior: "smooth", block: "center"}); l.querySelector("textarea")?.focus(); } return; }
     const gg = t.closest("[data-nx-go]");
     if (gg) { e.stopPropagation(); const reason = gg.closest(".nx-call")?.querySelector(".nx-reason")?.value || "";

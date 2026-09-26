@@ -49,6 +49,7 @@ async function pageBrain() {
       <button class="nx-status" id="nx-status" data-go="control" title="NETHER: every agent's state — open Control"><span class="nx-dot"></span><b>NETHER</b><span>connecting…</span></button>
       <span class="hint">Drag to turn · scroll to zoom · click a node</span>
       <button class="today-pill" id="today-pill" data-go="today">Today</button>
+      <button class="mem-link" data-go="memory" title="What NETHER has written down in LEARNINGS.md">Memory</button>
       <button class="ask" id="brain-ask">Ask the brain <kbd>⌘K</kbd></button></header>
     <canvas class="brain-net" id="bnet" role="img" aria-label="Nethermind's brain: a living network of glowing neurons"></canvas>
     <svg class="synapses" id="syn" aria-hidden="true"></svg>
@@ -56,7 +57,7 @@ async function pageBrain() {
     <div class="core" id="core"></div>
   </div>`;
   $("#brain-ask").onclick = () => palette();
-  const data = await brainData();
+  const [data] = await Promise.all([brainData(), NeuralBrain.ready.catch(() => null)]);
   const nT = data.today?.cards?.length || 0;                 // you: the one place every agent hands work to
   $("#today-pill").innerHTML = nT ? `Today <b>${nT}</b> need${nT > 1 ? "" : "s"} you` : "Today · all caught up";
   $("#today-pill").classList.toggle("hot", nT > 0);
@@ -64,7 +65,7 @@ async function pageBrain() {
   $("#neurons").innerHTML = NEURONS.map(n => {
     const [cap, hot] = data.cap[n.key];
     return `<button class="neuron ${hot ? "hot" : ""}" data-neuron="${n.key}" style="--s:${n.scale};--tilt:${n.tilt}deg">
-      <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(n.lobe)}</span></button>`;
+      <span class="nw">${n.label}</span><span class="nc">${esc(cap)}</span><span class="lobe">${esc(NeuralBrain.lobe(n.key) || n.lobe)}</span></button>`;
   }).join("");
   const c = data.ch;
   const P = data.plan, M = P?.ready ? P[P.next === "fan" ? "first" : "ads"] : null;   // the next milestone, not just subscribers
@@ -131,14 +132,15 @@ function wire() {
   const side = bx.size, I = {left: S.left + bx.ox, top: S.top + bx.oy, width: side, height: side};
   I.right = I.left + side;
   svg.setAttribute("viewBox", `0 0 ${S.width} ${S.height}`);
-  const pt = n => [I.left - S.left + n.ax * I.width, I.top - S.top + n.ay * I.height];
   const els = Object.fromEntries([...document.querySelectorAll(".neuron")].map(e => [e.dataset.neuron, e]));
   const narrow = S.width < 820;
   let paths = ""; const ends = {};
-  NEURONS.forEach(n => {
-    const el = els[n.key], [ax, ay] = pt(n);
+  const O = NeuralBrain.organ() || {}, brain = !O.name || O.name === "brain";          // other organs: their own label spots
+  NEURONS.forEach(n0 => {
+    const el = els[n0.key], [rx, ry] = NeuralBrain.map(n0.ax, n0.ay);
+    const n = brain ? n0 : {...n0, ax: rx, ay: ry, gap: 0.05, nudge: [0, 0], at: null, ...(O.labels?.[n0.key] || {})};
     if (narrow) { el.style.cssText = ""; return; }
-    const cxu = 0.53, cyu = 0.48, dx = n.ax - cxu, dy = n.ay - cyu, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    const [cxu, cyu] = brain ? [0.53, 0.48] : O.labelCenter || O.center, dx = n.ax - cxu, dy = n.ay - cyu, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
     let t = L; while (t < 0.9 && NeuralBrain.inside(cxu + ux * t, cyu + uy * t)) t += 0.004;   // reach the edge
     t += n.gap;
     let fx = I.left - S.left + (cxu + ux * t) * I.width + n.nudge[0], fy = I.top - S.top + (cyu + uy * t) * I.height + n.nudge[1];
@@ -152,7 +154,7 @@ function wire() {
     const w = el.offsetWidth, h = el.offsetHeight;                              // lines leave the frame on the side facing the brain
     const ex = n.at ? lx + w + 8 : left ? lx + w + 8 : right ? lx - 8 : lx + w / 2;
     const ey = n.at || left || right ? ly + h / 2 : uy < -0.5 ? ly + h + 6 : ly - 6;
-    ends[n.key] = {ex, ey, n, bow: 0.15};
+    ends[n.key] = {ex, ey, n: n0, bow: 0.15};
   });
   const core = $("#core .core-btn");                                        // the monetisation number is wired in like the rest
   if (core && !narrow) {
@@ -236,7 +238,8 @@ document.addEventListener("click", async e => {
   const n = e.target.closest && e.target.closest("[data-neuron]"); if (!n) return;
   e.stopPropagation();
   const key = n.dataset.neuron, target = key === "home-core" ? "money" : key;
-  if (REDUCED) return go(target);
+  const sub = key !== "home-core" && window.nxSub;
+  if (REDUCED) return sub ? sub.open(key) : go(target);
   if (n.dataset.going) return; n.dataset.going = "1";               // one click is enough; a second doesn't restart it
   n.classList.add("pressed");                                       // instant feedback, then a short flourish (~0.5s)
   const l = $("#l-" + key);
@@ -244,6 +247,7 @@ document.addEventListener("click", async e => {
   const nn = findN(key);
   if (nn && window.brainNet) brainNet.fire(nn.ax, nn.ay);             // the wave spreads while the view zooms
   await new Promise(r => setTimeout(r, 180));
+  if (sub) { n.classList.remove("pressed"); delete n.dataset.going; return sub.open(key); }   // zoom into the region's own neurons
   const node = $("#n-" + key), stage = $("#stage");
   if (node) {
     $("#h-" + key).classList.add("fire");
