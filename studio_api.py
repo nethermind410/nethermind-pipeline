@@ -8,7 +8,9 @@ import datetime, json, re, urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT, CFG, PKG = HERE / "out", HERE / "cfg", HERE / "packaging"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel as chcfg
+OUT, CFG, PKG = DATA / "out", DATA / "cfg", DATA / "packaging"
 DONE = OUT / "done.json"
 FEEDBACK = OUT / "feedback"
 SKIP = ("test", "zz")
@@ -77,7 +79,7 @@ def picture(vid, cfg, posts):
             return f"https://i.ytimg.com/vi/{m[1]}/hqdefault.jpg"
     for s in cfg.get("segments", []):
         src = (s.get("vis") or {}).get("src")
-        if src and (HERE / "assets" / src).is_file():
+        if src and (DATA / "assets" / src).is_file():
             return f"/asset/{src}"
     return None
 
@@ -219,7 +221,7 @@ def today():
 
 # ------------------------------------------------------------------ performance
 def insight():
-    txt = (HERE / "LEARNINGS.md").read_text() if (HERE / "LEARNINGS.md").exists() else ""
+    txt = (DATA / "LEARNINGS.md").read_text() if (DATA / "LEARNINGS.md").exists() else ""
     m = re.search(r"## Working hypotheses.*?\n- \*\*(.+?)\*\*(.*?)(?:\n|$)", txt, re.S)
     if not m:
         return None
@@ -272,7 +274,7 @@ def ideas():
     """TOPICS.md tables -> sections of idea cards. Dismissed ideas (done.json idea:<slug>) are
     flagged; the one pinned as "Make this next" comes back separately."""
     done, sections, cur = done_map(), [], None
-    for line in (HERE / "TOPICS.md").read_text().splitlines():
+    for line in (DATA / "TOPICS.md").read_text().splitlines():
         if line.startswith("## "):
             name = line[3:].strip()
             cur = {"name": name.split(" — ")[0].split(" / ")[0], "note": name.split(" — ")[1] if " — " in name else "",
@@ -302,7 +304,7 @@ def add_idea(section, hook, fmt, source):
     hook, fmt, source = clean(hook), clean(fmt) or "fact", clean(source) or "to verify"
     if not hook:
         raise ValueError("Write the idea first.")
-    lines = (HERE / "TOPICS.md").read_text().splitlines()
+    lines = (DATA / "TOPICS.md").read_text().splitlines()
     start = next((i for i, l in enumerate(lines) if l.startswith("## ") and l[3:].startswith(section)), None)
     if start is None:
         raise ValueError("Pick a category.")
@@ -313,7 +315,7 @@ def add_idea(section, hook, fmt, source):
     if last is None:
         raise ValueError("That category has no table to add to.")
     lines.insert(last + 1, f"| {hook} | {fmt} | {source} |")
-    (HERE / "TOPICS.md").write_text("\n".join(lines) + "\n")
+    (DATA / "TOPICS.md").write_text("\n".join(lines) + "\n")
     return {"ok": True, "slug": slug(hook)}
 
 
@@ -323,7 +325,7 @@ def add_feedback(vid, note):
     stamp = now_iso()
     with open(FEEDBACK / f"{vid}.md", "a") as f:
         f.write(f"- {stamp}: {note}\n")
-    lp = HERE / "LEARNINGS.md"
+    lp = DATA / "LEARNINGS.md"
     txt = lp.read_text() if lp.exists() else ""
     if "## Reviewer notes" not in txt:
         txt = txt.rstrip() + "\n\n## Reviewer notes\n\nWhat the user asked to change on review — patterns here should shape future builds.\n\n"
@@ -334,7 +336,7 @@ def add_feedback(vid, note):
 # ------------------------------------------------------------------ health (Settings)
 def env_names():
     env = {}
-    p = HERE / ".env"
+    p = chcfg.ENV_FILE
     if p.exists():
         for line in p.read_text().splitlines():
             if "=" in line and not line.strip().startswith("#"):
@@ -344,8 +346,10 @@ def env_names():
 
 
 def jarvis_up():
+    if not chcfg.jarvis()["enabled"]:
+        return False
     try:
-        with urllib.request.urlopen("http://127.0.0.1:8765/health", timeout=1.5) as r:
+        with urllib.request.urlopen(chcfg.jarvis()["url"] + "/health", timeout=1.5) as r:
             return r.status == 200
     except Exception:
         return False
@@ -367,7 +371,8 @@ def health():
          "detail": f"Views, subscribers, comments · fetched {when((jload(OUT / 'youtube.json', {}) or {}).get('fetched'))}" if (OUT / "youtube.json").exists() else "Tap Refresh on Home"},
         {"name": "vidIQ (title scores)", "ok": (jload(OUT / "vidiq_balance.json", {}) or {}).get("credits", 0) >= 5,
          "detail": (lambda b: f"{b.get('credits', '?')} credits (5 per score) · refills {str(b.get('resets', ''))[:10]}")(jload(OUT / "vidiq_balance.json", {}) or {})},
-        {"name": "Jarvis", "ok": jarvis_up(), "detail": "Answers questions (⌘K)" if jarvis_up() else "Not running. Nethermind starts it for you."},
+        *([{"name": "Jarvis", "ok": jarvis_up(), "detail": "Answers questions (⌘K)" if jarvis_up() else f"Not running. {chcfg.get('app_name')} starts it for you."}]
+          if chcfg.jarvis()["enabled"] else []),
         *daily_and_tools(),
         {"name": "Stats", "ok": bool(stats.get("updated")), "detail": f"Updated {when(stats.get('updated'))}" if stats.get("updated") else "Never refreshed"},
     ]
@@ -382,7 +387,7 @@ def daily_and_tools():
         d = orchestrator.last("control", "daily")
     except Exception:
         d = None
-    plist = Path.home() / "Library" / "LaunchAgents" / "com.nethermind.daily.plist"
+    plist = Path.home() / "Library" / "LaunchAgents" / f"{chcfg.get('launchd_label')}.plist"
     if d:
         age = (datetime.datetime.now().astimezone() - parse_dt(d["started"])).total_seconds() / 3600
         out.append({"name": "Daily run (7:00)", "ok": age < 26 and d["status"] != "failed" and plist.exists(),
@@ -402,7 +407,7 @@ def daily_and_tools():
     except Exception:
         voice = False
     out.append({"name": "Narration voice", "ok": voice, "detail": "Kokoro model present" if voice else "Voice model missing — see SETUP.md (Kokoro files)"})
-    fonts = (HERE / "assets" / "Anton-Regular.ttf").exists() and (HERE / "assets" / "BebasNeue-Regular.ttf").exists()
+    fonts = (DATA / "assets" / "Anton-Regular.ttf").exists() and (DATA / "assets" / "BebasNeue-Regular.ttf").exists()
     out.append({"name": "Fonts", "ok": fonts, "detail": "Anton + Bebas Neue" if fonts else "Fonts missing — run ./fetch_assets.sh"})
     free = shutil.disk_usage(HERE).free / 1e9
     out.append({"name": "Disk space", "ok": free > 5, "detail": f"{free:.0f} GB free" + ("" if free > 5 else " — renders need room; clear old out/ files")})
@@ -418,7 +423,7 @@ FRIENDLY = [
     (r"missing out/|run \./build\.sh", "This video hasn't been made yet. Tap Make video first."),
     (r"missing from assets/|FileNotFoundError", "A picture or clip for this video is missing. Tap Make video to fetch it again."),
     (r"Buffer rejected the post|MutationError", "Buffer refused the post. Open Buffer to see why."),
-    (r"ModuleNotFoundError", "Part of Nethermind's toolkit is missing. Ask Claude to repair the setup."),
+    (r"ModuleNotFoundError", f"Part of {chcfg.get('app_name')}'s toolkit is missing. Ask Claude to repair the setup."),
     (r"weekly limit|usage limit|hit your .*limit", "Your Claude usage limit is used up for now. It resets on its own — press Retry after the reset time shown."),
 ]
 

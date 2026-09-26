@@ -1,0 +1,50 @@
+/* First-run setup + demo marks. Calm, Apple-like; crimson is the one accent. */
+.nx-setup,.nx-band{--nx-accent:#E0294B;--nx-ink:#F5F5F7;--nx-muted:#98989D;--nx-line:rgba(255,255,255,.12);--nx-card:#141416;
+  font-family:"Inter Tight",-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif}
+.nx-setup{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:24px;overflow:auto;
+  background:radial-gradient(1200px 600px at 50% -10%,rgba(224,41,75,.16),transparent 60%),rgba(0,0,0,.94);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:nx-in .35s ease}
+@keyframes nx-in{from{opacity:0}to{opacity:1}}
+.nx-card{width:min(560px,100%);background:var(--nx-card);color:var(--nx-ink);border:1px solid var(--nx-line);border-radius:20px;
+  padding:36px 36px 26px;box-shadow:0 40px 120px rgba(0,0,0,.6);display:grid;gap:16px}
+.nx-card h1{margin:0;font:700 34px/1.08 inherit;font-family:inherit;letter-spacing:-.03em}
+.nx-lead{margin:0;color:var(--nx-muted);font-size:16px;line-height:1.5}
+.nx-mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff6b85,var(--nx-accent) 55%,#6d0f22);
+  box-shadow:0 0 40px rgba(224,41,75,.55);animation:nx-pulse 3s ease-in-out infinite}
+@keyframes nx-pulse{50%{box-shadow:0 0 70px rgba(224,41,75,.8)}}
+@media (prefers-reduced-motion:reduce){.nx-setup,.nx-mark{animation:none}}
+.nx-dots{display:flex;gap:6px}.nx-dots i{width:22px;height:4px;border-radius:2px;background:var(--nx-line)}
+.nx-dots i.done{background:rgba(224,41,75,.5)}.nx-dots i.on{background:var(--nx-accent)}
+.nx-f{display:grid;gap:6px;font-size:13px;color:var(--nx-muted)}
+.nx-f input,.nx-f select{font:inherit;font-size:15px;color:var(--nx-ink);background:#0B0B0C;border:1px solid var(--nx-line);border-radius:10px;padding:10px 12px;width:100%;box-sizing:border-box}
+.nx-f input:focus,.nx-f select:focus{outline:none;border-color:var(--nx-accent);box-shadow:0 0 0 3px rgba(224,41,75,.25)}
+.nx-check{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--nx-ink)}
+.nx-check input{accent-color:var(--nx-accent);width:16px;height:16px}
+.nx-chips{display:flex;flex-wrap:wrap;gap:8px}
+.nx-chip{font:inherit;font-size:14px;color:var(--nx-ink);background:transparent;border:1px solid var(--nx-line);border-radius:99px;padding:8px 14px;cursor:pointer}
+.nx-chip:hover{border-color:var(--nx-ink)}.nx-chip.on{background:var(--nx-accent);border-color:var(--nx-accent);color:#fff}
+.nx-more summary,.nx-svc summary{cursor:pointer;font-size:14px;color:var(--nx-ink);list-style:none}
+.nx-more summary::before{content:"+ ";color:var(--nx-accent)}.nx-more[open]{display:grid;gap:10px}
+.nx-svcs{display:grid;gap:8px;max-height:46vh;overflow:auto;padding-right:2px}
+.nx-svc{border:1px solid var(--nx-line);border-radius:12px;padding:12px 14px}.nx-svc[open]{display:grid;gap:10px;border-color:rgba(224,41,75,.45)}
+.nx-svc summary{display:flex;align-items:center;gap:10px}.nx-svc summary em{margin-left:auto;font-style:normal;font-size:12px;color:var(--nx-muted)}
+.nx-dot{width:8px;height:8px;border-radius:50%;background:#48484A;flex:none}.nx-dot.ok{background:#34C759}.nx-dot.part{background:#FF9F0A}
+.nx-why,.nx-fine{margin:0;font-size:13px;color:var(--nx-muted);line-height:1.45}
+.nx-row{display:flex;gap:8px}
+.nx-foot{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+.nx-btn{font:inherit;font-size:15px;font-weight:600;border-radius:99px;padding:10px 18px;cursor:pointer;border:1px solid var(--nx-line);background:transparent;color:var(--nx-ink)}
+.nx-btn:hover{border-color:var(--nx-ink)}.nx-btn.primary{background:var(--nx-accent);border-color:var(--nx-accent);color:#fff}
+.nx-btn.primary:hover{filter:brightness(1.08)}.nx-btn.ghost{border-color:transparent;color:var(--nx-muted)}.nx-btn.ghost:hover{color:var(--nx-ink)}
+.nx-btn:focus-visible,.nx-chip:focus-visible{outline:2px solid var(--nx-accent);outline-offset:2px}
+.nx-note{margin:0;min-height:1.2em;font-size:13px;color:var(--nx-muted)}.nx-note.ok{color:#34C759}.nx-note.bad{color:#FF6B6B}
+/* the demo */
+.nx-band{position:sticky;top:0;z-index:900;display:flex;gap:12px;align-items:center;padding:8px 16px;font-size:13px;
+  background:#1a0a0f;color:var(--nx-ink);border-bottom:1px solid rgba(224,41,75,.5)}
+.nx-band b{color:#fff;background:var(--nx-accent);border-radius:99px;padding:2px 10px;font-size:12px;letter-spacing:.02em}
+.nx-band span{color:var(--nx-muted)}.nx-band .nx-btn{margin-left:auto;padding:4px 12px;font-size:13px}
+.nx-tag{display:inline-block;margin-top:8px;font:600 11px "Inter Tight",-apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  color:#E0294B;border:1px solid rgba(224,41,75,.55);border-radius:99px;padding:3px 9px}
+.nx-demo .stat .v::after,.nx-demo .goal .gv::after,.nx-demo .hero .big::after,.nx-demo .ring-mid b::after{content:"demo";margin-left:6px;
+  font:600 10px "Inter Tight",-apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#E0294B;vertical-align:super}
+@media (max-width:560px){.nx-card{padding:26px 20px 20px}.nx-card h1{font-size:28px}.nx-band span{display:none}}
+.nx-demo #brandcard .bc-text span::after{content:" · demo data";color:#E0294B}

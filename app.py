@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""app.py — Nethermind as a Mac app (launched by /Applications/Nethermind.app).
+"""app.py — the Studio as a Mac app (launched by /Applications/<app_name>.app; see make_app.sh / package.sh).
+
+    app.py            your channel (NETHER_DATA, else this folder)
+    app.py --demo     the sample channel (demo_data.py), every number marked "Demo data"
 
 Opens one native window on the Studio UI and quietly runs what it needs behind it:
   * the Studio server (studio.py) on 127.0.0.1:8766
-  * Jarvis's brain on :8765 if it isn't already running — started with the Claude
+  * Jarvis's brain on :8765 if channel.json turns Jarvis on and it isn't already running — started with the Claude
     app's own login variables removed, so Jarvis uses the user's claude.ai login
   * a watcher that posts a Mac notification when a new video is ready to review
 Anything this app started is stopped when the window closes.
@@ -14,9 +17,19 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 os.chdir(HERE)
 sys.path.insert(0, str(HERE))
-LOG = HERE / "out" / "app.log"
-JARVIS_DIR = Path.home() / "Developer" / "jarvis"
-SEEN = HERE / "out" / "notified.json"
+if "--demo" in sys.argv:                      # open the sample channel instead (built on first use)
+    DEMO = Path(os.environ.get("NETHER_DEMO_DIR") or Path.home() / "Library/Application Support/Nether/Demo").expanduser()
+    if not (DEMO / "channel.json").exists():
+        import demo_data
+        demo_data.build(DEMO)
+    os.environ.setdefault("NETHER_HOME_DATA", os.environ.get("NETHER_DATA", str(HERE)))
+    os.environ["NETHER_DATA"] = str(DEMO)
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+(DATA / "out").mkdir(parents=True, exist_ok=True)
+LOG = DATA / "out" / "app.log"
+JARVIS_DIR = channel.jarvis()["dir"]   # optional; the original install: ~/Developer/jarvis
+SEEN = DATA / "out" / "notified.json"
 children = []
 
 
@@ -44,7 +57,9 @@ def start_studio():
 
 
 def start_jarvis():
-    if up("http://127.0.0.1:8765/health"):
+    if not channel.jarvis()["enabled"] or not JARVIS_DIR:
+        return log("jarvis off in channel settings — skipped")
+    if up(channel.jarvis()["url"] + "/health"):
         return log("jarvis already running")
     uvicorn = JARVIS_DIR / ".venv" / "bin" / "uvicorn"
     if not uvicorn.exists():
@@ -53,7 +68,7 @@ def start_jarvis():
            if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
     env["PATH"] = f"{Path.home()}/.local/bin:/opt/homebrew/bin:/usr/local/bin:" + env.get("PATH", "/usr/bin:/bin")
     p = subprocess.Popen([str(uvicorn), "brain:app", "--host", "127.0.0.1", "--port", "8765"], cwd=JARVIS_DIR,
-                         env=env, stdout=open(HERE / "out" / "jarvis.log", "a"), stderr=subprocess.STDOUT)
+                         env=env, stdout=open(DATA / "out" / "jarvis.log", "a"), stderr=subprocess.STDOUT)
     children.append(p)
     log(f"jarvis brain started (pid {p.pid})")
 
@@ -110,19 +125,19 @@ def set_dock_icon():
 
 
 def main():
-    import webview
+    import webview, studio
     start_studio()
     threading.Thread(target=start_jarvis, daemon=True).start()
     threading.Thread(target=watch_ready, daemon=True).start()
     threading.Thread(target=watch_health, daemon=True).start()
     for _ in range(40):
-        if up("http://127.0.0.1:8766/api/health"):
+        if up(f"http://127.0.0.1:{studio.PORT}/api/health"):
             break
         time.sleep(0.25)
-    webview.create_window("Nethermind", "http://127.0.0.1:8766/", width=1240, height=820,
+    webview.create_window(channel.get("app_name"), f"http://127.0.0.1:{studio.PORT}/", width=1240, height=820,
                           min_size=(760, 520), background_color="#1C1C1E", text_select=True)
     try:
-        webview.start(set_dock_icon, private_mode=False, storage_path=str(HERE / "out" / "webview"))  # keep settings like the brain look
+        webview.start(set_dock_icon, private_mode=False, storage_path=str(DATA / "out" / "webview"))  # keep settings like the brain look
     finally:
         for p in children:
             p.terminate()

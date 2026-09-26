@@ -19,6 +19,7 @@ in assets/ or, for "hero" (and any "kb" segment with a "prompt"), run:
 import json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 
 FACT = {
     "palette": {"accent": [200, 120, 255], "accent2": [255, 140, 40]},
@@ -92,7 +93,7 @@ if len(sys.argv) < 3 or sys.argv[1] not in TPL:
 kind, vid = sys.argv[1], sys.argv[2]
 cfg = json.loads(json.dumps(TPL[kind]))
 cfg = {"id": vid, "file": vid, **cfg}
-path = os.path.join(HERE, "cfg", vid + ".json")
+path = os.path.join(DATA, "cfg", vid + ".json")
 if os.path.exists(path):
     print(f"refusing to overwrite {path}"); sys.exit(1)
 os.makedirs(os.path.dirname(path), exist_ok=True)

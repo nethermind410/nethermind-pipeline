@@ -12,7 +12,7 @@ Engines:  claude     your Claude subscription through the `claude` command (what
           local      a model running on this Mac through Ollama — free, no web search
 
 Each job has a chain, e.g. packaging: local → claude. The first engine that's connected answers; its answer
-must pass the job's checks (valid JSON, the fields the rest of the pipeline needs, sources, #nethermind…).
+must pass the job's checks (valid JSON, the fields the rest of the pipeline needs, sources, the channel hashtag…).
 If it errors, refuses, hits a limit or fails a check, the next engine in the chain takes over — so a cheap
 engine can cost a retry, never a broken video. Jobs that need the web only go to engines that can search.
 Every call is logged to out/llm_usage.jsonl (engine, tokens, estimated cost, whether it fell back).
@@ -24,7 +24,9 @@ import datetime, json, os, re, subprocess, sys, time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT = DATA / "out"
 SETTINGS, USAGE = OUT / "llm.json", OUT / "llm_usage.jsonl"
 
 JOBS = {  # job: (what it is, needs web search)
@@ -105,7 +107,7 @@ def save(new):
 def env():
     """.env values (without printing them anywhere)."""
     vals = dict(os.environ)
-    p = HERE / ".env"
+    p = channel.ENV_FILE
     if p.exists():
         for line in p.read_text().splitlines():
             if "=" in line and not line.strip().startswith("#"):
@@ -114,17 +116,28 @@ def env():
     return vals
 
 
-def set_key(name, value):
-    """Store an API key in .env (replacing an old value). Only the names below are accepted."""
-    if name not in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "GEMINI_API_KEY"):
+KEY_RE = r"[A-Za-z0-9_\-\.]{10,300}"
+ENV_NAMES = {  # every .env name the app may write, and what a valid value looks like (setup wizard + AI engines)
+    **{k: KEY_RE for k in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "GEMINI_API_KEY", "YOUTUBE_API_KEY",
+                           "BUFFER_API_KEY", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "CLOUDFLARE_API_TOKEN")},
+    "CLOUDFLARE_ACCOUNT_ID": r"[a-f0-9]{32}", "R2_BUCKET": r"[a-z0-9][a-z0-9.\-]{1,62}",
+    "R2_ENDPOINT": r"https://[A-Za-z0-9.\-]+(:\d+)?/?", "R2_PUBLIC_BASE_URL": r"https://[A-Za-z0-9.\-]+(:\d+)?(/[A-Za-z0-9._~\-/]*)?",
+}
+
+
+def set_key(name, value, allowed=("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "GEMINI_API_KEY")):
+    """Store an API key in .env (replacing an old value). Only known names are accepted; the value is never echoed."""
+    if name not in allowed or name not in ENV_NAMES:
         raise ValueError("Unknown key name.")
     value = value.strip()
-    if not re.fullmatch(r"[A-Za-z0-9_\-\.]{10,300}", value):
-        raise ValueError("That doesn't look like an API key.")
-    p = HERE / ".env"
+    if not re.fullmatch(ENV_NAMES[name], value):
+        raise ValueError("That doesn't look like an API key." if ENV_NAMES[name] == KEY_RE else f"That doesn't look like a valid {name}.")
+    p = channel.ENV_FILE
+    p.parent.mkdir(parents=True, exist_ok=True)
     lines = [l for l in (p.read_text().splitlines() if p.exists() else []) if not l.strip().startswith(name + "=")]
     lines.append(f"{name}={value}")
-    p.write_text("\n".join(lines) + "\n")
+    with os.fdopen(os.open(p, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:   # never readable by others, even briefly
+        f.write("\n".join(lines) + "\n")
     os.chmod(p, 0o600)
     return {"ok": True, "reply": f"Saved {name} to .env."}
 
@@ -334,13 +347,14 @@ def check_packaging(r):
     _need(isinstance(r.get("title"), str) and 10 <= len(r["title"].strip()) <= 120, "no usable title")
     d = str(r.get("youtube_description", "")).strip()
     _need(len(d) >= 80, "description is too short")
-    if "#nethermind" not in d.lower():
-        r["youtube_description"] = d + ("\n\n" if "#" not in d[-80:] else " ") + "#nethermind"
+    t = channel.tag()                                          # the channel's own hashtag, if it has one
+    if t and f"#{t}" not in d.lower():
+        r["youtube_description"] = d + ("\n\n" if "#" not in d[-80:] else " ") + f"#{t}"
     tags = r.get("youtube_tags")
     tags = ", ".join(tags) if isinstance(tags, list) else str(tags or "")
     _need(len([x for x in tags.split(",") if x.strip()]) >= 3, "fewer than 3 tags")
-    if "nethermind" not in tags.lower():
-        tags = tags.rstrip(", ") + ", nethermind"
+    if t and t not in tags.lower():
+        tags = tags.rstrip(", ") + f", {t}"
     r["youtube_tags"] = tags
     _need(str(r.get("pinned_comment", "")).strip(), "no pinned comment")
 

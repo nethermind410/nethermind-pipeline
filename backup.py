@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""backup.py — zip Nethermind's irreplaceable state to ~/Documents/Nethermind Backups (keeps the newest 14).
+"""backup.py — zip the channel's irreplaceable state to its backup folder (channel.json "backup_dir";
+~/Documents/Nethermind Backups on the original install). Keeps the newest 14.
 
     .venv/bin/python backup.py            back up now
     .venv/bin/python backup.py --if-due   only if today's backup is missing (the app runs this daily)
@@ -12,8 +13,11 @@ import datetime, json, sys, zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
-DEST = Path.home() / "Documents" / "Nethermind Backups"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT = DATA / "out"
+import channel
+DEST = Path(channel.get("backup_dir")).expanduser()
+PRE = channel.get("backup_prefix") or "nether"
 LOG = OUT / "backups.json"
 KEEP = 14
 
@@ -21,12 +25,12 @@ KEEP = 14
 def files():
     for d in ("cfg", "packaging", "inspiration", "out/daily", "out/feedback", "out/digest",
               "out/intel", "out/learning"):   # NETHER scorecards + your decisions: what it has learned
-        p = HERE / d
+        p = DATA / d
         if p.is_dir():
             yield from (f for f in sorted(p.rglob("*")) if f.is_file() and f.name != ".env" and not f.name.startswith("."))
     for name in ("LEARNINGS.md", "TOPICS.md"):
-        if (HERE / name).is_file():
-            yield HERE / name
+        if (DATA / name).is_file():
+            yield DATA / name
     for pat in ("*.json", "*.jsonl", "nether.db"):
         yield from sorted(OUT.glob(pat))
 
@@ -34,23 +38,23 @@ def files():
 def run():
     DEST.mkdir(parents=True, exist_ok=True)
     today = datetime.date.today().isoformat()
-    path, tmp = DEST / f"nethermind-{today}.zip", DEST / f".nethermind-{today}.zip.part"
+    path, tmp = DEST / f"{PRE}-{today}.zip", DEST / f".{PRE}-{today}.zip.part"
     n = 0
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for f in files():
-            z.write(f, f.relative_to(HERE)); n += 1
+            z.write(f, f.relative_to(DATA)); n += 1
     tmp.replace(path)
-    old = sorted(DEST.glob("nethermind-*.zip"))[:-KEEP]
+    old = sorted(DEST.glob(f"{PRE}-*.zip"))[:-KEEP]
     for f in old:
         f.unlink()
     info = {"last": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "path": str(path),
-            "bytes": path.stat().st_size, "files": n, "kept": len(sorted(DEST.glob("nethermind-*.zip"))), "folder": str(DEST)}
+            "bytes": path.stat().st_size, "files": n, "kept": len(sorted(DEST.glob(f"{PRE}-*.zip"))), "folder": str(DEST)}
     LOG.write_text(json.dumps(info, indent=1) + "\n")
     return info
 
 
 def due():
-    return not (DEST / f"nethermind-{datetime.date.today().isoformat()}.zip").exists()
+    return not (DEST / f"{PRE}-{datetime.date.today().isoformat()}.zip").exists()
 
 
 if __name__ == "__main__":

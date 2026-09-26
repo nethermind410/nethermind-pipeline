@@ -52,13 +52,11 @@ import boto3
 from botocore.client import Config
 
 HERE = Path(__file__).resolve().parent
-ENV_PATH = HERE / ".env"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+ENV_PATH = DATA / ".env"  # = channel.ENV_FILE
 
-CHANNELS = {
-    "tiktok": "6aaf9711ea19ca0bde942596",
-    "instagram": "6aaf96f6ea19ca0bde9424ed",
-    "youtube": "6aaf9694ea19ca0bde942237",
-}
+import channel
+CHANNELS = {k: v for k, v in (channel.get("buffer_channels") or {}).items() if v}   # Buffer channel ids (channel.json)
 
 BUFFER_GRAPHQL_URL = "https://api.buffer.com/graphql"
 
@@ -148,7 +146,7 @@ def buffer_create_post(env, channel_id: str, text: str, video_url: str,
     return result["post"]
 
 
-POSTED = HERE / "out" / "posted.json"
+POSTED = DATA / "out" / "posted.json"
 
 
 def posted_record(vid):
@@ -220,7 +218,7 @@ def main():
             print(f"Skipping {platform}: already posted as {done[platform]} (use --force to post again).")
             continue
         if platform not in CHANNELS:
-            print(f"Skipping unknown platform: {platform}", file=sys.stderr)
+            print(f"Skipping {platform}: no Buffer channel id for it in channel.json (Settings → Your channel).", file=sys.stderr)
             continue
 
         if platform == "tiktok":

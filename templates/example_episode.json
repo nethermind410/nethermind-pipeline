@@ -1,0 +1,254 @@
+{
+ "id": "example_episode",
+ "title": "The Deep Sea's Buried Stories — Episode 1",
+ "next": "EPISODE 3 TOPIC",
+ "palette": {
+  "accent": [
+   230,
+   60,
+   60
+  ],
+  "accent2": [
+   255,
+   200,
+   60
+  ]
+ },
+ "credit": "ART: AI-GEN + WIKIMEDIA COMMONS (PD)",
+ "score": "deep",
+ "intro": [
+  {
+   "id": "i1",
+   "text": "Long-form cold open: the strangest claim in the whole episode, in one sentence.",
+   "in": [
+    "long"
+   ],
+   "vis": {
+    "t": "kb",
+    "src": "IMAGE.jpg",
+    "z0": 1.4,
+    "z1": 1.1,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.3
+  }
+ ],
+ "chapters": [
+  {
+   "id": "ch1",
+   "title": "Chapter one title",
+   "hook": {
+    "lines": [
+     [
+      "LINE ONE",
+      "w"
+     ],
+     [
+      "LINE TWO",
+      "w"
+     ],
+     [
+      "THE PAYOFF.",
+      "a"
+     ]
+    ],
+    "size": 140,
+    "y": 600
+   },
+   "segments": [
+    {
+     "id": "s1",
+     "text": "Hook, eight words or fewer, same as the hook text.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE.jpg",
+      "prompt": "scene description",
+      "z0": 1.5,
+      "z1": 1.1,
+      "cx": 0.5,
+      "cy": 0.45
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s2",
+     "text": "The setup, in one sentence.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.5
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s3",
+     "text": "The hero number.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE2.jpg",
+      "prompt": "scene description",
+      "z0": 1.3,
+      "z1": 1.1,
+      "cx": 0.5,
+      "cy": 0.4
+     },
+     "hero": {
+      "at": 2,
+      "lines": [
+       "NUMBER"
+      ],
+      "col": "a2",
+      "y": 390,
+      "size": 150
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s4",
+     "text": "Extra depth only the long-form gets: the interview quote, the second source, the context.",
+     "in": [
+      "long"
+     ],
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE2.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.5
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s5",
+     "text": "Land it. One line that reframes everything.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE.jpg",
+      "z0": 1.3,
+      "z1": 1.06,
+      "cx": 0.5,
+      "cy": 0.45
+     },
+     "gap": 0.3
+    }
+   ]
+  },
+  {
+   "id": "ch2",
+   "title": "Chapter two title",
+   "hook": {
+    "lines": [
+     [
+      "SECOND",
+      "w"
+     ],
+     [
+      "STORY.",
+      "a"
+     ]
+    ],
+    "size": 150,
+    "y": 620
+   },
+   "segments": [
+    {
+     "id": "s1",
+     "text": "Second chapter hook.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE3.jpg",
+      "prompt": "scene description",
+      "z0": 1.5,
+      "z1": 1.1,
+      "cx": 0.5,
+      "cy": 0.45
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s2",
+     "text": "Payoff.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE3.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.5
+     },
+     "gap": 0.3
+    }
+   ]
+  },
+  {
+   "id": "ch3",
+   "title": "Chapter three title",
+   "hook": {
+    "lines": [
+     [
+      "THIRD",
+      "w"
+     ],
+     [
+      "STORY.",
+      "a"
+     ]
+    ],
+    "size": 150,
+    "y": 620
+   },
+   "segments": [
+    {
+     "id": "s1",
+     "text": "Third chapter hook.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE4.jpg",
+      "prompt": "scene description",
+      "z0": 1.5,
+      "z1": 1.1,
+      "cx": 0.5,
+      "cy": 0.45
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "s2",
+     "text": "Payoff.",
+     "vis": {
+      "t": "kb",
+      "src": "IMAGE4.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.5
+     },
+     "gap": 0.3
+    }
+   ]
+  }
+ ],
+ "outro": [
+  {
+   "id": "o1",
+   "text": "Outro: name the next episode — that's the subscribe.",
+   "in": [
+    "long"
+   ],
+   "vis": {
+    "t": "kb",
+    "src": "IMAGE.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.5
+   },
+   "gap": 0.3
+  }
+ ]
+}

@@ -31,7 +31,8 @@ Exit code 1 = a check failed — read the printed reason, don't ship it.
 import json, math, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-A = os.path.join(HERE, "assets")
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A = os.path.join(DATA, "assets")
 
 def ffprobe(path, *entries):
     # ffprobe wants section specs joined with ":" (e.g. "stream=w,h:format=duration"),
@@ -54,8 +55,8 @@ def main():
     cfg_path = sys.argv[1]
     cfg = json.load(open(cfg_path))
     vid = cfg["id"]
-    mp4 = os.path.join(HERE, "out", f"{cfg.get('file', vid)}.mp4")      # the renderer names it after cfg["file"] when set
-    srt = os.path.join(HERE, "out", f"{vid}.srt")
+    mp4 = os.path.join(DATA, "out", f"{cfg.get('file', vid)}.mp4")      # the renderer names it after cfg["file"] when set
+    srt = os.path.join(DATA, "out", f"{vid}.srt")
     ok = True
 
     if not os.path.exists(mp4):
@@ -89,7 +90,7 @@ def main():
                  # a QA glance without needing the real per-segment timing
     times = [dur * i / (n_probe + 1) for i in range(1, n_probe + 1)]
     tiles = []
-    tmp = os.path.join(HERE, "out", f".{vid}_qa_frames")
+    tmp = os.path.join(DATA, "out", f".{vid}_qa_frames")
     os.makedirs(tmp, exist_ok=True)
     for i, t in enumerate(times):
         fp = os.path.join(tmp, f"{i}.jpg")
@@ -105,7 +106,7 @@ def main():
     sheet = Image.new("RGB", (tw * cols, th * rows), (20, 20, 20))
     for i, im in enumerate(tiles):
         sheet.paste(im.resize((tw, th)), ((i % cols) * tw, (i // cols) * th))
-    sheet_path = os.path.join(HERE, "out", f"{vid}_qa_contact.jpg")
+    sheet_path = os.path.join(DATA, "out", f"{vid}_qa_contact.jpg")
     sheet.save(sheet_path, quality=88)
     print(f"\n  contact sheet: {sheet_path}  ({len(tiles)} frames, {dur:.1f}s total)")
     print("  LOOK AT IT before this ships — this script can't judge whether text")

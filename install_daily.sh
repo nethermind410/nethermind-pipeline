@@ -9,15 +9,16 @@
 # or change that task to run `python3 daily.py` — don't run both, or you'll get two videos a day.
 set -euo pipefail
 cd "$(dirname "$0")"
-LABEL="com.nethermind.daily"
-PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 DIR="$(pwd)"
 PY="$DIR/.venv/bin/python"; [[ -x "$PY" ]] || PY="$(command -v python3)"
+LABEL="$("$PY" -c 'import channel; print(channel.get("launchd_label"))' 2>/dev/null || echo com.nethermind.daily)"   # channel.json
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOGDIR="${NETHER_DATA:-$DIR}/out"
 
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 if [[ "${1:-}" == "--remove" ]]; then rm -f "$PLIST"; echo "Daily run removed."; exit 0; fi
 
-mkdir -p "$HOME/Library/LaunchAgents" out
+mkdir -p "$HOME/Library/LaunchAgents" "$LOGDIR"
 cat > "$PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -29,9 +30,9 @@ cat > "$PLIST" <<EOF
     <dict><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Hour</key><integer>20</integer><key>Minute</key><integer>30</integer></dict>
   </array>
-  <key>EnvironmentVariables</key><dict><key>PATH</key><string>$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
-  <key>StandardOutPath</key><string>$DIR/out/daily.log</string>
-  <key>StandardErrorPath</key><string>$DIR/out/daily.log</string>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>${NETHER_DATA:+<key>NETHER_DATA</key><string>$NETHER_DATA</string>}</dict>
+  <key>StandardOutPath</key><string>$LOGDIR/daily.log</string>
+  <key>StandardErrorPath</key><string>$LOGDIR/daily.log</string>
 </dict></plist>
 EOF
 launchctl bootstrap "gui/$(id -u)" "$PLIST"

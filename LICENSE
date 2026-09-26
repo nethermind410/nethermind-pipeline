@@ -1,0 +1,18 @@
+Nether — proprietary software licence (placeholder)
+
+Copyright (c) 2026 Courtney Blyde. All rights reserved.
+
+PLACEHOLDER — replace this text with the licence you choose before selling (see docs/PRODUCT.md).
+
+Until then: no part of this software may be copied, modified, distributed, sublicensed or sold without the
+copyright holder's written permission. A person who has received a copy from the copyright holder may install
+and use it on Macs they own for their own channels.
+
+Third-party components keep their own licences (for example Kokoro voice models, Python packages listed in
+requirements.txt, fonts under the SIL Open Font License). Content a user makes with the software belongs to
+that user. Users are responsible for complying with the terms of every service they connect (YouTube, Buffer,
+Cloudflare, Anthropic, and others).
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.

@@ -25,7 +25,7 @@ def run(_b):
 
 
 def show(_b):
-    newest = sorted(backup.DEST.glob("nethermind-*.zip"))
+    newest = sorted(backup.DEST.glob(f"{backup.PRE}-*.zip"))
     subprocess.run(["open", "-R", str(newest[-1])] if newest else ["open", str(backup.DEST)])
     return {"ok": True}
 

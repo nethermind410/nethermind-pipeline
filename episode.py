@@ -32,6 +32,8 @@ import json, os, sys
 from retention import tiktok, check, est
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
 SHARED = ("palette", "score", "credit", "voice_id", "cap_y")
 
 
@@ -46,7 +48,7 @@ def ts(sec):
 def main(path):
     ep = json.load(open(path))
     chapters = ep["chapters"]
-    os.makedirs(os.path.join(HERE, "cfg"), exist_ok=True)
+    os.makedirs(os.path.join(DATA, "cfg"), exist_ok=True)
     written, rows = [], []
 
     for i, ch in enumerate(chapters if ep.get("shorts", True) else []):   # a weekly episode's chapters ARE made Shorts
@@ -63,13 +65,13 @@ def main(path):
                "end": {"at": 1.4, "lines": ["FULL EPISODE ON THE CHANNEL", "NEXT:", nxt.upper()]},
                # the TikTok cut filters on "in" itself, so keep the tags on the full list
                "segments": segs}
-        short_path = os.path.join(HERE, "cfg", cid + ".json")
+        short_path = os.path.join(DATA, "cfg", cid + ".json")
         json.dump(cfg, open(short_path, "w"), indent=1, ensure_ascii=False)
 
         full = {**cfg, "segments": [dict(s) for s in ch["segments"] if keep(s, "short") or keep(s, "tiktok")]}
         full["segments"][0]["hook"] = True
         tk = tiktok(full, 30)
-        tk_path = os.path.join(HERE, "cfg", tk["file"] + ".json")
+        tk_path = os.path.join(DATA, "cfg", tk["file"] + ".json")
         json.dump(tk, open(tk_path, "w"), indent=1, ensure_ascii=False)
 
         written += [short_path, tk_path]
@@ -117,7 +119,7 @@ def weekly(days=7):
     episode (no new Shorts are cut — they already exist). Writes episodes/week_<year>_<week>.json + plan."""
     import datetime
     from pathlib import Path
-    here = Path(HERE)
+    here = Path(DATA)
     cut = datetime.datetime.now().timestamp() - days * 86400
     picks = []
     for p in sorted((here / "cfg").glob("*.json"), key=lambda p: p.stat().st_mtime):
@@ -131,7 +133,7 @@ def weekly(days=7):
     y, w, _ = datetime.date.today().isocalendar()
     eid = f"week_{y}_{w:02d}"
     titles = [pk.get("title", vid) for vid, _, pk in picks]
-    ep = {"id": eid, "title": f"Nethermind — week {w}: " + " · ".join(t.split(" — ")[0] for t in titles[:3]),
+    ep = {"id": eid, "title": f"{channel.get('name')} — week {w}: " + " · ".join(t.split(" — ")[0] for t in titles[:3]),
           "shorts": False, "next": "NEXT WEEK'S EPISODE",
           **{k: picks[0][1][k] for k in SHARED if k in picks[0][1]},
           "intro": [{"id": "i1", "in": ["long"], "vis": dict(next((s["vis"] for _, c, _ in picks for s in c["segments"]

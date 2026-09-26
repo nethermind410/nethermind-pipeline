@@ -18,6 +18,7 @@ import drafter
 import drafter_long
 
 HERE = Path(__file__).parent
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 _BUSY = {"what": None}
 
 
@@ -49,7 +50,7 @@ _LONG = {"what": None}
 def episodes():
     import json
     out = []
-    for p in sorted((HERE / "episodes").glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:8]:
+    for p in sorted((DATA / "episodes").glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:8]:
         if p.stem.startswith("_"):
             continue
         try:
@@ -57,13 +58,13 @@ def episodes():
         except Exception:
             continue
         vid = f"{p.stem}_long"
-        mp4 = HERE / "out" / f"{vid}.mp4"
-        chap = HERE / "episodes" / f"{p.stem}.chapters.txt"
-        plan = HERE / "episodes" / f"{p.stem}.plan.md"
+        mp4 = DATA / "out" / f"{vid}.mp4"
+        chap = DATA / "episodes" / f"{p.stem}.chapters.txt"
+        plan = DATA / "episodes" / f"{p.stem}.plan.md"
         if ep.get("draft"):
             continue                                   # still a script: it's under "Scripts waiting for you"
-        pk = json.loads((HERE / "packaging" / f"{vid}.json").read_text()) if (HERE / "packaging" / f"{vid}.json").exists() else {}
-        shorts = sorted(q.stem for q in (HERE / "cfg").glob(f"{p.stem}__*.json") if not q.stem.endswith("_tiktok"))
+        pk = json.loads((DATA / "packaging" / f"{vid}.json").read_text()) if (DATA / "packaging" / f"{vid}.json").exists() else {}
+        shorts = sorted(q.stem for q in (DATA / "cfg").glob(f"{p.stem}__*.json") if not q.stem.endswith("_tiktok"))
         out.append({"id": p.stem, "title": pk.get("title") or ep.get("title", p.stem), "video": vid,
                     "kind": ep.get("kind", "recap"), "style": ep.get("style", ""), "shorts": shorts,
                     "chapters": [c.get("title", c.get("id")) for c in ep.get("chapters", [])],
@@ -80,7 +81,7 @@ def drafts():
 
 def render_long(body):
     eid = str(body.get("id", ""))
-    if not re.fullmatch(r"[a-z0-9_]{3,60}", eid) or not (HERE / "episodes" / f"{eid}.json").exists():
+    if not re.fullmatch(r"[a-z0-9_]{3,60}", eid) or not (DATA / "episodes" / f"{eid}.json").exists():
         raise ValueError("Which episode?")
     if _LONG["what"]:
         raise ValueError(f"Production is already rendering {_LONG['what']}.")
@@ -89,7 +90,7 @@ def render_long(body):
 
     def run():
         try:
-            subprocess.run([py, "make_long.py", f"episodes/{eid}.json"], cwd=HERE, capture_output=True, timeout=4 * 3600)
+            subprocess.run([py, str(HERE / "make_long.py"), f"episodes/{eid}.json"], cwd=DATA, capture_output=True, timeout=4 * 3600)
         finally:
             _LONG["what"] = None
     threading.Thread(target=run, daemon=True).start()
@@ -177,7 +178,7 @@ def cut_shorts(body):
     """Content cuts a Short (+ TikTok cut) from each chapter of an approved episode — build them from Production."""
     import episode, io, contextlib
     eid = str(body.get("id", ""))
-    p = HERE / "episodes" / f"{eid}.json"
+    p = DATA / "episodes" / f"{eid}.json"
     if not re.fullmatch(r"[a-z0-9_]{3,60}", eid) or not p.exists():
         raise ValueError("Which episode?")
     if drafter_long.is_draft(eid):
@@ -187,7 +188,7 @@ def cut_shorts(body):
             episode.main(str(p))
     except (Exception, SystemExit) as e:
         raise ValueError(f"Couldn't cut the Shorts: {e}")
-    n = len([q for q in (HERE / "cfg").glob(f"{eid}__*.json") if not q.stem.endswith("_tiktok")])
+    n = len([q for q in (DATA / "cfg").glob(f"{eid}__*.json") if not q.stem.endswith("_tiktok")])
     return {"ok": True, "reply": f"{n} Shorts cut from the chapters — they're in Production → Videos, ready to build."}
 
 

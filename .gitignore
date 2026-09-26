@@ -29,3 +29,7 @@ inspiration/
 # your own music for the Studio player (never committed)
 music/*
 !music/README.txt
+
+# one channel per install: settings written by the setup wizard (channel.example.json is the template)
+channel.json
+dist/

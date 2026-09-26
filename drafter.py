@@ -18,8 +18,10 @@ import orchestrator as nether
 import retention
 
 HERE = Path(__file__).resolve().parent
-CFG, PKG, ASSETS = HERE / "cfg", HERE / "packaging", HERE / "assets"
-DRAFTS = HERE / "out" / "drafts"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+CFG, PKG, ASSETS = DATA / "cfg", DATA / "packaging", DATA / "assets"
+DRAFTS = DATA / "out" / "drafts"
 ID_RE = re.compile(r"^[a-z0-9_]{3,48}$")
 
 
@@ -78,11 +80,16 @@ def example_cfg():
         t = read(CFG / f"{vid}.json")
         if t:
             return t
+    recent = sorted((p for p in CFG.glob("*.json") if not p.stem.endswith("_tiktok") and not p.stem.startswith(("_", "test"))),
+                    key=lambda p: -p.stat().st_mtime) if CFG.exists() else []
+    for p in recent:                                    # a new channel: its own latest finished config
+        if not json.loads(read(p) or "{}").get("draft"):
+            return read(p)
+    return read(HERE / "templates" / "example_cfg.json")
     return ""
 
 
-RULES = """Channel: Nethermind — faceless, fact-checked YouTube Shorts on Marvel/comics history, anime, gaming,
-space and strange animals; the best format so far is "a comic power that's real biology".
+RULES = f"""Channel: {channel.get("name")} — {channel.about()}
 Retention rules: the hook is frame zero — line 1 is 8 words or fewer and says what the on-screen hook says;
 show one hero number (the thing people repeat) in the first 3 seconds if the story allows; most lines 8–18
 words so the picture changes every few seconds; a real payoff (a reveal, not a summary); state the honest
@@ -92,13 +99,13 @@ Target 45–70 seconds of narration (about 125–190 words in total)."""
 
 # ------------------------------------------------------------------ steps
 def research(topic):
-    prompt = f"""You are the Researcher for Nethermind. Research this video topic with web search and fetch:
+    prompt = f"""You are the Researcher for {channel.get("name")}. Research this video topic with web search and fetch:
 "{topic}"
 
 {RULES}
 
 What the channel has learned (from real results — follow it):
-{read(HERE / "LEARNINGS.md", 4000)}
+{read(DATA / "LEARNINGS.md", 4000)}
 
 Find the most surprising TRUE version of this story. Verify every claim against a reliable source (primary
 sources, publishers, museums, peer-reviewed papers, reputable press — not fan wikis or listicles). If the
@@ -124,14 +131,14 @@ anime or game-character beats. At least 5 facts."""
 
 def write_script(topic, vid, facts, notes=None, current=None):
     ideas = "\n".join(f"- {i}" for i in open_ideas())
-    prompt = f"""You are the Script writer for Nethermind. Write the video config for: "{topic}".
+    prompt = f"""You are the Script writer for {channel.get("name")}. Write the video config for: "{topic}".
 
 {RULES}
 
 Checked research — use ONLY these facts, nothing else:
 {json.dumps(facts, ensure_ascii=False)[:9000]}
 
-{"Courtney's notes on the last draft — do what they ask:" + chr(10) + notes + chr(10) + "Last draft:" + chr(10) + json.dumps(current, ensure_ascii=False)[:6000] if notes else ""}
+{channel.whose() + " notes on the last draft — do what they ask:" + chr(10) + notes + chr(10) + "Last draft:" + chr(10) + json.dumps(current, ensure_ascii=False)[:6000] if notes else ""}
 
 The config format (one JSON object; this is a real, recent one to match in style):
 {example_cfg()[:7000]}
@@ -155,22 +162,24 @@ Reply with ONLY the JSON config."""
 
 
 def write_packaging(cfg, facts):
+    t = channel.tag()
+    TAG_INCL, TAG_TAGS, TAG_INCL2 = (f" incl. #{t}", f", include {t}", f" incl #{t}") if t else ("", "", "")
     script = " ".join(s["text"] for s in cfg["segments"])
-    prompt = f"""You are the Packaging agent for Nethermind (faceless fact-checked Shorts). Package this video.
+    prompt = f"""You are the Packaging agent for {channel.get("name")} (faceless fact-checked Shorts). Package this video.
 Script: {script}
 Sources: {json.dumps(facts.get("sources_for_description") or [f.get("source_title") for f in facts.get("facts", [])], ensure_ascii=False)}
 Hero number: {json.dumps(facts.get("hero_number"), ensure_ascii=False)}
 Match this real example's voice and shape:
-{read(PKG / "_example.json", 3000)}
+{read(PKG / "_example.json", 3000) or read(HERE / "templates" / "example_packaging.json", 3000)}
 Reply with ONLY this JSON:
 {{"title": "best title (≤70 chars, curiosity gap, no clickbait lies)",
   "title_options": ["4 alternatives"],
   "hook_options": ["3 alternative first lines, ≤8 words each"],
   "youtube_description": "hook paragraph, the story in 2–3 short paragraphs, a subscribe line naming the channel's niche,
-     then 'Sources: ...' and 6–8 hashtags incl. #nethermind",
-  "youtube_tags": "comma-separated, 8–12 tags, include nethermind",
-  "tiktok_caption": "≤150 chars, a hook + 'Follow for...' + 3 hashtags incl #nethermind",
-  "instagram_caption": "starts 'Send this to the ...', ≤220 chars, 3 hashtags incl #nethermind",
+     then 'Sources: ...' and 6–8 hashtags{TAG_INCL}",
+  "youtube_tags": "comma-separated, 8–12 tags{TAG_TAGS}",
+  "tiktok_caption": "≤150 chars, a hook + 'Follow for...' + 3 hashtags{TAG_INCL2}",
+  "instagram_caption": "starts 'Send this to the ...', ≤220 chars, 3 hashtags{TAG_INCL2}",
   "pinned_comment": "a question that makes people answer",
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 2, "cx": 0.5, "cy": 0.4, "zoom": 1.0}}}}"""
     import llm

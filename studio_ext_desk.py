@@ -13,10 +13,11 @@ from pathlib import Path
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
-OUT, CFG, PKG, EPS = HERE / "out", HERE / "cfg", HERE / "packaging", HERE / "episodes"
-LANE = {"marvel": "Marvel & comics", "anime": "Anime", "gaming": "Gaming", "space": "Space", "ocean": "Ocean",
-        "creature": "Creatures / real biology", "other": "Other"}
-CHANNEL_LANES = ["marvel", "anime", "gaming", "creature"]
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT, CFG, PKG, EPS = DATA / "out", DATA / "cfg", DATA / "packaging", DATA / "episodes"
+import channel as chcfg
+LANE = {**{k: v["label"] for k, v in chcfg.lane_defs().items()}, "other": "Other"}
+CHANNEL_LANES = chcfg.lanes()                                     # channel.json "lanes"
 
 
 def J(p, default=None):
@@ -101,7 +102,7 @@ def d_ideas():
     for sec, i in open_ideas():
         c = by.get(intelligence.slug(i["hook"]))
         items.append((c["score"] if c else -1, sec, i, c))
-    order = CHANNEL_LANES + ["other", "space", "ocean"]            # unscouted: the channel's lanes first, old backlogs last
+    order = CHANNEL_LANES + ["other"] + [l for l in LANE if l not in CHANNEL_LANES and l != "other"]            # unscouted: the channel's lanes first, old backlogs last
     items.sort(key=lambda x: (-x[0], order.index(idea_lane(x[1], x[2]["hook"])) if idea_lane(x[1], x[2]["hook"]) in order else 9))
     rows = []
     for score, sec, i, c in items[:15]:
@@ -205,8 +206,8 @@ def d_fit():
 def d_rights():
     cs = [c for c in cards() if ev(c, "rights")]
     today = datetime.date.today().isoformat()
-    ai_today = sum(1 for p in (HERE / "assets").glob("*.jpg") if datetime.date.fromtimestamp(p.stat().st_mtime).isoformat() == today) \
-        if (HERE / "assets").exists() else 0
+    ai_today = sum(1 for p in (DATA / "assets").glob("*.jpg") if datetime.date.fromtimestamp(p.stat().st_mtime).isoformat() == today) \
+        if (DATA / "assets").exists() else 0
     ex = []
     for c in cs[:10]:
         for e in ev(c, "rights").get("examples", []):
@@ -391,7 +392,7 @@ def fail_panel(agent, sub, what):
 
 def d_visuals():
     today = datetime.date.today().isoformat()
-    a = list((HERE / "assets").glob("*.jpg")) if (HERE / "assets").exists() else []
+    a = list((DATA / "assets").glob("*.jpg")) if (DATA / "assets").exists() else []
     made = sum(1 for p in a if datetime.date.fromtimestamp(p.stat().st_mtime).isoformat() == today)
     return {"question": "Does every beat have a picture — real where possible, original art where not?",
             "stats": [{"k": "Images in the library", "v": len(a)}, {"k": "Made today", "v": f"{made} of ~30 free"},

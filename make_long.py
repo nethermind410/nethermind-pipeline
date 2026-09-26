@@ -21,7 +21,9 @@ from pathlib import Path
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
-CFG, PKG, TTS, OUT = HERE / "cfg", HERE / "packaging", HERE / "tts", HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+CFG, PKG, TTS, OUT = DATA / "cfg", DATA / "packaging", DATA / "tts", DATA / "out"
 PY = str(HERE / ".venv" / "bin" / "python") if (HERE / ".venv" / "bin" / "python").exists() else sys.executable
 TITLE_CARD = 2.6        # seconds a chapter title card holds (no narration)
 
@@ -196,7 +198,7 @@ def package(ep, vid, cfg, marks, starts):
         pkg["youtube_description"] = body.replace("{CHAPTERS}", "Chapters\n" + "\n".join(lines))
         pkg["episode"] = ep["id"]
         own.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
-        (HERE / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
+        (DATA / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
         return pkg, lines
     tags, srcs, titles = [], [], []
     for ch in ep["chapters"]:
@@ -214,22 +216,23 @@ def package(ep, vid, cfg, marks, starts):
     desc = "\n".join([intro or ep["title"], "", "Chapters", *lines, "",
                       *([f"In this episode:"] + [f"• {t}" for t in titles]), "",
                       "Every story is fact-checked; sources per chapter:", *(srcs or ["(see each chapter's Short)"]), "",
-                      "Subscribe for the buried history behind comics, anime, games and the real science hiding inside them.",
-                      "", "#nethermind #comics #history #science"])
+                      *([channel.get("subscribe_line"), ""] if channel.get("subscribe_line") else []),
+                      channel.get("long_hashtags") or (f"#{channel.tag()}" if channel.tag() else "")])
     import business, intelligence
     pkg = {"title": title[:95], "title_options": [ep["title"][:95], f"{len(titles)} Buried Stories: {first}"[:95]],
-           "youtube_description": desc, "youtube_tags": ", ".join((tags + ["nethermind", "long form"])[:15]),
+           "youtube_description": desc, "youtube_tags": ", ".join((tags + ([channel.tag()] if channel.tag() else []) + ["long form"])[:15]),
            "pinned_comment": "Which of these did you already know? Tell me the one that surprised you most.",
            "thumbnail": thumb_for(ep, cfg, first, len(titles)),
            "episode": ep["id"]}
     business.apply_links(pkg, ep["title"], intelligence.lane_of(" ".join(titles)))
     (PKG / f"{vid}.json").write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
-    (HERE / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
+    (DATA / "episodes" / f"{ep['id']}.chapters.txt").write_text("\n".join(lines) + "\n")
     return pkg, lines
 
 
 def run(cmd, tid):
-    p = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
+    cmd = [cmd[0], str(HERE / cmd[1]) if str(cmd[1]).endswith(".py") else cmd[1], *cmd[2:]]   # code here, data in DATA
+    p = subprocess.run(cmd, cwd=DATA, capture_output=True, text=True)
     log = (p.stdout + p.stderr)
     print(log[-2500:])
     if p.returncode:
@@ -258,7 +261,7 @@ def main(path, preview=False):
             cur = nether.begin("production", "Visuals (real photos + art)", sub="visuals", parent=parent)
             run([PY, "fetch_real.py", f"cfg/{vid}.json"], cur)
             run([PY, "gen_visuals.py", f"cfg/{vid}.json"], cur)
-            missing = sorted({s["vis"]["src"] for s in cfg["segments"] if s["vis"].get("src") and not (HERE / "assets" / s["vis"]["src"]).exists()})
+            missing = sorted({s["vis"]["src"] for s in cfg["segments"] if s["vis"].get("src") and not (DATA / "assets" / s["vis"]["src"]).exists()})
             if missing:
                 raise RuntimeError(f"{len(missing)} image(s) still missing (daily AI-art limit or no photo found): " + ", ".join(missing[:6]))
             nether.finish(cur)

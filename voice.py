@@ -15,7 +15,8 @@ import base64, json, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VOICE, TTS = HERE / "out" / "voice", HERE / "tts"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+VOICE, TTS = DATA / "out" / "voice", DATA / "tts"
 ID_RE = re.compile(r"^[a-z0-9_]{1,80}$")
 
 

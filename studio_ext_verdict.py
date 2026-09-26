@@ -14,8 +14,10 @@ from pathlib import Path
 import studio_ext_desk as desk
 
 HERE = Path(__file__).resolve().parent
-OUT, CFG, PKG = HERE / "out", HERE / "cfg", HERE / "packaging"
-OFF_LANES = ("space", "ocean")
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT, CFG, PKG = DATA / "out", DATA / "cfg", DATA / "packaging"
+import channel as chcfg
+OFF_LANES = tuple(chcfg.off_lanes())                               # channel.json "off_lanes"
 
 
 def V(q, answer, detail="", tone="info", actions=()):

@@ -14,8 +14,9 @@ from pathlib import Path
 
 import studio_api
 from youtube import call
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 
-OUT = Path(__file__).resolve().parent / "out" / "idea_demand.json"
+OUT = DATA / "out" / "idea_demand.json"
 STOP = set("the a an of in on is are was were to for and or it its this that with at by from be has have had your you "
            "why how what who can could would still we our they them".split())
 

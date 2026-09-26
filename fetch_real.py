@@ -28,7 +28,8 @@ import html, json, os, re, sys, time
 import requests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-A = os.path.join(HERE, "assets")
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A = os.path.join(DATA, "assets")
 UA = "ContentPipelineBot/1.0 (single-operator research/educational use)"
 OK_LICENSES = {"public domain", "cc0"}
 OK_LICENSE_PREFIXES = ("cc by ",)  # plain CC BY only — not "cc by-sa"/"cc by-nc"

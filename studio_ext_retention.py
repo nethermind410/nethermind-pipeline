@@ -13,7 +13,8 @@ from pathlib import Path
 import retention
 
 HERE = Path(__file__).parent
-CFG, EPS, OUT = HERE / "cfg", HERE / "episodes", HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+CFG, EPS, OUT = DATA / "cfg", DATA / "episodes", DATA / "out"
 
 
 def _load(p, default=None):
@@ -50,7 +51,7 @@ def overview():
             continue
         tk = _load(CFG / f"{vid}_tiktok.json")
         posts = stats.get(vid, [])
-        title = (_load(HERE / "packaging" / f"{vid}.json", {}) or {}).get("title") \
+        title = (_load(DATA / "packaging" / f"{vid}.json", {}) or {}).get("title") \
             or " ".join(l[0] for l in cfg.get("hook", {}).get("lines", [])) or vid.replace("_", " ")
         vids.append({"id": vid, "hook": title,
                      "main": _rows(cfg), "tiktok": _rows(tk) if tk else None,

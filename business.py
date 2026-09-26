@@ -20,7 +20,9 @@ from pathlib import Path
 from urllib.parse import quote_plus
 
 HERE = Path(__file__).resolve().parent
-OUT, PKG = HERE / "out", HERE / "packaging"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT, PKG = DATA / "out", DATA / "packaging"
 SETTINGS = OUT / "business.json"
 START, END = "── links ──", "── end links ──"
 DEFAULTS = {"amazon_tag": "", "newsletter_url": "", "links": [], "sponsor_email": "",
@@ -44,13 +46,18 @@ def settings():
         return dict(DEFAULTS)
 
 
+MEDIA_KIT_ABOUT = ("Fact-checked short and long-form videos on the buried history of comics, anime and games — and the real science\n"
+                   "hiding inside them. Every video cites its sources.") if channel.source() == "legacy" else \
+                  (channel.about()[:1].upper() + channel.about()[1:] + " Every video cites its sources.")
+
+
 def save_settings(new):
     s = settings()
     for k in ("amazon_tag", "newsletter_url", "sponsor_email", "disclosure"):
         if k in new:
             s[k] = str(new[k]).strip()[:300]
     if s["amazon_tag"] and not re.fullmatch(r"[A-Za-z0-9_-]{2,40}", s["amazon_tag"]):
-        raise ValueError("That doesn't look like an Amazon tag (e.g. nethermind-20).")
+        raise ValueError("That doesn't look like an Amazon tag (e.g. yourchannel-20).")
     for k in ("newsletter_url",):
         if s[k] and not re.match(r"https?://", s[k]):
             raise ValueError("The newsletter link needs to start with https://")
@@ -238,7 +245,7 @@ def media_kit():
     e = html.escape
     rows = "".join(f"<tr><td>{e(k.title())}</td><td>{v:,}</td></tr>" for k, v in sorted(by.items(), key=lambda kv: -kv[1]))
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nethermind — media kit</title><style>
+<title>{e(channel.get('name'))} — media kit</title><style>
 :root{{--ink:#15130F;--muted:#6B665C;--accent:#E0294B;--bg:#FAF8F3}}
 body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,Helvetica,Arial,sans-serif}}
 main{{max-width:760px;margin:0 auto;padding:48px 24px}}h1{{font-size:44px;margin:0;letter-spacing:-.03em}}
@@ -247,9 +254,8 @@ main{{max-width:760px;margin:0 auto;padding:48px 24px}}h1{{font-size:44px;margin
 .t{{background:#fff;border:1px solid #E7E2D8;border-radius:12px;padding:16px}}.t b{{display:block;font-size:30px}}
 table{{width:100%;border-collapse:collapse;margin-top:8px}}td{{padding:8px 0;border-bottom:1px solid #E7E2D8}}td+td{{text-align:right}}
 a{{color:var(--accent)}}</style></head><body><main>
-<span class="k">Media kit · {datetime.date.today():%B %Y}</span><h1>Nethermind</h1>
-<p>Fact-checked short and long-form videos on the buried history of comics, anime and games — and the real science
-hiding inside them. Every video cites its sources.</p>
+<span class="k">Media kit · {datetime.date.today():%B %Y}</span><h1>{e(channel.get('name'))}</h1>
+<p>{e(MEDIA_KIT_ABOUT)}</p>
 <div class="tiles"><div class="t"><span class="k">Views, all posts</span><b>{views:,}</b></div>
 <div class="t"><span class="k">YouTube subscribers</span><b>{f"{subs:,}" if subs is not None else "—"}</b></div>
 <div class="t"><span class="k">Engagement</span><b>{(statistics.mean(eng) * 100 if eng else 0):.1f}%</b></div>

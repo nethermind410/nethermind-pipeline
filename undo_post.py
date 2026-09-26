@@ -14,7 +14,8 @@ import buffer_post
 from stats import gql
 
 HERE = Path(__file__).resolve().parent
-POSTED = HERE / "out" / "posted.json"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+POSTED = DATA / "out" / "posted.json"
 
 
 def main():

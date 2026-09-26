@@ -26,18 +26,13 @@ import requests
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
-INTEL = HERE / "out" / "intel"
-UA = "NethermindStudio/1.0 (single-operator research/educational use)"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+INTEL = DATA / "out" / "intel"
+import channel
+UA = f"{re.sub('[^A-Za-z0-9]', '', channel.get('app_name')) or 'Nether'}Studio/1.0 (single-operator research/educational use)"
 
-LANES = {  # first match wins; order matters (a Marvel animal video is Marvel)
-    "marvel": "marvel wolverine hulk x-men xmen mutant avengers spider-man spiderman daredevil stan lee comic comics superhero villain dc batman superman",
-    "anime": "anime manga dragon ball naruto pokemon pokémon ghibli one piece attack on titan titan goku studio",
-    "gaming": "game games gaming nintendo mario sonic minecraft zelda halo playstation xbox speedrun arcade pac-man pacman",
-    "space": "space star planet galaxy nasa black hole universe moon mars jupiter neptune kepler voyager telescope nebula",
-    "ocean": "ocean deep sea shark whale jellyfish octopus squid fish reef trench abyss",
-    "creature": "superpower superpowers animal creature species worm beetle frog bird insect spider snake lizard shrimp",
-}
-COPYRIGHT_LANES = {"marvel", "anime", "gaming"}
+LANES = {k: v["words"] for k, v in channel.lane_defs().items()}  # first match wins; order matters (channel.py)
+COPYRIGHT_LANES = {k for k, v in channel.lane_defs().items() if v["copyright"]}
 DEFAULT_WEIGHTS = {"demand": 30, "competition": 15, "fit": 20, "taste": 10, "visuals": 15, "sources": 10}
 
 
@@ -54,7 +49,7 @@ def lane_of(text):
 
 
 def weights():
-    p = HERE / "out" / "intel_weights.json"
+    p = DATA / "out" / "intel_weights.json"
     try:
         return json.loads(p.read_text())["weights"]
     except Exception:
@@ -105,13 +100,13 @@ def scout_competitors(demand):
 def _our_videos():
     stats = {}
     try:
-        stats = json.loads((HERE / "out" / "stats.json").read_text()).get("videos", {})
+        stats = json.loads((DATA / "out" / "stats.json").read_text()).get("videos", {})
     except Exception:
         pass
     out = []
     for vid, posts in stats.items():
         text = vid.replace("_", " ")
-        pk = HERE / "packaging" / f"{vid}.json"
+        pk = DATA / "packaging" / f"{vid}.json"
         if pk.exists():
             try:
                 text += " " + json.loads(pk.read_text()).get("title", "")

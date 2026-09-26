@@ -15,7 +15,9 @@ from pathlib import Path
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT = DATA / "out"
 FIXES = OUT / "fixes.json"
 WT = OUT / "fix_worktrees"
 LOCK = threading.Lock()
@@ -40,7 +42,7 @@ RULES = [
     (r"missing out/|run \./build\.sh|missing from assets/", "retry",
      "A file this job needs hasn't been made yet.", "Make the video first (or Retry — it re-fetches what's missing)."),
     (r"Traceback|Error:|Exception|SyntaxError|TypeError|KeyError|AttributeError|NameError|IndexError|ValueError|exit code", "code",
-     "Something in Nethermind's own code broke.", "Send it to fix — Control files a ticket and Claude can repair it on a separate branch for you to approve."),
+     f"Something in {channel.get('app_name')}'s own code broke.", "Send it to fix — Control files a ticket and Claude can repair it on a separate branch for you to approve."),
 ]
 RESET = re.compile(r"resets? ((?:\w+ \d+ )?(?:at )?\d[\w:]*(?: ?[ap]m)?(?: \([^)]*\))?)", re.I)
 
@@ -226,7 +228,7 @@ def apply(n):
         raise ValueError("The fix clashes with newer changes. Discard it and let Claude try again.")
     _git("branch", "-d", x["branch"])
     _update(x["n"], state="applied", applied=_now())
-    return {"ok": True, "retry": x.get("retry"), "reply": f"Fix #{x['n']} applied. Restart Nethermind to load it, then Retry the task."}
+    return {"ok": True, "retry": x.get("retry"), "reply": f"Fix #{x['n']} applied. Restart {channel.get('app_name')} to load it, then Retry the task."}
 
 
 def discard(n):

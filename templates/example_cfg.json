@@ -1,0 +1,118 @@
+{
+ "id": "example_short",
+ "file": "example_short",
+ "palette": {
+  "accent": [
+   120,
+   190,
+   255
+  ],
+  "accent2": [
+   255,
+   140,
+   40
+  ]
+ },
+ "credit": "PHOTO: PUBLIC DOMAIN (NOAA)",
+ "score": "deep",
+ "hook": {
+  "lines": [
+   [
+    "THIS SHARK",
+    "w"
+   ],
+   [
+    "COULD BE",
+    "w"
+   ],
+   [
+    "400 YEARS OLD.",
+    "a"
+   ]
+  ],
+  "size": 124,
+  "y": 610
+ },
+ "end": {
+  "at": 1.4,
+  "lines": [
+   "NEXT:",
+   "THE FISH THAT WALKS"
+  ]
+ },
+ "segments": [
+  {
+   "id": "s1",
+   "text": "This shark could be four hundred years old.",
+   "hook": true,
+   "vis": {
+    "t": "kb",
+    "src": "greenland_shark.jpg",
+    "z0": 1.4,
+    "z1": 1.15,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "gap": 0.18
+  },
+  {
+   "id": "s2",
+   "text": "Scientists dated the eye lenses of twenty eight Greenland sharks.",
+   "vis": {
+    "t": "kb",
+    "src": "greenland_shark.jpg",
+    "z0": 1.12,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45
+   },
+   "hero": {
+    "at": 7,
+    "lines": [
+     "28 SHARKS"
+    ],
+    "col": "a",
+    "y": 400,
+    "size": 118
+   },
+   "gap": 0.15
+  },
+  {
+   "id": "s3",
+   "text": "The biggest came out at about three hundred and ninety two years.",
+   "vis": {
+    "t": "kb",
+    "src": "greenland_shark.jpg",
+    "z0": 1.3,
+    "z1": 1.1,
+    "cx": 0.45,
+    "cy": 0.5
+   }
+  },
+  {
+   "id": "s4",
+   "text": "But the honest range is two hundred seventy two to five hundred twelve.",
+   "vis": {
+    "t": "kb",
+    "src": "greenland_shark.jpg",
+    "z0": 1.1,
+    "z1": 1.25,
+    "cx": 0.55,
+    "cy": 0.5
+   }
+  },
+  {
+   "id": "s5",
+   "text": "They grow about a centimetre a year, and may not breed until they are one hundred and fifty.",
+   "payoff": true,
+   "vis": {
+    "t": "kb",
+    "src": "greenland_shark.jpg",
+    "z0": 1.25,
+    "z1": 1.05,
+    "cx": 0.5,
+    "cy": 0.45
+   }
+  }
+ ]
+}
