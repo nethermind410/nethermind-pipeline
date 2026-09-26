@@ -82,6 +82,24 @@ def watch_ready():
         time.sleep(300)
 
 
+def watch_health():
+    """Every 30 minutes: back up once a day, and notify when a connection breaks or recovers (once per change)."""
+    import alerts, backup, studio_api
+    while True:
+        try:
+            if backup.due():
+                i = backup.run()
+                log(f"backup: {i['files']} files, {i['bytes'] // 1024} KB")
+        except Exception as e:
+            log(f"backup: {e}")
+        try:
+            for a in alerts.check(studio_api.health()):
+                notify(*alerts.message(a))
+        except Exception as e:
+            log(f"alerts: {e}")
+        time.sleep(1800)
+
+
 def set_dock_icon():
     try:
         from AppKit import NSApplication, NSImage
@@ -96,6 +114,7 @@ def main():
     start_studio()
     threading.Thread(target=start_jarvis, daemon=True).start()
     threading.Thread(target=watch_ready, daemon=True).start()
+    threading.Thread(target=watch_health, daemon=True).start()
     for _ in range(40):
         if up("http://127.0.0.1:8766/api/health"):
             break
