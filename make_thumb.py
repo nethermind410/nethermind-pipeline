@@ -18,7 +18,8 @@ import json, os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-A, OUT = os.path.join(HERE, "assets"), os.path.join(HERE, "out")
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A, OUT = os.path.join(DATA, "assets"), os.path.join(DATA, "out")
 F_CAP = os.path.join(A, "Anton-Regular.ttf")
 WHITE = (255, 255, 255)
 
@@ -87,7 +88,7 @@ def render(img, lines, accent, col, w, h, cx, cy, landscape, z=1.0):
 def main(pkg_path):
     vid = os.path.splitext(os.path.basename(pkg_path))[0]
     pkg = json.load(open(pkg_path))
-    cfg = json.load(open(os.path.join(HERE, "cfg", vid + ".json")))
+    cfg = json.load(open(os.path.join(DATA, "cfg", vid + ".json")))
     t = pkg.get("thumbnail")
     if not t or not t.get("lines"):
         sys.exit(f'{pkg_path}: add a "thumbnail" block with "lines" (see make_thumb.py docstring)')

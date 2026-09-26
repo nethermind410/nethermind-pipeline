@@ -16,7 +16,8 @@ import studio_channel as chan
 import watchlist as wl
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT = DATA / "out"
 MIN_VIDEOS = 8                    # below this, no pattern is called
 AGE_MIN, AGE_MAX = 2.0, 7.0       # "comparable age": views measured when the video was 2–7 days old
 BANDS = [(0, 6, "Night", "12–6 AM"), (6, 12, "Morning", "6 AM–12"), (12, 18, "Afternoon", "12–6 PM"), (18, 24, "Evening", "6 PM–12")]
@@ -271,7 +272,7 @@ def comment_ideas(done):
     OUT.mkdir(exist_ok=True)
     (OUT / "community_ideas.json").write_text(json.dumps({"at": api.now_iso(), "checked": len(cs), "comments_fetched": d.get("fetched"),
                                                           "ideas": cache}, indent=1, ensure_ascii=False))
-    topics = (HERE / "TOPICS.md").read_text() if (HERE / "TOPICS.md").exists() else ""
+    topics = (DATA / "TOPICS.md").read_text() if (DATA / "TOPICS.md").exists() else ""
     for i in ideas:                               # already added: its comment link is the idea's source in TOPICS.md
         i["added"] = bool(i["link"]) and i["link"] in topics
     return {"ideas": ideas, "checked": len(cs), "fetched": d.get("fetched"),

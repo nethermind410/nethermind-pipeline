@@ -68,3 +68,20 @@ a `prompt` and a `gen_visuals.py` run.
   TOPICS.md           the backlog — topics with sources to verify against
   cfg/                video configs
 ```
+
+## Buyer install (the packaged Nether.app)
+
+1. Drag **Nether** from the .dmg to Applications.
+2. Install the tools once, in Terminal:
+   ```bash
+   brew install ffmpeg espeak-ng python@3.12
+   python3.12 -m venv ~/Library/Application\ Support/Nether/venv
+   ~/Library/Application\ Support/Nether/venv/bin/pip install -r /Applications/Nether.app/Contents/Resources/app/requirements.txt pywebview
+   cd ~/Library/Application\ Support/Nether/Channel 2>/dev/null || mkdir -p ~/Library/Application\ Support/Nether/Channel && cd "$_"
+   curl -L -O https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.fp16.onnx
+   curl -L -O https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+   ```
+3. Open Nether. The setup walks you through your channel and keys (or explore the demo first).
+4. Fonts for the renderer: `cd` into the channel folder and run `/Applications/Nether.app/Contents/Resources/app/fetch_assets.sh`.
+
+Your data lives in `~/Library/Application Support/Nether/Channel`; the app never writes inside itself.

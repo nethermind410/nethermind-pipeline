@@ -38,9 +38,11 @@ import subprocess
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.environ.get("KOKORO_MODEL_PATH", os.path.join(HERE, "kokoro-v1.0.fp16.onnx"))
-VOICES_PATH = os.environ.get("KOKORO_VOICES_PATH", os.path.join(HERE, "voices-v1.0.bin"))
-DEFAULT_VOICE = os.environ.get("KOKORO_VOICE", "am_liam")
+import channel
+_home = lambda f: os.path.join(HERE, f) if os.path.exists(os.path.join(HERE, f)) else os.path.join(channel.DATA, f)  # code folder, else data folder
+MODEL_PATH = os.environ.get("KOKORO_MODEL_PATH", _home("kokoro-v1.0.fp16.onnx"))
+VOICES_PATH = os.environ.get("KOKORO_VOICES_PATH", _home("voices-v1.0.bin"))
+DEFAULT_VOICE = os.environ.get("KOKORO_VOICE", channel.get("narration_voice") or "am_liam")
 
 _kokoro = None
 

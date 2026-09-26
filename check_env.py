@@ -10,7 +10,8 @@ NEEDED = {
 }
 
 env = {}
-p = Path(__file__).resolve().parent / ".env"
+import channel
+p = channel.ENV_FILE
 if p.exists():
     for line in p.read_text().splitlines():
         if "=" in line and not line.strip().startswith("#"):

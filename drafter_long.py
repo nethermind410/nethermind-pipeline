@@ -21,7 +21,9 @@ import orchestrator as nether
 from drafter import ask, read, slug, RULES
 
 HERE = Path(__file__).resolve().parent
-EPS, PKG, DRAFTS = HERE / "episodes", HERE / "packaging", HERE / "out" / "drafts"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+EPS, PKG, DRAFTS = DATA / "episodes", DATA / "packaging", DATA / "out" / "drafts"
 TARGET_WORDS = (1400, 2100)          # ≈ 9–13 minutes at Kokoro's ~2.8 words/sec
 MAX_AI_IMAGES = 12                   # Cloudflare's free tier makes ~30 images a day; real photos fill the rest
 
@@ -45,7 +47,7 @@ def is_iceberg(topic, style=None):
 
 
 def research(topic, style=None):
-    prompt = f"""You are the Researcher for Nethermind's weekly long-form episode. Research this topic in depth with
+    prompt = f"""You are the Researcher for {channel.get("name")}'s weekly long-form episode. Research this topic in depth with
 web search and fetch: "{topic}"
 
 {RULES}
@@ -53,7 +55,7 @@ web search and fetch: "{topic}"
 {ICEBERG if is_iceberg(topic, style) else ""}
 
 What the channel has learned from real results — follow it:
-{read(HERE / "LEARNINGS.md", 4000)}
+{read(DATA / "LEARNINGS.md", 4000)}
 
 Verify every claim against a reliable source (primary sources, publishers, museums, peer-reviewed papers, reputable
 press — not fan wikis or listicles). Find where the popular version is wrong. Never include a claim you couldn't source.
@@ -77,7 +79,7 @@ character beats, archetype/pose/palette only — never a named character, costum
 
 def write_episode(topic, eid, facts, notes=None, current=None, style=None):
     ice = is_iceberg(topic, style)
-    prompt = f"""You are the Script writer for Nethermind's weekly long-form episode: "{topic}".
+    prompt = f"""You are the Script writer for {channel.get("name")}'s weekly long-form episode: "{topic}".
 
 {RULES}
 {LONG_RULES}
@@ -87,7 +89,7 @@ def write_episode(topic, eid, facts, notes=None, current=None, style=None):
 Checked research — use ONLY these facts:
 {json.dumps(facts, ensure_ascii=False)[:14000]}
 
-{"Courtney's notes on the last draft — do what they ask:" + chr(10) + notes + chr(10) + "Last draft:" + chr(10) + json.dumps(current, ensure_ascii=False)[:9000] if notes else ""}
+{channel.whose() + " notes on the last draft — do what they ask:" + chr(10) + notes + chr(10) + "Last draft:" + chr(10) + json.dumps(current, ensure_ascii=False)[:9000] if notes else ""}
 
 Beats use the same shape as the channel's Shorts (this is a real one, match its style):
 {drafter.example_cfg()[:4000]}
@@ -115,17 +117,17 @@ Reply with ONLY the JSON."""
 
 def write_packaging(ep, facts):
     chapters = "\n".join(f"- {c['title']}" for c in ep["chapters"])
-    prompt = f"""You are the Packaging agent for Nethermind's weekly long-form (YouTube only, 16:9). Package it.
+    prompt = f"""You are the Packaging agent for {channel.get("name")}'s weekly long-form (YouTube only, 16:9). Package it.
 Episode: {ep["title"]}. Angle: {facts.get("angle")}. Promise: {facts.get("promise")}.
 Chapters:
 {chapters}
 Sources: {json.dumps(facts.get("sources_for_description") or [], ensure_ascii=False)}
-Voice reference (a real Short's packaging): {read(PKG / "_example.json", 2000)}
+Voice reference (a real Short's packaging): {read(PKG / "_example.json", 2000) or read(HERE / "templates" / "example_packaging.json", 2000)}
 Reply with ONLY this JSON:
 {{"title": "best title (≤70 chars, curiosity gap, honest)", "title_options": ["2 alternatives"],
   "youtube_description": "2 short hook paragraphs, then the line {{CHAPTERS}} on its own, then 'Sources:' with each source,
-     a subscribe line, and 5–8 hashtags incl. #nethermind",
-  "youtube_tags": "comma-separated, 10–15 tags incl. nethermind",
+     a subscribe line, and 5–8 hashtags{(' incl. #' + channel.tag()) if channel.tag() else ''}",
+  "youtube_tags": "comma-separated, 10–15 tags{(' incl. ' + channel.tag()) if channel.tag() else ''}",
   "pinned_comment": "a question that makes people answer",
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 1, "cx": 0.5, "cy": 0.4, "zoom": 1.0}},
   "thumbnail_options": [{{"lines": ["..."], "accent": 1}}, {{"lines": ["..."], "accent": 1}}]}}"""

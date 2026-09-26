@@ -17,13 +17,15 @@ from pathlib import Path
 import requests
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
-CHANNEL_ID = "UCpE0Ce-qXmVWCwwqiW5bvxw"  # Nnethermind (from Buffer's connected YouTube channel)
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT = DATA / "out"
+import channel
+CHANNEL_ID = channel.get("youtube_channel_id")  # channel.json (the original install: Buffer's connected YouTube channel)
 API = "https://www.googleapis.com/youtube/v3/"
 
 
 def key():
-    for line in (HERE / ".env").read_text().splitlines():
+    for line in (DATA / ".env").read_text().splitlines():
         if line.strip().startswith("YOUTUBE_API_KEY="):
             return line.split("=", 1)[1].strip()
     sys.exit("YOUTUBE_API_KEY missing from .env")
@@ -43,6 +45,8 @@ def seconds(iso):  # PT1M5S -> 65
 
 
 def fetch(with_comments=False):
+    if not CHANNEL_ID:
+        sys.exit("No YouTube channel id yet — add it in Settings → Your channel.")
     ch = call("channels", part="snippet,statistics,contentDetails", id=CHANNEL_ID)["items"][0]
     uploads = ch["contentDetails"]["relatedPlaylists"]["uploads"]
     ids, token = [], None

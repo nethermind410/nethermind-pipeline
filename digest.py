@@ -14,7 +14,9 @@ from pathlib import Path
 import studio_api, studio_channel
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT = DATA / "out"
 
 
 def main():
@@ -37,14 +39,14 @@ def main():
               f"- Subscribers: {now['subscribers']:,}" + (f" ({now['subscribers'] - base['subscribers']:+,})" if span >= 3 else "")
               + f" — {now['subscribers'] / 10:.1f}% of the 1,000 needed",
               f"- YouTube views, all videos: {total:,}" + (f" ({total - sum(base['videos'].values()):+,} this week)" if span >= 3 else ""),
-              f"- Shorts views, last 90 days (estimate): {now.get('shorts_90d', 0):,} of 10,000,000", ""]
+              f"- Shorts views, last 90 days (estimate): {now.get('shorts_90d', 0):,} of {channel.get('goals')['shorts_views_90d']:,}", ""]
     if span >= 3:
         gains = sorted(((vid, v - base["videos"].get(vid, 0)) for vid, v in now["videos"].items()), key=lambda x: -x[1])
         if gains and gains[0][1] > 0:
             lines += ["## Biggest movers on YouTube"] + [f"- {titles.get(vid, vid)}: {g:+,} views" for vid, g in gains[:3] if g > 0] + [""]
     perf = studio_api.performance()
     names = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instagram"}
-    lines += ["## Videos made with Nethermind Studio, by platform (all time)"] + [
+    lines += [f"## Videos made with {channel.get('app_name')} Studio, by platform (all time)"] + [
         f"- {names.get(k, k)}: {v:,} views" for k, v in sorted(perf["platforms"].items(), key=lambda x: -x[1])] + [""]
     week_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
     posted = [v for v in yt["videos"] if studio_channel.parse(v["published"]) >= week_ago]

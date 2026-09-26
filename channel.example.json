@@ -1,0 +1,52 @@
+{
+ "name": "Deep Current",
+ "app_name": "Nether",
+ "owner": "you",
+ "about": "",
+ "lanes": [
+  "ocean",
+  "creature",
+  "space"
+ ],
+ "title_subjects": [
+  "ocean",
+  "shark",
+  "whale",
+  "planet",
+  "star"
+ ],
+ "hashtag": "deepcurrent",
+ "subscribe_line": "Subscribe for the true stories hiding under the popular versions.",
+ "long_hashtags": "#deepcurrent #science #nature",
+ "replies_about": "ocean science, strange animals and space",
+ "reply_voice": "direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one)",
+ "narration_voice": "am_liam",
+ "youtube_channel_id": "",
+ "dashboard_url": "",
+ "goals": {
+  "subscribers": 1000,
+  "shorts_views_90d": 10000000
+ },
+ "jarvis": {
+  "enabled": false,
+  "dir": "",
+  "url": "http://127.0.0.1:8765"
+ },
+ "backup_dir": "~/Documents/Nether Backups",
+ "backup_prefix": "nether",
+ "launchd_label": "com.nether.daily",
+ "demo": false,
+ "off_lanes": [],
+ "custom_lanes": {
+  "weather": {
+   "label": "Extreme weather",
+   "words": "storm hurricane tornado lightning hail flood",
+   "copyright": false
+  }
+ },
+ "buffer_channels": {
+  "youtube": "",
+  "instagram": "",
+  "tiktok": ""
+ }
+}

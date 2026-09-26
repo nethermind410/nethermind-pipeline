@@ -19,7 +19,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 W, H, FPS, SR = 1080, 1920, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
-A = os.path.join(HERE, "assets")
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A = os.path.join(DATA, "assets")
 CFG = json.load(open(sys.argv[1]))
 PREVIEW = "--preview" in sys.argv
 VID = CFG["id"]
@@ -30,8 +31,8 @@ if LAND:
     W, H = 1920, 1080
 LY, FSC = (H / 1920, 0.74) if LAND else (1.0, 1.0)
 def L(v): return v * LY
-OUT = os.path.join(HERE, "out"); os.makedirs(OUT, exist_ok=True)
-TTS_DIR = os.path.join(HERE, "tts", VID); os.makedirs(TTS_DIR, exist_ok=True)
+OUT = os.path.join(DATA, "out"); os.makedirs(OUT, exist_ok=True)
+TTS_DIR = os.path.join(DATA, "tts", VID); os.makedirs(TTS_DIR, exist_ok=True)
 
 PAL = CFG.get("palette", {})
 ACCENT = tuple(PAL.get("accent", [200, 120, 255]))

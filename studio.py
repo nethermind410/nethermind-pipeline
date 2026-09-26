@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""studio.py — the local server behind Nethermind (the Mac app) and Studio in a browser.
+"""studio.py — the local server behind the Mac app (app.py) and Studio in a browser.
 
     .venv/bin/python studio.py        serves http://127.0.0.1:8766 and opens it
 
@@ -18,11 +18,13 @@ import studio_create as create
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
-OUT, CFG = HERE / "out", HERE / "cfg"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel as chcfg
+OUT, CFG = DATA / "out", DATA / "cfg"
 UI = HERE / "studio"
 PORT = int(os.environ.get("STUDIO_PORT", 8766))  # 8765 belongs to Jarvis
 ID_RE = re.compile(r"^[a-z0-9_]+$")
-PY = str(HERE / ".venv" / "bin" / "python")
+PY = str(HERE / ".venv" / "bin" / "python") if (HERE / ".venv" / "bin" / "python").exists() else sys.executable  # packaged app: its own python
 ACTIONS = {
     "build": lambda i: ["./build.sh", i],
     "build_nofetch": lambda i: ["./build.sh", i, "--no-fetch"],
@@ -73,8 +75,8 @@ EXT_GET = {k: v for m in EXT for k, v in getattr(m, "GET", {}).items()}
 EXT_POST = {k: v for m in EXT for k, v in getattr(m, "POST", {}).items()}
 EXT_PREFIX = {k: v for m in EXT for k, v in getattr(m, "GET_PREFIX", {}).items()}   # "/api/x/" → f(rest of path)
 MEDIA = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".srt": "text/plain"}
-MUSIC_DIR, TRACKS = HERE / "music", {".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".wav": "audio/wav", ".ogg": "audio/ogg"}
-JARVIS = "http://127.0.0.1:8765/ask"
+MUSIC_DIR, TRACKS = DATA / "music", {".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".wav": "audio/wav", ".ogg": "audio/ogg"}
+JARVIS = chcfg.jarvis()["url"] + "/ask"   # optional (channel.json "jarvis")
 
 
 def run_job(action, vid):
@@ -118,13 +120,15 @@ def run_job(action, vid):
 
 def ask_jarvis(text):
     import urllib.request, urllib.error
+    if not chcfg.jarvis()["enabled"]:
+        return 503, {"reply": "Jarvis isn't set up for this channel. It's optional — turn it on in channel.json if you use it."}
     req = urllib.request.Request(JARVIS, data=json.dumps({"text": text}).encode(),
                                  headers={"Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=90) as r:
             return 200, json.loads(r.read())
     except urllib.error.URLError:
-        return 503, {"reply": "Jarvis isn't running yet. Open Nethermind from the Dock and it starts automatically."}
+        return 503, {"reply": f"Jarvis isn't running yet. Open {chcfg.get('app_name')} from the Dock and it starts automatically."}
     except Exception as e:
         return 502, {"reply": f"Jarvis didn't answer: {e}"}
 
@@ -217,8 +221,8 @@ class H(BaseHTTPRequestHandler):
             return self.send(200, {"tracks": sorted(p.name for p in MUSIC_DIR.glob("*") if p.suffix.lower() in TRACKS)
                                    if MUSIC_DIR.is_dir() else []})
         m = re.fullmatch(r"/asset/([A-Za-z0-9_.\-]+\.(?:jpg|jpeg|png|webp))", path)   # a video's own artwork
-        if m and (HERE / "assets" / m[1]).is_file():
-            return self.send_file(HERE / "assets" / m[1], {"png": "image/png", "webp": "image/webp"}.get(m[1].rsplit(".", 1)[1], "image/jpeg"))
+        if m and (DATA / "assets" / m[1]).is_file():
+            return self.send_file(DATA / "assets" / m[1], {"png": "image/png", "webp": "image/webp"}.get(m[1].rsplit(".", 1)[1], "image/jpeg"))
         m = re.fullmatch(r"/music/([^/]+)", path)
         if m and (MUSIC_DIR / m[1]).is_file() and (MUSIC_DIR / m[1]).suffix.lower() in TRACKS and (MUSIC_DIR / m[1]).resolve().parent == MUSIC_DIR.resolve():
             return self.send_file(MUSIC_DIR / m[1], TRACKS[(MUSIC_DIR / m[1]).suffix.lower()])
@@ -254,7 +258,7 @@ class H(BaseHTTPRequestHandler):
             return self.send(200, api.set_next(sl, str(b.get("hook", ""))[:300]))
         if self.path == "/api/choose_title":
             vid, title = b.get("id", ""), str(b.get("title", "")).strip()
-            pkg_path = HERE / "packaging" / f"{vid}.json"
+            pkg_path = DATA / "packaging" / f"{vid}.json"
             if not (ID_RE.match(vid) and pkg_path.exists() and title):
                 return self.send(400, {"error": "bad title"})
             pkg = json.loads(pkg_path.read_text())
@@ -329,7 +333,7 @@ def serve(open_browser=True):
         if open_browser:
             webbrowser.open(url)
         return None
-    print(f"Nethermind Studio on {url}")
+    print(f"{chcfg.get('app_name')} Studio on {url}" + (f"  (data: {chcfg.DATA})" if chcfg.DATA != HERE else ""))
     if open_browser and not os.environ.get("STUDIO_NO_BROWSER"):
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     return srv

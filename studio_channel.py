@@ -10,8 +10,10 @@ import datetime, json, re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
-GOAL_SUBS, GOAL_VIEWS = 1000, 10_000_000  # YouTube Partner Program via Shorts
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel as chcfg
+OUT = DATA / "out"
+GOAL_SUBS, GOAL_VIEWS = chcfg.get("goals")["subscribers"], chcfg.get("goals")["shorts_views_90d"]  # YouTube Partner Program via Shorts
 
 
 def jload(p, default=None):
@@ -133,7 +135,7 @@ def calendar(days_back=14, days_ahead=21):
     """Sent + scheduled posts in a window, grouped by local date. Scheduled ones can be moved."""
     stats = jload(OUT / "stats.json", {}) or {}
     titles = {}
-    for p in (HERE / "packaging").glob("*.json"):
+    for p in (DATA / "packaging").glob("*.json"):
         titles[p.stem] = (jload(p, {}) or {}).get("title", p.stem)
     now = datetime.datetime.now().astimezone()
     lo, hi = now - datetime.timedelta(days=days_back), now + datetime.timedelta(days=days_ahead)
@@ -177,7 +179,7 @@ def title_checklist(title):
     return [
         {"ok": len(t) <= 70, "label": f"Short enough to read on a phone ({len(t)}/70 characters)"},
         {"ok": bool(re.search(r"\d", t)), "label": "Has a hard number"},
-        {"ok": bool(re.search(r"marvel|wolverine|hulk|x-men|mutant|spider", t, re.I)) or bool(re.search(r"star|planet|ocean|sea|worm|shark|fish|shrimp", t, re.I)),
+        {"ok": bool(re.search("|".join(map(re.escape, chcfg.get("title_subjects"))), t, re.I)) if chcfg.get("title_subjects") else True,
          "label": "Names the subject people search for"},
         {"ok": "—" in t or ":" in t or "?" in t, "label": "Has a twist or reveal after the hook"},
         {"ok": not re.search(r"\b(you won't believe|shocking|insane)\b", t, re.I), "label": "No clickbait phrases"},

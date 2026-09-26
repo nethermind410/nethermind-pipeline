@@ -13,13 +13,14 @@ import json, sys, tarfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-A = HERE / "assets"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A = DATA / "assets"
 
 
 def files_for(vid):
-    cfg = json.loads((HERE / "cfg" / f"{vid}.json").read_text())
+    cfg = json.loads((DATA / "cfg" / f"{vid}.json").read_text())
     names = {s["vis"]["src"] for s in cfg["segments"] if s.get("vis", {}).get("src")}
-    pkg = HERE / "packaging" / f"{vid}.json"
+    pkg = DATA / "packaging" / f"{vid}.json"
     if pkg.exists():
         t = json.loads(pkg.read_text()).get("thumbnail") or {}
         if t.get("src"):
@@ -34,7 +35,7 @@ def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     vid = sys.argv[1]
-    out = HERE / "out" / f"{vid}_assets.tar.gz"
+    out = DATA / "out" / f"{vid}_assets.tar.gz"
     names = files_for(vid)
     with tarfile.open(out, "w:gz") as tar:
         for n in names:

@@ -9,8 +9,9 @@ import base64, datetime, json, re, uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT, CFG, PKG = HERE / "out", HERE / "cfg", HERE / "packaging"
-INSP_DIR, INSP = HERE / "inspiration", OUT / "inspiration.json"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT, CFG, PKG = DATA / "out", DATA / "cfg", DATA / "packaging"
+INSP_DIR, INSP = DATA / "inspiration", OUT / "inspiration.json"
 SERIES = OUT / "series.json"
 ID_RE = re.compile(r"^[a-z0-9_]+$")
 

@@ -11,7 +11,9 @@ import datetime, json, os, re, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT = DATA / "out"
 VIDIQ = "mcp__claude_ai_vidIQ_for_Claude__"
 
 
@@ -35,11 +37,11 @@ def ask(prompt, tools):
 def replies(thread_id):
     yt = json.loads((OUT / "youtube.json").read_text())
     c = next((x for x in yt.get("comments", []) if x["id"] == thread_id), None) or sys.exit("Comment not found; refresh first.")
-    pkg = next((json.loads(p.read_text()) for p in (HERE / "packaging").glob("*.json")
+    pkg = next((json.loads(p.read_text()) for p in (DATA / "packaging").glob("*.json")
                 if json.loads(p.read_text()).get("title", "")[:40].lower() == c["video_title"][:40].lower()), {})
     import llm
-    out = llm.ask("replies", f"""You write replies for Nethermind, a faceless YouTube Shorts channel about Marvel history, space and weird animals.
-Voice: direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one).
+    out = llm.ask("replies", f"""You write replies for {channel.get("name")}, a faceless YouTube Shorts channel about {channel.get("replies_about") or ", ".join(channel.get("lanes")) or "fact-checked stories"}.
+Voice: {channel.get("reply_voice")}.
 Video: "{c['video_title']}". What the video covers: {pkg.get('youtube_description', '')[:600]}
 Comment by {c['author']}: "{c['text']}"
 Write 2 different replies (each under 220 characters). Only state facts that are in the video description above;
@@ -52,7 +54,7 @@ if the comment asks something you can't verify from it, say you'll look into it.
 
 
 def score(vid):
-    p = HERE / "packaging" / f"{vid}.json"
+    p = DATA / "packaging" / f"{vid}.json"
     pkg = json.loads(p.read_text())
     titles = [o["title"] if isinstance(o, dict) else o for o in pkg.get("title_options", [])] or [pkg["title"]]
     bal = ask(f"Call {VIDIQ}vidiq_balance and reply with ONLY JSON: " + '{"credits": <totalCredits>, "resets": "<renewableResetsAt>"}',
@@ -63,7 +65,7 @@ def score(vid):
         sys.exit(f"vidIQ has {bal.get('credits')} credits; scoring {len(titles)} titles needs {5 * len(titles)}. "
                  f"Credits refill {str(bal.get('resets', ''))[:10]}.")
     res = ask("Score each of these YouTube Shorts titles with vidiq_score_title (type 'short', channelId "
-              f"'UCpE0Ce-qXmVWCwwqiW5bvxw'). Titles: {json.dumps(titles)}. Reply with ONLY JSON: "
+              f"'{channel.get('youtube_channel_id')}'). Titles: {json.dumps(titles)}. Reply with ONLY JSON: "
               '{"scores": [{"title": "...", "score": <0-100>, "note": "<one short reason vidIQ gave>"}]} — use the exact numbers vidIQ returned.',
               [VIDIQ + "vidiq_score_title"])
     stamp = datetime.datetime.now().isoformat(timespec="minutes")

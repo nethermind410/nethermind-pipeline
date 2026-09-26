@@ -17,7 +17,8 @@ from pathlib import Path
 import youtube
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+OUT = DATA / "out"
 CONFIG = HERE / "watchlist.json"            # the channels you follow (tracked)
 RESULT = OUT / "watchlist.json"             # the last check (ids cached here too)
 HISTORY = OUT / "watchlist_history.jsonl"   # one line per check: each channel's median and per-video views

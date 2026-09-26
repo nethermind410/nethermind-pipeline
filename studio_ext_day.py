@@ -13,6 +13,7 @@ comments, and anything broken.
 import datetime, shutil, subprocess, sys
 
 import studio_ext_desk as desk
+import channel
 
 
 def _step(key, title, why, go, kind, done=False):
@@ -112,7 +113,7 @@ def remind():
     late = datetime.datetime.now().hour >= 18
     title = "Nothing's gone out today yet" if late else first["title"]
     body = first["why"].replace('"', "'")[:180]
-    subprocess.run(["osascript", "-e", f'display notification "{body}" with title "Nethermind" subtitle "{title}" sound name "Glass"'],
+    subprocess.run(["osascript", "-e", f'display notification "{body}" with title "{channel.get('app_name')}" subtitle "{title}" sound name "Glass"'],
                    capture_output=True, timeout=10)
     return first
 

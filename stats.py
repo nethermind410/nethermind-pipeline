@@ -14,6 +14,7 @@ import requests
 import buffer_post
 
 HERE = Path(__file__).resolve().parent
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 QUERY = """
 query($o: OrganizationId!, $after: String) {
   posts(first: 50, after: $after, input: {organizationId: $o, filter: {status: [sent]},
@@ -42,7 +43,7 @@ def norm(s):
 
 def load_packaging():
     keys = {}
-    for p in (HERE / "packaging").glob("*.json"):
+    for p in (DATA / "packaging").glob("*.json"):
         if p.stem.startswith("_"):
             continue
         d = json.loads(p.read_text())
@@ -64,7 +65,7 @@ def words(s):
 def load_fuzzy():
     """Each video's distinctive words (title + description + captions) for posts whose text was edited by hand."""
     docs = {}
-    for p in (HERE / "cfg").glob("*.json"):                # every video: its script, plus packaging when it has one
+    for p in (DATA / "cfg").glob("*.json"):                # every video: its script, plus packaging when it has one
         if p.stem.startswith(("_", "test")) or p.stem.endswith("_tiktok") or "__" in p.stem:
             continue
         try:
@@ -74,7 +75,7 @@ def load_fuzzy():
         if c.get("draft") or c.get("format") == "landscape":   # long-form repeats every chapter's words
             continue
         text = " ".join(s.get("text", "") for s in c.get("segments", [])) + " " + p.stem.replace("_", " ")
-        pk = HERE / "packaging" / f"{p.stem}.json"
+        pk = DATA / "packaging" / f"{p.stem}.json"
         if pk.exists():
             d = json.loads(pk.read_text())
             text += " " + " ".join(str(d.get(f, "")) for f in ("title", "youtube_description", "tiktok_caption",
@@ -119,7 +120,7 @@ def main():
     org = gql(env, "{ account { organizations { id } } }")["account"]["organizations"][0]["id"]
     keys = load_packaging()
     fuzzy = load_fuzzy()
-    posted = json.loads((HERE / "out" / "posted.json").read_text()) if (HERE / "out" / "posted.json").exists() else {}
+    posted = json.loads((DATA / "out" / "posted.json").read_text()) if (DATA / "out" / "posted.json").exists() else {}
     by_id = {pid: vid for vid, rec in posted.items() if isinstance(rec, dict)
              for pid in rec.get("posts", {}).values()}
     videos, unmatched, after, nodes = {}, 0, None, []
@@ -148,10 +149,10 @@ def main():
     import datetime
     out = {"videos": videos, "scheduled": scheduled, "unmatched_posts": unmatched,
            "updated": datetime.datetime.now().isoformat(timespec="minutes")}
-    (HERE / "out" / "stats.json").write_text(json.dumps(out, indent=1))
+    (DATA / "out" / "stats.json").write_text(json.dumps(out, indent=1))
     # one line per run, so the app can draw trends: {"at": ..., "views": {video: total}}
     snap = {"at": out["updated"], "views": {v: int(sum(p["views"] or 0 for p in ps)) for v, ps in videos.items()}}
-    with open(HERE / "out" / "stats_history.jsonl", "a") as f:
+    with open(DATA / "out" / "stats_history.jsonl", "a") as f:
         f.write(json.dumps(snap) + "\n")
     rank = sorted(videos.items(), key=lambda kv: -sum(p["views"] or 0 for p in kv[1]))
     print(f"{'video':32} {'views':>8} {'shares':>7} {'saves':>6}")

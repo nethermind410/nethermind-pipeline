@@ -9,7 +9,9 @@ import datetime, json
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-STATE = HERE / "out" / "alerts.json"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+STATE = DATA / "out" / "alerts.json"
 KEEP = 30
 
 
@@ -41,7 +43,7 @@ def check(health, now=None):
 def message(a):
     if a["kind"] == "fixed":
         return f"{a['name']} is working again", "Fixed"
-    return f"{a['name']} needs a look", a["detail"] or "Open Settings in Nethermind"
+    return f"{a['name']} needs a look", a["detail"] or f"Open Settings in {channel.get('app_name')}"
 
 
 def clear(alert_id):

@@ -45,8 +45,9 @@ import requests
 from dotenv import load_dotenv
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-A = os.path.join(HERE, "assets")
-load_dotenv(os.path.join(HERE, ".env"))
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+A = os.path.join(DATA, "assets")
+load_dotenv(os.path.join(DATA, ".env"))
 
 BACKEND = os.environ.get("IMAGE_BACKEND", "cloudflare")
 GEMINI_MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")

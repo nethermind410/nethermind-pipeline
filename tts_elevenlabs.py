@@ -14,7 +14,8 @@ import os
 from dotenv import load_dotenv
 from elevenlabs import ElevenLabs
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+import channel
+load_dotenv(channel.ENV_FILE)
 
 MODEL_ID = os.environ.get("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
 _client = None

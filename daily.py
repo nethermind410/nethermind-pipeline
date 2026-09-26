@@ -18,6 +18,7 @@ from pathlib import Path
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 PY = str(HERE / ".venv" / "bin" / "python") if (HERE / ".venv" / "bin" / "python").exists() else sys.executable
 
 
@@ -29,12 +30,12 @@ def drafted_topics():
     """Every topic the Content agent has already drafted (waiting, approved or built) — by topic text, not by
     slug, because cfg ids and idea slugs are cut to different lengths."""
     seen = set()
-    for p in (HERE / "out" / "drafts").glob("*.json") if (HERE / "out" / "drafts").exists() else []:
+    for p in (DATA / "out" / "drafts").glob("*.json") if (DATA / "out" / "drafts").exists() else []:
         try:
             seen.add(_norm(json.loads(p.read_text()).get("topic", "")))
         except Exception:
             pass
-    for p in (HERE / "cfg").glob("*.json"):
+    for p in (DATA / "cfg").glob("*.json"):
         seen.add(_norm(p.stem.replace("_", " ")))
         try:
             d = json.loads(p.read_text()).get("draft")
@@ -75,7 +76,7 @@ def pick_topic(skip=()):
 def scout_backlog(n=3):
     """Investigate up to n open ideas that have no scorecard yet. A failing scout never stops the run."""
     import studio_api, intelligence
-    have = {p.stem for p in (HERE / "out" / "intel").glob("*.json")} if (HERE / "out" / "intel").exists() else set()
+    have = {p.stem for p in (DATA / "out" / "intel").glob("*.json")} if (DATA / "out" / "intel").exists() else set()
     done = []
     lanes = ("intelligence picks", "marvel", "anime", "gaming")     # score the channel's lanes first
     rank = lambda s: next((k for k, name in enumerate(lanes) if s["name"].lower().startswith(name)), len(lanes))
@@ -99,12 +100,12 @@ def pick_long_topic():
     """A long-form wants a big topic: an iceberg idea from the backlog first, else the best open idea."""
     import studio_api
     done = drafted_topics() | {_norm(json.loads(p.read_text()).get("draft", {}).get("topic", ""))
-                               for p in (HERE / "episodes").glob("*.json") if not p.stem.startswith("_")}
+                               for p in (DATA / "episodes").glob("*.json") if not p.stem.startswith("_")}
     import intelligence
     items = [(s["name"], i) for s in studio_api.ideas()["sections"] for i in s["items"]
              if not i["made"] and not i["dismissed"] and _norm(i["hook"]) not in done]
     # the iceberg is a template for any topic: take one in the channel's lanes, rotating away from last week's lane
-    eps = sorted((p for p in (HERE / "episodes").glob("*.json") if not p.stem.startswith("_")), key=lambda p: p.stat().st_mtime)
+    eps = sorted((p for p in (DATA / "episodes").glob("*.json") if not p.stem.startswith("_")), key=lambda p: p.stat().st_mtime)
     last = intelligence.lane_of(json.loads(eps[-1].read_text()).get("title", "")) if eps else None
     ice = [i for _, i in items if "iceberg" in i["hook"].lower() and intelligence.lane_of(i["hook"]) in ("marvel", "anime", "gaming", "creature")]
     ice.sort(key=lambda i: intelligence.lane_of(i["hook"]) == last)          # a different lane from last week first

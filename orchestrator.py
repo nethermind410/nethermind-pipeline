@@ -20,7 +20,8 @@ import datetime, json, sqlite3, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DB = HERE / "out" / "nether.db"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+DB = DATA / "out" / "nether.db"
 STALE_HOURS = 6        # a task still "working" after this long stopped without reporting (app closed mid-job)
 
 # The whole system as agents. Each is a region of the brain (ax/ay: its anchor in the brain drawing,

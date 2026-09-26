@@ -19,9 +19,11 @@ import json, re, statistics
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-INTEL = HERE / "out" / "intel"
-WEIGHTS = HERE / "out" / "intel_weights.json"
-DECISIONS = HERE / "out" / "learning" / "decisions.jsonl"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+INTEL = DATA / "out" / "intel"
+WEIGHTS = DATA / "out" / "intel_weights.json"
+DECISIONS = DATA / "out" / "learning" / "decisions.jsonl"
 MIN_SIDE = 2          # videos needed on each side of a component before it moves
 STOP = set("the a an of in on is are was were to for and or it its this that with at by from be has have had your you "
            "why how what who can could would still we our they them not always real really just".split())
@@ -76,7 +78,7 @@ def decide(slug, choice, reason=""):
 # ------------------------------------------------------------------ learning from results
 def _views():
     try:
-        vids = json.loads((HERE / "out" / "stats.json").read_text()).get("videos", {})
+        vids = json.loads((DATA / "out" / "stats.json").read_text()).get("videos", {})
     except Exception:
         return {}
     return {v: int(sum(p.get("views") or 0 for p in ps)) for v, ps in vids.items()}
@@ -84,7 +86,7 @@ def _views():
 
 def _title(vid):
     try:
-        return json.loads((HERE / "packaging" / f"{vid}.json").read_text()).get("title", "")
+        return json.loads((DATA / "packaging" / f"{vid}.json").read_text()).get("title", "")
     except Exception:
         return ""
 
@@ -167,7 +169,7 @@ def lessons(cards, views, weights, notes, checked, acc):
             lanes.setdefault(c["lane"], []).append(c["decision"]["choice"])
     for lane, calls in sorted(lanes.items()):
         if len(calls) >= 2:
-            out.append(f"Courtney's taste — {lane}: \"make it\" on {calls.count('make')} of {len(calls)} scorecards.")
+            out.append(f"{channel.whose()} taste — {lane}: \"make it\" on {calls.count('make')} of {len(calls)} scorecards.")
     reasons = [c["decision"]["reason"] for c in cards if c.get("decision") and c["decision"].get("reason")]
     if reasons:
         out.append("Recent reasons given: " + " | ".join(f'"{r}"' for r in reasons[-5:]))
@@ -183,8 +185,8 @@ def lessons(cards, views, weights, notes, checked, acc):
 
 
 def write_learnings(lines):
-    p = HERE / "LEARNINGS.md"
-    text = p.read_text() if p.exists() else "# What's working — Nethermind\n"
+    p = DATA / "LEARNINGS.md"
+    text = p.read_text() if p.exists() else f"# What's working — {channel.get('name')}\n"
     block = ("<!-- nether:auto — written by learning.py; edit above or below, not inside -->\n"
              "## NETHER learned (automatic)\n\n" + "\n".join(f"- {l}" for l in lines) + "\n<!-- /nether:auto -->")
     if "<!-- nether:auto" in text:
@@ -204,7 +206,7 @@ def summary():
         wj = {"weights": intelligence.weights(), "history": []}
     auto = ""
     try:
-        m = re.search(r"## NETHER learned \(automatic\)\n\n(.*?)\n<!-- /nether:auto -->", (HERE / "LEARNINGS.md").read_text(), re.S)
+        m = re.search(r"## NETHER learned \(automatic\)\n\n(.*?)\n<!-- /nether:auto -->", (DATA / "LEARNINGS.md").read_text(), re.S)
         auto = m.group(1) if m else ""
     except Exception:
         pass

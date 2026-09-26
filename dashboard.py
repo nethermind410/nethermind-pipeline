@@ -15,7 +15,9 @@ from PIL import Image
 import studio_api
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "out"
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+import channel
+OUT = DATA / "out"
 
 
 def jload(p, default):
@@ -53,13 +55,13 @@ def copy_block(label, text):
 def ready_videos(posted):
     """Built + packaged + passed QA, not yet posted — newest first."""
     out = []
-    for cfg in sorted((HERE / "cfg").glob("*.json"), key=lambda p: -p.stat().st_mtime):
+    for cfg in sorted((DATA / "cfg").glob("*.json"), key=lambda p: -p.stat().st_mtime):
         vid = cfg.stem
         if vid.endswith("_tiktok") or vid.startswith(("test", "zz")) or vid in posted:
             continue
         c = jload(cfg, {})
         mp4 = OUT / f"{c.get('file', vid)}.mp4"
-        pkg = jload(HERE / "packaging" / f"{vid}.json", None)
+        pkg = jload(DATA / "packaging" / f"{vid}.json", None)
         if mp4.exists() and pkg and (OUT / f"{vid}_qa_contact.jpg").exists():
             out.append((vid, pkg))
     return out
@@ -101,7 +103,7 @@ def main():
             line += f' <a href="{e(c["link"])}" target="_blank" rel="noopener">Open YouTube Studio</a>'
         todo.append(line + "</li>")
     if todo:
-        todo.append('<li class="hint">Tick these off in the Nethermind app on your Mac — they clear here after the next update.</li>')
+        todo.append(f'<li class="hint">Tick these off in the {e(channel.get("app_name"))} app on your Mac — they clear here after the next update.</li>')
 
     ready_html = ""
     for vid, pkg in ready[:2]:
@@ -148,6 +150,7 @@ def main():
         best_title=e(titles.get(rows[0][1], rows[0][1])) if rows else "",
         ready=ready_html, sched=sched_html, perf=perf_html,
         log=e(log_text), log_date=e(log_date))
+    page = page.replace("<title>Nethermind Daily</title>", f"<title>{e(channel.get('name'))} Daily</title>", 1)   # the template names the original channel
     (OUT / "dashboard.html").write_text(page)
     print(f"wrote {OUT / 'dashboard.html'} ({len(page) // 1024} KB)")
 

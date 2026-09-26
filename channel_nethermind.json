@@ -1,0 +1,52 @@
+{
+ "name": "Nethermind",
+ "app_name": "Nethermind",
+ "owner": "Courtney",
+ "about": "faceless, fact-checked YouTube Shorts on Marvel/comics history, anime, gaming,\nspace and strange animals; the best format so far is \"a comic power that's real biology\".",
+ "lanes": [
+  "marvel",
+  "anime",
+  "gaming",
+  "creature"
+ ],
+ "title_subjects": [
+  "marvel",
+  "wolverine",
+  "hulk",
+  "x-men",
+  "mutant",
+  "spider",
+  "star",
+  "planet",
+  "ocean",
+  "sea",
+  "worm",
+  "shark",
+  "fish",
+  "shrimp"
+ ],
+ "hashtag": "nethermind",
+ "subscribe_line": "Subscribe for the buried history behind comics, anime, games and the real science hiding inside them.",
+ "long_hashtags": "#nethermind #comics #history #science",
+ "replies_about": "Marvel history, space and weird animals",
+ "narration_voice": "am_liam",
+ "youtube_channel_id": "UCpE0Ce-qXmVWCwwqiW5bvxw",
+ "dashboard_url": "https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B",
+ "jarvis": {
+  "enabled": true,
+  "dir": "~/Developer/jarvis",
+  "url": "http://127.0.0.1:8765"
+ },
+ "backup_dir": "~/Documents/Nethermind Backups",
+ "backup_prefix": "nethermind",
+ "launchd_label": "com.nethermind.daily",
+ "off_lanes": [
+  "space",
+  "ocean"
+ ],
+ "buffer_channels": {
+  "tiktok": "6aaf9711ea19ca0bde942596",
+  "instagram": "6aaf96f6ea19ca0bde9424ed",
+  "youtube": "6aaf9694ea19ca0bde942237"
+ }
+}

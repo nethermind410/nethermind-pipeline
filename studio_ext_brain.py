@@ -16,9 +16,10 @@ from pathlib import Path
 import orchestrator as nether
 
 HERE = Path(__file__).resolve().parent
+from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 ORGANS = HERE / "organs"
-STATE = HERE / "out" / "brain_state.json"
-LEARN = HERE / "LEARNINGS.md"
+STATE = DATA / "out" / "brain_state.json"
+LEARN = DATA / "LEARNINGS.md"
 NAME_RE = re.compile(r"^[a-z][a-z0-9_]{0,31}$")
 
 
