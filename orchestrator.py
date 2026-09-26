@@ -19,6 +19,8 @@ through the functions. The log lives in out/nether.db (SQLite).
 import datetime, json, sqlite3, sys
 from pathlib import Path
 
+import events
+
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 DB = DATA / "out" / "nether.db"
@@ -117,15 +119,18 @@ def begin(agent, title, sub=None, parent=None, video=None, input=None, retry=Non
         raise ValueError(f"unknown agent {agent}")
     with db() as c:
         t = now()
-        return c.execute("INSERT INTO tasks (parent, agent, sub, title, status, video, input, retry, created, started) "
-                         "VALUES (?,?,?,?,?,?,?,?,?,?)",
-                         (parent, agent, sub, title, status, video, _j(input), _j(retry), t,
-                          t if status == "working" else None)).lastrowid
+        tid = c.execute("INSERT INTO tasks (parent, agent, sub, title, status, video, input, retry, created, started) "
+                        "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                        (parent, agent, sub, title, status, video, _j(input), _j(retry), t,
+                         t if status == "working" else None)).lastrowid
+    events.publish("task", {"id": tid, "agent": agent, "sub": sub, "status": status, "title": title})
+    return tid
 
 
 def _close(c, tid, status, output=None, error=None):
     c.execute("UPDATE tasks SET status=?, output=COALESCE(?, output), error=COALESCE(?, error), finished=? "
               "WHERE id=? AND status != 'cancelled'", (status, _j(output), error, now(), tid))   # a cancel sticks
+    events.publish("task", {"id": tid, "status": status})
 
 
 def finish(tid, output=None):
@@ -191,6 +196,7 @@ def mark_interrupted():
     with db() as c:
         c.execute("UPDATE tasks SET status='failed', finished=?, error=? WHERE status='working'",
                   (now(), "Nethermind was closed while this ran — Retry"))
+    events.publish("task", {"bulk": "interrupted"})
 
 
 def _row(r):

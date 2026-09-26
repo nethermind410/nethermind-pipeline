@@ -151,7 +151,13 @@
   // for other extensions: fire an impulse along a tract (e.g. Publishing → Analytics when a video goes live)
   window.nxFire = async (from, to) => { if (!onBrain() || !sys) return; const d = geo[`${from}>${to}`], a = sys.agents.find(x => x.key === to);
     if (d) { await pulse(d, 1100); if (a) brainNet.fire(a.ax, a.ay); } };
-  setInterval(() => { if (!document.hidden) refresh(); }, 4000);
+  // push, not poll: ext_live.js's SSE stream fires these the moment a task/job changes; the
+  // interval below just catches anything in between (or if the stream is down) at a calmer pace.
+  let liveRefreshTimer = null;
+  const liveRefresh = () => { clearTimeout(liveRefreshTimer); liveRefreshTimer = setTimeout(refresh, 150); };
+  window.addEventListener("nx-task", liveRefresh);
+  window.addEventListener("nx-job", e => { if (!e.detail || e.detail.type !== "progress") liveRefresh(); });
+  setInterval(() => { if (!document.hidden) refresh(); }, 15000);
   refresh();
 
   /* ---------- a sub-agent, up close ---------- */

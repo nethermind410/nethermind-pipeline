@@ -1,0 +1,18 @@
+/* ext_live.css — truth badges + cancel controls (crimson accent, calm, no top-level layout changes) */
+.truth { display: inline-flex; align-items: center; gap: 5px; cursor: default; }
+.truth-dot { width: 6px; height: 6px; border-radius: 50%; background: #E0294B; display: inline-block; flex: none; }
+.truth.stale { opacity: .55; }
+.truth.stale .truth-dot { background: #8a8a8a; }
+.truth.unknown { opacity: .45; }
+
+button.cancel, .icon.cancel {
+  margin-left: auto; background: transparent; border: 1px solid #E0294B; color: #E0294B;
+  border-radius: 6px; padding: 3px 11px; font-size: 12px; font-family: inherit; cursor: pointer;
+  line-height: 1.4;
+}
+button.cancel:hover, .icon.cancel:hover { background: #E0294B; color: #fff; }
+.q-row.now { display: flex; align-items: center; gap: 8px; }
+
+#activity.interrupted { background: rgba(224, 41, 75, .14); }
+#activity { display: flex; align-items: center; gap: 8px; }
+#activity [data-cancel-pill] { flex: none; }
