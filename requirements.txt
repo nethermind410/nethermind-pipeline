@@ -1,23 +1,36 @@
 # Nnethermind pipeline — Python deps.
 # Split by what actually needs each one, so a CI job that only renders +
 # posts doesn't have to install the Gemini/ElevenLabs paths it doesn't use.
+# Versions pinned to what's tested in the project's own .venv (`pip freeze`), 2026-09-27.
 
 # Core render pipeline (make_short.py)
-numpy
-pillow
+numpy==2.5.3
+pillow==12.3.0
 
-# Narration — Kokoro (tts_kokoro.py), the default, free/self-hosted
-kokoro-onnx
-soundfile
+# Narration — Kokoro (tts_kokoro.py), the default, free/self-hosted.
+# Kokoro itself needs espeak-ng as a system package (apt/brew install espeak-ng) — it is NOT bundled or
+# pip-installed here; see THIRD_PARTY_NOTICES.md and docs/PRODUCT.md ("Platform policy") for why.
+kokoro-onnx==0.6.1
+soundfile==0.14.0
+espeakng-loader==0.2.4
 
 # Publishing (buffer_post.py: R2 upload + Buffer GraphQL)
-requests
-boto3
-python-dotenv
+requests==2.34.2
+boto3==1.43.101
+python-dotenv==1.2.3
+
+# The Mac app shell (app.py: a native window around Studio)
+pywebview==6.2.1
+pyobjc-core==12.2.2
+pyobjc-framework-Cocoa==12.2.2
+pyobjc-framework-Quartz==12.2.2
+pyobjc-framework-Security==12.2.2
+pyobjc-framework-UniformTypeIdentifiers==12.2.2
+pyobjc-framework-WebKit==12.2.2
 
 # Optional / not used by the default GitHub Actions workflow:
 # google-genai      — only for gen_visuals.py (hero configs' Gemini art)
 # elevenlabs        — only if tts_elevenlabs.py's fallback path is called
 
 # Optional: AI engines beyond the Claude subscription (Control → AI engines)
-anthropic        # Anthropic API key engine
+anthropic>=0.40   # Anthropic API key engine — not installed in the project's own .venv, so pinned as a floor, not exact

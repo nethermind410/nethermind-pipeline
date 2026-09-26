@@ -250,6 +250,11 @@ def clean_segments(segs, vid, id_prefix=""):
         v = s.get("vis") or {}
         if v.get("t") != "kb":
             raise ValueError(f"Beat {sid} uses a '{v.get('t')}' visual; drafts use stills only.")
+        if v.get("prompt"):
+            hit = channel.blocked_name_in(v["prompt"])
+            if hit:
+                raise ValueError(f"Beat {sid}'s AI-art prompt names a trademarked character/mark ({hit!r}) — "
+                                  "AI art must stay archetype-only (pose/palette, never a named character, costume or logo).")
         src = str(v.get("src") or f"{sid}.jpg")
         if not (ASSETS / src).exists():            # new art: give it a name that can't clash with another video's
             if src not in defined:
@@ -262,6 +267,16 @@ def clean_segments(segs, vid, id_prefix=""):
         s["gap"] = min(max(float(s.get("gap", 0.15)), 0.05), 0.4)
         s.pop("hook", None)
     return segs
+
+
+def synthetic_disclosure(cfg):
+    """True when this video needs YouTube's "Altered or synthetic content" disclosure. Narration is always
+    text-to-speech in this pipeline (Kokoro/ElevenLabs — never a real voice), and any AI-art visual makes it
+    doubly true; kept as an explicit, stored decision (not just assumed) so the finish checklist and Buffer's
+    per-post label always agree with what's actually in the video."""
+    tts_narration = True            # every video this pipeline makes is narrated by Kokoro/ElevenLabs TTS
+    ai_art = any((s.get("vis") or {}).get("prompt") for s in cfg.get("segments") or [])
+    return tts_narration or ai_art
 
 
 def new_id(topic):
@@ -314,6 +329,7 @@ def draft(topic, notes=None, vid=None):
         pkg = write_packaging(cfg, facts)
         if not pkg.get("title"):
             raise RuntimeError("Packaging came back without a title.")
+        pkg["synthetic_disclosure"] = synthetic_disclosure(cfg)   # narration is TTS / visuals may be AI art — disclose it
         import business, intelligence                    # Business: affiliate + newsletter links in the description
         business.apply_links(pkg, topic, intelligence.lane_of(topic))
         nether.finish(cur, {"title": pkg["title"]})
@@ -323,10 +339,23 @@ def draft(topic, notes=None, vid=None):
         nether.finish(cur, {"score": score, "misses": [m for ok, m in rows if not ok]})
         cur = None
 
+        # Defense in depth: the validators in clean_segments/llm.check_packaging already reject a blocked
+        # trademarked name at generation time; this re-scan flags anything that still slipped through (e.g.
+        # a hand-edited prompt) so the user sees and must deal with it before approving.
+        flags = []
+        for s in cfg["segments"]:
+            hit = channel.blocked_name_in((s.get("vis") or {}).get("prompt") or "")
+            if hit:
+                flags.append(f"Beat {s['id']}'s AI-art prompt mentions '{hit}' — replace with an archetype description.")
+        for line in (pkg.get("thumbnail") or {}).get("lines") or []:
+            hit = channel.blocked_name_in(line)
+            if hit:
+                flags.append(f"Thumbnail text mentions '{hit}' — remove the named character/mark.")
+
         cfg["draft"] = {"at": nether.now(), "topic": topic, "task": parent}
         if notes:
             record["notes"].append({"at": nether.now(), "notes": notes})
-        record.update(check={"score": score, "rows": [[ok, m] for ok, m in rows]}, task=parent)
+        record.update(check={"score": score, "rows": [[ok, m] for ok, m in rows]}, task=parent, policy_flags=flags)
         save(vid, cfg, pkg, record)
         nether.finish(parent, {"id": vid, "title": pkg["title"], "retention": score})
         return vid
@@ -382,7 +411,7 @@ def drafts():
                                "kind": "real photo" if s["vis"].get("real") else "AI art" if s["vis"].get("prompt") else "same picture, new framing"}
                               for s in cfg["segments"]],
                     "end": (cfg.get("end") or {}).get("lines", []), "research": rec.get("research"),
-                    "check": rec.get("check"), "notes": rec.get("notes", [])})
+                    "check": rec.get("check"), "notes": rec.get("notes", []), "policy_flags": rec.get("policy_flags", [])})
     return out
 
 

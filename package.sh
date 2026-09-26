@@ -25,7 +25,7 @@ DIST="$HERE/dist"
 APP="$DIST/$NAME.app"
 RES="$APP/Contents/Resources/app"
 
-EXCLUDE='^(\.env|channel\.json|channel_nethermind\.json|jarvis_nethermind\.patch|TOPICS\.md|LEARNINGS\.md|ROADMAP\.md|runall\.sh|docs/NETHERMIND\.md|package\.sh|make_app\.sh)$|^(out|assets|tts|cfg|packaging|episodes|inspiration|music|\.github|\.claude)/|\.onnx$|voices-v1\.0\.bin$'
+EXCLUDE='^(\.env|channel\.json|channel_nethermind\.json|jarvis_nethermind\.patch|TOPICS\.md|LEARNINGS\.md|ROADMAP\.md|runall\.sh|docs/NETHERMIND\.md|package\.sh|make_app\.sh)$|^(out|assets|tts|cfg|packaging|episodes|inspiration|music|\.github|\.claude)/|\.onnx$|voices-v1\.0\.bin$|^espeak-ng(-data)?/|(^|/)espeak-ng(-data)?$|libespeak-ng\.(dylib|so|a)$'
 rm -rf "$APP"; mkdir -p "$RES" "$APP/Contents/MacOS"
 git ls-files | grep -Ev "$EXCLUDE" | while IFS= read -r f; do
   mkdir -p "$RES/$(dirname "$f")"; cp -p "$f" "$RES/$f"
@@ -67,9 +67,11 @@ cat > "$APP/Contents/Info.plist" <<EOF
 </dict></plist>
 EOF
 
-# the guard: nothing personal or secret in the bundle
+# the guard: nothing personal or secret in the bundle — and no espeak-ng binary/data (GPLv3; must stay a
+# separate system install the buyer does themselves, per THIRD_PARTY_NOTICES.md, never shipped inside Nether)
 LEAK=$(cd "$RES" && { find . \( -name .env -o -name channel.json -o -name channel_nethermind.json -o -name '*.onnx' -o -path './out/*' \
-        -o -path './cfg/*' -o -path './packaging/*' -o -path './assets/*' -o -path './tts/*' -o -name .git \) -print; \
+        -o -path './cfg/*' -o -path './packaging/*' -o -path './assets/*' -o -path './tts/*' -o -name .git \
+        -o -name 'espeak-ng*' -o -name 'libespeak-ng*' \) -print; \
         grep -rIl -e 'UCpE0Ce-qXmVWCwwqiW5bvxw' -e '6aaf9711ea19ca0bde942596' -e 'H7zHPA7sX1urnaWbt9yR7B' . || true; })
 if [[ -n "$LEAK" ]]; then echo "!! refusing to package — personal files or ids found:"; echo "$LEAK"; rm -rf "$APP"; exit 1; fi
 echo "Built $APP ($(du -sh "$APP" | cut -f1)) — $(cd "$RES" && find . -type f | wc -l | xargs) files, nothing personal."

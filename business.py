@@ -4,7 +4,9 @@
     python3 business.py kit        write out/media_kit.html — a one-page sponsor kit from your real numbers
     python3 business.py links      add the links block to every packaging file that hasn't been posted yet
 
-Successful faceless channels earn only 30–50% from ads; the rest is affiliate links, a newsletter and sponsors.
+For many faceless channels, ads are just one revenue stream among several — typical splits vary a lot by
+niche and audience, and nothing here is guaranteed. The others this agent helps with: affiliate links, a
+newsletter and sponsors.
 Settings live in out/business.json (edit them in Studio → Business → Money):
   amazon_tag       your Amazon Associates tag — every video gets a search link for what it covers
                    (e.g. the collected editions of the comic in the video)

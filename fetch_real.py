@@ -28,11 +28,12 @@ import html, json, os, re, sys, time
 import requests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+from channel import DATA, PKG  # the data folder (this folder unless NETHER_DATA is set)
 A = os.path.join(DATA, "assets")
 UA = "ContentPipelineBot/1.0 (single-operator research/educational use)"
 OK_LICENSES = {"public domain", "cc0"}
 OK_LICENSE_PREFIXES = ("cc by ",)  # plain CC BY only — not "cc by-sa"/"cc by-nc"
+CREDIT_START, CREDIT_END = "── image credits ──", "── end image credits ──"
 
 
 def _strip_html(s):
@@ -70,6 +71,32 @@ def search(query, limit=5):
 
 def _license_ok(license_):
     return license_ in OK_LICENSES or license_.startswith(OK_LICENSE_PREFIXES)
+
+
+def apply_credits(vid, credits):
+    """Write/refresh a CC BY attribution block in this video's YouTube description (real content needs real
+    credit — CC0/public domain need none). Idempotent: re-running fetch_real replaces the old block rather
+    than piling up duplicates. Silently does nothing if there's no packaging file yet for this id."""
+    lines, seen = [], set()
+    for c in credits:
+        if not c["license"].startswith(OK_LICENSE_PREFIXES):
+            continue
+        who = c.get("artist") or "Wikimedia Commons"
+        if who in seen:
+            continue
+        seen.add(who)
+        lines.append(f"{who} — {c['page']} (CC BY, via Wikimedia Commons)")
+    if not lines:
+        return False
+    p = PKG / f"{vid}.json"
+    if not p.exists():
+        return False
+    pkg = json.loads(p.read_text())
+    desc = pkg.get("youtube_description", "")
+    base = re.sub(rf"\n*{re.escape(CREDIT_START)}.*?{re.escape(CREDIT_END)}", "", desc, flags=re.S).rstrip()
+    pkg["youtube_description"] = base + f"\n\n{CREDIT_START}\n" + "\n".join(lines) + f"\n{CREDIT_END}"
+    p.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
+    return True
 
 
 def fetch(query, out_path):
@@ -121,3 +148,5 @@ if __name__ == "__main__":
                 print(f"  {c['page']}  (CC BY — credit: {c['artist']})")
             else:
                 print(f"  {c['page']}")
+        if apply_credits(cfg["id"], credits):
+            print(f"\nAdded CC BY attribution to the description in packaging/{cfg['id']}.json.")

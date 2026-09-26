@@ -46,13 +46,43 @@ of updates, and add **B-style "update plan"** renewals later if updates keep com
   - *Anthropic*: buyers use their own Claude subscription (Claude Code) or their own API key under Anthropic's
     Consumer/Commercial Terms and Usage Policy. Don't resell or share access; don't ship a key. Confirm running
     Claude Code headless (`claude -p`) from a sold product is within the subscription's terms for the buyer's plan.
-  - *Cloudflare, Kokoro, fonts*: Kokoro model is Apache-2.0 (keep its notice); fonts are OFL; list third-party
-    licences in an About/Acknowledgements file.
+  - *Cloudflare, Kokoro, fonts*: Kokoro model is Apache-2.0 (keep its notice); fonts are OFL; third-party
+    licences are listed in `THIRD_PARTY_NOTICES.md`.
+  - *espeak-ng*: Kokoro's phonemizer needs it, and it's **GPLv3** — a licence Nether itself doesn't ship under.
+    It must stay a separate system install the buyer does themselves (`apt install espeak-ng` / `brew install
+    espeak-ng`, see `SETUP.md`), never bundled inside the `.app`/`.dmg`; `package.sh` now refuses to package
+    if an espeak-ng binary or its data slips in. Don't bundle it without redoing the licence math first.
 - **Content rights**: the app's guidance (public-domain media only, original AI art for characters, cite sources) is
   guidance, not a guarantee — say so plainly in the EULA and README. vidIQ scoring uses Courtney's vidIQ connector:
   remove or make it bring-your-own before selling.
 - **Privacy**: Nether collects nothing and has no server; say that in a short privacy notice. If you add analytics,
   crash reports or licence checks later, that notice must change (UK GDPR).
+
+## Platform policy
+
+Plain rules, not legalese — what the app actually does to stay inside YouTube's, TikTok's and Instagram's own
+policies, and what stays the buyer's job:
+
+- **Reused/inauthentic content**: every video is written from its own sourced research (each fact carries a
+  source), the narration and beats are original to that script, and repeated images are reframed rather than
+  looped verbatim. A buyer who instead points the drafter at someone else's script or footage is outside what
+  this checklist covers — YouTube's reused-content policy is about the buyer's judgement, not a box the app
+  can tick for them.
+- **AI disclosure**: narration is always text-to-speech and some visuals are AI-generated art, so every video
+  carries a `synthetic_disclosure` flag (on by default) that (a) tells Buffer to mark the post as AI-generated
+  on every platform that accepts the flag, and (b) is a step in the finish checklist reminding the buyer to
+  tick "Altered or synthetic content" in YouTube Studio — because YouTube's own toggle isn't exposed by any
+  public API, so it can't be set from here automatically.
+- **Human approval before every post**: nothing renders without an approved script, and nothing posts without
+  the buyer opening the review page and pressing Schedule/Post themselves — there is no unattended posting
+  path, by design, however the app is configured.
+- **No mass accounts**: the app manages exactly one channel's three platform accounts (YouTube, TikTok,
+  Instagram) through the buyer's own Buffer login. It has no feature for operating multiple channels, sock
+  puppets, or bulk-created accounts, and buyers should not use it that way.
+- **Trademarked characters**: AI art and thumbnail text are checked against a block list of trademarked
+  character names and studio marks (`channel.py` → `BLOCKED_NAMES`, extendable per channel) — AI art may only
+  depict an archetype (pose/palette), never a named character, costume or logo. Narration may still mention a
+  real character by name; that's commentary, not the depiction the block list targets.
 
 ## Before selling — must change (technical)
 
