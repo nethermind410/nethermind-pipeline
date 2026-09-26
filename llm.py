@@ -26,6 +26,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 import channel
+from store import atomic_write_json, atomic_write_text, locked
 OUT = DATA / "out"
 SETTINGS, USAGE = OUT / "llm.json", OUT / "llm_usage.jsonl"
 
@@ -88,6 +89,20 @@ def settings():
     return s
 
 
+# which key_env names each engine may point at (never arbitrary — this ends up read by env() and sent as a bearer token)
+ALLOWED_KEY_ENV = {"openai": {"OPENAI_API_KEY", "OPENROUTER_API_KEY", "GEMINI_API_KEY"}, "local": set()}
+
+
+def _valid_base_url(engine, url):
+    from urllib.parse import urlparse
+    u = urlparse(url)
+    if u.scheme == "https" and u.netloc:
+        return True
+    if engine == "local" and u.scheme == "http" and u.hostname in ("localhost", "127.0.0.1", "::1"):
+        return True
+    return False
+
+
 def save(new):
     s = settings()
     for job, chain in (new.get("routes") or {}).items():
@@ -98,9 +113,15 @@ def save(new):
             s["routes"][job] = chain or ["claude"]
     for k, v in (new.get("engines") or {}).items():
         if k in s["engines"]:
-            s["engines"][k].update({kk: str(vv).strip() for kk, vv in v.items() if kk in ("model", "base_url", "key_env")})
+            clean = {kk: str(vv).strip() for kk, vv in v.items() if kk in ("model", "base_url", "key_env")}
+            if "key_env" in clean and clean["key_env"] not in ALLOWED_KEY_ENV.get(k, set()):
+                clean.pop("key_env")
+            if "base_url" in clean and not _valid_base_url(k, clean["base_url"]):
+                clean.pop("base_url")
+            s["engines"][k].update(clean)
     OUT.mkdir(exist_ok=True)
-    SETTINGS.write_text(json.dumps(s, indent=1))
+    with locked(SETTINGS):
+        atomic_write_json(SETTINGS, s)
     return s
 
 
@@ -134,10 +155,10 @@ def set_key(name, value, allowed=("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENRO
         raise ValueError("That doesn't look like an API key." if ENV_NAMES[name] == KEY_RE else f"That doesn't look like a valid {name}.")
     p = channel.ENV_FILE
     p.parent.mkdir(parents=True, exist_ok=True)
-    lines = [l for l in (p.read_text().splitlines() if p.exists() else []) if not l.strip().startswith(name + "=")]
-    lines.append(f"{name}={value}")
-    with os.fdopen(os.open(p, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:   # never readable by others, even briefly
-        f.write("\n".join(lines) + "\n")
+    with locked(p):
+        lines = [l for l in (p.read_text().splitlines() if p.exists() else []) if not l.strip().startswith(name + "=")]
+        lines.append(f"{name}={value}")
+        atomic_write_text(p, "\n".join(lines) + "\n")   # temp file is 0600 by default; never readable by others
     os.chmod(p, 0o600)
     return {"ok": True, "reply": f"Saved {name} to .env."}
 

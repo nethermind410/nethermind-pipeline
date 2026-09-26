@@ -7,7 +7,7 @@ Screens and their data come from studio_api.py; this file is routing, the one-at
 job runner (build / post / undo / stats), media serving with Range support, and the
 Jarvis proxy. Localhost only; state-changing requests need the X-Studio header.
 """
-import datetime, json, os, re, subprocess, sys, threading, webbrowser
+import datetime, json, logging, logging.handlers, os, re, subprocess, sys, threading, traceback, webbrowser
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import unquote
@@ -16,11 +16,19 @@ import studio_api as api
 import studio_channel as chan
 import studio_create as create
 import orchestrator as nether
+from store import atomic_write_text
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 import channel as chcfg
 OUT, CFG = DATA / "out", DATA / "cfg"
+LOGDIR = OUT / "logs"
+LOGDIR.mkdir(parents=True, exist_ok=True)
+log = logging.getLogger("studio")
+log.setLevel(logging.ERROR)
+_h = logging.handlers.RotatingFileHandler(LOGDIR / "server.log", maxBytes=1_000_000, backupCount=3)
+_h.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+log.addHandler(_h)
 UI = HERE / "studio"
 PORT = int(os.environ.get("STUDIO_PORT", 8766))  # 8765 belongs to Jarvis
 ID_RE = re.compile(r"^[a-z0-9_]+$")
@@ -68,7 +76,13 @@ STATIC = {"/": ("index.html", "text/html; charset=utf-8"), "/app.css": ("app.css
 # Extensions: any studio_ext_<name>.py may define GET = {"/api/x": fn} and POST = {"/api/x": fn(body) -> dict}
 # (raise ValueError for a 400). Any studio/ext_<name>.js / .css is served and loaded by the page via /ext.js.
 import importlib
-EXT = [importlib.import_module(p.stem) for p in sorted(HERE.glob("studio_ext_*.py"))]
+EXT, EXT_ERRORS = [], []
+for _p in sorted(HERE.glob("studio_ext_*.py")):
+    try:
+        EXT.append(importlib.import_module(_p.stem))
+    except Exception as _e:
+        log.error("extension %s failed to load:\n%s", _p.stem, traceback.format_exc())
+        EXT_ERRORS.append({"name": _p.stem, "error": str(_e)})
 for f in sorted(UI.glob("ext_*.js")) + sorted(UI.glob("ext_*.css")):
     STATIC["/" + f.name] = (f.name, "text/javascript" if f.suffix == ".js" else "text/css")
 EXT_GET = {k: v for m in EXT for k, v in getattr(m, "GET", {}).items()}
@@ -133,6 +147,10 @@ def ask_jarvis(text):
         return 502, {"reply": f"Jarvis didn't answer: {e}"}
 
 
+class BadJSON(Exception):
+    pass
+
+
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -174,9 +192,26 @@ class H(BaseHTTPRequestHandler):
             pass
 
     def body(self):
-        return json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0)) or 2) or b"{}")
+        raw = self.rfile.read(int(self.headers.get("Content-Length", 0)) or 2) or b"{}"
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            raise BadJSON()
+
+    def _host_ok(self):
+        host = (self.headers.get("Host") or "").lower()
+        return host in (f"127.0.0.1:{PORT}", f"localhost:{PORT}")
 
     def do_GET(self):
+        if not self._host_ok():
+            return self.send(403, {"error": "forbidden"})
+        try:
+            return self._do_GET()
+        except Exception:
+            log.error("GET %s failed:\n%s", self.path, traceback.format_exc())
+            return self.send(500, {"error": "Something went wrong handling that request — see out/logs/server.log."})
+
+    def _do_GET(self):
         path = unquote(self.path.split("?")[0])
         if path in STATIC:
             name, ctype = STATIC[path]
@@ -186,7 +221,8 @@ class H(BaseHTTPRequestHandler):
                   "/api/ideas": api.ideas, "/api/health": api.health, "/api/channel": chan.channel,
                   "/api/calendar": chan.calendar, "/api/comments": lambda: chan.comments(api.done_map()),
                   "/api/demand": lambda: api.jload(OUT / "idea_demand.json", {}),
-                  "/api/inspiration": create.inspiration, "/api/series": create.series}
+                  "/api/inspiration": create.inspiration, "/api/series": create.series,
+                  "/api/ext_errors": lambda: EXT_ERRORS}
         if path == "/ext.js":                               # loads every extension's script and stylesheet
             names = sorted(k[1:] for k in STATIC if k.startswith("/ext_"))
             js = "".join(f'document.head.insertAdjacentHTML("beforeend",\'<link rel="stylesheet" href="/{n}">\');' if n.endswith(".css")
@@ -232,9 +268,21 @@ class H(BaseHTTPRequestHandler):
         self.send(404, {"error": "not found"})
 
     def do_POST(self):
+        if not self._host_ok():
+            return self.send(403, {"error": "forbidden"})
+        try:
+            return self._do_POST()
+        except BadJSON:
+            return self.send(400, {"error": "bad JSON body"})
+        except Exception:
+            log.error("POST %s failed:\n%s", self.path, traceback.format_exc())
+            return self.send(500, {"error": "Something went wrong handling that request — see out/logs/server.log."})
+
+    def _do_POST(self):
         # same-origin + custom header: stops other web pages triggering anything
         origin = self.headers.get("Origin", "")
-        if self.headers.get("X-Studio") != "1" or (origin and origin != f"http://127.0.0.1:{PORT}"):
+        ok_origins = (f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}")
+        if self.headers.get("X-Studio") != "1" or (origin and origin not in ok_origins):
             return self.send(403, {"error": "forbidden"})
         b = self.body()
         if self.path == "/api/jarvis":
@@ -266,7 +314,7 @@ class H(BaseHTTPRequestHandler):
             if title not in opts + [pkg.get("title")]:
                 return self.send(400, {"error": "Pick one of the listed titles."})
             pkg["title"] = title
-            pkg_path.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
+            atomic_write_text(pkg_path, json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
             return self.send(200, {"ok": True})
         try:
             if self.path == "/api/inspiration":
@@ -326,6 +374,10 @@ class H(BaseHTTPRequestHandler):
 
 def serve(open_browser=True):
     url = f"http://127.0.0.1:{PORT}"
+    try:
+        nether.mark_interrupted()
+    except Exception:
+        pass
     try:
         srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     except OSError:

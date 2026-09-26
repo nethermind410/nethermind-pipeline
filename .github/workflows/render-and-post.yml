@@ -18,11 +18,10 @@ on:
         type: string
       publish:
         description: >-
-          Actually post to Buffer for real (uploads to R2, creates a live
-          Buffer post in the queue). Leave OFF (default) to just render and
-          run buffer_post.py in --dry-run mode — prints exactly what would be
-          posted without touching Buffer or R2 at all. Flip this on only once
-          you've reviewed a dry run and the rendered video artifact.
+          DISABLED — this workflow always renders and dry-runs only, and
+          refuses to post live no matter what you set here. Review the
+          artifact and dry-run output, then run buffer_post.py locally
+          (without --dry-run) to actually post.
         required: true
         default: false
         type: boolean
@@ -129,19 +128,20 @@ jobs:
           R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
           EOF
 
-      - name: Post to Buffer (dry run unless "publish" is checked)
+      - name: Post to Buffer (render-only: this workflow never posts live)
         run: |
+          if [ "${{ inputs.publish }}" = "true" ]; then
+            echo "::warning::publish=true was requested, but this workflow refuses to post live."
+            echo "Live Buffer posting from CI is disabled by policy (working-preferences.md)."
+            echo "Review this dry run and the rendered artifact, then run buffer_post.py locally to post for real."
+          fi
           PACKAGING_ARG=""
           if [ -f "packaging/${{ inputs.config }}.json" ]; then
             PACKAGING_ARG="--packaging packaging/${{ inputs.config }}.json"
-          fi
-          DRY_RUN_FLAG="--dry-run"
-          if [ "${{ inputs.publish }}" = "true" ]; then
-            DRY_RUN_FLAG=""
           fi
           python3 buffer_post.py \
             --video "out/${{ steps.cfgfile.outputs.file }}.mp4" \
             --tiktok-video "out/${{ inputs.config }}_tiktok.mp4" \
             --platforms "${{ inputs.platforms }}" \
             $PACKAGING_ARG \
-            $DRY_RUN_FLAG
+            --dry-run

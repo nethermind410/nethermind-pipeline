@@ -10,7 +10,7 @@ comments, and anything broken.
     python3 studio_ext_day.py remind      a macOS notification if today's Short isn't out (daily.py runs this
                                           at 7:00 and at the 20:30 catch-up)
 """
-import datetime, shutil, subprocess, sys
+import datetime, json, shutil, subprocess, sys
 
 import studio_ext_desk as desk
 import channel
@@ -112,9 +112,10 @@ def remind():
         return first
     late = datetime.datetime.now().hour >= 18
     title = "Nothing's gone out today yet" if late else first["title"]
-    body = first["why"].replace('"', "'")[:180]
-    subprocess.run(["osascript", "-e", f'display notification "{body}" with title "{channel.get('app_name')}" subtitle "{title}" sound name "Glass"'],
-                   capture_output=True, timeout=10)
+    body = first["why"][:180]
+    script = (f'display notification {json.dumps(body)} with title {json.dumps(channel.get("app_name"))} '
+              f'subtitle {json.dumps(title)} sound name "Glass"')
+    subprocess.run(["osascript", "-e", script], capture_output=True, timeout=10)
     return first
 
 

@@ -15,6 +15,7 @@ import buffer_post
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+from store import atomic_write_json
 QUERY = """
 query($o: OrganizationId!, $after: String) {
   posts(first: 50, after: $after, input: {organizationId: $o, filter: {status: [sent]},
@@ -149,7 +150,7 @@ def main():
     import datetime
     out = {"videos": videos, "scheduled": scheduled, "unmatched_posts": unmatched,
            "updated": datetime.datetime.now().isoformat(timespec="minutes")}
-    (DATA / "out" / "stats.json").write_text(json.dumps(out, indent=1))
+    atomic_write_json(DATA / "out" / "stats.json", out)
     # one line per run, so the app can draw trends: {"at": ..., "views": {video: total}}
     snap = {"at": out["updated"], "views": {v: int(sum(p["views"] or 0 for p in ps)) for v, ps in videos.items()}}
     with open(DATA / "out" / "stats_history.jsonl", "a") as f:

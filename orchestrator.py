@@ -184,6 +184,15 @@ def _sweep(c):
                                                          "have closed mid-job). Retry it.", cut))
 
 
+def mark_interrupted():
+    """Call once when Studio's server starts: any task still 'working' must be left over from
+    before this boot (nothing survives a process restart), so fail it immediately rather than
+    waiting for _sweep()'s STALE_HOURS window."""
+    with db() as c:
+        c.execute("UPDATE tasks SET status='failed', finished=?, error=? WHERE status='working'",
+                  (now(), "Nethermind was closed while this ran — Retry"))
+
+
 def _row(r):
     d = dict(r)
     for k in ("input", "output", "retry"):

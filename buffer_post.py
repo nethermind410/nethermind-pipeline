@@ -50,6 +50,7 @@ from pathlib import Path
 import requests
 import boto3
 from botocore.client import Config
+from store import atomic_write_json, locked
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
@@ -147,6 +148,7 @@ def buffer_create_post(env, channel_id: str, text: str, video_url: str,
 
 
 POSTED = DATA / "out" / "posted.json"
+INTENTS = DATA / "out" / "intents.json"
 
 
 def posted_record(vid):
@@ -158,12 +160,74 @@ def posted_record(vid):
 
 def save_posted(vid, platform, post_id):
     import datetime
-    d = json.loads(POSTED.read_text()) if POSTED.exists() else {}
-    rec = posted_record(vid)
-    rec.setdefault("posts", {})[platform] = post_id
-    rec["at"] = datetime.datetime.now().isoformat(timespec="minutes")
-    d[vid] = rec
-    POSTED.write_text(json.dumps(d, indent=1))
+    with locked(POSTED):
+        d = json.loads(POSTED.read_text()) if POSTED.exists() else {}
+        rec = posted_record(vid)
+        rec.setdefault("posts", {})[platform] = post_id
+        rec["at"] = datetime.datetime.now().isoformat(timespec="minutes")
+        d[vid] = rec
+        atomic_write_json(POSTED, d)
+
+
+def _intent_key(vid, platform):
+    return f"{vid}:{platform}"
+
+
+def load_intent(vid, platform):
+    """out/intents.json: {"vid:platform": {"video_url":..., "text":..., "confirmed_id": str|None, "at": iso}}."""
+    d = json.loads(INTENTS.read_text()) if INTENTS.exists() else {}
+    return d.get(_intent_key(vid, platform))
+
+
+def write_intent(vid, platform, video_url, text, confirmed_id=None):
+    """Record intent to post BEFORE calling createPost, so a crash mid-request leaves a
+    trace we can reconcile against Buffer instead of double-posting."""
+    import datetime
+    with locked(INTENTS):
+        d = json.loads(INTENTS.read_text()) if INTENTS.exists() else {}
+        d[_intent_key(vid, platform)] = {
+            "video_url": video_url, "text": text,
+            "confirmed_id": confirmed_id, "at": datetime.datetime.now().isoformat(timespec="minutes"),
+        }
+        atomic_write_json(INTENTS, d)
+
+
+def confirm_intent(vid, platform, post_id):
+    with locked(INTENTS):
+        d = json.loads(INTENTS.read_text()) if INTENTS.exists() else {}
+        k = _intent_key(vid, platform)
+        if k in d:
+            d[k]["confirmed_id"] = post_id
+            atomic_write_json(INTENTS, d)
+
+
+def buffer_has_matching_post(env, channel_id, video_url, text):
+    """Query Buffer for that channel's scheduled/sent posts (see stats.py) and check
+    whether one already matches this video by URL or caption text — used to skip a
+    createPost call when an intent record exists without a confirmed id (i.e. we don't
+    know whether a previous run actually reached Buffer)."""
+    try:
+        import stats
+        for status in ("scheduled", "sent"):
+            q = stats.QUERY.replace("status: [sent]", f"status: [{status}]")
+            after = None
+            for _ in range(5):  # a few pages is plenty for a dedupe check
+                data = stats.gql(env, q, {"o": env["BUFFER_ORG_ID"], "after": after})
+                edges = data["posts"]["edges"]
+                for e in edges:
+                    n = e["node"]
+                    if n.get("channelService") != channel_id and n.get("id") != channel_id:
+                        pass  # channelService is a platform name, not a channel id; filtered by caller if needed
+                    if (video_url and n.get("externalLink") == video_url) or \
+                       (text and n.get("text") and text.strip() and text.strip() in n["text"]):
+                        return n["id"]
+                pi = data["posts"]["pageInfo"]
+                if not pi.get("hasNextPage"):
+                    break
+                after = pi.get("endCursor")
+    except Exception as e:
+        print(f"WARNING: could not query Buffer for existing posts ({e}); proceeding without dedupe check.", file=sys.stderr)
+    return None
 
 
 def main():
@@ -256,12 +320,24 @@ def main():
             print(f"  metadata: {metadata}")
             continue
 
+        if args.record:
+            prior = load_intent(args.record, platform)
+            if prior and not prior.get("confirmed_id"):
+                existing = buffer_has_matching_post(env, CHANNELS[platform], video_url, text)
+                if existing:
+                    print(f"Skipping {platform}: found a matching post already on Buffer ({existing}) "
+                          f"from an unconfirmed prior attempt — not double-posting.")
+                    confirm_intent(args.record, platform, existing)
+                    continue
+            write_intent(args.record, platform, video_url, text)
+
         print(f"\nPosting to {platform} (mode={args.mode}) ...")
         post = buffer_create_post(env, CHANNELS[platform], text, video_url, args.mode, metadata)
         print(f"  -> post id {post['id']}, due {post.get('dueAt')}")
         results.append((platform, post))
         if args.record:
             save_posted(args.record, platform, post["id"])
+            confirm_intent(args.record, platform, post["id"])
 
     if pinned and not args.dry_run and results:
         print(f"\nDon't forget — pinned comment to post manually once each video is live:\n  \"{pinned}\"")

@@ -10,6 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+from store import atomic_write_json, atomic_write_text
 OUT, CFG, PKG = DATA / "out", DATA / "cfg", DATA / "packaging"
 INSP_DIR, INSP = DATA / "inspiration", OUT / "inspiration.json"
 SERIES = OUT / "series.json"
@@ -51,7 +52,7 @@ def add_inspiration(data_url, note, url=""):
     else:
         raise ValueError("Add an image or a link.")
     items.insert(0, item)
-    INSP.write_text(json.dumps(items, indent=1))
+    atomic_write_json(INSP, items)
     return item
 
 
@@ -61,7 +62,7 @@ def remove_inspiration(iid):
     for i in items:
         if i["id"] == iid and i.get("file"):
             (INSP_DIR / i["file"]).unlink(missing_ok=True)
-    INSP.write_text(json.dumps(keep, indent=1))
+    atomic_write_json(INSP, keep)
     return {"ok": True}
 
 
@@ -82,7 +83,7 @@ def save_script(vid, lines):
         if new != s["text"]:
             changed.append(s["id"])
             s["text"] = new
-    p.write_text(json.dumps(cfg, indent=1, ensure_ascii=False) + "\n")
+    atomic_write_text(p, json.dumps(cfg, indent=1, ensure_ascii=False) + "\n")
     return {"ok": True, "changed": changed}
 
 
@@ -133,5 +134,5 @@ def save_series(data):
         first = next(i for i, s in enumerate(clean) if s["active"])
         for i, s in enumerate(clean):
             s["active"] = i == first
-    SERIES.write_text(json.dumps(clean, indent=1))
+    atomic_write_json(SERIES, clean)
     return {"ok": True, "series": clean}

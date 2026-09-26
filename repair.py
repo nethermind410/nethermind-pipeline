@@ -13,6 +13,7 @@ import datetime, json, re, subprocess, threading
 from pathlib import Path
 
 import orchestrator as nether
+from store import atomic_write_json, locked
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
@@ -21,6 +22,7 @@ OUT = DATA / "out"
 FIXES = OUT / "fixes.json"
 WT = OUT / "fix_worktrees"
 LOCK = threading.Lock()
+STUCK_MINUTES = 45
 
 # (pattern, kind, what happened, what fixes it). First match wins; order = most specific first.
 RULES = [
@@ -76,13 +78,32 @@ def diagnose(t):
 
 def _load():
     try:
-        return json.loads(FIXES.read_text())
+        d = json.loads(FIXES.read_text())
     except Exception:
-        return {"next": 1, "tickets": []}
+        d = {"next": 1, "tickets": []}
+    changed = False
+    now = datetime.datetime.now().astimezone()
+    for x in d.get("tickets", []):
+        if x.get("state") == "working":
+            started = _parse_ts(x.get("started_working") or x.get("filed"))
+            if started and (now - started).total_seconds() > STUCK_MINUTES * 60:
+                x["state"] = "open"
+                x["summary"] = (x.get("summary") or "") + f" (Nethermind marked this stuck after {STUCK_MINUTES}+ min and reopened it.)"
+                changed = True
+    if changed:
+        _save(d)
+    return d
+
+
+def _parse_ts(s):
+    try:
+        return datetime.datetime.fromisoformat(s)
+    except Exception:
+        return None
 
 
 def _save(d):
-    FIXES.write_text(json.dumps(d, indent=1, ensure_ascii=False) + "\n")
+    atomic_write_json(FIXES, d, indent=1)
 
 
 def tickets():
@@ -162,12 +183,19 @@ def _fix_worker(n):
             (wt / ".venv").symlink_to(venv)
         where = f", step: {x['where']}" if x.get("where") else ""
         prompt = PROMPT.format(title=x["title"], department=x["department"], where=where, log=x["log"][-3000:])
-        env_tools = ["Read", "Edit", "Write", "Grep", "Glob", "Bash(.venv/bin/python:*)", "Bash(python3:*)", "Bash(git diff:*)", "Bash(ls:*)"]
+        env_tools = ["Read", "Edit", "Write", "Grep", "Glob",
+                     "Bash(.venv/bin/python selftest.py)", "Bash(.venv/bin/python -m py_compile:*)", "Bash(git diff:*)"]
         res = _claude_in(wt, prompt, env_tools)
         _git("add", "-A", ".", ":!.venv", cwd=wt)
         diff = _git("diff", "--cached", "--stat", cwd=wt).stdout.strip()
         if not diff:
             _update(n, state="nofix", summary=res.get("summary") or "Claude looked but found nothing in the code to change.", branch=branch)
+            nether.finish(rid, {"ticket": n, "changed": False})
+            return
+        ok, msg = _compile_check(wt)
+        if not ok:
+            _git("reset", "--hard", "HEAD", cwd=wt)
+            _update(n, state="open", summary=f"Repair didn't finish: the fix doesn't compile ({msg}).")
             nether.finish(rid, {"ticket": n, "changed": False})
             return
         _git("commit", "-m", f"Fix ticket #{n}: {x['title']}\n\n{res.get('summary', '')}", cwd=wt)
@@ -179,14 +207,40 @@ def _fix_worker(n):
         nether.fail(rid, str(e))
 
 
+_SECRET_SUFFIXES = ("_KEY", "_TOKEN", "_SECRET")
+_SECRET_PREFIXES = ("R2_", "BUFFER_", "CLOUDFLARE_", "YOUTUBE_")
+
+
+def _strip_secrets(env):
+    return {k: v for k, v in env.items()
+            if not k.startswith(_SECRET_PREFIXES) and not k.endswith(_SECRET_SUFFIXES)
+            and k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
+
+
+def _compile_check(wt):
+    """py_compile every changed .py file in the worktree; refuse the fix if any fails."""
+    changed = _git("diff", "--cached", "--name-only", "--diff-filter=ACMR", cwd=wt).stdout.split()
+    py_files = [f for f in changed if f.endswith(".py")]
+    if not py_files:
+        return True, ""
+    r = subprocess.run([str(wt / ".venv" / "bin" / "python"), "-m", "py_compile", *py_files],
+                        cwd=wt, capture_output=True, text=True, timeout=120)
+    if r.returncode:
+        return False, (r.stderr or r.stdout).strip()[-500:]
+    return True, ""
+
+
 def _claude_in(cwd, prompt, tools):
     import os, shutil
-    e = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
+    e = _strip_secrets(os.environ)
     e["PATH"] = f"{Path.home()}/.local/bin:/opt/homebrew/bin:" + e.get("PATH", "/usr/bin:/bin")
     if not shutil.which("claude", path=e["PATH"]):
         raise RuntimeError("the claude command isn't installed on this Mac")
     r = subprocess.run(["claude", "-p", prompt, "--output-format", "json", "--permission-prompts", "none",
-                        "--allowedTools", ",".join(tools)], cwd=cwd, env=e, capture_output=True, text=True, timeout=1800)
+                        "--allowedTools", ",".join(tools),
+                        "--disallowedTools", "WebFetch,WebSearch",
+                        "--strict-mcp-config", "--setting-sources", "project"],
+                       cwd=cwd, env=e, capture_output=True, text=True, timeout=1800)
     try:
         res = json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -204,7 +258,7 @@ def start_fix(n):
     x = _get(int(n))
     if x["state"] == "working":
         raise ValueError("Claude is already working on this one.")
-    _update(x["n"], state="working", summary="Claude is looking at it on its own branch…")
+    _update(x["n"], state="working", summary="Claude is looking at it on its own branch…", started_working=_now())
     threading.Thread(target=_fix_worker, args=(x["n"],), daemon=True).start()
     return {"ok": True, "reply": f"Claude is repairing ticket #{x['n']} on a separate branch. Nothing changes until you Apply."}
 
@@ -221,6 +275,14 @@ def apply(n):
         raise ValueError("There's no finished repair to apply yet.")
     if _git("status", "--porcelain", "--untracked-files=no").stdout.strip():
         raise ValueError("Your code has unsaved changes — commit them first, then Apply.")
+    wt = WT / f"fix-{x['n']}"
+    if wt.exists():
+        py_files = [f for f in _git("show", "--name-only", "--diff-filter=ACMR", "--pretty=format:", x["branch"], cwd=wt).stdout.split() if f.endswith(".py")]
+        if py_files:
+            r = subprocess.run([str(HERE / ".venv" / "bin" / "python"), "-m", "py_compile", *py_files],
+                                cwd=wt, capture_output=True, text=True, timeout=120)
+            if r.returncode:
+                raise ValueError(f"The fix doesn't compile ({(r.stderr or r.stdout).strip()[-300:]}) — Discard it and let Claude try again.")
     _drop_worktree(x["n"])
     r = _git("merge", "--no-edit", x["branch"])
     if r.returncode:

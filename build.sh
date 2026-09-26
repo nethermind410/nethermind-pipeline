@@ -35,6 +35,10 @@ if [[ "${2:-}" != "--no-fetch" ]]; then
   step "generated art (gen_visuals)"; $PY "$SRC/gen_visuals.py" "cfg/$ID.json"
 fi
 
+# drop any stale QA/thumbnail from a prior build so a failure below can't leave
+# last run's "ready" artifacts sitting next to a half-finished video.
+rm -f "out/${ID}_qa_contact.jpg" "out/${ID}_tiktok_qa_contact.jpg" "out/${ID}_thumb.jpg" "out/${ID}_cover.jpg"
+
 step "tiktok config (retention cut)"
 # retention.py: number on frame 0, punch-in, tight gaps, no still held over ~6s,
 # follow end card. Tag beats "in": ["short"] in cfg/<id>.json to leave them out.

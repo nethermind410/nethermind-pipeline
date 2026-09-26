@@ -165,6 +165,10 @@
       else if (r.kind === "draft_long") toast((await post("/api/make/draft", {topic: r.topic, kind: "long", style: r.style})).reply);
       else if (r.kind === "daily") toast((await post("/api/daily/run", {})).reply);
       else if (r.kind === "long") { toast((await post("/api/long/render", {id: r.id})).reply); watchLong(); }
+      else if (r.action === "post_live") {
+        if (!confirm(`Post "${r.id || "this video"}" live now?`)) return;
+        runJob(r.action, r.id || "", {confirm: true});
+      }
       else if (r.action) runJob(r.action, r.id || "");
       setTimeout(refresh, 600);
     } catch (e) { toast(e.message); }

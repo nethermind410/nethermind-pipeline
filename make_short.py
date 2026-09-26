@@ -497,8 +497,10 @@ if not PREVIEW:
     import score
     mix = score.build_audio(segs, TOTAL, TMP, VID, A, TTS_DIR, CFG.get("score", "space") == "deep", SR)
     final = os.path.join(OUT, CFG.get("file", VID) + ".mp4")
+    part = final + ".part.mp4"
     subprocess.check_call(["ffmpeg", "-v", "error", "-y", "-i", vpath, "-i", mix, "-c:v", "copy",
-                           "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", final])
+                           "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", part])
+    os.replace(part, final)
     srt = build_srt()
     shutil.rmtree(TMP, ignore_errors=True)
     print(f"  DONE {final}  ({dur(final):.2f}s)  + {os.path.basename(srt)}")

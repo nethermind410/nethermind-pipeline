@@ -18,6 +18,7 @@ import requests
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
+from store import atomic_write_json
 OUT = DATA / "out"
 import channel
 CHANNEL_ID = channel.get("youtube_channel_id")  # channel.json (the original install: Buffer's connected YouTube channel)
@@ -114,7 +115,7 @@ def comments(videos):
 
 def main():
     data = fetch("--comments" in sys.argv)
-    (OUT / "youtube.json").write_text(json.dumps(data, indent=1))
+    atomic_write_json(OUT / "youtube.json", data)
     snap = {"at": data["fetched"], "subscribers": data["channel"]["subscribers"], "views": data["channel"]["views"],
             "shorts_90d": data["shorts_90d"]["views"], "videos": {v["id"]: v["views"] for v in data["videos"]}}
     with open(OUT / "youtube_history.jsonl", "a") as f:

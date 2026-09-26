@@ -4,12 +4,13 @@ Everything here reads the pipeline's own files (cfg/, packaging/, out/) and retu
 dicts for studio.py to serve as JSON. Anything the user can tick off lives in out/done.json;
 "Needs changes" notes live in out/feedback/<id>.md.
 """
-import datetime, json, re, urllib.request
+import datetime, json, re, sys, urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 import channel as chcfg
+from store import atomic_write_json, locked
 OUT, CFG, PKG = DATA / "out", DATA / "cfg", DATA / "packaging"
 DONE = OUT / "done.json"
 FEEDBACK = OUT / "feedback"
@@ -17,10 +18,16 @@ SKIP = ("test", "zz")
 
 
 def jload(p, default=None):
+    p = Path(p)
     try:
-        return json.loads(Path(p).read_text())
-    except Exception:
-        return default
+        return json.loads(p.read_text())
+    except Exception as e:
+        print(f"jload: {p} unreadable ({e}), trying .bak", file=sys.stderr)
+        bak = p.with_suffix(p.suffix + ".bak")
+        try:
+            return json.loads(bak.read_text())
+        except Exception:
+            return default
 
 
 def mtime(p):
@@ -44,12 +51,13 @@ def done_map():
 
 
 def set_done(key, done=True):
-    d = done_map()
-    if done:
-        d[key] = now_iso()
-    else:
-        d.pop(key, None)
-    DONE.write_text(json.dumps(d, indent=1))
+    with locked(DONE):
+        d = done_map()
+        if done:
+            d[key] = now_iso()
+        else:
+            d.pop(key, None)
+        atomic_write_json(DONE, d)
     return d
 
 
