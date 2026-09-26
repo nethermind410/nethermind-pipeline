@@ -1,8 +1,9 @@
 "use strict";
-/* Today's run: one tap walks you through today, posting first.
+/* Today's run: one tap opens the whole day as a scrollable list, posting first.
    A dock sits bottom-right on every page. Closed, it says what today still needs ("Post today's Short · 3 jobs")
-   and glows until today's Short is out. Tap it and it takes you job by job: Go opens the right page, Done ticks it
-   off and moves to the next. It never posts for you — it takes you to the Post button.
+   and glows until today's Short is out. Tap it and every job for today is right there, ticked jobs collapsed and
+   struck through, the first open job expanded automatically. Tap any row to open it — in order or out of it —
+   and its Go/Done/Skip sit right below. It never posts for you — it takes you to the Post button.
    Also here: when a video goes out (scheduled or live), a celebration — a burst across the screen, a chime if
    interface sounds are on, and an impulse from Publishing to Analytics on the brain. */
 (() => {
@@ -23,32 +24,44 @@
     dock.classList.toggle("urgent", !postOut); dock.classList.toggle("open", running);
     if (!running) {
       const label = !left.length ? `Day done${day.streak ? ` · ${day.streak}-day streak` : ""}` : !postOut ? day.post.title : `${left.length} job${left.length > 1 ? "s" : ""} left today`;
-      dock.innerHTML = `<button class="dr-pill ${left.length ? "" : "clear"}" data-dr="start" title="${left.length ? "Walk me through today" : "Everything's done — nice"}">
-        <span class="dr-play">${left.length ? "▶" : "✓"}</span><span><b>${esc(label)}</b>${left.length ? `<em>${left.length} job${left.length > 1 ? "s" : ""} · tap to start</em>` : `<em>${day.out} of 7 out this week</em>`}</span></button>`;
+      dock.innerHTML = `<button class="dr-pill ${left.length ? "" : "clear"}" data-dr="start" title="${left.length ? "See today's jobs" : "Everything's done — nice"}">
+        <span class="dr-play">${left.length ? "▶" : "✓"}</span><span><b>${esc(label)}</b>${left.length ? `<em>${left.length} job${left.length > 1 ? "s" : ""} · tap to see all</em>` : `<em>${day.out} of 7 out this week</em>`}</span></button>`;
       return;
     }
-    i = Math.max(0, Math.min(i, steps.length - 1));
-    const s = steps[i], done = isDone(s);
+    if (i < 0 || i >= steps.length || isDone(steps[i])) i = nextOpen(-1);     // land on the first open job
+    const done = steps.length - left.length;
+    const row = (s, n) => {
+      const d = isDone(s), open = n === i && !d;
+      return `<div class="dr-row ${d ? "done" : ""} ${open ? "open" : ""}" data-dr-row="${n}">
+        <button class="dr-rowhead" data-dr-toggle="${n}" ${d ? "disabled" : ""}>
+          <span class="dr-check">${d ? "✓" : ""}</span>
+          <span class="dr-rowtext"><span class="dr-kind ${s.kind}">${esc(kindWord[s.kind] || s.kind)}</span><b>${esc(s.title)}</b></span>
+          ${d ? "" : `<span class="dr-chev">${open ? "⌄" : "›"}</span>`}
+        </button>
+        ${open ? `<div class="dr-body"><p>${esc(s.why)}</p>
+          <div class="dr-acts"><button class="btn primary small" data-dr="go">Go</button><button class="btn small" data-dr="done">Done ✓</button><button class="btn ghost small" data-dr="skip">Skip</button></div></div>` : ""}
+      </div>`;
+    };
     dock.innerHTML = `<div class="dr-card">
-      <div class="dr-top"><span class="k">Today · ${i + 1} of ${steps.length}</span>
-        <span class="dr-beads">${steps.map((x, n) => `<i class="${isDone(x) ? "done" : ""} ${n === i ? "on" : ""} ${x.kind === "post" ? "post" : ""}" title="${esc(x.title)}" data-dr-jump="${n}"></i>`).join("")}</span>
+      <div class="dr-top"><span class="k">Today · ${done} of ${steps.length} done</span>
         <button class="dr-x" data-dr="close" aria-label="Close">×</button></div>
-      <span class="dr-kind ${s.kind}">${esc(kindWord[s.kind] || s.kind)}</span>
-      <h3>${done ? "✓ " : ""}${esc(s.title)}</h3><p>${esc(s.why)}</p>
-      <div class="dr-acts">${done ? `<button class="btn primary" data-dr="next">${i < steps.length - 1 ? "Next job ›" : "Finish"}</button>`
-        : `<button class="btn primary" data-dr="go">Go</button><button class="btn" data-dr="done">Done ✓</button><button class="btn ghost" data-dr="skip">Skip</button>`}</div></div>`;
+      <div class="dr-bar"><i style="width:${steps.length ? Math.round(done / steps.length * 100) : 0}%"></i></div>
+      <div class="dr-list">${steps.map(row).join("")}</div></div>`;
+    dock.querySelector(`[data-dr-row="${i}"]`)?.scrollIntoView({block: "nearest"});
   }
   function nextOpen(from) { const n = day.steps.findIndex((s, k) => k > from && !isDone(s)); return n < 0 ? day.steps.findIndex(s => !isDone(s)) : n; }
   function finish() {
-    running = false; render();
-    if (!day.steps.some(s => !isDone(s))) { celebrate("Day done", `${day.out} of 7 out this week${day.streak ? ` · ${day.streak}-day streak` : ""}`); }
+    if (!day.steps.some(s => !isDone(s))) { running = false; celebrate("Day done", `${day.out} of 7 out this week${day.streak ? ` · ${day.streak}-day streak` : ""}`); }
+    render();
   }
   dock.addEventListener("click", async e => {
-    const b = e.target.closest("[data-dr],[data-dr-jump]"); if (!b) return;
+    const toggle = e.target.closest("[data-dr-toggle]");
+    if (toggle) { const n = +toggle.dataset.drToggle; if (isDone(day.steps[n])) return; i = i === n ? -1 : n; return render(); }
+    const b = e.target.closest("[data-dr]"); if (!b) return;
     const a = b.dataset.dr;
-    if (b.dataset.drJump) { i = +b.dataset.drJump; return render(); }
     if (a === "start") { running = true; i = Math.max(0, nextOpen(-1)); window.nxSound?.play("tick"); return render(); }
     if (a === "close") { running = false; return render(); }
+    if (i < 0 || i >= day.steps.length) return;
     const s = day.steps[i];
     if (a === "go") { window.nxSound?.play("tick"); go(s.go); return; }
     if (a === "done" && s.key === "post") {             // posting can't be ticked by hand: it clears when it's really out
@@ -57,11 +70,10 @@
       window.nxSound?.play("done");
     } else if (a === "done") { tick(s.key); window.nxSound?.play("done");
       if (/^setup:/.test(s.key)) post("/api/done", {key: s.key}).catch(() => {}); }        // a money step: tick it on the Money page too
-    if (a === "done" || a === "skip" || a === "next") {
+    if (a === "done" || a === "skip") {
       const n = nextOpen(i);
-      if (n < 0 || (a === "next" && i === day.steps.length - 1 && n <= i)) return finish();
-      if (n === i) { running = false; return render(); }          // skipped the only job left: close, it waits for later
-      i = n; render();
+      i = n === i ? -1 : n;        // that was the only job left open: collapse; otherwise land on the next open one
+      finish();
     }
   });
   async function load() {
