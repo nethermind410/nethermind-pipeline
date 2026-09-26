@@ -83,19 +83,34 @@
     const svg = $("#mem-clusters"); if (!svg || !M || !mnet) return;
     const stage = $("#mem-stage"), S = stage.getBoundingClientRect();
     svg.setAttribute("viewBox", `0 0 ${S.width} ${S.height}`);
-    let out = "";
+    let out = ""; const pos = {}, themeOf = {};
     M.themes.filter(t => t.learnings.length).forEach(t => {
       const items = t.learnings.map(byId).filter(Boolean);
       items.forEach((n, i) => {
         const k = i + 1, ang = k * 2.399963, rad = 0.012 + 0.006 * Math.sqrt(k);
         const ax = t.ax + Math.cos(ang) * rad, ay = t.ay + Math.sin(ang) * rad;
         const [x, y] = mnet.anchor(ax, ay);
+        pos[n.id] = [x, y]; themeOf[n.id] = t.id;
         const r = 2.4 + n.brightness * 4.2, dropped = n.decision === "drop";
         out += `<circle class="ml-node ${t.id === openTheme ? "on" : ""} ${dropped ? "dropped" : ""}" data-theme="${esc(t.id)}"
           cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" opacity="${dropped ? 0.18 : Math.max(0.22, n.brightness)}"></circle>`;
       });
     });
-    svg.innerHTML = out;
+    // the lines: learnings that name the same video, date or ideas are wired together through the brain
+    const seen = new Set(), pairs = [];
+    const add = (a, b, why) => { if (a === b || !pos[a] || !pos[b]) return; const k = a < b ? a + "|" + b : b + "|" + a; if (!seen.has(k)) { seen.add(k); pairs.push([a, b, why]); } };
+    (M.links || []).forEach(l => add(l.a, l.b, l.why));
+    const byVid = {}; M.nodes.forEach(n => (n.videos || []).forEach(v => (byVid[v] = byVid[v] || []).push(n.id)));
+    Object.entries(byVid).forEach(([v, ids]) => ids.forEach((a, i) => ids.slice(i + 1).forEach(b => add(a, b, "same video: " + v))));
+    const byDate = {}; M.nodes.forEach(n => (n.dates || []).forEach(d => (byDate[d] = byDate[d] || []).push(n.id)));
+    Object.entries(byDate).forEach(([d, ids]) => ids.forEach((a, i) => ids.slice(i + 1).forEach(b => add(a, b, "same date: " + d))));
+    M.themes.forEach(t => t.learnings.forEach((a, i) => i && add(t.learnings[i - 1], a, "same theme: " + t.label)));   // each theme's own thread
+    const lines = pairs.map(([a, b, why]) => {
+      const [x1, y1] = pos[a], [x2, y2] = pos[b], mx = (x1 + x2) / 2 + (y2 - y1) * 0.18, my = (y1 + y2) / 2 - (x2 - x1) * 0.18;
+      const lit = openTheme && (themeOf[a] === openTheme || themeOf[b] === openTheme);
+      return `<path class="ml-link ${lit ? "on" : ""}" data-a="${esc(a)}" data-b="${esc(b)}" d="M${x1.toFixed(1)},${y1.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}"><title>${esc(why || "")}</title></path>`;
+    }).join("");
+    svg.innerHTML = `<g class="ml-links">${lines}</g>${out}`;
   }
 
   /* ---------- open a theme: zoom the brain, list its cards ---------- */

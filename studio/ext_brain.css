@@ -126,3 +126,8 @@
 .bx-panel{padding-right:44px}
 .bx-x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:#0C0C0D;color:var(--ink);font:400 18px/1 var(--grotesk);cursor:pointer;display:grid;place-items:center}
 .bx-x:hover,.bx-x:focus-visible{border-color:var(--bx);color:#fff}
+/* memory: the lines between related learnings */
+.ml-links path{fill:none;stroke:rgba(235,45,75,.32);stroke-width:1;transition:stroke .25s,opacity .25s}
+.ml-links path.on{stroke:#FF8FA3;stroke-width:1.5}
+.mem-clusters:has(.ml-link.on) .ml-link:not(.on){opacity:.25}
+.ml-links path{stroke:rgba(235,45,75,.45);stroke-width:1.1}
