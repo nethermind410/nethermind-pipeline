@@ -7,16 +7,19 @@ Screens and their data come from studio_api.py; this file is routing, the one-at
 job runner (build / post / undo / stats), media serving with Range support, and the
 Jarvis proxy. Localhost only; state-changing requests need the X-Studio header.
 """
-import datetime, json, logging, logging.handlers, os, re, subprocess, sys, threading, traceback, webbrowser
+import datetime, json, logging, logging.handlers, os, queue, re, signal, subprocess, sys, threading, time, traceback, webbrowser
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, parse_qs
 
 import studio_api as api
 import studio_channel as chan
 import studio_create as create
 import orchestrator as nether
-from store import atomic_write_text
+import events
+from store import atomic_write_text, atomic_write_json
+
+ThreadingHTTPServer.daemon_threads = True   # so an open SSE tab never blocks a clean shutdown
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
@@ -55,16 +58,55 @@ JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True,
 LOCK = threading.Lock()
 QUEUE = []   # jobs waiting their turn: one runs at a time (renders need the whole Mac), the rest line up here
 QSEQ = [0]
+PROC = {"p": None}    # the running job's Popen, so /api/cancel can kill its process group
+LOG_CAP = 200_000      # bounded log buffer (~200 KB) kept per job
+QUEUE_FILE_NAME = "queue.json"   # under OUT — survives a restart; see restore_queue()
 
 
 def label_for(action, vid):
     return (LABELS[action] if action in FREE_ARG else f"{LABELS[action]} {vid}").strip()
 
 
+def _persist_queue():
+    """Snapshot the queue + whatever's running to disk, atomically. Caller must hold LOCK —
+    this never acquires it itself, since every call site is already inside a `with LOCK:` block."""
+    running = None if JOB["done"] else {"action": JOB["action"], "video": JOB["video"], "label": JOB["label"]}
+    try:
+        atomic_write_json(OUT / QUEUE_FILE_NAME, {"running": running, "queue": queue_view()})
+    except Exception:
+        pass
+
+
+def restore_queue():
+    """Called once at boot. A job that was actually *running* when the app closed can't be
+    resumed (its process is gone) — mark_interrupted() already failed its task, and here we
+    surface it once as an interrupted job on Home's activity pill. Jobs that were only
+    *waiting* never started, so they're safe to restore and the first one starts immediately."""
+    try:
+        data = json.loads((OUT / QUEUE_FILE_NAME).read_text()) if (OUT / QUEUE_FILE_NAME).exists() else {}
+    except Exception:
+        data = {}
+    running, saved_queue = data.get("running"), data.get("queue") or []
+    with LOCK:
+        if running:
+            JOB.update(id=JOB["id"] + 1, action=running.get("action", ""), video=running.get("video", ""),
+                       label=running.get("label", ""), log="", done=True, code=None,
+                       friendly="Nethermind was closed while this was running — interrupted. Retry it below.")
+        QUEUE.clear()
+        QUEUE.extend(q for q in saved_queue if isinstance(q, dict) and "qid" in q)
+        QSEQ[0] = max([q.get("qid", 0) for q in QUEUE] + [QSEQ[0]])
+        nxt = QUEUE.pop(0) if QUEUE and JOB["done"] else None
+        if nxt:
+            start_job(nxt["action"], nxt["video"])
+        _persist_queue()
+
+
 def start_job(action, vid):
     """Start a job now. Caller holds LOCK and has checked nothing is running."""
     JOB.update(id=JOB["id"] + 1, action=action, video=vid, task=None, label=label_for(action, vid),
                log="", done=False, code=None, friendly=None)
+    _persist_queue()
+    events.publish("job", {"type": "started", **{k: JOB[k] for k in ("id", "action", "video", "label", "done", "code", "friendly")}})
     threading.Thread(target=run_job, args=(action, vid), daemon=True).start()
 
 
@@ -105,23 +147,42 @@ def run_job(action, vid):
                 JOB["task"] = task
         except Exception:
             pass
+    last_pub, last_len = time.monotonic(), 0
+    cancelled = False
     try:
-        p = subprocess.Popen(cmd, cwd=HERE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+        p = subprocess.Popen(cmd, cwd=HERE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
+                              start_new_session=True)   # its own process group, so /api/cancel can kill it and any children
+        with LOCK:
+            PROC["p"] = p
         for line in p.stdout:
             with LOCK:
                 JOB["log"] += line
+                if len(JOB["log"]) > LOG_CAP:
+                    JOB["log"] = JOB["log"][-LOG_CAP:]
+                cur_len, jid = len(JOB["log"]), JOB["id"]
+            now = time.monotonic()
+            if now - last_pub >= 0.25:              # throttle ≤4/s; send only the new tail
+                events.publish("job", {"type": "progress", "id": jid, "delta": JOB["log"][last_len:] if last_len <= cur_len else JOB["log"]})
+                last_pub, last_len = now, cur_len
         code = p.wait()
+        cancelled = code in (-signal.SIGTERM, -signal.SIGKILL)
     except Exception as e:  # never leave the app stuck on "working"
         with LOCK:
             JOB["log"] += f"\nCould not run {cmd[0]}: {e}\n"
     finally:
         with LOCK:
-            JOB.update(done=True, code=code, friendly=api.friendly(JOB["log"], code))
+            PROC["p"] = None
+            JOB.update(done=True, code=code, friendly="Cancelled." if cancelled else api.friendly(JOB["log"], code))
+            snap = {k: JOB[k] for k in ("id", "action", "video", "label", "done", "code", "friendly")}
         if task:
             try:
-                nether.end(task, code, (JOB["friendly"] + "\n\n" if code and JOB["friendly"] else "") + JOB["log"])
+                if cancelled:
+                    nether.cancel(task)
+                else:
+                    nether.end(task, code, (JOB["friendly"] + "\n\n" if code and JOB["friendly"] else "") + JOB["log"])
             except Exception:
                 pass
+        events.publish("job", {"type": "finished", **snap})
         if action == "post_live" and code == 0:
             api.set_done(f"ready:{vid}")
         if action in ("build", "build_nofetch") and code == 0:
@@ -130,6 +191,9 @@ def run_job(action, vid):
             if QUEUE and JOB["done"]:
                 q = QUEUE.pop(0)
                 start_job(q["action"], q["video"])
+            else:
+                _persist_queue()
+        events.publish("queue", {"queue": queue_view()})
 
 
 def ask_jarvis(text):
@@ -191,6 +255,37 @@ class H(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def _sse(self):
+        """GET /api/events — one Server-Sent Events stream per open tab. Runs in this
+        connection's own daemon thread (ThreadingHTTPServer), so a long-lived tab never
+        blocks anything else; a dropped client just ends this loop and unsubscribes."""
+        sid, q = events.subscribe()
+        try:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Connection", "keep-alive")
+            self.send_header("X-Accel-Buffering", "no")
+            self.end_headers()
+            self.wfile.write(b": connected\n\n")
+            self.wfile.flush()
+            last_ping = time.monotonic()
+            while True:
+                try:
+                    payload = q.get(timeout=1)
+                    self.wfile.write(f"data: {payload}\n\n".encode())
+                    self.wfile.flush()
+                    last_ping = time.monotonic()
+                except queue.Empty:
+                    if time.monotonic() - last_ping >= 15:
+                        self.wfile.write(b": keep-alive\n\n")
+                        self.wfile.flush()
+                        last_ping = time.monotonic()
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            pass
+        finally:
+            events.unsubscribe(sid)
+
     def body(self):
         raw = self.rfile.read(int(self.headers.get("Content-Length", 0)) or 2) or b"{}"
         try:
@@ -213,6 +308,8 @@ class H(BaseHTTPRequestHandler):
 
     def _do_GET(self):
         path = unquote(self.path.split("?")[0])
+        if path == "/api/events":
+            return self._sse()
         if path in STATIC:
             name, ctype = STATIC[path]
             f = UI / name
@@ -251,8 +348,19 @@ class H(BaseHTTPRequestHandler):
         if m and (create.INSP_DIR / m[1]).is_file():
             return self.send_file(create.INSP_DIR / m[1], {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "gif": "image/gif"}[m[1].rsplit(".", 1)[1]])
         if path == "/api/job":
+            since = None
+            if "?" in self.path:
+                try:
+                    since = int(parse_qs(self.path.split("?", 1)[1]).get("since", [None])[0])
+                except (TypeError, ValueError):
+                    since = None
             with LOCK:
-                return self.send(200, {**JOB, "queue": queue_view()})
+                j = {**JOB, "queue": queue_view()}
+            total = len(j["log"])
+            j["log_len"] = total
+            if since is not None and 0 <= since <= total:
+                j["log"] = j["log"][since:]
+            return self.send(200, j)
         if path == "/api/music":                             # your own tracks for the interface's music player
             return self.send(200, {"tracks": sorted(p.name for p in MUSIC_DIR.glob("*") if p.suffix.lower() in TRACKS)
                                    if MUSIC_DIR.is_dir() else []})
@@ -292,7 +400,33 @@ class H(BaseHTTPRequestHandler):
             key = str(b.get("key", ""))
             if not re.fullmatch(r"[a-z]+:[a-z0-9_]{1,60}(:[a-z]+)?", key):
                 return self.send(400, {"error": "bad key"})
-            api.set_done(key, bool(b.get("done", True)))
+            done = bool(b.get("done", True))
+            api.set_done(key, done)
+            events.publish("done", {"key": key, "done": done})
+            return self.send(200, {"ok": True})
+        if self.path == "/api/cancel":
+            with LOCK:
+                p, done = PROC["p"], JOB["done"]
+            if done or not p:
+                return self.send(400, {"error": "Nothing is running."})
+            try:
+                os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            except Exception as e:
+                return self.send(500, {"error": f"Could not cancel: {e}"})
+
+            def _kill_after():
+                try:
+                    p.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    try:
+                        os.killpg(os.getpgid(p.pid), signal.SIGKILL)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+            threading.Thread(target=_kill_after, daemon=True).start()
             return self.send(200, {"ok": True})
         if self.path == "/api/feedback":
             vid, note = b.get("id", ""), str(b.get("note", "")).strip()[:2000]
@@ -350,6 +484,8 @@ class H(BaseHTTPRequestHandler):
                     QUEUE[i - 1], QUEUE[i] = QUEUE[i], QUEUE[i - 1]
                 elif op == "down" and i < len(QUEUE) - 1:
                     QUEUE[i + 1], QUEUE[i] = QUEUE[i], QUEUE[i + 1]
+                _persist_queue()
+                events.publish("queue", {"queue": queue_view()})
                 return self.send(200, {"ok": True, "queue": queue_view()})
         if self.path != "/api/run":
             return self.send(404, {"error": "not found"})
@@ -369,6 +505,8 @@ class H(BaseHTTPRequestHandler):
             QUEUE.append({"qid": QSEQ[0], "action": action, "video": vid, "label": label_for(action, vid),
                           "added": datetime.datetime.now().astimezone().isoformat(timespec="seconds")})
             n = len(QUEUE)
+            _persist_queue()
+            events.publish("queue", {"queue": queue_view()})
         self.send(200, {"ok": True, "queued": n, "reply": f"Queued — {label_for(action, vid)} starts after {'the current job' if n == 1 else f'{n - 1} other' + ('s' if n > 2 else '') + ' in line'}."})
 
 
@@ -378,6 +516,10 @@ def serve(open_browser=True):
         nether.mark_interrupted()
     except Exception:
         pass
+    try:
+        restore_queue()
+    except Exception:
+        log.error("restore_queue failed:\n%s", traceback.format_exc())
     try:
         srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     except OSError:
