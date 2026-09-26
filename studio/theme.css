@@ -201,3 +201,5 @@ body.on-brain main{padding:0;overflow:hidden}
 .brain-top .hint+.ask{margin-left:14px}
 .brain-net:active{cursor:grabbing}
 @media (max-width:820px){.brain-top .hint{display:none}.brain-top .hint+.ask{margin-left:auto}}
+/* the monetisation strip spans the page bottom: only its button takes the pointer, so labels under it hover instantly */
+.core{pointer-events:none}.core .core-btn{pointer-events:auto}

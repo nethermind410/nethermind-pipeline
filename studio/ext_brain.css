@@ -117,3 +117,16 @@
   .bx-n,.bx-dend path,.bx-note,.bx-panel,.mem-web .mn{transition:none!important;animation:none!important}
   .bx-n.working i,.bx-n.bad i{animation:none}
 }
+/* memory, readable first: plain cards on top, the web below */
+.mem-digest{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.mem-col{display:grid;gap:8px;align-content:start}
+.mem-col h2,.mem-h2{font:700 20px var(--grotesk);letter-spacing:-.01em;margin:0}.mem-col h2 span{color:#FF8FA3;font-weight:600;font-size:14px;margin-left:4px}
+.mem-col>p{margin:0 0 4px;color:var(--muted);font-size:13.5px;line-height:1.4}
+.mem-h2{margin-top:10px}
+.mem-card{display:grid;gap:4px;text-align:left;background:#0C0C0D;border:1px solid rgba(255,255,255,.09);border-left:3px solid var(--bx);border-radius:12px;
+  padding:12px 14px;color:var(--ink);cursor:pointer;font-family:var(--grotesk);transition:border-color .15s,background .15s}
+.mem-card b{font:600 15px/1.3 var(--grotesk)}.mem-card span{font:400 13.5px/1.45 var(--grotesk);color:rgba(247,247,238,.72)}
+.mem-card:hover,.mem-card.sel{background:#141416;border-color:rgba(224,41,75,.55)}
+.mem-card.hypothesis{border-left-color:#FF9500}.mem-card.evidence{border-left-color:#FF8FA3}.mem-card.note{border-left-color:rgba(247,247,238,.4)}
+.mem-web text{font-size:14px;fill:rgba(247,247,238,.88)}.mem-web .section text{font-size:15px}
+.mem-web .mk-s{transform-box:fill-box;transform-origin:center}

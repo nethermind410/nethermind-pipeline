@@ -8,16 +8,36 @@
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`(.+?)`/g, "<code>$1</code>");
   let M = null, sel = null;
+  const gist = n => {                                   // the card's line: what the note says beyond its title
+    let t = n.text.replace(/\*\*|`/g, "").replace(/\s+/g, " ").trim(); const base = n.title.replace(/…$/, "").trim();
+    if (t.toLowerCase().startsWith(base.toLowerCase())) t = t.slice(base.length).replace(/^[\s.:;—–-]+/, "");
+    else t = t.replace(/^[^:]{0,60}:\s*/, "");
+    return t.length > 150 ? t.slice(0, 149).trimEnd() + "…" : t;
+  };
 
   async function pageMemory() {
     document.body.classList.remove("on-brain");
     main.innerHTML = `<div class="mem-page"><header class="mem-head"><button class="mem-back" data-go="home">← The brain</button>
         <div><h1>Memory</h1><p class="mem-sub" id="mem-sub">Reading LEARNINGS.md…</p></div></header>
+      <div class="mem-digest" id="mem-digest"></div>
+      <h2 class="mem-h2">How it all connects</h2>
       <div class="mem-wrap"><div class="mem-stage" id="mem-stage"><svg class="mem-web" id="mem-web" aria-label="LEARNINGS.md as a web of linked notes"></svg>
         <div class="mem-legend" id="mem-legend"></div></div>
         <aside class="mem-read" id="mem-read" aria-live="polite"></aside></div></div>`;
-    const d = await get("/api/memory");
+    const [d, vids] = await Promise.all([get("/api/memory"), get("/api/videos").catch(() => [])]);
+    const names = Object.fromEntries((vids || []).map(v => [v.id, v.title]));
+    d.nodes.forEach(n => {                               // plain names: video titles for ids, sections without their fine print
+      if (n.kind === "evidence" && names[n.title]) n.title = names[n.title];
+      if (n.kind === "section") n.title = n.title.replace(/\s*\(.*\)\s*$/, "");
+    });
     M = d; sel = null;
+    const G = [["rule", "lesson"], "Always true", "Rules this channel follows — from your feedback and from results."],
+          T = [["hypothesis"], "Being tested", "Hunches the numbers haven't proven yet."],
+          E = [["evidence"], "The evidence", "What each video actually did."],
+          U = [["note"], "How NETHER uses this", "The ground rules for the notes themselves."];
+    $("#mem-digest").innerHTML = [G, T, E, U].map(([ks, h, sub]) => { const items = d.nodes.filter(n => ks.includes(n.kind)); if (!items.length) return "";
+      return `<section class="mem-col"><h2>${h} <span>${items.length}</span></h2><p>${sub}</p>${items.map(n => `<button class="mem-card ${n.kind}" data-mem="${esc(n.id)}">
+        <b>${esc(n.title)}</b><span>${esc(gist(n))}</span></button>`).join("")}</section>`; }).join("");
     const count = k => d.nodes.filter(n => n.kind === k).length, body = d.nodes.filter(n => !["section", "date"].includes(n.kind)).length;
     $("#mem-sub").textContent = d.nodes.length
       ? `Everything NETHER has written down in ${d.file}: ${body} note${body === 1 ? "" : "s"} in ${count("section")} section${count("section") === 1 ? "" : "s"}, ${count("date")} date${count("date") === 1 ? "" : "s"}, ${d.links.length} link${d.links.length === 1 ? "" : "s"}.${d.updated ? ` Last changed ${new Date(d.updated).toLocaleString(undefined, {day: "numeric", month: "short", hour: "numeric", minute: "2-digit"})}.` : ""}`
@@ -51,16 +71,18 @@
     }
     M.nodes.forEach((n, i) => { n.x = P[i].x; n.y = P[i].y; n.deg = deg[i];
       n.r = n.kind === "section" ? 8 : n.kind === "date" ? 4.5 : Math.min(10, 4 + deg[i] * 1.1); });
+    const xs = M.nodes.map(n => n.x), ys = M.nodes.map(n => n.y), pad = 70;   // fit: the web fills the stage, labels included
+    M.box = [Math.min(...xs) - pad * 2, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + pad * 4, Math.max(...ys) - Math.min(...ys) + pad * 2];
     M.W = W; M.H = H; M.byId = byId;
   }
   function draw() {
     const svg = $("#mem-web"); if (!svg || !M) return;
-    svg.setAttribute("viewBox", `0 0 ${M.W} ${M.H}`);
+    svg.setAttribute("viewBox", M.box.map(v => v.toFixed(0)).join(" "));
     const N = id => M.nodes[M.byId[id]];
     const links = M.links.map((l, i) => { const a = N(l.a), b = N(l.b), mx = (a.x + b.x) / 2 + (b.y - a.y) * 0.08, my = (a.y + b.y) / 2 - (b.x - a.x) * 0.08;
       return `<path class="ml ${l.w >= 3 ? "strong" : l.why === "same section" ? "sec" : ""}" data-l="${i}" d="M${a.x.toFixed(1)},${a.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}"><title>${esc(l.why)}</title></path>`; }).join("");
     const nodes = M.nodes.map((n, i) => {
-      const right = n.x < M.W * 0.72, lx = right ? n.r + 7 : -n.r - 7, label = n.title.length > 34 ? n.title.slice(0, 33).trimEnd() + "…" : n.title;
+      const right = n.x < M.W * 0.72, lx = right ? n.r + 7 : -n.r - 7, label = n.title.length > 30 ? n.title.slice(0, 29).trimEnd() + "…" : n.title;
       const mark = n.kind === "date" ? `<rect class="mk-s" x="${-n.r}" y="${-n.r}" width="${n.r * 2}" height="${n.r * 2}" transform="rotate(45)"/>` : `<circle class="mk-s" r="${n.r.toFixed(1)}"/>`;
       return `<g class="mn ${n.kind}" data-mem="${esc(n.id)}" transform="translate(${n.x.toFixed(1)},${n.y.toFixed(1)})" tabindex="0" role="button"
         aria-label="${esc(KIND[n.kind] || n.kind)}: ${esc(n.title)}" style="--i:${i}"><circle class="mn-hit" r="16"/>${mark}
@@ -95,11 +117,12 @@
       ${linked ? `<span class="k">Linked to</span><ul class="mem-links">${linked}</ul>` : ""}
       <button class="btn small mem-close">Close <kbd>Esc</kbd></button>`;
   }
-  function pick(id) { sel = id; read(id); focusOn(id); if (id && matchMedia("(max-width: 820px)").matches) $("#mem-read")?.scrollIntoView({block: "nearest", behavior: reduced() ? "auto" : "smooth"}); }
+  function pick(id) { sel = id; read(id); focusOn(id); document.querySelectorAll(".mem-card").forEach(c => c.classList.toggle("sel", c.dataset.mem === id)); if (id && matchMedia("(max-width: 820px)").matches) $("#mem-read")?.scrollIntoView({block: "nearest", behavior: reduced() ? "auto" : "smooth"}); }
 
   document.addEventListener("click", e => {
     if (!$(".mem-page")) return;
-    const g = e.target.closest?.("[data-mem]"); if (g) return pick(g.dataset.mem === sel ? null : g.dataset.mem);
+    const g = e.target.closest?.("[data-mem]");
+    if (g) { if (g.classList.contains("mem-card")) $("#mem-stage")?.scrollIntoView({block: "start", behavior: reduced() ? "auto" : "smooth"}); return pick(g.dataset.mem === sel ? null : g.dataset.mem); }
     const l = e.target.closest?.("[data-mem-go]"); if (l) return pick(l.dataset.memGo);
     if (e.target.closest?.(".mem-close")) return pick(null);
   });
