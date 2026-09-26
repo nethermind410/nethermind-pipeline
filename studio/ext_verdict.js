@@ -2,7 +2,7 @@
 /* Every page opens with its answer: one question, the answer from real data, and the next action.
    (studio_ext_verdict.py works the answers out; this puts them at the top of each page.) */
 (() => {
-  const PAGES = ["comments", "today", "videos", "calendar", "performance", "retention", "channel", "agents", "settings", "ideas"];
+  const PAGES = ["comments", "today", "videos", "calendar", "performance", "retention", "channel", "agents", "settings", "ideas", "insights"];
   async function show(name) {
     let v; try { v = await get("/api/verdict/" + name); } catch (e) { return; }
     const page = main.firstElementChild; if (!page || !v.answer || page.querySelector(".vd")) return;

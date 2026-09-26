@@ -189,6 +189,28 @@ def v_ideas():
              "warn" if off else "good", acts)
 
 
+def v_insights():
+    import studio_ext_insights as ins
+    t = ins.times()
+    calls = [p for p in t["platforms"] if p["verdict"]["call"]]
+    w = ins.watch_state()
+    ok = [c for c in w["channels"] if c.get("status") == "ok"]
+    breakouts = sorted((v for c in ok for v in c.get("breakouts", [])), key=lambda v: -v.get("x", 0))
+    if calls:
+        p = calls[0]
+        head = p["verdict"]["text"].partition(":")[0]
+        detail = p["verdict"]["text"] + (f" Also: a {breakouts[0]['x']}× breakout on your watchlist — “{breakouts[0]['title'][:60]}”." if breakouts else "")
+        return V("When should we post, and what's working elsewhere?", f"{p['name']}: {head}", detail, "good")
+    if breakouts:
+        b = breakouts[0]
+        return V("When should we post, and what's working elsewhere?", f"No pattern of your own yet — but a {b['x']}× breakout on your watchlist",
+                 f"“{b['title'][:70]}” — {b['x']}× that channel's usual views. Your own best-time pattern needs a few more videos measured at a comparable age.",
+                 "info", [{"label": "See the watchlist", "go": "insights/watchlist", "primary": True}])
+    return V("When should we post, and what's working elsewhere?", "Not enough data yet",
+             "Keep posting, and add channels to your watchlist — a best-time pattern needs a handful of videos measured at a comparable age, or a breakout to point to.",
+             "info", [{"label": "Add to your watchlist", "go": "insights/watchlist"}])
+
+
 def v_comments():
     import studio_api, studio_channel
     c = studio_channel.comments(studio_api.done_map())
@@ -204,7 +226,7 @@ def v_comments():
 
 
 PAGES = {"comments": v_comments, "today": v_today, "videos": v_videos, "calendar": v_calendar, "performance": v_performance, "retention": v_retention,
-         "channel": v_channel, "agents": v_agents, "settings": v_settings, "ideas": v_ideas}
+         "channel": v_channel, "agents": v_agents, "settings": v_settings, "ideas": v_ideas, "insights": v_insights}
 
 
 def verdict(page):
