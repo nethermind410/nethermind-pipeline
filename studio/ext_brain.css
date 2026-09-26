@@ -66,70 +66,63 @@
 .bx-map li{display:grid;gap:1px;font:400 12.5px var(--grotesk);color:var(--muted)}.bx-map b{font:600 13.5px var(--grotesk);color:var(--ink)}
 .bx-form .fine{font-family:var(--grotesk);margin:0}
 
-/* ---------- Memory ---------- */
+/* ---------- Memory: NETHER's own brain ---------- */
 .mem-page{max-width:1320px;margin:0 auto;padding:6px 0 30px;display:grid;gap:18px;font-family:var(--grotesk)}
 .mem-head{display:flex;gap:22px;align-items:flex-start}
 .mem-head h1{font:800 clamp(40px,5vw,72px)/.9 var(--grotesk);letter-spacing:-.045em;margin:0}
 .mem-sub{font:400 15px/1.4 var(--grotesk);color:var(--muted);margin:10px 0 0;max-width:70ch}
 .mem-back{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:7px 14px;font:500 14px var(--grotesk);cursor:pointer;white-space:nowrap;margin-top:6px}
 .mem-back:hover{border-color:var(--bx)}
-.mem-wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
-.mem-stage{position:relative;border-radius:18px;background:radial-gradient(ellipse at 50% 45%,rgba(210,30,60,.09),rgba(0,0,0,0) 62%),#000}
-.mem-web{display:block;width:100%;height:min(72vh,720px);min-height:420px}
-.mem-legend{position:absolute;left:14px;bottom:12px;display:flex;gap:14px;flex-wrap:wrap;font:500 11.5px var(--grotesk);color:var(--muted)}
-.mem-legend span{display:inline-flex;align-items:center;gap:6px}
-.mk{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--bx);box-shadow:0 0 8px rgba(235,45,75,.8)}
-.mk.section{background:#fff;box-shadow:0 0 8px var(--bx)}.mk.evidence{background:#FF8FA3}.mk.rule,.mk.note{background:#000;border:1.5px solid var(--bx);box-shadow:none}
-.mk.lesson{background:#FFE8EC}.mk.date{border-radius:1px;transform:rotate(45deg) scale(.8);background:#000;border:1.5px solid rgba(247,247,238,.7);box-shadow:none}
-.mem-web .ml{fill:none;stroke:rgba(235,45,75,.28);stroke-width:1;transition:stroke .2s,opacity .2s}
-.mem-web .ml.sec{stroke:rgba(247,247,238,.12);stroke-dasharray:2 4}.mem-web .ml.strong{stroke:rgba(235,45,75,.6);stroke-width:1.4}
-.mem-web .mn{cursor:pointer;opacity:0;transition:opacity .5s calc(var(--i) * 30ms)}
-.mem-web.in .mn,.mem-web.still .mn{opacity:1}.mem-web.still .mn{transition:none}
-.mem-web .mn-hit{fill:transparent}
-.mem-web .mk-s{fill:var(--bx);filter:drop-shadow(0 0 5px rgba(235,45,75,.9));transition:transform .2s}
-.mem-web .section .mk-s{fill:#fff;filter:drop-shadow(0 0 7px rgba(235,45,75,1))}.mem-web .evidence .mk-s{fill:#FF8FA3}
-.mem-web .rule .mk-s,.mem-web .note .mk-s{fill:#000;stroke:var(--bx);stroke-width:1.6}.mem-web .lesson .mk-s{fill:#FFE8EC}
-.mem-web .date .mk-s{fill:#000;stroke:rgba(247,247,238,.75);stroke-width:1.3;filter:none}
-.mem-web text{font:500 12px var(--grotesk);fill:rgba(247,247,238,.7);paint-order:stroke;stroke:#000;stroke-width:4px;stroke-linejoin:round;pointer-events:none}
-.mem-web .section text{font-weight:700;fill:var(--ink);letter-spacing:.01em}.mem-web .date text{fill:var(--muted);font-size:11px}
-.mem-web .mn:hover .mk-s,.mem-web .mn:focus-visible .mk-s,.mem-web .mn.sel .mk-s{transform:scale(1.35)}
-.mem-web .mn:focus-visible{outline:none}.mem-web .mn.sel text{fill:#fff}
-.mem-web.dim .mn:not(.on){opacity:.22}.mem-web.dim .ml:not(.on){opacity:.15}.mem-web .ml.on{stroke:#FF8FA3;stroke-width:1.5;opacity:1}
-.mem-read{position:sticky;top:12px;padding:16px 18px 18px;display:grid;gap:8px;max-height:calc(100vh - 110px);overflow:auto}
-.mem-read .k{font:600 10.5px var(--grotesk);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,143,163,.75)}
-.mem-read h3{font:700 22px/1.12 var(--grotesk);letter-spacing:-.02em;margin:0}
-.mem-text p,.mem-hint{font:400 14.5px/1.5 var(--grotesk);color:rgba(247,247,238,.86);margin:0 0 6px}.mem-hint{color:var(--muted)}
-.mem-text b{color:#fff}.mem-text code{font:500 13px var(--grotesk);color:#FF8FA3}
-.mem-meta{font:400 13px var(--grotesk);color:var(--muted);margin:0}.mem-meta a{color:#FF8FA3}
-.mem-links{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.mem-links button{width:100%;display:grid;gap:1px;text-align:left;background:transparent;border:1px solid var(--line);border-radius:10px;padding:7px 10px;color:var(--ink);cursor:pointer;font-family:var(--grotesk)}
-.mem-links button:hover{border-color:var(--bx-soft)}.mem-links b{font:600 13px var(--grotesk)}.mem-links span{font:400 12px var(--grotesk);color:var(--muted)}
-.mem-read .mem-close{justify-self:start;font-family:var(--grotesk)}.mem-read kbd{font:500 11px var(--grotesk);opacity:.6}
+.mem-empty{font:400 15px/1.5 var(--grotesk);color:var(--muted);max-width:60ch;padding:40px 4px}
+.mem-brain-wrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.mem-brain-stage{position:relative;border-radius:18px;background:radial-gradient(ellipse at 50% 45%,rgba(210,30,60,.09),rgba(0,0,0,0) 62%),#000;height:min(74vh,740px);min-height:440px;overflow:hidden}
+.mem-net{display:block;width:100%;height:100%}
+.mem-clusters{position:absolute;inset:0;pointer-events:none}
+.mem-clusters .ml-node{fill:var(--bx);filter:drop-shadow(0 0 5px rgba(235,45,75,.85));pointer-events:auto;cursor:pointer;transition:opacity .3s,r .2s}
+.mem-clusters .ml-node.on{fill:#fff;filter:drop-shadow(0 0 8px rgba(235,45,75,1))}
+.mem-clusters .ml-node.dropped{fill:rgba(247,247,238,.3);filter:none}
+.mem-hint2{position:absolute;left:16px;bottom:12px;margin:0;font:500 12px var(--grotesk);color:var(--muted);pointer-events:none}
+.mem-labels{position:absolute;inset:0;pointer-events:none}
+.mem-label{position:absolute;pointer-events:auto;display:grid;gap:1px;text-align:left;width:178px;padding:8px 12px;border:1px solid var(--bx-soft);
+  border-radius:12px;background:var(--bx-frame);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--ink);cursor:pointer;font-family:var(--grotesk)}
+.mem-label b{font:600 14px/1.2 var(--grotesk)}.mem-label span{font:400 12px var(--grotesk);color:var(--muted)}
+.mem-label:hover,.mem-label:focus-visible{border-color:var(--bx);box-shadow:0 0 14px rgba(224,41,75,.3)}
+.mem-label.on{border-color:var(--bx);background:rgba(224,41,75,.14)}
+.mem-panel{position:sticky;top:12px;padding:16px 18px 18px;display:grid;gap:10px;max-height:calc(100vh - 110px);overflow:auto;
+  border:1px solid var(--bx-soft);border-radius:14px;background:var(--bx-frame);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-family:var(--grotesk)}
+.mem-panel .k{font:600 10.5px var(--grotesk);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,143,163,.75)}
+.mem-panel h2{font:700 20px/1.15 var(--grotesk);letter-spacing:-.01em;margin:2px 0 4px}
+.mem-panel-x{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:#0C0C0D;color:var(--ink);font:400 17px/1 var(--grotesk);cursor:pointer;display:grid;place-items:center}
+.mem-panel-x:hover,.mem-panel-x:focus-visible{border-color:var(--bx);color:#fff}
+.mem-card3{display:grid;gap:6px;padding:12px 14px;border:1px solid rgba(255,255,255,.09);border-left:3px solid var(--bx);border-radius:12px;background:#0C0C0D;position:relative}
+.mem-card3.dropped{opacity:.5;border-left-color:rgba(247,247,238,.3)}
+.mem-tier{align-self:start;font:600 10.5px var(--grotesk);letter-spacing:.06em;text-transform:uppercase;color:#FF8FA3;padding:2px 8px;border:1px solid rgba(255,143,163,.4);border-radius:99px;justify-self:start}
+.mem-tier.rule{color:#fff;border-color:var(--bx);background:rgba(224,41,75,.25)}
+.mem-tier.none{color:var(--muted);border-color:rgba(247,247,238,.2)}
+.mc-learned,.mc-proof,.mc-used{margin:0;font:400 13.5px/1.45 var(--grotesk);color:rgba(247,247,238,.88)}
+.mc-learned .k,.mc-proof .k,.mc-used .k{display:block;margin-bottom:2px}
+.mc-learned b{color:#fff}.mc-learned code{font:500 12.5px var(--grotesk);color:#FF8FA3}
+.mem-decide{display:flex;gap:6px;margin-top:4px}
+.mem-decide button{flex:1;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:6px 8px;font:500 12.5px var(--grotesk);cursor:pointer}
+.mem-decide button:hover{border-color:var(--bx-soft)}
+.mem-decide button.on{background:var(--bx);border-color:var(--bx);color:#FFF4F5}
+.mem-decide button[data-decide="drop"].on{background:rgba(247,247,238,.2);border-color:rgba(247,247,238,.3);color:var(--ink)}
 
 @media (max-width:820px){
   .bx-panel{position:fixed;left:16px;right:16px;bottom:64px;width:auto}
   .bx-panel .t{font-size:28px}
   .bx-prev{grid-template-columns:1fr}.bx-prev canvas{height:220px}
-  .mem-wrap{grid-template-columns:1fr}.mem-web{height:62vh;min-height:360px}.mem-read{position:static;max-height:none}
+  .mem-brain-wrap{grid-template-columns:1fr}.mem-brain-stage{height:48vh;min-height:320px}
+  .mem-label{padding:6px 8px;text-align:center;border-radius:9px}
+  .mem-label b{font-size:11.5px;line-height:1.15}
+  .mem-hint2{display:none}
+  .mem-panel{position:static;max-height:none}
   .mem-head{flex-direction:column;gap:10px}
 }
 @media (prefers-reduced-motion:reduce){
-  .bx-n,.bx-dend path,.bx-note,.bx-panel,.mem-web .mn{transition:none!important;animation:none!important}
+  .bx-n,.bx-dend path,.bx-note,.bx-panel{transition:none!important;animation:none!important}
   .bx-n.working i,.bx-n.bad i{animation:none}
 }
-/* memory, readable first: plain cards on top, the web below */
-.mem-digest{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.mem-col{display:grid;gap:8px;align-content:start}
-.mem-col h2,.mem-h2{font:700 20px var(--grotesk);letter-spacing:-.01em;margin:0}.mem-col h2 span{color:#FF8FA3;font-weight:600;font-size:14px;margin-left:4px}
-.mem-col>p{margin:0 0 4px;color:var(--muted);font-size:13.5px;line-height:1.4}
-.mem-h2{margin-top:10px}
-.mem-card{display:grid;gap:4px;text-align:left;background:#0C0C0D;border:1px solid rgba(255,255,255,.09);border-left:3px solid var(--bx);border-radius:12px;
-  padding:12px 14px;color:var(--ink);cursor:pointer;font-family:var(--grotesk);transition:border-color .15s,background .15s}
-.mem-card b{font:600 15px/1.3 var(--grotesk)}.mem-card span{font:400 13.5px/1.45 var(--grotesk);color:rgba(247,247,238,.72)}
-.mem-card:hover,.mem-card.sel{background:#141416;border-color:rgba(224,41,75,.55)}
-.mem-card.hypothesis{border-left-color:#FF9500}.mem-card.evidence{border-left-color:#FF8FA3}.mem-card.note{border-left-color:rgba(247,247,238,.4)}
-.mem-web text{font-size:14px;fill:rgba(247,247,238,.88)}.mem-web .section text{font-size:15px}
-.mem-web .mk-s{transform-box:fill-box;transform-origin:center}
 .bx-panel{padding-right:44px}
 .bx-x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:#0C0C0D;color:var(--ink);font:400 18px/1 var(--grotesk);cursor:pointer;display:grid;place-items:center}
 .bx-x:hover,.bx-x:focus-visible{border-color:var(--bx);color:#fff}
