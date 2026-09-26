@@ -1,0 +1,28 @@
+/* "Make your first video" (Today). Same dark, crimson-bordered card as the setup wizard. */
+.nxf-card{--nxf:#E0294B;background:#141416;color:#F5F5F7;border:1px solid rgba(224,41,75,.45);border-radius:14px;
+  padding:18px 20px;margin:0 0 16px;display:grid;gap:10px;box-shadow:none;
+  font-family:"Inter Tight",-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif}
+.nxf-head{display:flex;gap:12px;align-items:center}
+.nxf-mark{width:28px;height:28px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 35% 35%,#ff6b85,var(--nxf) 55%,#6d0f22);box-shadow:0 0 24px rgba(224,41,75,.5)}
+.nxf-head b{font-size:15px}
+.nxf-dots{display:flex;gap:5px;margin-top:5px}
+.nxf-dots span{width:18px;height:3px;border-radius:2px;background:rgba(255,255,255,.16)}
+.nxf-dots span.done{background:rgba(224,41,75,.55)}.nxf-dots span.on{background:var(--nxf)}
+.nxf-lead{margin:0;font-size:13.5px;line-height:1.55;color:#D8D8DC}
+.nxf-fine{margin:0;font-size:12px;color:#8A8A8E}
+.nxf-picks{display:flex;flex-wrap:wrap;gap:8px}
+.nxf-pick{font:inherit;font-size:13px;color:#F5F5F7;background:transparent;border:1px solid rgba(255,255,255,.18);
+  border-radius:99px;padding:7px 14px;cursor:pointer;text-align:left}
+.nxf-pick:hover{border-color:var(--nxf)}
+.nxf-btn{font:inherit;font-size:14px;font-weight:600;border-radius:99px;padding:9px 16px;cursor:pointer;
+  border:1px solid var(--nxf);background:transparent;color:#F5F5F7;justify-self:start}
+.nxf-btn.primary{background:var(--nxf);border-color:var(--nxf);color:#fff}
+.nxf-btn.primary:hover{filter:brightness(1.08)}
+.nxf-btn:disabled{opacity:.6;cursor:default}
+.nxf-link{background:none;border:0;color:var(--nxf);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.nxf-spin{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(255,255,255,.25);
+  border-top-color:var(--nxf);animation:nxf-spin .8s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes nxf-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.nxf-spin{animation:none}}
+@media (max-width:480px){.nxf-card{padding:14px 16px}}
