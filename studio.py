@@ -187,6 +187,10 @@ def run_job(action, vid):
             except Exception:
                 pass
         events.publish("job", {"type": "finished", **snap})
+        try:
+            import nether_status; nether_status.write()   # keep Jarvis's status brief current after every job
+        except Exception:
+            pass
         if action in ("post_live", "post_now", "post_at") and code == 0:
             api.set_done(f"ready:{vid.split('|', 1)[0] if action == 'post_at' else vid}")
         if action in ("build", "build_nofetch") and code == 0:
@@ -545,6 +549,10 @@ def serve(open_browser=True):
         restore_queue()
     except Exception:
         log.error("restore_queue failed:\n%s", traceback.format_exc())
+    try:   # Jarvis's status brief, fresh as of this boot — in the background so its quality checks never delay startup
+        import nether_status; threading.Thread(target=nether_status.write, daemon=True, name="jarvis-status-boot").start()
+    except Exception:
+        log.error("nether_status.write failed:\n%s", traceback.format_exc())
     try:
         srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     except OSError:
