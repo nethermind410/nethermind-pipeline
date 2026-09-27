@@ -59,7 +59,10 @@ class MultimodalCandidateBrain:
             missing.append("audio")
 
         if visual is not None:
-            scores["visual"] = self._clamp(visual.get("relevance", 0.0))
+            visual_parts = [("composition", .15), ("action", .20), ("subject_visibility", .20), ("visual_novelty", .15), ("relevance", .20), ("continuity", .10)]
+            supplied = [(key, weight, self._clamp(visual[key])) for key, weight in visual_parts if key in visual]
+            denom = sum(weight for _, weight, _ in supplied)
+            scores["visual"] = sum(weight * value for _, weight, value in supplied) / denom if denom else 0.0
             # Preserve richer visual evidence for downstream QC.
             evidence.extend(visual.get("evidence", []))
         else:
