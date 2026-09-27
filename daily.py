@@ -201,6 +201,10 @@ def main(dry=False):
                         report["long"] = f"failed: {type(e).__name__}: {e}"
         cur = None
         nether.finish(parent, report)
+        try:
+            import nether_status; nether_status.write()   # Jarvis's status brief, fresh after the morning run
+        except Exception:
+            pass
         print(json.dumps(report, indent=1))
     except (Exception, SystemExit) as e:                # never leave the run stuck on "working"
         if cur:
