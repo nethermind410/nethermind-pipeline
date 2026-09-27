@@ -11,7 +11,19 @@ class Budget:
   if amount<0: raise ValueError("negative reservation")
   spent=self.db.cx.execute("SELECT COALESCE(SUM(estimated_cost),0) x FROM costs WHERE job_id=? AND status IN ('RESERVED','SPENT')",(job_id,)).fetchone()["x"]
   if spent+amount>budget: raise RuntimeError(f"Budget blocked: {spent+amount:.6f} > {budget:.6f}")
-  self.db.cx.execute("INSERT INTO costs VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",(uuid.uuid4().hex,job_id,"harness","reserve",None,None,0,0,amount,0,"USD","RESERVED",self.db.now()))
+  reservation_id=uuid.uuid4().hex
+  self.db.cx.execute(
+   "INSERT INTO costs(id,job_id,agent,task,model,provider,input_units,output_units,estimated_cost,actual_cost,currency,status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+   (reservation_id,job_id,"harness","reserve",None,None,0,0,amount,0,"USD","RESERVED",self.db.now()))
+  return reservation_id
+
+ def settle(self,reservation_id,actual_cost):
+  if actual_cost < 0: raise ValueError("negative actual cost")
+  cur=self.db.cx.execute(
+   "UPDATE costs SET actual_cost=?,status='SPENT' WHERE id=? AND status='RESERVED'",
+   (actual_cost,reservation_id))
+  if cur.rowcount != 1: raise RuntimeError(f"reservation {reservation_id} is not open")
+  return True
 class ModelRouter:
  DETERMINISTIC={"silence_detection","scene_detection","metadata","hash","duplicate_detection","audio_levels","frame_sampling"}
  def __init__(self,db): self.db=db
