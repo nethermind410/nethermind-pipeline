@@ -14,7 +14,8 @@
         <div class="body"><div class="t">${esc(x.name)} ${x.kind === "fixed" ? "is working again" : "stopped working"}</div><div class="s">${esc(when(x.at))}${x.detail ? " · " + esc(x.detail) : ""}</div></div>
         <label class="tick"><input type="checkbox" data-op-clear="${esc(x.id)}"> Done</label></div>`).join("")
         : `<div class="row"><div class="body"><div class="t">No alerts</div><div class="s">You'll get a Mac notification if a connection breaks, and again when it's fixed.</div></div></div>`}</div>`;
-    main.querySelector(".page")?.insertAdjacentHTML("beforeend", html);
+    const more = main.querySelector("#settings-more");
+    (more || main.querySelector(".page"))?.insertAdjacentHTML("beforeend", html);
     $("#op-back").onclick = async e => { e.target.disabled = true; e.target.textContent = "Backing up…";
       try { toast((await post("/api/backup/run", {})).reply); route(); } catch (err) { toast(err.message); e.target.disabled = false; } };
     $("#op-show") && ($("#op-show").onclick = () => post("/api/backup/show", {}));

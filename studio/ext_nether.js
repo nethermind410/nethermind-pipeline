@@ -580,23 +580,35 @@
         <div class="nx-head">${glyph(a)}<div><button class="link" data-go="${a.key}"><b>${esc(a.name)}</b></button><div class="nx-meta st-${a.state}">${STATE[a.state]}${a.active ? ` · ${a.active} active` : ""}</div></div>${pips(a.recent)}</div>
         <p class="nx-role">${esc(a.lobe)} · ${esc(a.role)}</p>
         <div class="nx-subs">${a.subs.map(x => `<button class="nx-chip ${x.state}" data-sub="${a.key}:${x.key}">${esc(x.name)}</button>`).join("")}</div></div>`).join("");
-    const rows = tasks.map(t => `<div class="card nx-task ${t.status}">
+    // failures get a plain-English "department · what happened" line (repair.diagnose) instead of a raw log up front
+    const failed = tasks.filter(t => t.status === "failed");
+    const diag = {};
+    await Promise.all(failed.slice(0, 20).map(async t => { try { diag[t.id] = await post("/api/fix/diagnose", {task: t.id}); } catch (e) { /* keep the plain error line as a fallback */ } }));
+    const taskRow = t => {
+      const bad = t.steps.find(x => x.status === "failed"); const errText = (bad && bad.error) || (t.status === "failed" && t.error) || "";
+      const d = diag[t.id];
+      const why = t.status === "failed" ? (d ? `<p class="nx-what"><b>${esc(d.department)}</b>${d.desk ? " → " + esc(d.desk) : ""} — ${esc(d.what)}</p>`
+        : errText ? `<p class="nx-what">${esc(errText.trim().split("\n").pop().slice(0, 160))}</p>` : "") : "";
+      return `<div class="card nx-task ${t.status}">
         <div class="nx-head"><span class="nx-state ${t.status === "working" ? "working" : t.status === "failed" ? "failed" : "ready"}"></span>
           <b>${esc(t.title)}</b><span class="pill">${esc(t.agent)}</span><span class="nx-meta">${esc(t.status)} · ${ago(t.finished || t.started)}</span>
           <span class="nx-actions">${t.retry && ["failed", "cancelled"].includes(t.status) ? `<button class="btn small primary" data-nx-retry="${t.id}">Retry</button>` : ""}${t.status === "failed" ? `<button class="btn small" data-fx-why="${t.id}">Why? · Fix</button>` : ""}${t.status === "working" ? `<button class="btn small" data-nx-cancel="${t.id}">Cancel</button>` : ""}</span></div>
-        ${pipeline(t.steps)}
-        ${(() => { const bad = t.steps.find(x => x.status === "failed"); const e = (bad && bad.error) || (t.status === "failed" && t.error);
-           return e ? `<pre class="nx-err">${bad ? `<b>${esc(bad.title)}</b>\n` : ""}${esc(e.split("\n").slice(-8).join("\n"))}</pre>` : ""; })()}
-      </div>`).join("");
+        ${pipeline(t.steps)}${why}
+        ${errText ? `<details class="more"><summary>Full log</summary><pre class="nx-err">${bad ? `<b>${esc(bad.title)}</b>\n` : ""}${esc(errText.split("\n").slice(-30).join("\n"))}</pre></details>` : ""}
+      </div>`;
+    };
+    const attention = tasks.filter(t => t.status === "failed" || t.status === "cancelled" || t.status === "working");
+    const done = tasks.filter(t => !attention.includes(t));
     window._nxTasks = tasks;
     main.innerHTML = `<div class="page wide">
-      <div class="head-row"><div class="head"><h1>Task log</h1><p>Every job is a task owned by an agent. When something breaks, the amber step shows where and why — retry it, or tap Why? · Fix to send it back to be fixed.</p><button class="link small" data-go="fixes">Fix tickets →</button></div>
+      <div class="head-row"><div class="head"><h1>Task log</h1><p>Every job is a task owned by an agent. When something breaks, this shows what happened in plain words — retry it, or tap Why? · Fix to send it back to be fixed.</p><button class="link small" data-go="fixes">Fix tickets →</button></div>
         <div class="nx-counts"><span>${s.counts.working} working</span><span>${fmt(s.counts.complete)} done</span><span class="${s.counts.failed ? "bad" : ""}">${s.counts.failed} failed</span></div></div>
       <div class="card nx-dailyc"><div><b>Daily run</b> <span class="nx-meta">7:00 (+20:30 catch-up) · refresh → learn → scout 3 ideas → draft the next video · Sundays: plan + render the long-form</span>
         <div class="nx-meta">${daily ? `Last: ${esc(daily.status)} ${ago(daily.finished || daily.started)}` : "Hasn't run yet — install it once with ./install_daily.sh"}</div></div>
         <button class="btn small" id="nx-daily">Run now</button></div>
       <div class="nx-grid">${agents}</div>
-      <h2>Recent tasks</h2>${rows || `<div class="card caught"><b>No tasks yet</b>Builds, posts, refreshes, drafts and investigations show up here as they run.</div>`}</div>`;
+      <h2>Needs a look</h2>${attention.map(taskRow).join("") || `<div class="card caught"><b>Nothing needs you</b>Working and failed tasks show up here.</div>`}
+      <details class="more"><summary>Show all (${done.length} completed)</summary><div style="margin-top:10px">${done.map(taskRow).join("") || `<div class="card caught"><b>No tasks yet</b>Builds, posts, refreshes, drafts and investigations show up here as they run.</div>`}</div></details></div>`;
     $("#nx-daily").onclick = async () => { try { toast((await post("/api/daily/run", {})).reply); } catch (e) { toast(e.message); } };
   }
 
