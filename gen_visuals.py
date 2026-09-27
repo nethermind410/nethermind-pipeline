@@ -117,6 +117,20 @@ def _generate_gemini(prompt, out_path, style="comic", aspect_ratio="9:16"):
         f.write(base64.b64decode(interaction.output_image.data))
 
 
+def _valid_image(path):
+    """True only if `path` exists, is non-empty, and decodes as an image — so a truncated/failed
+    generation doesn't get treated as "already have it" and skipped on the next run."""
+    if not os.path.exists(path) or os.path.getsize(path) < 256:
+        return False
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            im.verify()
+        return True
+    except Exception:
+        return False
+
+
 def generate(prompt, out_path, aspect_ratio="9:16", style="comic", backend=None):
     backend = backend or BACKEND
     if backend == "cloudflare":
@@ -167,9 +181,11 @@ if __name__ == "__main__":
             continue
         seen.add(v["src"])
         out = os.path.join(A, v["src"])
-        if os.path.exists(out) and not force:
+        if not force and _valid_image(out):
             print(f"  have  {v['src']}")
             continue
+        if not force and os.path.exists(out):
+            print(f"  regen {v['src']}  (existing file is empty/corrupt) ...")
         if "edit_from" in v:
             base = os.path.join(A, v["edit_from"])
             print(f"  edit  {v['src']}  (from {v['edit_from']}) ...")

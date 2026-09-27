@@ -44,6 +44,18 @@ MODEL_PATH = os.environ.get("KOKORO_MODEL_PATH", _home("kokoro-v1.0.fp16.onnx"))
 VOICES_PATH = os.environ.get("KOKORO_VOICES_PATH", _home("voices-v1.0.bin"))
 DEFAULT_VOICE = os.environ.get("KOKORO_VOICE", channel.get("narration_voice") or "am_liam")
 
+# Bump this string whenever the model files, voice set, or synthesis params change in a way
+# that would make an old cached clip sound different from a fresh one — it's part of the
+# content-hash cache key make_short.py uses to reuse narration across videos/renders.
+CACHE_VERSION = "kokoro-v1.0"
+
+
+def cache_id(voice_id=None):
+    """A short string identifying exactly which model+voice produced (or would produce) a
+    clip — used as part of the narration content-hash cache key."""
+    return f"{CACHE_VERSION}:{voice_id or DEFAULT_VOICE}"
+
+
 _kokoro = None
 
 

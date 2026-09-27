@@ -13,7 +13,7 @@ Visual types (segment "vis"):
   {"t":"vid", "src":"x.mp4", "ss":0, "fit":"square"|"cover"}        video clip
   {"t":"ice", "tier":2}                                            iceberg descent
 """
-import json, os, sys, math, re, subprocess, time, tempfile, shutil
+import json, os, sys, math, re, subprocess, time, tempfile, shutil, hashlib
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
@@ -43,8 +43,20 @@ F_CAP = os.path.join(A, "Anton-Regular.ttf")
 F_SM = os.path.join(A, "BebasNeue-Regular.ttf")
 
 # ---------------------------------------------------------------- TTS
+NARR_CACHE = os.path.join(DATA, "tts", ".cache")  # content-hash-keyed clips, shared across every video/segment id
+
+
+def _line_key(text, voice_id, backend_id):
+    """sha256 of (normalized line text, voice, TTS backend+model version) — identical lines hash the
+    same no matter which video/segment id they land on, so a reorder or renumber doesn't lose the cache."""
+    norm = re.sub(r"\s+", " ", text.strip())
+    return hashlib.sha256(f"{backend_id}|{voice_id or ''}|{norm}".encode()).hexdigest()[:32]
+
+
 def tts_all():
     import tts_kokoro as tts_elevenlabs  # switched from ElevenLabs -> free, self-hosted Kokoro (am_liam), 2026-09-21
+    os.makedirs(NARR_CACHE, exist_ok=True)
+    backend_id = tts_elevenlabs.cache_id(CFG.get("voice_id")) if hasattr(tts_elevenlabs, "cache_id") else tts_elevenlabs.__name__
     timing = {}
     for s in CFG["segments"]:
         if not s.get("text"):
@@ -59,10 +71,23 @@ def tts_all():
             open(txt, "w").write(s["text"])
         if os.path.exists(mp3) and os.path.exists(jsn) and same_text and "--no-tts" not in sys.argv:
             timing[s["id"]] = json.load(open(jsn))
+            continue
+        # Position cache missed (new segment id, renumbered segment, or changed text). Before
+        # re-synthesizing, check the content-hash cache: the exact same line (text+voice+model),
+        # made for any segment id in any video, is reused here instead of calling the TTS backend.
+        key = _line_key(s["text"], CFG.get("voice_id"), backend_id)
+        cmp3, cjsn = os.path.join(NARR_CACHE, key + ".mp3"), os.path.join(NARR_CACHE, key + ".json")
+        if os.path.exists(cmp3) and os.path.exists(cjsn) and "--no-tts" not in sys.argv:
+            shutil.copy(cmp3, mp3)
+            timing[s["id"]] = json.load(open(cjsn))
         else:
             timing[s["id"]] = tts_elevenlabs.synthesize(s["text"], mp3, CFG.get("voice_id"))
-            json.dump(timing[s["id"]], open(jsn, "w"))
-            open(txt, "w").write(s["text"])
+            if os.path.exists(mp3):
+                shutil.copy(mp3, cmp3)
+            json.dump(timing[s["id"]], open(cjsn, "w"))
+            open(os.path.join(NARR_CACHE, key + ".txt"), "w").write(s["text"])  # for voice.py's cleanup()
+        json.dump(timing[s["id"]], open(jsn, "w"))
+        open(txt, "w").write(s["text"])
     return timing
 
 TIMING = tts_all()

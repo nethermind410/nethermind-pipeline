@@ -18,6 +18,16 @@ import channel
 load_dotenv(channel.ENV_FILE)
 
 MODEL_ID = os.environ.get("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
+
+# Part of the narration content-hash cache key make_short.py uses (see tts_kokoro.cache_id) —
+# bump MODEL_ID or this string if a change would make an old cached clip sound different.
+CACHE_VERSION = "elevenlabs-" + MODEL_ID
+
+
+def cache_id(voice_id=None):
+    return f"{CACHE_VERSION}:{voice_id or os.environ.get('ELEVENLABS_VOICE_ID', 'default')}"
+
+
 _client = None
 
 

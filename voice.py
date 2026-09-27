@@ -121,9 +121,56 @@ def apply(cfg_path):
     return used
 
 
+def cleanup(days=30, apply_deletes=False):
+    """Narration clips (tts/<vid>/*.mp3 and the shared tts/.cache/*.mp3 content-hash cache, see
+    make_short.py) whose text no longer appears in ANY current cfg/*.json or episodes/*.json, and
+    that are older than `days`. Dry-run by default — returns the list it WOULD remove without
+    touching disk; pass apply_deletes=True (e.g. `python3 voice.py cleanup --apply`) to actually
+    delete. Never called automatically by build.sh or anything else — a human runs it on purpose."""
+    import time
+    cutoff = time.time() - days * 86400
+    live = set()
+    for pat in ("cfg/*.json", "episodes/*.json"):
+        for p in DATA.glob(pat):
+            try:
+                data = json.loads(p.read_text())
+            except Exception:
+                continue
+            for s in data.get("segments") or data.get("chapters") or []:
+                if isinstance(s, dict) and s.get("text"):
+                    live.add(_norm(s["text"]))
+    stale = []
+    for base in (TTS, TTS / ".cache"):
+        if not base.exists():
+            continue
+        for mp3 in base.glob("**/*.mp3"):
+            if mp3.stat().st_mtime > cutoff:
+                continue
+            txt = mp3.with_suffix(".txt")
+            if txt.exists() and _norm(txt.read_text()) in live:
+                continue  # still used by a current config — keep
+            if mp3.with_suffix(".voice").exists():
+                continue  # a human recording's copy — never auto-cleaned here
+            stale.append(str(mp3))
+            if apply_deletes:
+                for ext in (".mp3", ".json", ".txt"):
+                    mp3.with_suffix(ext).unlink(missing_ok=True)
+    return stale
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "apply":
         n = apply(sys.argv[2])
         print(f"your voice on {n} line(s)" if n else "no recordings for this video — Kokoro narrates")
+    elif len(sys.argv) >= 2 and sys.argv[1] == "cleanup":
+        d = 30
+        for i, a in enumerate(sys.argv):
+            if a == "--days" and i + 1 < len(sys.argv):
+                d = int(sys.argv[i + 1])
+        found = cleanup(days=d, apply_deletes="--apply" in sys.argv)
+        verb = "removed" if "--apply" in sys.argv else "would remove (dry-run; add --apply to delete)"
+        print(f"{verb} {len(found)} narration clip(s) older than {d}d and unreferenced:")
+        for f in found:
+            print(f"  {f}")
     else:
         sys.exit(__doc__)
