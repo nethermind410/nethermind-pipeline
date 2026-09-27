@@ -92,3 +92,15 @@ def _request_with_retry(config, path, body, headers, model, ollama=False):
         except (KeyError, json.JSONDecodeError, ProviderProtocolError) as exc:
             raise ProviderProtocolError(f"{model} invalid response") from exc
     raise ProviderTimeout(f"{model} timed out after {config.max_retries+1} attempts") from last
+
+
+def build_configured_providers():
+    from .provider_config import load_provider_configs
+    out=[]
+    for config in load_provider_configs():
+        if config.name == "ollama-local":
+            if config.model and config.enabled:
+                out.append(OllamaProvider(config))
+        elif config.enabled and config.base_url:
+            out.append(OpenAICompatibleProvider(config))
+    return out
