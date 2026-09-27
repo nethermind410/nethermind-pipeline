@@ -62,6 +62,17 @@ class AdaptiveBrainTests(unittest.TestCase):
         self.assertTrue(out.blocked)
         self.assertEqual(out.result.model, "deterministic")
 
+    def test_paid_call_settles_cost_ledger(self):
+        packet = self.packet(.8, hook=.2, payoff=.2, context=.2)
+        self.adaptive.analyse(packet, job_id="settle-job", budget=.01)
+        rows = self.db.cx.execute(
+            "SELECT status, estimated_cost, actual_cost FROM costs WHERE job_id=?",
+            ("settle-job",),
+        ).fetchall()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["status"], "SPENT")
+        self.assertGreater(rows[0]["actual_cost"], 0)
+
     def test_provider_cache_avoids_second_call(self):
         packet = self.packet(.8, hook=.2, payoff=.2, context=.2)
         first = self.adaptive.analyse(packet, job_id="cache-1", budget=.01)
