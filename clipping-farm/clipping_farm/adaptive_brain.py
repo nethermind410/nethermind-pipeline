@@ -4,7 +4,7 @@ import json
 
 from .evidence import EvidencePacket
 from .harness import Harness
-from .model_registry import ModelRegistry
+from .model_registry import ModelRegistry, register_configured_specs
 from .providers import BrainProvider, ProviderResult
 from .provider_contracts import validate_packet, validate_result
 from .provider_health import ProviderHealth
@@ -23,7 +23,7 @@ class AdaptiveBrain:
                  required_confidence=0.78, health=None):
         self.db = db
         self.harness = harness or Harness(db)
-        self.registry = registry or ModelRegistry()
+        self.registry = registry or register_configured_specs(ModelRegistry())
         self.providers = providers or {}
         self.required_confidence = required_confidence
         self.health = health or ProviderHealth()
