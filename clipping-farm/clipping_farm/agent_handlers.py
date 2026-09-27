@@ -11,6 +11,7 @@ from .brain import DeterministicBrain
 from .adaptive_brain import AdaptiveBrain
 from .mock_providers import CheapMockProvider, PremiumMockProvider
 from .providers import DeterministicProvider
+from .provider_adapters import build_configured_providers
 from .context import standalone_evidence
 from .evidence import build_packet
 from .qc import run_qc
@@ -19,7 +20,10 @@ from .export import write_review_manifest
 class LocalHandlers:
  def __init__(self,db,workdir="clipping_farm_work",transcriber=None):
   self.db=db; self.workdir=Path(workdir); self.workdir.mkdir(parents=True,exist_ok=True)
-  self.transcriber=transcriber or FixtureTranscriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db); self.brain=DeterministicBrain()
+  self.transcriber=transcriber or FixtureTranscriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db)
+  self.brain=AdaptiveBrain(db)
+  self.brain.register_provider(DeterministicProvider(DeterministicBrain()))
+  for provider in build_configured_providers(): self.brain.register_provider(provider)
  def _path(self,j):
   p=Path(j["payload"].get("source_path") or "")
   if not p.exists(): raise FileNotFoundError(str(p))
