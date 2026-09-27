@@ -105,3 +105,28 @@ policies, and what stays the buyer's job:
       the dashboard link in `app.js` is scrubbed by package.sh) — `ext_setup.js` renames them at runtime for now.
 - [ ] Update path: a version check (read-only, no tracking) or "download the new .dmg" emails.
 - [ ] Support: an email, a known-issues page, and a way for buyers to send `selftest.py` output.
+
+## Speed budget
+
+Targets for Studio, the local app the buyer actually lives in:
+
+- **First paint** (GET `/` to something on screen): under 1s.
+- **Each `/api/*` call** the front end makes on page load: under 300ms.
+- **Total JS + CSS** `index.html` pulls in (app.js/app2/app3, neural.js, brain.js, theme.css, app.css, every
+  `ext_*.js`/`.css`): kept as small as reasonably possible; no single new file over ~15 KB.
+
+Measured with `.venv/bin/python studio.py` on a spare port (`STUDIO_PORT=8799 STUDIO_NO_BROWSER=1`), demo
+channel data, `curl -w`:
+
+| | Before | After |
+|---|---|---|
+| Slowest `/api/*` used on page load (`/api/health`) | ~5–10ms typical | 63ms on one run (still well under budget — it's a live connection check, not cached) |
+| Everything else (`/api/today`, `/api/videos`, `/api/performance`, `/api/day`, `/api/money`, `/api/retention`, `/api/memory`, `/api/system`, `/api/tasks`, `/api/connect`, …) | 0.5–11ms each | unchanged — all still under 15ms, budget is 300ms |
+| Total JS+CSS loaded by `index.html` (app.js/app2/app3, neural.js, brain.js, theme.css, app.css, every `ext_*`) | 438 KB, served with `Cache-Control: no-store` — every reload re-downloaded all of it | same ~438 KB (added ~4 KB for `ext_states.js/css`'s loading/empty/error helper), now served `Cache-Control: public, max-age=300` — a reload or second tab within 5 minutes re-downloads none of it |
+| `GET /` (first byte) | ~2ms | ~2ms (unchanged; already well under the 1s budget) |
+
+The API was already fast — the real cost was re-fetching ~430 KB of unchanging JS/CSS on every single page
+load. `studio.py`'s static-file handler (`send_file`, and the `/ext.js` loader that wires up every `ext_*.js`/
+`.css`) now sends a 5-minute cache for the app's own scripts, styles and icon; `/api/*` responses stay
+`no-store` since that data changes between page loads. Nothing calling paid AI endpoints or long jobs (renders,
+builds, posts) was run for this measurement.

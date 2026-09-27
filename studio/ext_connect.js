@@ -9,8 +9,9 @@
     const page = main.querySelector(".page");
     if (!page) return;
     const openIds = [...page.querySelectorAll(".cx-card[open]")].map(d => d.dataset.cx);
-    hidePlainList(page);
-    await paintConnections(page, openIds);
+    // only swap the plain list for the card view once the richer data is actually in hand —
+    // otherwise a failed /api/connect fetch used to leave the whole section blank.
+    if (await paintConnections(page, openIds)) hidePlainList(page);
     await paintSchedule(page);
   };
 
@@ -46,12 +47,22 @@
   }
 
   async function paintConnections(page, openIds) {
-    let c; try { c = await get("/api/connect"); } catch { return; }
+    let c;
+    try { c = await get("/api/connect"); }
+    catch (e) {
+      page.querySelector(".cx-wrap")?.remove();
+      // the plain list (from /api/health) is still showing, so this stays a small note, not a blank panel
+      page.insertAdjacentHTML("afterbegin", `<div class="nx-state nx-error" style="margin-bottom:12px"><b>Couldn't load connection details</b><p>${esc(e.message)}</p><button class="btn" id="cx-retry">Retry</button></div>`);
+      page.querySelector("#cx-retry").onclick = () => route();
+      return false;
+    }
+    page.querySelector(".nx-state.nx-error")?.remove();
     page.querySelector(".cx-wrap")?.remove();
     const h2 = [...page.querySelectorAll("h2")].find(h => h.textContent.trim() === "Connections");
     const html = `<div class="cx-wrap"><h2>Connections</h2><div class="cx-grid">${c.services.map(svcCard).join("")}</div></div>`;
     (h2 || page.firstElementChild).insertAdjacentHTML("afterend", html);
     (openIds || []).forEach(id => page.querySelector(`.cx-card[data-cx="${id}"]`)?.setAttribute("open", ""));
+    return true;
   }
 
   async function paintSchedule(page) {
