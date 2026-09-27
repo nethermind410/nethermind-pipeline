@@ -1,0 +1,21 @@
+/* ext_gate.css — "Ready to post?" checklist card (video page + Schedule sheet). Uses theme.css
+   tokens only, so it matches light/dark automatically. */
+.gate { padding: var(--sp-4) var(--sp-5); display: grid; gap: var(--sp-3); margin: var(--sp-4) 0; }
+.gate-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); font-size: var(--fs-5); }
+.gate-rows { display: grid; gap: var(--sp-2); }
+.gate-row { display: flex; gap: var(--sp-3); align-items: flex-start; }
+.gate-icon { flex: 0 0 auto; width: 1.4em; text-align: center; font-weight: 700; }
+.gate-row.ok .gate-icon { color: var(--ok); }
+.gate-row.warn .gate-icon { color: var(--warn); }
+.gate-row.block .gate-icon { color: var(--error); }
+.gate-body { display: grid; gap: 2px; }
+.gate-name { font-size: var(--fs-4); font-weight: 600; }
+.gate-detail { font-size: var(--fs-2); color: var(--muted); }
+.gate-fix { font-size: var(--fs-2); color: var(--warn); }
+.gate-row.block .gate-fix { color: var(--error); }
+.gate-pill-pass { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); font-size: var(--fs-1); font-weight: 600; border-radius: var(--radius-pill); padding: 2px var(--sp-2); }
+.gate-pill-warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); font-size: var(--fs-1); font-weight: 600; border-radius: var(--radius-pill); padding: 2px var(--sp-2); }
+.gate-pill-block { background: color-mix(in srgb, var(--error) 18%, transparent); color: var(--error); font-size: var(--fs-1); font-weight: 600; border-radius: var(--radius-pill); padding: 2px var(--sp-2); }
+.gate-override { display: grid; gap: var(--sp-2); padding-top: var(--sp-2); border-top: 1px solid var(--line); }
+.gate-reason { display: grid; gap: var(--sp-2); }
+.gate-reason textarea { width: 100%; font: inherit; padding: var(--sp-2); border-radius: var(--radius-sm); border: 1px solid var(--line); background: transparent; color: inherit; resize: vertical; }

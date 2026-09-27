@@ -503,8 +503,23 @@ class H(BaseHTTPRequestHandler):
             ok_arg = None
         if action not in ACTIONS or not ok_arg:
             return self.send(400, {"error": "bad action or video"})
-        if action in ("post_live", "post_now", "post_at") and b.get("confirm") is not True:
-            return self.send(400, {"error": "Confirm the schedule first."})
+        if action in ("post_live", "post_now", "post_at"):
+            if b.get("confirm") is not True:
+                return self.send(400, {"error": "Confirm the schedule first."})
+            import quality_gate
+            gate_id = vid.split("|", 1)[0] if action == "post_at" else vid
+            gate = quality_gate.check(gate_id)
+            reason = str(b.get("gate_override") or "").strip()
+            if not gate["pass"] and not reason:
+                blockers = [c["detail"] for c in gate["checks"] if c["level"] == "block" and not c["ok"]]
+                return self.send(400, {"error": "The quality gate isn't happy with this one: "
+                                        + "; ".join(blockers), "gate": gate})
+            if not gate["pass"] and reason:
+                try:
+                    import studio_ext_gate
+                    studio_ext_gate.record_override(gate_id, gate, reason)
+                except Exception:
+                    log.error("gate override logging failed:\n%s", traceback.format_exc())
         with LOCK:
             if JOB["done"] and not QUEUE:
                 start_job(action, vid)
