@@ -105,7 +105,7 @@ class AdaptiveBrain:
             return AdaptiveResult(result, trace, blocked=True)
 
         result2, remaining = self._run_paid(cheap.name, packet, job_id=job_id,
-                                            budget=budget, trace=trace)
+                                            budget=budget, total_budget=budget, trace=trace)
         if result2 and result2.confidence >= self.required_confidence:
             return AdaptiveResult(result2, trace)
 
@@ -117,7 +117,7 @@ class AdaptiveBrain:
             return AdaptiveResult(result2 or result, trace, blocked=True)
 
         result3, _ = self._run_paid(premium.name, packet, job_id=job_id,
-                                     budget=remaining, trace=trace)
+                                     budget=remaining, total_budget=budget, trace=trace)
         return AdaptiveResult(result3 or result2 or result, trace, blocked=result3 is None)
 
     @staticmethod
