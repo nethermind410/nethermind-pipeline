@@ -432,16 +432,16 @@
       topWhy.why = `Top pick: ${uniq[0][0]} — ${reason}`;
     }
     const drafts = d.drafts.map(x => `<button class="card nx-draft" data-go="draft/${esc(x.id)}">
-        <div><b>${esc(x.title || x.topic)}</b> <span class="pill ${x.kind === "long" ? "scheduled" : ""}">${x.kind === "long" ? `Long-form · ${x.minutes} min` : "Short"}</span>
+        <div><b>${esc(x.title || x.topic)}</b> <span class="pill ${x.kind === "long" ? "scheduled" : ""}">${x.kind === "long" ? `Long-form · ${x.minutes} min` : "Short"}</span>${x.needs_checking ? `<span class="pill ready" title="${esc((x.confirm || []).join(" · "))}">Needs checking (${x.confirm.length})</span>` : ""}
           <div class="nx-meta">${x.kind === "long" ? `${x.chapters.length} chapters` : `${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"}`} · ${ago(x.at)}</div></div>
         <span class="btn small primary">Read &amp; approve</span></button>`).join("");
     const longs = d.episodes.filter(e => e.kind === "long"), recaps = d.episodes.filter(e => e.kind !== "long");
     const epCard = e => `<div class="card nx-ep">
-          <div class="nx-head"><b>${esc(e.title)}</b><span class="pill ${e.rendered ? "live" : ""}">${e.rendering ? "Rendering…" : e.rendered ? "Rendered" : e.kind === "long" ? "Approved" : "Planned"}</span>${e.style === "iceberg" ? `<span class="pill">Iceberg</span>` : ""}</div>
+          <div class="nx-head"><b>${esc(e.title)}</b><span class="pill ${e.rendered ? "live" : ""}">${e.rendering ? "Rendering…" : e.rendered ? "Rendered" : e.kind === "long" ? "Approved" : "Planned"}</span>${e.style === "iceberg" ? `<span class="pill">Iceberg</span>` : ""}${e.needs_checking ? `<span class="pill ready" title="${esc((e.confirm || []).join(" · "))}">Needs checking (${e.confirm.length})</span>` : ""}</div>
           <ol class="nx-chaps">${e.chapters.map(c => `<li>${esc(c)}</li>`).join("")}</ol>
           ${e.timestamps ? `<pre class="rt-pre nx-ts">${esc(e.timestamps)}</pre>` : ""}
           <div class="row-end">${e.rendered ? `<button class="btn primary small" data-open="${esc(e.video)}">Review the video</button>` : ""}
-            <button class="btn small" data-nx-long="${esc(e.id)}" ${d.rendering ? "disabled" : ""}>${e.rendering ? "Rendering…" : e.rendered ? "Re-render" : "Render"}</button>
+            ${e.own_voice ? "" : `<button class="btn small" data-nx-long="${esc(e.id)}" ${d.rendering ? "disabled" : ""}>${e.rendering ? "Rendering…" : e.rendered ? "Re-render" : "Render"}</button>`}
             ${e.kind === "long" ? (e.shorts.length ? `<span class="nx-meta">${e.shorts.length} Shorts cut</span>` : `<button class="btn small" data-nx-cut="${esc(e.id)}">Cut Shorts from chapters</button>`) : ""}
             ${e.plan ? `<details class="nx-plan"><summary>Script</summary><pre class="rt-pre">${esc(e.plan)}</pre></details>` : ""}</div></div>`;
     main.innerHTML = `<div class="page wide">

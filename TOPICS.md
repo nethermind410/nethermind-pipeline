@@ -90,6 +90,36 @@ Same rules as Marvel: no official art, stills or clips — Gemini art by archety
 
 Marvel/comics averages ~1,400 YouTube views per Short vs ~800 for space/ocean (Buffer, 8–24 Sep 2026). Suggested weekly mix while that holds: **3 Marvel/comics · 1 anime · 1 gaming · 1 science-crossover** ("the power that's real biology"). Re-check the split against `stats.py` monthly — move slots toward whatever lane wins.
 
+## Long-form — weekly episode ideas (Idea Farm, scored /60, imported 2026-09-27)
+
+One weekly ~15–25 min episode Courtney voices herself, cut into 3 Shorts after. Format `long` here always means
+this weekly slot, never the daily Shorts above. Score = audience-fit + pillar-fit + fandom-depth fit + depth +
+specificity + evergreen value, each 0–10. Source column keeps the idea's status/note from the Idea Farm backlog.
+
+| Hook | Format | Verify at |
+|---|---|---|
+| What Happens When a Whale Dies Two Miles Down | long | 55/60 · made (EP01, episodes/ep_whale_fall_two_miles_down.json) · own-Short (bone worm) + API-90d |
+| The Star That Keeps Dimming and Nobody Knows Why | long | 53/60 · ready · own-Short (Boyajian) + comment ("OH HELL NO!") |
+| Marvel's Biggest Hero Started Out Grey | long | 52/60 · ready · own-Short (Hulk, top video) |
+| The Video Game America Buried in the Desert | long | 52/60 · ready · evergreen (Atari landfill) |
+| Scientists Still Can't Agree What This Fossil Is | long | 50/60 · ready · API-90d (Tully monster) |
+| 72 Seconds in 1977 Nobody Has Explained | long | 50/60 · ready · evergreen (Wow! signal) |
+| The Anime That Ran Out of Money Before Its Ending | long | 49/60 · ready · evergreen (Evangelion) |
+| Marvel Almost Never Existed | long | 48/60 · needs verification (the Hindenburg claim) · own-Short (rendered, unpublished) |
+| Nintendo Tried Taxis and Love Hotels First | long | 48/60 · ready (verify the love-hotel claim) · evergreen |
+| The Object That Came From Another Star and Left | long | 48/60 · ready · evergreen (ʻOumuamua) |
+| The Voice in Rudeus's Dreams Was Lying | long | 47/60 · ready (spoiler warning in cold open) · API-90d (Mushoku Tensei) + July-plan |
+| The Hero Who Beat Doctor Doom in Her First Comic | long | 47/60 · ready · API-90d (Squirrel Girl vs Dr Doom origin) |
+| The Real Falcon Punch Lives Underwater | long | 45/60 · ready (incl. the "super colour vision" myth-bust) · comment + own-Short (mantis shrimp) |
+| Ichigo Was Never Just a Soul Reaper | long | 44/60 · ready · API-90d (Bleach) + July-plan |
+| What If You Fell Into the Mariana Trench | long | 43/60 · ready · evergreen (pillar demand not measured) |
+| Strange True Facts to Fall Asleep To | long | 42/60 · parked (long compilations come at Month 4+) · API-90d |
+| What Would Actually Happen If the Moon Vanished | long | 41/60 · ready · evergreen |
+| What a Real Gamma Dose Would Do to You | long | 40/60 · ready · own-Short (Hulk) cross-pillar |
+| The Animal That Survived Open Space | long | 39/60 · ready (crowded topic: needs a fresh angle) · evergreen (tardigrades) |
+| Things Invented by Accident That Run Your Life | long | 33/60 · weak (list format: lists don't retain; recast or kill) · evergreen |
+| GTA 6's Story, Before It Even Releases | long | 32/60 · parked (clip-heavy, clashes with Format Spec v2 §9; verify release date) · July-plan |
+
 ## Intelligence picks — topics you said "make it" to in Studio
 
 | Hook | Format | Verify at |

@@ -65,12 +65,14 @@ def episodes():
             continue                                   # still a script: it's under "Scripts waiting for you"
         pk = json.loads((DATA / "packaging" / f"{vid}.json").read_text()) if (DATA / "packaging" / f"{vid}.json").exists() else {}
         shorts = sorted(q.stem for q in (DATA / "cfg").glob(f"{p.stem}__*.json") if not q.stem.endswith("_tiktok"))
+        confirm = ep.get("confirm") or pk.get("confirm") or []           # unresolved [CONFIRM: ...] slots — flag until cleared
         out.append({"id": p.stem, "title": pk.get("title") or ep.get("title", p.stem), "video": vid,
                     "kind": ep.get("kind", "recap"), "style": ep.get("style", ""), "shorts": shorts,
                     "chapters": [c.get("title", c.get("id")) for c in ep.get("chapters", [])],
                     "rendered": mp4.exists(), "timestamps": chap.read_text() if chap.exists() else "",
                     "plan": plan.read_text()[:6000] if plan.exists() else "",
-                    "rendering": _LONG["what"] == p.stem})
+                    "rendering": _LONG["what"] == p.stem, "own_voice": bool(ep.get("own_voice")),
+                    "confirm": confirm, "needs_checking": bool(confirm)})
     return out
 
 
@@ -154,6 +156,8 @@ def approve(body):
         if _LONG["what"]:
             raise ValueError(f"Production is rendering {_LONG['what']} — approve this once it finishes.")
         r = drafter_long.approve(vid)
+        if drafter_long.load(vid).get("own_voice"):     # her own voiceover: wait for the recording, don't render yet
+            return {**r, "reply": "Approved — record your voiceover for this episode (Make → Long-form), then render it."}
         render_long({"id": vid})                        # Production: visuals, 16:9 render, QA, chapters, thumbnails
         return {**r, "reply": "Approved — Production is fetching the visuals and rendering the episode (20–45 min)."}
     return {**drafter.approve(_id(body)), "reply": "Approved — Production is building it."}

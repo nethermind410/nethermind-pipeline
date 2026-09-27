@@ -42,6 +42,19 @@ DEFAULTS = {
     "replies_about": "",                   # comment replies: what the channel is about
     "reply_voice": "direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one)",
     "narration_voice": "am_liam",          # Kokoro voice id
+    # identity: the channel's voice/personality, brought in from the creator's brand workspace (company.yaml).
+    # Feeds every script-writing prompt (drafter.py, drafter_long.py) alongside reply_voice/narration_voice above,
+    # which keep doing their own separate jobs (comment replies, Kokoro's TTS voice id) untouched.
+    "identity": {
+        "tone": "like a caffeinated raccoon: high-energy, gleeful, rummaging for the weird bit; low-key geek — knows the lore, never gatekeeps or shows off",
+        "personality": ["caffeinated raccoon energy", "low-key geek", "Kiwi (New Zealand) voice and phrasing"],
+        "voice": "curious, direct, a little dry — a knowledgeable friend, never a lecture; no scripted catchphrases, sounds like the creator talking naturally",
+        "pace_wpm": 155,
+        "viewer_promise": "genuinely strange things that are actually true, explained fast — always fact-checked and sourced",
+        "do_words": ["cool cool", "amazing....", "stretched-out words for emphasis (e.g. \"butttttt\")", "following this vibe, what are the options"],
+        "dont_words": ["dive into", "explore", "journey", "unlock", "unleash", "rage-bait framing (\"they don't want you to know\")",
+                       "filler intros (\"hey guys, in today's video\")", "overclaiming (\"scientists are baffled\")", "circle of life / nature is metal clichés"],
+    },
     "youtube_channel_id": "",              # UC… — for true YouTube numbers (optional)
     "buffer_channels": {"youtube": "", "instagram": "", "tiktok": ""},   # Buffer's channel ids (setup finds them)
     "dashboard_url": "",                   # a phone dashboard link shown in Settings (optional)
@@ -182,6 +195,38 @@ def whose():
 def tag():
     """The channel hashtag without '#', lower-case; '' when the channel has none."""
     return re.sub(r"[^a-z0-9_]", "", str(get("hashtag") or "").lower())
+
+
+def identity():
+    """This channel's voice/personality block ({} for a fresh channel with none set)."""
+    d = get("identity") or {}
+    return d if isinstance(d, dict) else {}
+
+
+def identity_brief():
+    """Identity, formatted for a script-writing prompt (Researcher/Script writer/Packaging). '' when unset —
+    every prompt that calls this degrades gracefully to just the channel's name/about, as it did before."""
+    d = identity()
+    if not d:
+        return ""
+    who = str(get("owner") or "").strip()
+    creator = "the creator" if who.lower() in ("", "you") else who
+    lines = [f"Creator identity — write so it sounds like {creator}:"]
+    if d.get("tone"):
+        lines.append(f"- Tone: {d['tone']}")
+    if d.get("personality"):
+        lines.append(f"- Personality: {', '.join(d['personality'])}")
+    if d.get("voice"):
+        lines.append(f"- Voice: {d['voice']}")
+    if d.get("pace_wpm"):
+        lines.append(f"- Pace: about {d['pace_wpm']} words per minute when spoken aloud.")
+    if d.get("viewer_promise"):
+        lines.append(f"- What viewers can always count on: {d['viewer_promise']}")
+    if d.get("do_words"):
+        lines.append(f"- Phrases/patterns to use naturally (never force them): {', '.join(d['do_words'])}")
+    if d.get("dont_words"):
+        lines.append(f"- Never use: {', '.join(d['dont_words'])}")
+    return "\n".join(lines)
 
 
 def jarvis():

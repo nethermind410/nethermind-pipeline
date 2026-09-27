@@ -1,0 +1,1049 @@
+{
+ "id": "ep_whale_fall_two_miles_down",
+ "kind": "long",
+ "title": "What Happens When a Whale Dies Two Miles Down",
+ "next": "THE STAR THAT KEEPS DIMMING",
+ "palette": {
+  "accent": [
+   70,
+   130,
+   180
+  ],
+  "accent2": [
+   250,
+   204,
+   21
+  ]
+ },
+ "score": "deep",
+ "credit": "ART: NOAA / MBARI / EV NAUTILUS — PUBLIC DOMAIN OR CC — SOURCES IN THE DESCRIPTION; NARRATION: CREATOR'S OWN VOICE",
+ "own_voice": true,
+ "intro": [
+  {
+   "id": "intro_s1",
+   "text": "Right now, about two miles under the Pacific, there's something the size of a school bus lying on the seafloor in complete darkness.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s1.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "deep sea abyssal plain darkness NOAA"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s2",
+   "text": "It's dead. And it's going to keep feeding things down there for longer than you've been alive.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s2.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale carcass seafloor NOAA"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s3",
+   "text": "Butttt here's the bit that got me. Some of the things eating it, don't have mouths.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s3.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "Osedax bone eating worm bone"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s4",
+   "text": "No mouth. No stomach. No gut at all. And they're doing absolutely fine.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s4.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "Osedax worm plume closeup"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s5",
+   "text": "It's a whale. Or, it was.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s5.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale skeleton seafloor NOAA"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s6",
+   "text": "When a big whale dies out in the open ocean, it doesn't always wash up on a beach. A lot of the time it goes down. All the way down. And when it hits the bottom, scientists call it a whale fall.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s6.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale fall skeleton seafloor"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s7",
+   "text": "Which is, honestly, one of the best names in all of science. Every comment section under every whale fall video agrees with me on this.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s7.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale skeleton ocean floor text overlay"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s8",
+   "text": "So here's the plan. Over the next fifteen minutes or so we're following one of these bodies from the moment it lands to a hundred years later. Four completely different stages, each with its own cast of weirdos. We'll meet the worm with no mouth. And we'll end on a graveyard: four hundred and eighty-five whales, up to seven kilometres down, that scientists only announced this June.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s8.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale graveyard necropolis seafloor map"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "intro_s9",
+   "text": "But first: how did anyone even figure out this was happening?",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_intro_s9.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "deep sea submersible historic"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  }
+ ],
+ "chapters": [
+  {
+   "id": "ch1",
+   "title": "Act 1: The Fall",
+   "hook": {
+    "lines": [
+     [
+      "OKAY,",
+      "w"
+     ],
+     [
+      "PICTURE",
+      "w"
+     ],
+     [
+      "WHERE",
+      "w"
+     ],
+     [
+      "THIS",
+      "w"
+     ],
+     [
+      "MORE.",
+      "a"
+     ]
+    ],
+    "size": 140,
+    "y": 600
+   },
+   "segments": [
+    {
+     "id": "ch1_s1",
+     "text": "Okay, picture where this whale ends up. A whale fall is usually more than a kilometre down, often a lot more. No sunlight. Water just above freezing. The pressure is over a hundred times what you're feeling right now.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s1.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "deep ocean depth gauge abyssal zone"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s2",
+     "text": "And there's almost no food. Most of what reaches the deep seafloor is a slow drizzle of tiny dead bits sinking from the surface. Scientists call it marine snow. It's a starvation diet, basically.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s2.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "marine snow deep sea particles"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s3",
+     "text": "Then, out of nowhere, a whale lands.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s3.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale carcass sinking seafloor"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s4",
+     "text": "For the patch of mud right under the body, that's roughly two thousand years' worth of food, arriving all at once. Hold onto that number, it comes back at the end.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s4.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "seafloor mud patch sediment"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s5",
+     "text": "So when did humans notice? The first hints were honestly accidental. Back in 1854, someone pulled a brand new species of mussel off a floating chunk of whale blubber. Then in the 1960s, deep-sea trawlers kept dragging up limpets, little cone-shaped snail things, stuck to whale bones. Nobody had seen those species before either.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s5.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "historic whaling ship engraving 1800s"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s6",
+     "text": "Then, 1977. US Navy pilots in a deep-diving craft called the Trieste II are down on the abyssal floor, and they spot a whale skeleton just lying there. That's the first whale fall on record at that depth.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s6.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Trieste II bathyscaphe submersible"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s7",
+     "text": "But the one that really kicked everything off came ten years later. 1987. A research submersible called Alvin is running a routine dive off southern California, in a spot called the Santa Catalina Basin, about one thousand two hundred and forty metres down. And it finds a blue whale skeleton. Twenty-one metres long.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s7.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Alvin submersible research vessel"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s8",
+     "text": "Later, dating showed that skeleton had already been lying there for about thirty-nine years. Thirty-nine years on the seafloor, and it still wasn't just bones. It was covered in bacteria mats, clams, snails, all these animals living on it. Some of them were the kind of animals scientists were used to seeing at hydrothermal vents, those super-hot cracks in the seafloor.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s8.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "hydrothermal vent deep sea mussels clams"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s9",
+     "text": "Which should not make sense. There's no volcano here. It's a dead whale. So scientists had a problem: they'd found this thing by accident, and they had no idea what they were looking at. So they did something that sounds a bit like the start of a horror movie. They started sinking dead whales on purpose.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s9.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "research vessel deck whale carcass"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch1_s10",
+     "text": "A 2022 study counted thirty-eight whale falls that humans had deliberately placed, next to only forty-five natural ones anyone had found. And watching them is how we know the story I'm about to tell you. Because it turns out a whale fall isn't one event. It's four.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch1_s10.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "scientists research vessel deep sea"
+      }
+     },
+     "gap": 0.15
+    }
+   ]
+  },
+  {
+   "id": "ch2",
+   "title": "Act 2: The Feast",
+   "hook": {
+    "lines": [
+     [
+      "STAGE",
+      "w"
+     ],
+     [
+      "ONE",
+      "w"
+     ],
+     [
+      "STARTS",
+      "w"
+     ],
+     [
+      "PRETTY",
+      "w"
+     ],
+     [
+      "MORE.",
+      "a"
+     ]
+    ],
+    "size": 140,
+    "y": 600
+   },
+   "segments": [
+    {
+     "id": "ch2_s1",
+     "text": "Stage one starts pretty much the moment the whale touches down. And the guests arrive fast. First up: hagfish. If you've never met a hagfish, they look like an eel that gave up halfway. No jaws like a normal fish. And when they're bothered they can make an absurd amount of slime. Heaps of it. They burrow straight into the carcass.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s1.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "hagfish deep sea eel"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s2",
+     "text": "Then the sleeper sharks. Slow, big, deep-water sharks. Plus crabs, and fish like eelpouts. And together, this crew eats about forty to sixty kilos of whale every single day.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s2.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "sleeper shark deep sea"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s3",
+     "text": "Someone in the comments under another whale video put this perfectly. They said a whale dying is like a rare boss spawning in an MMO, and the whole server turns up for the drops. That's exactly what it is. Except this boss drops tens of tonnes of loot, and the raid takes months.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s3.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale carcass scavengers feeding seafloor"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s4",
+     "text": "And we've actually watched this happen live. October 16th, 2019. A research ship called the Nautilus is livestreaming a dive off central California, at a place called Davidson Seamount. It's the last dive of the season. They're about three thousand two hundred metres down. That's two miles.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s4.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Nautilus research vessel livestream ROV"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s5",
+     "text": "And on the camera feed, there's a baleen whale on the seafloor. Freshly arrived, in whale terms. Fish are stripping the blubber off it, and on the bones you can already see the first bone-eating worms moving in. The scientists on the stream were thrilled, and anyone watching online was watching it live with them. A year later, the team went back to the same spot. And it looked completely different.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s5.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Davidson Seamount whale fall ROV footage"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s6",
+     "text": "Which brings me to a myth. You'll see people say a whale's soft tissue is gone within a month. Not really. The scavenger stage usually runs months, up to around a year and a half, sometimes two. It's a lot of whale.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s6.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale skeleton partially scavenged"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s7",
+     "text": "Once the big eaters have taken most of the meat, stage two kicks in. The scraps fall into the mud around the skeleton, and the mud itself gets enriched: soaked in leftover whale. And a whole new crowd moves in. Worms, heaps of them, the bristly segmented kind scientists call polychaetes. Plus small crustaceans. They pack into the bones and the sediment and just go for it.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s7.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "polychaete worms sediment macro"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch2_s8",
+     "text": "This stage can last from a few months up to about four and a half years. So by now we're maybe five, six years in. The meat is gone. The mud's been picked over. If you dropped a camera down there you'd see, basically, a skeleton. And you'd think, okay, that's it. Show's over. Butttt the flesh was never the main course.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch2_s8.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale skeleton bare bones seafloor"
+      }
+     },
+     "gap": 0.15
+    }
+   ]
+  },
+  {
+   "id": "ch3",
+   "title": "Act 3: The Bones",
+   "hook": {
+    "lines": [
+     [
+      "WHALE",
+      "w"
+     ],
+     [
+      "BONES",
+      "w"
+     ],
+     [
+      "ARE",
+      "w"
+     ],
+     [
+      "PACKED",
+      "w"
+     ],
+     [
+      "MORE.",
+      "a"
+     ]
+    ],
+    "size": 140,
+    "y": 600
+   },
+   "segments": [
+    {
+     "id": "ch3_s1",
+     "text": "Whale bones are packed with fat. There's so much fat stored in a whale's skeleton that it adds up to about four to six percent of the whale's entire body weight. And that fat is locked inside solid bone. Two miles down. How do you get at it?",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s1.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale bone vertebra closeup"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s2",
+     "text": "February 6th, 2002. A biologist from MBARI, the Monterey Bay Aquarium Research Institute, named Robert Vrijenhoek, is looking for deep-sea clams in Monterey Canyon. His team comes across a dead gray whale, almost two thousand nine hundred metres down. And the bones look, fuzzy. Like they're covered in red shag carpet.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s2.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Monterey Canyon deep sea research"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s3",
+     "text": "That carpet was thousands of worms. A whole new genus nobody had ever described. They named it Osedax, which roughly means bone-devourer. And this is where our mystery from the start pays off. Because Osedax has no mouth. No gut. No anus. Nothing.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s3.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Osedax bone eating worm red plumes"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s4",
+     "text": "So how do you eat a whale without a mouth? Here's how. The worm sticks up out of the bone with a little red plume on top. That's how it breathes. But underneath, inside the bone, it grows these green branching roots. And the roots release acid. They literally dissolve the bone.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s4.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Osedax worm diagram roots bone"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s5",
+     "text": "Then, inside those roots, the worm keeps bacteria. The bacteria do the actual digesting: they break down the collagen and the fat from the bone, and the worm lives off what the bacteria make. So the worm doesn't eat the whale. The worm farms bacteria that eat the whale. That's amazing.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s5.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "bacteria symbiosis diagram illustration"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s6",
+     "text": "And it gets weirder. When scientists first published on these worms, in the journal Science in 2004, the title literally mentioned dwarf males. Because the worms you see, the big ones, are all females. The males are tiny. They live inside the female's tube, and they never grow past the larval stage. They never really grow up. And one female can be carrying hundreds of them. Some counts go past six hundred.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s6.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Osedax worm tube females males diagram"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s7",
+     "text": "No mouth, no gut, and the males never grow up. Genuinely one of the strangest animals in the ocean.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s7.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Osedax worm bone closeup"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s8",
+     "text": "While the worms go at the bones, stage three is happening all around them. This is the long one. Bacteria start breaking down the fat inside the bones without any oxygen. And as they do that, they give off hydrogen sulphide. Rotten-egg gas. That gas is toxic to most life. But some bacteria can run on it. They pull energy out of chemicals instead of sunlight. That's called chemosynthesis. And those bacteria form mats that feed mussels, clams, limpets, sea snails.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s8.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "chemosynthetic bacteria mats whale bone"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s9",
+     "text": "How long does this last? Fifty years. Possibly a hundred. That's the boss drop that just keeps dropping.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s9.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale skeleton decades seafloor time-lapse"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s10",
+     "text": "And remember those vent animals from the Alvin skeleton? Here's why they're there. Some mussels and clams found on whale bones used to be known only from hydrothermal vents and sunken wood. The same kind of chemistry, sulphide and bacteria, is happening on a whale skeleton in the middle of nowhere.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s10.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "hydrothermal vent mussels comparison"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s11",
+     "text": "Which gave scientists an idea. Vents are rare and really far apart. So how do the animals that live on them spread across the ocean? One estimate says that at any moment there are around six hundred and ninety thousand carcasses of the biggest whale species somewhere in these stages. Spread out, that's roughly one every twelve kilometres. Along whale migration routes, maybe one every five.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s11.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "ocean floor map whale carcasses distribution"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s12",
+     "text": "And the idea is that those could work like stepping stones. Close enough together that tiny larvae can hop from one to the next, and from there to a vent or a seep. It's a hypothesis, not a settled fact. But it's a cool one.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s12.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "larvae stepping stones ocean diagram"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s13",
+     "text": "Finally, once all the fat is gone, you're left with bare, hard bones. And even then it's still useful. On a seafloor that's mostly soft mud, hard ground is valuable. Filter feeders anchor onto the skeleton and live on it. The whale turns into a reef.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s13.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale bone reef filter feeders"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s14",
+     "text": "One more thing about those bone-eating worms. Scientists CT-scanned fossil bones of plesiosaurs, the big long-necked marine reptiles, plus ancient sea turtles. About a hundred million years old. And they found the telltale holes and cavities Osedax makes. So these worms were eating bones before whales even existed. Whales just turned out to be the best meal they'd ever had.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s14.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "plesiosaur fossil bone CT scan"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch3_s15",
+     "text": "So if a single whale can run a whole neighbourhood for a century, what happens when you take the whales away?",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch3_s15.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale silhouette disappearing ocean"
+      }
+     },
+     "gap": 0.15
+    }
+   ]
+  },
+  {
+   "id": "ch4",
+   "title": "Act 4: The Graveyard and the Missing Whales",
+   "hook": {
+    "lines": [
+     [
+      "FIRST,",
+      "w"
+     ],
+     [
+      "THE",
+      "w"
+     ],
+     [
+      "GRAVEYARD",
+      "w"
+     ],
+     [
+      "I",
+      "w"
+     ],
+     [
+      "MORE.",
+      "a"
+     ]
+    ],
+    "size": 140,
+    "y": 600
+   },
+   "segments": [
+    {
+     "id": "ch4_s1",
+     "text": "First, the graveyard I promised you. In June this year, scientists published a paper in the journal Nature. The team, led by Xiaotong Peng at the Chinese Academy of Sciences, had been surveying a place called the Diamantina Zone, in the southeastern Indian Ocean. It's deep. Between about four and a half and seven kilometres down.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s1.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "Diamantina Zone Indian Ocean map"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch4_s2",
+     "text": "And along roughly twelve hundred kilometres of seafloor, they recorded four hundred and eighty-five whale-fall sites. Five of those are modern whale falls, with the whole community living on them. The rest, four hundred and seventy-six, are fossil whales. The oldest skull they dated is about five point three million years old.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s2.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "whale fossil seafloor survey sonar"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch4_s3",
+     "text": "In some patches, the remains are packed in at hundreds per square kilometre. They even found a whale species nobody knew existed: an extinct beaked whale they named Pterocetus diamantinae. They're calling it a whale necropolis. A city of the dead.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s3.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "fossil whale skull ancient seafloor"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch4_s4",
+     "text": "And it's not just the Indian Ocean. In 2023, a Scripps survey used sonar off southern California and found at least seven whale falls in one patch of seafloor, with signs there could be up to sixty. That one survey might roughly double the number of modern whale falls known in the entire world. Which tells you something. It's not that whale falls are rare. It's that we've barely looked.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s4.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "sonar survey seafloor California"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch4_s5",
+     "text": "Now, the question. Under one of the biggest whale fall videos out there, there's a comment with thousands of likes asking basically this: how did whaling affect all of this? Here's what we know. Industrial whaling killed an enormous number of the biggest whales. Fewer big whales means fewer whale falls. Fewer whale falls means less food reaching the deep sea, and less carbon getting carried down there and stored.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s5.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "historic whaling ship archival"
+      }
+     },
+     "gap": 0.15
+    },
+    {
+     "id": "ch4_s6",
+     "text": "How big is the effect? Honestly, scientists say the impact on whale-fall communities themselves isn't well understood yet. But one estimate suggests that removing the great whales may have cut the total amount of life in the deep sea by more than thirty percent. Thirty percent. From animals we mostly never saw, dying somewhere nobody was looking.",
+     "vis": {
+      "t": "kb",
+      "src": "whale_fall_ch4_s6.jpg",
+      "z0": 1.1,
+      "z1": 1.3,
+      "cx": 0.5,
+      "cy": 0.45,
+      "real": {
+       "query": "deep sea biodiversity illustration"
+      }
+     },
+     "gap": 0.15
+    }
+   ]
+  }
+ ],
+ "outro": [
+  {
+   "id": "outro_s1",
+   "text": "So, remember that patch of mud from the start? The one under the whale. Before the whale, it got by on a slow drizzle of marine snow. Then one day, a body the size of a school bus lands on it, and that little patch gets about two thousand years of food in one go.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_outro_s1.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "seafloor mud patch return to opening shot"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "outro_s2",
+   "text": "First the scavengers raid it. Then the worms and the crustaceans move through the mud. Then the no-mouth worms and the sulphur bacteria spend fifty, maybe a hundred years working through the bones. And at the end, the skeleton is a reef. The ultimate boss drop. One that lasts a century.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_outro_s2.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "whale skeleton reef final"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "outro_s3",
+   "text": "If you're into the genuinely strange stuff that turns out to be true, that's what this channel is. Subscribe and you'll get the next one.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_outro_s3.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "channel outro subscribe"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  },
+  {
+   "id": "outro_s4",
+   "text": "And I want to know: what's the weirdest deep-sea fact you know? Put it in the comments. I read them, and the best ones might become a video.",
+   "vis": {
+    "t": "kb",
+    "src": "whale_fall_outro_s4.jpg",
+    "z0": 1.1,
+    "z1": 1.3,
+    "cx": 0.5,
+    "cy": 0.45,
+    "real": {
+     "query": "ocean deep sea final shot"
+    }
+   },
+   "gap": 0.15,
+   "in": [
+    "long"
+   ]
+  }
+ ],
+ "sources": [
+  "Wikipedia: Whale fall (F1, F2, F6-F9, F11-F14, F23-F25)",
+  "Frontiers in Ecology and Evolution, 2022 review (F3, F4)",
+  "Smith & Baco 2003, Oceanography (F5-F9, F14)",
+  "MBARI Osedax project / news (F15-F18)",
+  "Science, 2004, Rouse/Goffredi/Vrijenhoek 'Osedax: Bone-Eating Marine Worms with Dwarf Males' (F17)",
+  "PMC (Danise & Higgs 2015, Osedax borings in ~100M-year-old plesiosaur/turtle bone) (F19)",
+  "Nautilus Live, Davidson Seamount whale fall 2019 + return 2020 (F20)",
+  "Nature (2026) + Nature news + CNN: Diamantina Zone whale necropolis (F21)",
+  "NOAA Fisheries FAQ / Scripps 2023 sonar survey (F22)"
+ ],
+ "confirm": [
+  "[CONFIRM: 760/km2 remains-per-area figure] — check against the Nature paper directly (F21)",
+  "[CONFIRM: the 2022 study's exact counts] — 45 natural / 38 implanted / 78 fossil whale falls; verify before publishing (F25)",
+  "[CONFIRM: image rights per source] — MBARI stills are copyrighted (ask permission or use illustration); check E/V Nautilus/OET media-use terms before using any clip; log each Wikimedia Commons file's licence individually",
+  "[CONFIRM: the next-episode pick and the ocean & weird biology playlist link] — before publishing (end screen)"
+ ],
+ "draft": {
+  "at": "2026-09-27T00:00:00",
+  "topic": "What Happens When a Whale Dies Two Miles Down",
+  "task": null,
+  "own_voice_pending": true
+ }
+}

@@ -118,6 +118,7 @@ Reply with ONLY the JSON."""
 def write_packaging(ep, facts):
     chapters = "\n".join(f"- {c['title']}" for c in ep["chapters"])
     prompt = f"""You are the Packaging agent for {channel.get("name")}'s weekly long-form (YouTube only, 16:9). Package it.
+{channel.identity_brief()}
 Episode: {ep["title"]}. Angle: {facts.get("angle")}. Promise: {facts.get("promise")}.
 Chapters:
 {chapters}
@@ -312,12 +313,14 @@ def drafts():
                               "visual": v.get("real", {}).get("query") if v.get("real") else v.get("prompt"),
                               "kind": "real photo" if v.get("real") else "AI art" if v.get("prompt") else "same picture, new framing"})
         words = sum(len(l["text"].split()) for l in lines)
+        confirm = ep.get("confirm") or pkg.get("confirm") or []          # unresolved [CONFIRM: ...] research slots
         out.append({"id": eid, "kind": "long", "topic": ep["draft"].get("topic"), "at": ep["draft"].get("at"),
                     "title": pkg.get("title") or ep.get("title"), "title_options": pkg.get("title_options", []),
                     "title_pkg": f"{eid}_long", "hook_options": [], "lines": lines, "minutes": round(words / 168, 1),
                     "chapters": [c["title"] for c in ep["chapters"]], "end": [f"NEXT WEEK: {ep.get('next', '')}"],
                     "thumbnails": [pkg.get("thumbnail", {})] + pkg.get("thumbnail_options", []),
-                    "research": rec.get("research"), "check": None, "notes": rec.get("notes", [])})
+                    "research": rec.get("research"), "check": None, "notes": rec.get("notes", []),
+                    "confirm": confirm, "needs_checking": bool(confirm)})
     return out
 
 
