@@ -353,11 +353,12 @@ class H(BaseHTTPRequestHandler):
                   "/api/ext_errors": lambda: EXT_ERRORS}
         if path == "/ext.js":                               # loads every extension's script and stylesheet
             names = sorted(k[1:] for k in STATIC if k.startswith("/ext_"))
-            js = "".join(f'document.head.insertAdjacentHTML("beforeend",\'<link rel="stylesheet" href="/{n}">\');' if n.endswith(".css")
-                         else f'document.write(\'<script src="/{n}"><\\/script>\');' for n in names)
+            v = lambda n: int((UI / STATIC["/" + n][0]).stat().st_mtime) if (UI / STATIC["/" + n][0]).exists() else 0
+            js = "".join(f'document.head.insertAdjacentHTML("beforeend",\'<link rel="stylesheet" href="/{n}?v={v(n)}">\');' if n.endswith(".css")
+                         else f'document.write(\'<script src="/{n}?v={v(n)}"><\\/script>\');' for n in names)   # ?v= busts the cache on change
             data = js.encode()
             self.send_response(200); self.send_header("Content-Type", "text/javascript"); self.send_header("Content-Length", str(len(data)))
-            self.send_header("Cache-Control", "public, max-age=300"); self.end_headers(); return self.wfile.write(data)
+            self.send_header("Cache-Control", "no-store"); self.end_headers(); return self.wfile.write(data)   # the list itself is never stale
         routes.update(EXT_GET)
         if path in routes:
             return self.send(200, routes[path]())

@@ -46,30 +46,42 @@
 
   function panelHtml(data) {
     return `<div class="card sc-panel">
-      <div class="nx-head"><b>Scenes</b><span class="nx-meta">${data.scenes.length} scene${data.scenes.length === 1 ? "" : "s"} — upload your own photo or video for any of them</span></div>
+      <div class="nx-head"><b>Scenes</b><span class="nx-meta">${data.scenes.length} scene${data.scenes.length === 1 ? "" : "s"} — drag a photo or video onto any scene, or use its button</span></div>
       <div class="sc-list">${data.scenes.map(sceneRow).join("")}</div>
     </div>`;
   }
 
   function wire(panel, vid) {
+    async function send(file, key, inp) {
+      const row = panel.querySelector(`.sc-row[data-sc-key="${CSS.escape(key)}"]`);
+      let rights = null;
+      if (row && row.dataset.scOwn !== "1") {
+        rights = confirm("Is this your own photo/video? OK = yours. Cancel = free to use / stock.") ? "own" : "free";
+      }
+      try {
+        row?.classList.add("sc-busy");
+        const dataUrl = await readAsDataURL(file);
+        const body = {id: vid, key, data: dataUrl, mime: file.type};
+        if (rights) body.rights = rights;
+        const r = await post("/api/scenes/upload", body);
+        toast(r.reply);
+        refreshPanel(panel.parentElement, vid);
+      } catch (err) { toast(err.message); if (inp) inp.value = ""; }
+      finally { row?.classList.remove("sc-busy"); }
+    }
     panel.querySelectorAll(".sc-file").forEach(inp => {
-      inp.onchange = async ev => {
-        const file = ev.target.files[0]; if (!file) return;
-        const key = inp.dataset.scKey;
-        const row = panel.querySelector(`.sc-row[data-sc-key="${CSS.escape(key)}"]`);
-        let rights = null;
-        if (row && row.dataset.scOwn !== "1") {
-          rights = confirm("Is this your own photo/video? OK = yours. Cancel = free to use / stock.") ? "own" : "free";
-        }
-        try {
-          const dataUrl = await readAsDataURL(file);
-          const body = {id: vid, key, data: dataUrl, mime: file.type};
-          if (rights) body.rights = rights;
-          const r = await post("/api/scenes/upload", body);
-          toast(r.reply);
-          refreshPanel(panel.parentElement, vid);
-        } catch (err) { toast(err.message); inp.value = ""; }
-      };
+      inp.onchange = ev => { const file = ev.target.files[0]; if (file) send(file, inp.dataset.scKey, inp); };
+    });
+    panel.querySelectorAll(".sc-row").forEach(row => {          // drag a photo or clip straight onto a scene
+      row.addEventListener("dragover", e => { if ([...e.dataTransfer.types].includes("Files")) { e.preventDefault(); row.classList.add("sc-drop"); } });
+      row.addEventListener("dragleave", e => { if (!row.contains(e.relatedTarget)) row.classList.remove("sc-drop"); });
+      row.addEventListener("drop", e => {
+        e.preventDefault(); row.classList.remove("sc-drop");
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        if (!/^(image|video)\//.test(file.type)) return toast("That's not a photo or video.");
+        send(file, row.dataset.scKey);
+      });
     });
     panel.querySelectorAll(".sc-remove").forEach(btn => {
       btn.onclick = async () => {
