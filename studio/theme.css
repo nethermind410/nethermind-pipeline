@@ -225,3 +225,14 @@ body.on-brain main{padding:0;overflow:hidden}
 .chan-tabs button:hover{color:var(--ink);border-color:var(--ink)}
 .chan-tabs button.on{background:var(--ink);color:#000;border-color:var(--ink)}
 @media (max-width:760px){.chan-tabs{padding:0 16px 14px}}
+
+/* v4 — calmer home: frames hug their words, one "next step" (the Today pill), a frameless money line */
+.on-brain .next-step{display:none!important}
+.neuron{width:max-content;max-width:260px;padding:9px 14px 10px;gap:2px}
+.neuron .nw,.neuron.hot .nw{font-size:clamp(20px,1.7vw,27px)}
+.neuron .nc{font-size:13px;line-height:1.3}
+.neuron .lobe{position:absolute;left:14px;top:calc(100% + 6px);white-space:nowrap;pointer-events:none}
+.on-brain .core-btn{background:none!important;border:0!important;box-shadow:none!important;padding:4px 10px}
+.on-brain .core-btn .big{font-size:clamp(28px,2.6vw,40px)}
+.on-brain .core-btn .nc{font-size:12.5px;max-width:52ch}
+.on-brain .today-pill{display:none!important}   /* the Today pill bottom-right already says this */

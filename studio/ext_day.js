@@ -23,7 +23,7 @@
     const steps = day.steps, left = steps.filter(s => !isDone(s)), postOut = isDone(day.post);
     dock.classList.toggle("urgent", !postOut); dock.classList.toggle("open", running);
     if (!running) {
-      const label = !left.length ? `Day done${day.streak ? ` · ${day.streak}-day streak` : ""}` : !postOut ? day.post.title : `${left.length} job${left.length > 1 ? "s" : ""} left today`;
+      const label = !left.length ? `Day done${day.streak ? ` · ${day.streak}-day streak` : ""}` : !postOut ? day.post.title : left[0].title;   // the pill IS the next best step
       dock.innerHTML = `<button class="dr-pill ${left.length ? "" : "clear"}" data-dr="start" title="${left.length ? "See today's jobs" : "Everything's done — nice"}">
         <span class="dr-play">${left.length ? "▶" : "✓"}</span><span><b>${esc(label)}</b>${left.length ? `<em>${left.length} job${left.length > 1 ? "s" : ""} · tap to see all</em>` : `<em>${day.out} of 7 out this week</em>`}</span></button>`;
       return;
