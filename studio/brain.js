@@ -156,6 +156,8 @@ function wire() {
   const narrow = S.width < 820;
   let paths = ""; const ends = {};
   const O = NeuralBrain.organ() || {}, brain = !O.name || O.name === "brain";          // other organs: their own label spots
+  const placed = [];                                    // rects already laid this pass, for collision nudging on small windows
+  const overlaps = (a, b, m) => a.left < b.right + m && a.right + m > b.left && a.top < b.bottom + m && a.bottom + m > b.top;
   NEURONS.forEach(n0 => {
     const el = els[n0.key], [rx, ry] = NeuralBrain.map(n0.ax, n0.ay);
     const n = brain ? n0 : {...n0, ax: rx, ay: ry, gap: 0.05, nudge: [0, 0], at: null, ...(O.labels?.[n0.key] || {})};
@@ -170,8 +172,16 @@ function wire() {
     let lx = left ? fx - el.offsetWidth : right ? fx : fx - el.offsetWidth / 2;
     let ly = n.at ? fy - el.offsetHeight / 2 : uy < -0.5 ? fy - el.offsetHeight : uy > 0.5 ? fy : fy - el.offsetHeight / 2;
     lx = Math.max(24, Math.min(S.width - el.offsetWidth - 24, lx)); ly = Math.max(96, Math.min(S.height - el.offsetHeight - (n.at ? 24 : 120), ly));
+    const w = el.offsetWidth, h = el.offsetHeight;
+    // small windows squeeze the hand-tuned spots together: nudge apart, staying inside the same bounds
+    let rect = {left: lx, top: ly, right: lx + w, bottom: ly + h}, tries = 0;
+    while (tries < 24 && placed.some(p => overlaps(rect, p, 8))) {
+      ly = Math.min(S.height - h - (n.at ? 24 : 120), ly + 10);
+      rect = {left: lx, top: ly, right: lx + w, bottom: ly + h}; tries++;
+    }
+    placed.push(rect); lx = rect.left; ly = rect.top;
     el.style.left = lx + "px"; el.style.top = ly + "px";
-    const w = el.offsetWidth, h = el.offsetHeight;                              // lines leave the frame on the side facing the brain
+                                                                                 // lines leave the frame on the side facing the brain
     const ex = n.at ? lx + w + 8 : left ? lx + w + 8 : right ? lx - 8 : lx + w / 2;
     const ey = n.at || left || right ? ly + h / 2 : uy < -0.5 ? ly + h + 6 : ly - 6;
     ends[n.key] = {ex, ey, n: n0, bow: 0.15};

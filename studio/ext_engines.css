@@ -1,17 +1,17 @@
 /* Control → AI engines */
 .en-presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-.en-preset{display:grid;gap:4px;text-align:left;background:none;border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);cursor:pointer;font:inherit}
+.en-preset{display:grid;gap:4px;text-align:left;background:none;border:1px solid var(--line);border-radius:var(--radius-md);padding:14px;color:var(--ink);cursor:pointer;font:inherit}
 .en-preset:hover{border-color:var(--ink)}.en-preset.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .en-preset span{color:var(--muted);font-size:13px;line-height:1.45}.en-preset em{font-style:normal;color:var(--accent);font:700 11px var(--grotesk);letter-spacing:.08em;text-transform:uppercase}
 .en-jobs{display:grid;gap:12px;padding:16px}
 .en-job{display:grid;grid-template-columns:minmax(200px,1fr) 2fr;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .en-job .pill{margin-left:8px}
 .en-chain{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
-.en-chain select,.en-f select,.en-f input,.en-key input,.en-job>div>select{background:var(--hover);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:inherit;font-size:13px;min-width:0;width:100%}
+.en-chain select,.en-f select,.en-f input,.en-key input,.en-job>div>select{background:var(--hover);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 9px;font:inherit;font-size:13px;min-width:0;width:100%}
 .en-engines{display:grid;gap:10px}
 .en-eng{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:16px}
 .en-eng p{margin:2px 0 8px}.en-eng code{font-size:12px}
-.en-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);margin-top:5px}.en-dot.ok{background:#34C759;box-shadow:0 0 8px #34C759}
+.en-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);margin-top:5px}.en-dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .en-f{display:flex;gap:10px;align-items:center;margin:6px 0}.en-f .k{width:62px;color:var(--muted);font-size:12px}.en-f input,.en-f select{flex:1}
 .en-key{display:flex;gap:8px;margin-top:8px}.en-key input{flex:1}
 .en-quick{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
