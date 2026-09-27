@@ -87,6 +87,33 @@ def save_script(vid, lines):
     return {"ok": True, "changed": changed}
 
 
+def _hook_lane(vid):
+    try:
+        import intelligence
+        topic = jload(CFG / f"{vid}.json", {}).get("draft", {}).get("topic", "")
+        return intelligence.lane_of(topic) if topic else "general"
+    except Exception:
+        return "general"
+
+
+def hook_why(vid, past):
+    """Plain-English reason for the current hook, plus a confidence word — from how many past
+    hooks with real views it can be compared against. No new AI call."""
+    better = [p for p in past if p["views"] > 0]
+    if len(better) >= 3:
+        top = better[0]
+        why = f"styled like your best-performing hooks (e.g. \"{top['hook'][:60]}\" — {top['views']:,} views)"
+        level = "high"
+    elif better:
+        why = f"only {len(better)} past hook{'s' if len(better) != 1 else ''} to compare against so far"
+        level = "medium"
+    else:
+        why = "no past hooks with views yet to compare against"
+        level = "low"
+    import studio_ext_why as why_ext
+    return {**why_ext.confidence(level, kind="hook", lane=_hook_lane(vid)), "why": why}
+
+
 def hooks(vid):
     """Hook options for a video, plus the real first lines + YouTube views of past videos as reference."""
     pkg = jload(PKG / f"{vid}.json", {}) or {}
@@ -104,15 +131,24 @@ def hooks(vid):
         if yt is not None:
             past.append({"title": v["title"], "hook": v["script"][0], "views": yt})
     past.sort(key=lambda x: -x["views"])
-    return {"options": [{"text": o, "current": o == current} for o in opts], "past": past[:6]}
+    return {"options": [{"text": o, "current": o == current} for o in opts], "past": past[:6],
+            "why": hook_why(vid, past) if current else None}
 
 
 def choose_hook(vid, text):
     h = hooks(vid)
     if text not in [o["text"] for o in h["options"]]:
         raise ValueError("Pick one of the listed hooks.")
+    prior = next((o["text"] for o in h["options"] if o["current"]), "")
     first = (jload(CFG / f"{vid}.json", {})["segments"][0]["id"])
-    return save_script(vid, {first: text})
+    r = save_script(vid, {first: text})
+    if prior and text != prior:
+        try:
+            import studio_ext_why as why_ext
+            why_ext.record({"kind": "hook", "lane": _hook_lane(vid), "ai": prior, "user": text})
+        except Exception:
+            pass
+    return r
 
 
 # ------------------------------------------------------------------ series planner

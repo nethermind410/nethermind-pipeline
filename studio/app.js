@@ -149,6 +149,7 @@ function videoVerdict(v) {
 }
 async function pageVideo(id) {
   const v = await get("/api/video/" + encodeURIComponent(id));
+  const hooks = v.stage === "ready" ? await get("/api/hooks/" + encodeURIComponent(id)).catch(() => null) : null;
   const p = v.packaging || {};
   const field = (lab, val) => val ? `<div class="field"><div class="lab">${lab}<button class="btn small" data-copy="${esc(val)}">Copy</button></div><div class="val">${esc(val)}</div></div>` : "";
   let cta = "";
@@ -177,7 +178,8 @@ async function pageVideo(id) {
         <div class="cta">${cta}</div>
         ${sched}${live}
         ${v.precheck && v.stage === "ready" ? precheckHtml(v) : ""}
-        ${v.thumb ? `<div class="card"><img src="${media(v.thumb)}" alt="Thumbnail" style="width:100%;display:block"></div>` : ""}
+        ${hookHtml(hooks)}
+        ${v.thumb ?`<div class="card"><img src="${media(v.thumb)}" alt="Thumbnail" style="width:100%;display:block"></div>` : ""}
         ${p.title ? `<div class="card">${field("Title", p.title)}${field("Description", p.youtube_description)}${field("YouTube tags", p.youtube_tags)}
           ${field("TikTok caption", p.tiktok_caption)}${field("Instagram caption", p.instagram_caption)}${field("Pinned comment", p.pinned_comment)}</div>` : ""}
         <details class="more"><summary>Script</summary><div class="card script" style="padding:14px 16px;margin-top:8px">${v.script.map(s => `<p>${esc(s)}</p>`).join("")}</div></details>
@@ -193,22 +195,59 @@ async function pageVideo(id) {
   });
 }
 
+function whyHtml(w) {
+  if (!w) return "";
+  return `<details class="why"><summary>Why? <span class="pill conf-${esc((w.level || "").toLowerCase())}">${esc(w.level)}</span></summary>
+    <p class="fine">${esc(w.why)}${w.note ? ` — ${esc(w.note)}.` : ""}</p></details>`;
+}
 function precheckHtml(v) {
   const pc = v.precheck;
   return `<div class="card precheck"><div class="pc-head"><b>Before you schedule: pick the title</b>
       <button class="btn small" data-act="score">Score with vidIQ</button></div>
+    ${whyHtml(pc.why)}
     ${pc.titles.map(o => `<label class="opt ${o.current ? "on" : ""}"><input type="radio" name="title" ${o.current ? "checked" : ""} data-title="${esc(o.title)}">
       <div><div class="t">${esc(o.title)}</div>
         <div class="s">${o.score != null ? `<b class="score">vidIQ ${o.score}/100</b> ${esc(o.note || "")} · scored ${esc(new Date(o.scored).toLocaleDateString())} · ` : ""}Checklist ${o.passed}/${o.checks.length}:
         ${o.checks.map(c => `<span class="${c.ok ? "ok" : "no"}">${c.ok ? "✓" : "✗"} ${esc(c.label)}</span>`).join(" ")}</div></div></label>`).join("")}
     <p class="fine">${esc(pc.vidiq_note)} The checklist is a rule-based check, not a prediction.</p></div>`;
 }
-function scheduleSheet(v) {
+function hookHtml(h) {
+  if (!h || h.options.length < 2) return "";
+  return `<div class="card precheck"><div class="pc-head"><b>Before you schedule: pick the hook (first line)</b></div>
+    ${whyHtml(h.why)}
+    ${h.options.map(o => `<label class="opt ${o.current ? "on" : ""}"><input type="radio" name="hook" ${o.current ? "checked" : ""} data-hook="${esc(o.text)}">
+      <div class="t">${esc(o.text)}</div></label>`).join("")}
+    <p class="fine">Past hooks are compared by real YouTube views, not a prediction.</p></div>`;
+}
+async function scheduleSheet(v) {
+  const t = await get("/api/insights/times").catch(() => null);
+  const yt = t && t.platforms.find(p => p.key === "youtube");
+  const vd = yt && yt.verdict;
+  const bandNow = vd && vd.call ? t.bands[vd.band] : null;
+  const timeWhy = vd ? `<div class="card">
+      <div class="pc-head"><b>Posting time</b><span class="pill conf-${esc((vd.level || "").toLowerCase())}">${esc(vd.level || "")} confidence</span></div>
+      <details class="why"><summary>Why now?</summary><p class="fine">${esc(vd.text)}${vd.note ? ` — ${esc(vd.note)}.` : ""}</p></details>
+      ${bandNow ? `<p class="fine">It'll go out at your next open Buffer slot — that's usually close to ${esc(bandNow.name)} (${esc(bandNow.hours)}), the band that's done best so far.
+        Not that band? <button class="btn small" id="not-band" type="button">A different time works better</button></p>` : ""}
+    </div>` : "";
   sheet(`<h3>Schedule "${esc(v.title)}"?</h3>
     <p>It goes to YouTube, Instagram and TikTok, each at your next open slot in Buffer. While it's still waiting, you can take it back.</p>
     <p>After it's live on YouTube, Today will remind you to add the tags and pinned comment.</p>
+    ${timeWhy}
     <div class="row-end"><button class="btn" data-close>Cancel</button><button class="btn primary" id="go">Schedule</button></div>`,
-    (el, close) => { $("#go", el).onclick = () => { close(); runJob("post_live", v.id, {confirm: true}); }; $("#go", el).focus(); });
+    (el, close) => {
+      $("#go", el).onclick = () => { close(); runJob("post_live", v.id, {confirm: true}); };
+      $("#go", el).focus();
+      const nb = $("#not-band", el);
+      if (nb) nb.onclick = async () => {
+        const other = t.bands.map(b => b.name).filter(n => n !== bandNow.name);
+        const pick = prompt(`Which time works better?\n${other.join(", ")}`, other[0]);
+        if (pick && other.includes(pick)) {
+          await post("/api/override", {kind: "time", lane: "youtube", ai: bandNow.name, user: pick});
+          toast("Noted — this feeds tomorrow's confidence, but the send time is still Buffer's next open slot for now.");
+        }
+      };
+    });
 }
 function changesSheet(v) {
   sheet(`<h3>What should change?</h3><p>Be specific, e.g. "the second picture doesn't show a worm" or "hook is too slow". Tomorrow's 7:00 build will redo it, and the note teaches future builds.</p>
@@ -556,6 +595,8 @@ document.addEventListener("click", async e => {
   const dq = t.closest("[data-demand]"); if (dq) return runJob("demand", dq.dataset.demand);
   const tt = t.closest("[data-title]");
   if (tt && current) { await post("/api/choose_title", {id: current.id, title: tt.dataset.title}); toast("Title chosen."); return route(); }
+  const hk = t.closest("[data-hook]");
+  if (hk && current) { await post("/api/hook", {id: current.id, text: hk.dataset.hook}); toast("Hook chosen."); return route(); }
   const pt = t.closest("[data-ptab]"); if (pt) { perfTab = pt.dataset.ptab; return route(); }
   const cat = t.closest("[data-cat]"); if (cat) { ideaFilter = cat.dataset.cat; return route(); }
   if (t.closest("[data-addidea]")) return addIdeaSheet();

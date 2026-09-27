@@ -29,8 +29,10 @@
     const gridHtml = p.dots.length ? grid(p, t) : `<div class="caught"><b>Nothing posted to ${esc(p.name)} yet</b></div>`;
     return `<section class="card in-plat">
       <div class="in-ph"><i class="sw ${PCOL[p.key]}"></i><b>${esc(p.name)}</b>
-        <span class="pill">${p.videos} posted · ${p.comparable} at a comparable age</span><span class="in-asof">as of ${esc(asOf(p.as_of))}</span></div>
-      <p class="in-verdict ${p.verdict.call ? "call" : ""}">${esc(p.verdict.text)}</p>
+        <span class="pill">${p.videos} posted · ${p.comparable} at a comparable age</span>
+        <span class="pill conf-${esc((p.verdict.level || "").toLowerCase())}">${esc(p.verdict.level || "")} confidence</span>
+        <span class="in-asof">as of ${esc(asOf(p.as_of))}</span></div>
+      <p class="in-verdict ${p.verdict.call ? "call" : ""}">${esc(p.verdict.text)}${p.verdict.note ? ` (${esc(p.verdict.note)}.)` : ""}</p>
       ${p.dots.length ? `<p class="fine in-guide">${esc(READ_GUIDE)}</p>` : ""}
       ${enough || !p.dots.length ? gridHtml : `<details class="more"><summary>Show the grid anyway (${p.comparable} measured — too few for a pattern yet)</summary><div style="margin-top:8px">${gridHtml}</div></details>`}
       <p class="fine">${esc(p.source)}.</p>

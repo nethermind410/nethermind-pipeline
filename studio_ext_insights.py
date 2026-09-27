@@ -89,12 +89,14 @@ def buffer_dots(platform):
     return dots, s.get("updated")
 
 
-def verdict(dots):
+def verdict(dots, platform="general"):
+    import studio_ext_why as why_ext
     comp = [d for d in dots if d["comparable"]]
     n = len(comp)
     if n < MIN_VIDEOS:
         return {"call": False, "text": f"{n} video{'s' if n != 1 else ''} measured at a comparable age — too few to call a pattern. "
-                f"It takes {MIN_VIDEOS}; until then any \"best time\" would be noise."}
+                f"It takes {MIN_VIDEOS}; until then any \"best time\" would be noise.",
+                **why_ext.confidence("low", kind="time", lane=platform)}
     overall = statistics.median(d["views"] for d in comp)
     groups = {}
     for d in comp:
@@ -102,10 +104,13 @@ def verdict(dots):
     ranked = sorted(((statistics.median(v), b, len(v)) for b, v in groups.items() if len(v) >= 3), reverse=True)
     if ranked and ranked[0][0] >= 1.5 * overall:
         med, b, k = ranked[0]
+        level = "high" if k >= 2 * MIN_VIDEOS else "medium"
         return {"call": True, "band": b, "text": f"{BANDS[b][2]} posts ({BANDS[b][3]}) do best so far: median {int(med):,} views "
-                f"across {k} videos, vs {int(overall):,} for all {n}. A lean, not a law — keep testing other times."}
+                f"across {k} videos, vs {int(overall):,} for all {n}. A lean, not a law — keep testing other times.",
+                **why_ext.confidence(level, kind="time", lane=platform)}
     return {"call": False, "text": f"{n} videos measured, no clear pattern: no time band beats the overall median "
-            f"({int(overall):,} views) by 1.5× with at least 3 videos in it."}
+            f"({int(overall):,} views) by 1.5× with at least 3 videos in it.",
+            **why_ext.confidence("low", kind="time", lane=platform)}
 
 
 def times():
@@ -119,7 +124,7 @@ def times():
     for k, name, ds, at, src in plats:
         ds.sort(key=lambda d: d["posted"])
         out.append({"key": k, "name": name, "dots": ds, "as_of": at, "source": src, "videos": len(ds),
-                    "comparable": sum(d["comparable"] for d in ds), "verdict": verdict(ds)})
+                    "comparable": sum(d["comparable"] for d in ds), "verdict": verdict(ds, k)})
     return {"platforms": out, "bands": [{"name": b[2], "hours": b[3]} for b in BANDS], "days": DAYS,
             "tz": tz.tzname() or tz.strftime("UTC%z"), "min_videos": MIN_VIDEOS,
             "window": f"views when the video was {AGE_MIN:g}–{AGE_MAX:g} days old", "general": GENERAL}

@@ -186,6 +186,39 @@ def title_checklist(title):
     ]
 
 
+def title_why(cur, opts):
+    """Plain-English reason NETHER's title is the one shown, plus a confidence word — from the
+    checklist and vidIQ score already on hand, no new AI call."""
+    n = len(cur["checks"])
+    if cur.get("score") is not None:
+        why = f"vidIQ scored it {cur['score']}/100" + (f" — {cur['note']}" if cur.get("note") else "")
+        level = "high" if cur["score"] >= 80 else "medium" if cur["score"] >= 60 else "low"
+    else:
+        why = f"passes {cur['passed']}/{n} of the title checklist" + (f" ({len(opts) - 1} alternatives to try)" if len(opts) > 1 else "")
+        level = "high" if cur["passed"] == n else "medium" if cur["passed"] >= n - 1 else "low"
+    lane = "general"
+    try:
+        import intelligence
+        lane = intelligence.lane_of(cur["title"])
+    except Exception:
+        pass
+    import studio_ext_why as why_ext
+    return {**why_ext.confidence(level, kind="title", lane=lane), "why": why, "lane": lane}
+
+
+def record_title_override(prior, chosen):
+    """You picked a different title than NETHER's — teaches title_why()'s confidence. Never fails
+    the actual title change if this can't be recorded."""
+    if not prior or chosen == prior:
+        return
+    try:
+        import intelligence
+        import studio_ext_why as why_ext
+        why_ext.record({"kind": "title", "lane": intelligence.lane_of(prior), "ai": prior, "user": chosen})
+    except Exception:
+        pass
+
+
 def precheck(pkg):
     opts = [o if isinstance(o, dict) else {"title": o} for o in (pkg or {}).get("title_options", [])]
     current = (pkg or {}).get("title")
@@ -196,7 +229,9 @@ def precheck(pkg):
         o["passed"] = sum(c["ok"] for c in o["checks"])
         o["current"] = o["title"] == current
     thumbs = (pkg or {}).get("thumb_options", [])
-    return {"titles": opts, "thumbs": thumbs, "vidiq_note": vidiq_note()}
+    cur = next((o for o in opts if o["current"]), opts[0] if opts else None)
+    return {"titles": opts, "thumbs": thumbs, "vidiq_note": vidiq_note(),
+            "why": title_why(cur, opts) if cur else None}
 
 
 def vidiq_note():

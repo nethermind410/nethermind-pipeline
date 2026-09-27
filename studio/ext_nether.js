@@ -422,6 +422,15 @@
     (ideas.sections.find(s => s.name.startsWith("Intelligence picks"))?.items || []).filter(i => !i.dismissed).slice(0, 2).forEach(i => picks.push([i.hook, "Intelligence pick"]));
     if (makeKind !== "short") ideas.sections.flatMap(s => s.items).filter(i => !i.made && !i.dismissed && /iceberg/i.test(i.hook)).slice(0, 3).forEach(i => picks.push([i.hook, "iceberg idea"]));
     const seen = new Set(), uniq = picks.filter(([h]) => !seen.has(h) && seen.add(h)).slice(0, 6);
+    let topWhy = null;
+    if (uniq.length) {
+      const reason = uniq[0][1];
+      const lane = reason.startsWith("pinned") ? "pinned" : reason.startsWith("scorecard") ? "scorecard" : reason === "Intelligence pick" ? "intelligence" : "iceberg";
+      const m = /(\d+)\/100/.exec(reason);
+      const level = reason.startsWith("pinned") ? "high" : m ? (+m[1] >= 70 ? "high" : +m[1] >= 50 ? "medium" : "low") : reason === "Intelligence pick" ? "medium" : "low";
+      topWhy = await get(`/api/why/confidence/topic/${lane}/${level}`).catch(() => ({level: level[0].toUpperCase() + level.slice(1), note: ""}));
+      topWhy.why = `Top pick: ${uniq[0][0]} — ${reason}`;
+    }
     const drafts = d.drafts.map(x => `<button class="card nx-draft" data-go="draft/${esc(x.id)}">
         <div><b>${esc(x.title || x.topic)}</b> <span class="pill ${x.kind === "long" ? "scheduled" : ""}">${x.kind === "long" ? `Long-form · ${x.minutes} min` : "Short"}</span>
           <div class="nx-meta">${x.kind === "long" ? `${x.chapters.length} chapters` : `${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"}`} · ${ago(x.at)}</div></div>
@@ -442,7 +451,8 @@
         <button class="btn primary" ${d.busy ? "disabled" : ""}>${d.busy ? "Writing…" : "Draft it"}</button></form>
       ${d.busy ? `<p class="nx-meta nx-live">Content is ${esc(d.busy)} — watch it fire on the brain.</p>` : ""}
       ${makeKind === "short" && !d.busy ? `<div class="row-end nx-batch"><span class="nx-meta">Batching is how faceless channels stay consistent — review them in one sitting.</span><button class="btn small" id="nx-batch">Draft a week (5 Shorts)</button></div>` : ""}
-      ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
+      ${uniq.length ? `<div class="nx-picks"><span class="k">Suggested</span>${typeof whyHtml === "function" ? whyHtml(topWhy) : ""}
+        ${uniq.map(([h, why]) => `<button class="nx-chip" data-nx-make="${esc(h)}" data-nx-ai="${esc(uniq[0][0])}" ${d.busy ? "disabled" : ""} title="${esc(why)}">${esc(h)}</button>`).join("")}</div>` : ""}
       <h2>Scripts waiting for you</h2>${drafts || `<div class="card caught"><b>Nothing waiting</b>Draft one above — the daily run drafts a Short every morning and a long-form on Sundays.</div>`}
       <h2>Long-form episodes</h2>${longs.map(epCard).join("") || `<div class="card caught"><b>No long-form yet</b>Pick Long-form or Iceberg above. Sundays, the daily run drafts one for you to approve.</div>`}
       <details class="nx-recap"><summary>Recap: stitch this week's Shorts together (not a real long-form)</summary>
@@ -633,7 +643,13 @@
     if (cut) { e.stopPropagation(); try { toast((await post("/api/episode/shorts", {id: cut.dataset.nxCut})).reply); route(); } catch (err) { toast(err.message); } return; }
     const lg = t.closest("[data-nx-long]");
     if (lg) { e.stopPropagation(); try { toast((await post("/api/long/render", {id: lg.dataset.nxLong})).reply); watchLong(); route(); } catch (err) { toast(err.message); } return; }
-    const mk = t.closest("[data-nx-make]"); if (mk) { e.stopPropagation(); return make(mk.dataset.nxMake); }
+    const mk = t.closest("[data-nx-make]");
+    if (mk) {
+      e.stopPropagation();
+      const ai = mk.dataset.nxAi, user = mk.dataset.nxMake;
+      if (ai && user && ai !== user) post("/api/override", {kind: "topic", lane: "topic", ai, user}).catch(() => {});
+      return make(user);
+    }
     const r = t.closest("[data-nx-retry]");
     if (r) { const task = (window._nxTasks || []).find(x => x.id === +r.dataset.nxRetry); if (task) { await retry(task); setTimeout(route, 900); } return; }
     const cx = t.closest("[data-nx-cancel]");

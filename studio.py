@@ -447,8 +447,10 @@ class H(BaseHTTPRequestHandler):
             opts = [o["title"] if isinstance(o, dict) else o for o in pkg.get("title_options", [])]
             if title not in opts + [pkg.get("title")]:
                 return self.send(400, {"error": "Pick one of the listed titles."})
+            prior = pkg.get("title")
             pkg["title"] = title
             atomic_write_text(pkg_path, json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
+            chan.record_title_override(prior, title)
             return self.send(200, {"ok": True})
         try:
             if self.path == "/api/inspiration":
