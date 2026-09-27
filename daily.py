@@ -16,6 +16,7 @@ import datetime, json, re, subprocess, sys
 from pathlib import Path
 
 import orchestrator as nether
+import resilience
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
@@ -88,7 +89,7 @@ def scout_backlog(n=3):
             if i["made"] or i["dismissed"] or intelligence.slug(i["hook"]) in have:
                 continue
             try:
-                c = intelligence.investigate(i["hook"])
+                c = resilience.retry_network(lambda: intelligence.investigate(i["hook"]))
                 done.append(f"{c['score']}/100 {i['hook'][:60]}")
             except (Exception, SystemExit) as e:
                 done.append(f"failed: {i['hook'][:40]} ({type(e).__name__})")
@@ -142,18 +143,37 @@ def main(dry=False):
         return
     parent = nether.begin("control", f"Daily run {datetime.date.today():%a %-d %b}", sub="daily",
                           retry={"kind": "daily"})
-    report, cur = {}, None
-    try:
+    report, cur, cur_topic = {}, None, None
+
+    # Everything below is online. If the Mac just woke up it may not be reconnected yet, so wait
+    # (cheaply — a raw TCP connect, no API calls) up to ~10 min before trying anything. If it's
+    # still offline, carry on anyway: each step below retries its own transient network errors
+    # and a failing step never stops the others.
+    online = resilience.wait_online(max_wait=600)
+    report["online"] = online
+
+    try:                                              # step 1: numbers refresh + learning loop
         cur = nether.begin("analytics", "Numbers refresh + learning loop", sub="stats", parent=parent)
-        r = subprocess.run(["./refresh.sh"], cwd=HERE, capture_output=True, text=True, timeout=900, env={"PY": PY, **__import__("os").environ})
+        r = resilience.run_with_network_retry(["./refresh.sh"], cwd=HERE, capture_output=True, text=True,
+                                              timeout=900, env={"PY": PY, **__import__("os").environ})
         (nether.finish if r.returncode == 0 else nether.fail)(cur, (r.stdout + r.stderr)[-2000:])
         report["refresh"] = r.returncode == 0
+    except Exception as e:                            # a broken refresh must not stop the rest of the run
+        nether.fail(cur, f"{type(e).__name__}: {e}")
+        report["refresh"] = f"failed: {type(e).__name__}: {e}"
+    cur = None
 
+    try:                                              # step 2: scout backlog ideas (scout_backlog already
         cur = nether.begin("intelligence", "Scout 3 backlog ideas", sub="demand", parent=parent)
-        scouted = scout_backlog(3)                      # scorecards for you to call (YouTube quota only, no Claude)
+        scouted = scout_backlog(3)                     # never lets one idea's failure stop the others)
         nether.finish(cur, {"scouted": scouted})
         report["scouted"] = scouted
+    except Exception as e:
+        nether.fail(cur, f"{type(e).__name__}: {e}")
+        report["scouted"] = f"failed: {type(e).__name__}: {e}"
+    cur = None
 
+    try:                                              # step 3: draft the next video
         waiting = [d["id"] for d in drafter.drafts()]
         cur = nether.begin("content", "Draft the next video", sub="script", parent=parent)
         if waiting:
@@ -173,18 +193,28 @@ def main(dry=False):
                 if why.startswith("you pinned"):          # the pin is used up: tomorrow picks the next topic
                     import studio_api
                     studio_api.set_next("", "")
+    except Exception as e:                             # a broken draft must not stop research/long-form below
+        if cur:
+            nether.fail(cur, f"{type(e).__name__}: {e}")
+        report["draft"] = f"failed: {type(e).__name__}: {e}"
+    cur = None
+
+    try:                                              # step 4: research tomorrow's topic ahead
         cur = nether.begin("content", "Research tomorrow's topic ahead", sub="research", parent=parent)
-        try:                                            # tomorrow's draft starts from finished research
-            nxt, _ = pick_topic(skip=[t for t in (locals().get("cur_topic"),) if t])   # not the one just drafted
-            if nxt and not drafter.cached_research(nxt):
-                f = drafter.research(nxt)
-                nether.finish(cur, {"topic": nxt, "facts": len(f["facts"])})
-                report["researched"] = nxt
-            else:
-                nether.finish(cur, {"skipped": "already researched" if nxt else "no next topic"})
-        except Exception as e:                          # never stops the run
-            nether.fail(cur, str(e))
-        if datetime.date.today().weekday() == 6:          # Sundays: the week's long-form, written for your approval
+        nxt, _ = pick_topic(skip=[t for t in (cur_topic,) if t])   # not the one just drafted
+        if nxt and not drafter.cached_research(nxt):
+            f = drafter.research(nxt)
+            nether.finish(cur, {"topic": nxt, "facts": len(f["facts"])})
+            report["researched"] = nxt
+        else:
+            nether.finish(cur, {"skipped": "already researched" if nxt else "no next topic"})
+    except Exception as e:                            # never stops the run
+        nether.fail(cur, f"{type(e).__name__}: {e}")
+        report["researched"] = f"failed: {type(e).__name__}: {e}"
+    cur = None
+
+    if datetime.date.today().weekday() == 6:          # Sundays: the week's long-form, written for your approval
+        try:
             import drafter_long
             cur = nether.begin("content", "Draft the weekly long-form", sub="episodes", parent=parent)
             if drafter_long.drafts():
@@ -195,22 +225,19 @@ def main(dry=False):
                 nether.finish(cur, {"topic": topic, "why": why})
                 cur = None
                 if topic:
-                    try:
-                        report["long"] = drafter_long.draft(topic)   # its own Content task shows any failure
-                    except (Exception, SystemExit) as e:
-                        report["long"] = f"failed: {type(e).__name__}: {e}"
+                    report["long"] = drafter_long.draft(topic)   # its own Content task shows any failure
+        except (Exception, SystemExit) as e:
+            if cur:
+                nether.fail(cur, f"{type(e).__name__}: {e}")
+            report["long"] = f"failed: {type(e).__name__}: {e}"
         cur = None
-        nether.finish(parent, report)
-        try:
-            import nether_status; nether_status.write()   # Jarvis's status brief, fresh after the morning run
-        except Exception:
-            pass
-        print(json.dumps(report, indent=1))
-    except (Exception, SystemExit) as e:                # never leave the run stuck on "working"
-        if cur:
-            nether.fail(cur, f"{type(e).__name__}: {e}")
-        nether.fail(parent, f"{type(e).__name__}: {e}")
-        raise
+
+    nether.finish(parent, report)
+    try:
+        import nether_status; nether_status.write()   # Jarvis's status brief, fresh after the morning run
+    except Exception:
+        pass
+    print(json.dumps(report, indent=1))
 
 
 if __name__ == "__main__":
