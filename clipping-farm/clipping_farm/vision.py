@@ -76,7 +76,7 @@ class VisionBrain:
                    for i in range(self.max_frames)] if self.max_frames > 1 else [0]
         return [unique[i] for i in indexes]
 
-    def _cache_key(self, frames, candidate):
+    def _cache_key(self, frames, candidate, ocr=None, objects=None, faces=None):
         payload = {
             "version": self.VERSION,
             "candidate": {
@@ -84,6 +84,7 @@ class VisionBrain:
                 "end": float(candidate.get("end", 0)),
             },
             "frames": [{"time": f["time"], "sha256": f["sha256"]} for f in frames],
+            "ocr": ocr or [], "objects": objects or [], "faces": faces or [],
         }
         return "vision:" + hashlib.sha256(
             json.dumps(payload, sort_keys=True).encode()
@@ -99,7 +100,7 @@ class VisionBrain:
                 confidence=0.0,
             )
 
-        cache_key = self._cache_key(selected, candidate)
+        cache_key = self._cache_key(selected, candidate, ocr, objects, faces)
         if self.db:
             cached = self.db.get_artifact(cache_key)
             if cached:
