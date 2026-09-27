@@ -159,7 +159,7 @@ window.NeuralBrain = (() => {
 
   // each form gets its own colour and idle motion so brain / eye / heart / tongue read as different things at a glance
   const LOOKS = {brain: {fib: [235, 45, 75], lit: [255, 232, 236], move: "breathe"},
-                 eye: {fib: [40, 190, 235], lit: [225, 248, 255], move: "blink"},
+                 eye: {fib: [40, 190, 235], lit: [225, 248, 255], move: "still"},
                  heart: {fib: [255, 70, 40], lit: [255, 236, 210], move: "beat"},
                  tongue: {fib: [255, 105, 180], lit: [255, 235, 245], move: "ripple"}};
   const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
