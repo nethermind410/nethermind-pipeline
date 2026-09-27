@@ -119,6 +119,17 @@ def check(id_or_cfg_path):
     checks.append(_row("Rendered", rendered, "block",
                         f"{mp4.name} exists" if rendered else f"{mp4.name} hasn't been rendered yet",
                         "Press Make video, then come back here."))
+    missing_file = OUT / f"missing_{vid}.json"      # make_short.py writes this when a picture never downloaded
+    if rendered and missing_file.exists():
+        try:
+            miss = json.loads(missing_file.read_text())
+        except Exception:
+            miss = []
+        if miss:
+            checks.append(_row("Every picture downloaded", False, "block",
+                               f"{len(miss)} picture{'s' if len(miss) != 1 else ''} never downloaded ("
+                               + ", ".join(m.get("file", "?") for m in miss) + ") — a stand-in was used",
+                               "Replace those scenes' pictures, then make the video again."))
 
     if rendered and ffprobe is not None:
         try:

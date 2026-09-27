@@ -387,6 +387,25 @@ def health():
     ]
 
 
+_LOGIN = {"at": 0.0, "ok": None}
+
+
+def claude_logged_in(claude):
+    """True/False from `claude auth status` (free — no usage), None if it can't tell. Cached 5 minutes."""
+    import os, subprocess, time
+    if time.time() - _LOGIN["at"] < 300:
+        return _LOGIN["ok"]
+    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
+    try:
+        r = subprocess.run([claude, "auth", "status"], capture_output=True, text=True, timeout=15, env=env)
+        ok = json.loads(r.stdout).get("loggedIn")
+        ok = ok if isinstance(ok, bool) else None
+    except Exception:
+        ok = None
+    _LOGIN.update(at=time.time(), ok=ok)
+    return ok
+
+
 def daily_and_tools():
     """What the agents need on this Mac: the 7:00 run, drafting, rendering. Plain-English fixes."""
     import shutil
@@ -406,8 +425,11 @@ def daily_and_tools():
                     "detail": "Installed — first run at 7:00" if plist.exists() else "Not installed: run ./install_daily.sh once"})
     claude = shutil.which("claude") or next((str(p) for p in (Path.home() / ".local/bin/claude", Path("/opt/homebrew/bin/claude"),
                                                                 Path("/usr/local/bin/claude")) if p.exists()), None)
-    out.append({"name": "Drafting (Claude)", "ok": bool(claude),
-                "detail": "Content agent writes scripts with your Claude login" if claude else "Install Claude Code (the claude command) to draft scripts"})
+    logged_in = claude_logged_in(claude) if claude else None
+    out.append({"name": "Drafting (Claude)", "ok": bool(claude) and logged_in is not False,
+                "detail": ("Install Claude Code (the claude command) to draft scripts" if not claude else
+                           "Your Claude login has expired — open Terminal, type claude, then /login" if logged_in is False else
+                           "Content agent writes scripts with your Claude login")})
     out.append({"name": "Rendering (ffmpeg)", "ok": bool(shutil.which("ffmpeg") and shutil.which("ffprobe")),
                 "detail": "Video and audio" if shutil.which("ffprobe") else "Install ffmpeg: brew install ffmpeg"})
     try:

@@ -85,9 +85,25 @@ for s in segs:
 
 # ---------------------------------------------------------------- assets
 _im, _vf = {}, {}
+MISSING = os.path.join(OUT, f"missing_{VID}.json")   # scenes whose picture never downloaded — the quality gate reads this
+if os.path.exists(MISSING):
+    os.remove(MISSING)
+
+def _stand_in(name):
+    """A picture failed to download (e.g. Wikimedia rate limit): borrow another of this video's pictures, or a plain
+    dark card, instead of crashing the whole build — and note it so the quality gate asks for a replacement."""
+    others = sorted(f for f in os.listdir(A) if f.startswith(VID + "_") and f != name
+                    and f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+    miss = json.load(open(MISSING)) if os.path.exists(MISSING) else []
+    miss.append({"file": name, "used": others[0] if others else "plain card"})
+    json.dump(miss, open(MISSING, "w"), indent=1)
+    print(f"   ⚠ missing picture {name} — used {miss[-1]['used']} for now; replace it before posting")
+    return Image.open(os.path.join(A, others[0])).convert("RGB") if others else Image.new("RGB", (W, 1700), (18, 18, 22))
+
 def img(name):
     if name not in _im:
-        im = Image.open(os.path.join(A, name)).convert("RGB")
+        path = os.path.join(A, name)
+        im = Image.open(path).convert("RGB") if os.path.exists(path) else _stand_in(name)
         if im.height < 1700:
             sc = 1700 / im.height
             im = im.resize((int(im.width * sc), 1700), Image.LANCZOS)
