@@ -6,6 +6,7 @@ mock paid tiers are only used by tests until real adapters are installed.
 """
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
+import os
 
 
 @dataclass(frozen=True)
@@ -59,3 +60,21 @@ def default_specs() -> List[ModelSpec]:
         ModelSpec("cheap-mock", "brain.reasoning", "multimodal", "cheap", 0.005, 0.84, 0.85),
         ModelSpec("premium-mock", "brain.reasoning", "multimodal", "premium", 0.05, 0.96, 0.55),
     ]
+
+
+def register_configured_specs(registry: ModelRegistry) -> ModelRegistry:
+    """Add real providers only when configured; mocks remain the offline fallback."""
+    from .provider_config import load_provider_configs
+    for config in load_provider_configs():
+        if config.name == "ollama-local" and config.enabled and config.model:
+            registry.register(ModelSpec(
+                config.name, "brain.reasoning", "multimodal", "deterministic",
+                0.0, float(os.getenv("CLIP_FARM_OLLAMA_QUALITY", "0.72")), 0.65))
+        elif config.base_url and config.enabled:
+            tier = "premium" if "premium" in config.name else "cheap"
+            registry.register(ModelSpec(
+                config.name, "brain.reasoning", "multimodal", tier,
+                float(os.getenv("CLIP_FARM_"+tier.upper()+"_COST", "0.05" if tier=="premium" else "0.005")),
+                float(os.getenv("CLIP_FARM_"+tier.upper()+"_QUALITY", "0.92" if tier=="premium" else "0.82")),
+                float(os.getenv("CLIP_FARM_"+tier.upper()+"_SPEED", "0.55" if tier=="premium" else "0.80"))))
+    return registry
