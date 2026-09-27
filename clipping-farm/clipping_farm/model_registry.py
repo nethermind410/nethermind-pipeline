@@ -43,9 +43,10 @@ class ModelRegistry:
         ]
         return sorted(rows, key=lambda s: (-s.quality, s.estimated_cost, -s.speed))
 
-    def choose(self, capability: str, *, quality_required: float = 0.0,
-               budget: float = 0.0, modality: Optional[str] = None) -> Optional[ModelSpec]:
-        rows = self.for_capability(capability, modality=modality)
+    def choose(self, capability: str, *, tier: Optional[str] = None,
+               quality_required: float = 0.0, budget: float = 0.0,
+               modality: Optional[str] = None) -> Optional[ModelSpec]:
+        rows = self.for_capability(capability, tier=tier, modality=modality)
         affordable = [s for s in rows if s.estimated_cost <= budget and s.quality >= quality_required]
         if affordable:
             return sorted(affordable, key=lambda s: (s.estimated_cost, -s.quality))[0]
