@@ -51,17 +51,20 @@
   function layoutLabels() {
     const stage = $("#mem-stage"); if (!stage || !M) return;
     const S = stage.getBoundingClientRect(), narrow = matchMedia("(max-width:820px)").matches;
+    const compact = narrow || S.height < 640;          // small windows: drop the secondary line so labels stay small
     const box = NeuralBrain.box(S.width, S.height);
     const cxu = 0.53, cyu = 0.48;
     const wrap = $("#mem-labels"); wrap.innerHTML = "";
     wrap.style.cssText = "position:absolute;inset:0;pointer-events:none";
     const themes = M.themes.filter(t => t.learnings.length);
+    const placed = [];                                 // rects already on the stage, for collision nudging
+    const overlaps = (a, b, m) => a.left < b.right + m && a.right + m > b.left && a.top < b.bottom + m && a.bottom + m > b.top;
     themes.forEach((t, i) => {
       const el = document.createElement("button");
       el.className = "mem-label"; el.dataset.theme = t.id;
       el.style.cssText = "position:absolute;pointer-events:auto";
       const n = t.learnings.length, proven = t.learnings.map(id => byId(id)).filter(x => x && (x.tier === "proven" || x.tier === "rule")).length;
-      el.innerHTML = narrow ? `<b>${esc(t.label)}</b>` : `<b>${esc(t.label)}</b><span>${n} learning${n === 1 ? "" : "s"}${proven ? ` · ${proven} proven` : ""}</span>`;
+      el.innerHTML = compact ? `<b>${esc(t.label)}</b>` : `<b>${esc(t.label)}</b><span>${n} learning${n === 1 ? "" : "s"}${proven ? ` · ${proven} proven` : ""}</span>`;
       if (narrow) {                                  // small chips, wrapped along the bottom of the stage
         const perRow = Math.max(2, Math.floor((S.width - 16) / 96)), row = Math.floor(i / perRow), col = i % perRow;
         el.style.left = (8 + col * 96) + "px"; el.style.bottom = (8 + row * 36) + "px"; el.style.width = "88px";
@@ -70,10 +73,27 @@
       const dx = t.ax - cxu, dy = t.ay - cyu, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
       let d = L; while (d < 0.9 && NeuralBrain.inside(cxu + ux * d, cyu + uy * d)) d += 0.004;
       d += 0.06;
-      let fx = box.ox + (cxu + ux * d) * box.size, fy = box.oy + (cyu + uy * d) * box.size;
-      el.style.left = Math.max(12, Math.min(S.width - 190, fx - (ux < -0.25 ? 190 : 0))) + "px";
-      el.style.top = Math.max(64, Math.min(S.height - 60, fy)) + "px";
       wrap.appendChild(el);
+      // measure the label once it's in the DOM, then push it outward (and, failing that, sideways)
+      // along its own radial line until it clears every label already placed on the stage
+      const w = el.offsetWidth || (compact ? 88 : 178), h = el.offsetHeight || (compact ? 30 : 46);
+      const place = dd => {
+        const fx = box.ox + (cxu + ux * dd) * box.size, fy = box.oy + (cyu + uy * dd) * box.size;
+        const left = Math.max(12, Math.min(S.width - 12 - w, fx - (ux < -0.25 ? w : 0)));
+        const top = Math.max(64, Math.min(S.height - 12 - h, fy));
+        return {left, top, right: left + w, bottom: top + h};
+      };
+      let rect = place(d), tries = 0;
+      while (tries < 40 && placed.some(p => overlaps(rect, p, 6))) { d += 0.018; rect = place(d); tries++; }
+      if (placed.some(p => overlaps(rect, p, 6))) {      // radial nudging ran out of room: drop it straight down instead
+        let step = 0;
+        while (step < 12 && placed.some(p => overlaps(rect, p, 6))) {
+          rect = {...rect, top: Math.min(S.height - 12 - h, rect.top + 14), bottom: Math.min(S.height - 12 - h, rect.top + 14) + h};
+          step++;
+        }
+      }
+      placed.push(rect);
+      el.style.left = rect.left + "px"; el.style.top = rect.top + "px";
     });
   }
   function byId(id) { return M.nodes.find(n => n.id === id); }
