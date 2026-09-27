@@ -111,7 +111,8 @@ class VisionBrain:
 
         times = [float(f["time"]) for f in selected]
         span = max(times) - min(times) if len(times) > 1 else 0.0
-        continuity = 1.0 if len(selected) == 1 or span >= 0 else 0.0
+        gaps=[b-a for a,b in zip(times,times[1:])]
+        continuity=1.0 if len(selected)==1 else max(0.0,min(1.0,1.0-(max(gaps)/max(span,1e-6))))
         # Presence of validated frames is evidence of subject visibility, not
         # proof of a compelling subject. Higher-level Brain decides that.
         subject_visibility = 0.75 if selected else 0.0
