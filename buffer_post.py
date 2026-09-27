@@ -41,6 +41,7 @@ YouTube input has no tags field, so youtube_tags still go in by hand in Studio.
 """
 
 import argparse
+import datetime
 import json
 import mimetypes
 import os
@@ -105,7 +106,7 @@ def upload_to_r2(env, local_path: Path) -> str:
 
 
 def buffer_create_post(env, channel_id: str, text: str, video_url: str,
-                        mode: str, metadata: dict | None = None):
+                        mode: str, metadata: dict | None = None, due_at: str | None = None):
     query = """
     mutation CreatePost($input: CreatePostInput!) {
       createPost(input: $input) {
@@ -125,6 +126,8 @@ def buffer_create_post(env, channel_id: str, text: str, video_url: str,
             ],
         }
     }
+    if due_at:  # mode == "customScheduled" — same shape reschedule_post.py's editPost uses
+        variables["input"]["dueAt"] = due_at
     if metadata:
         variables["input"]["metadata"] = metadata
 
@@ -145,6 +148,34 @@ def buffer_create_post(env, channel_id: str, text: str, video_url: str,
     if result.get("message"):
         raise RuntimeError(f"Buffer rejected the post: {result['message']}")
     return result["post"]
+
+
+def resolve_when(when: str, platform: str):
+    """--when -> (mode, due_at_iso|None, plain-words note) for one platform.
+
+    "best"  -> customScheduled at that platform's best_times.next_slot() (the default).
+    "now"   -> shareNow, right away.
+    "queue" -> addToQueue, Buffer's own next open slot (the old default — still available).
+    anything else -> parsed as an ISO 8601 datetime, used as-is (customScheduled) for every platform.
+    """
+    if when == "now":
+        return "shareNow", None, "posts immediately"
+    if when == "queue":
+        return "addToQueue", None, "Buffer's own next open queue slot"
+    if when == "best":
+        import best_times
+        slot = best_times.next_slot(platform)
+        note = f"{best_times.local_words(slot['when'])} — {slot['confidence']}: {slot['why']}"
+        return "customScheduled", slot["when"].isoformat(), note
+    try:
+        dt = datetime.datetime.fromisoformat(when)
+    except ValueError:
+        print(f"ERROR: --when must be 'best', 'now', 'queue', or an ISO 8601 datetime (got {when!r}).", file=sys.stderr)
+        sys.exit(1)
+    if dt.tzinfo is None:  # a bare "YYYY-MM-DDTHH:MM" is read as this Mac's local time
+        dt = dt.astimezone()
+    import best_times
+    return "customScheduled", dt.isoformat(), best_times.local_words(dt)
 
 
 POSTED = DATA / "out" / "posted.json"
@@ -241,8 +272,10 @@ def main():
     ap.add_argument("--tiktok-caption", help="Override/standalone TikTok caption.")
     ap.add_argument("--youtube-title", help="YouTube title (only used if youtube is in --platforms).")
     ap.add_argument("--youtube-category", default="24", help="YouTube category ID (default 24 = Entertainment).")
-    ap.add_argument("--mode", default="addToQueue", choices=["addToQueue", "shareNow"],
-                     help="addToQueue = Buffer's own recommended next slot (default). shareNow = publish immediately.")
+    ap.add_argument("--when", default="best",
+                     help="best (default) = each platform's own best time to post (see best_times.py). "
+                          "now = publish immediately. queue = Buffer's own next open slot (the old default). "
+                          "Or an ISO 8601 datetime, used for every platform.")
     ap.add_argument("--record", metavar="VIDEO_ID",
                      help="Track per-platform post ids in out/posted.json and skip platforms already posted "
                           "(makes a re-run after a partial failure safe).")
@@ -313,11 +346,15 @@ def main():
         if not text:
             print(f"WARNING: no caption/text for {platform} — posting with empty text.", file=sys.stderr)
 
+        mode, due_at, when_note = resolve_when(args.when, platform)
+
         if args.dry_run:
             print(f"\n[DRY RUN] Would post to {platform} ({CHANNELS[platform]}):")
             print(f"  video_url: {video_url}")
             print(f"  text: {text[:200]}{'...' if len(text) > 200 else ''}")
             print(f"  metadata: {metadata}")
+            print(f"  mode: {mode}" + (f", dueAt: {due_at}" if due_at else ""))
+            print(f"  when: {when_note}")
             continue
 
         if args.record:
@@ -331,8 +368,8 @@ def main():
                     continue
             write_intent(args.record, platform, video_url, text)
 
-        print(f"\nPosting to {platform} (mode={args.mode}) ...")
-        post = buffer_create_post(env, CHANNELS[platform], text, video_url, args.mode, metadata)
+        print(f"\nPosting to {platform} (mode={mode}, when={when_note}) ...")
+        post = buffer_create_post(env, CHANNELS[platform], text, video_url, mode, metadata, due_at)
         print(f"  -> post id {post['id']}, due {post.get('dueAt')}")
         results.append((platform, post))
         if args.record:
