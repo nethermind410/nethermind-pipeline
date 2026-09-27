@@ -157,8 +157,31 @@ window.NeuralBrain = (() => {
   const box = (W, H) => { const size = Math.min(W * O.fit[0], H * O.fit[1]); return {size, ox: W / 2 - size * C[0], oy: H * 0.47 - size * C[1]}; };
   const HOME = {yaw: 0, pitch: 0, zoom: 1, px: 0, py: 0};
 
+  // each form gets its own colour and idle motion so brain / eye / heart / tongue read as different things at a glance
+  const LOOKS = {brain: {fib: [235, 45, 75], lit: [255, 232, 236], move: "breathe"},
+                 eye: {fib: [40, 190, 235], lit: [225, 248, 255], move: "blink"},
+                 heart: {fib: [255, 70, 40], lit: [255, 236, 210], move: "beat"},
+                 tongue: {fib: [255, 105, 180], lit: [255, 235, 245], move: "ripple"}};
+  const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function motion(kind, t) {                                    // -> [scaleX, scaleY, skewX, shiftX, shiftY] around the centre
+    if (calm()) return [1, 1, 0, 0, 0];
+    if (kind === "beat") {                                     // lub-dub, ~70 bpm
+      const ph = (t % 860) / 860, k = Math.exp(-((ph - .08) ** 2) / .0012) + .6 * Math.exp(-((ph - .26) ** 2) / .0015);
+      return [1 + .035 * k, 1 + .035 * k, 0, 0, 0];
+    }
+    if (kind === "blink") {                                    // a blink every ~5s, and a slow glance side to side
+      const ph = t % 5200, lid = ph < 180 ? 1 - .9 * Math.sin(ph / 180 * Math.PI) : 1;
+      return [1, lid, 0, 6 * Math.sin(t / 2600), 2 * Math.sin(t / 3700)];
+    }
+    if (kind === "ripple") return [1 + .012 * Math.sin(t / 700), 1, .045 * Math.sin(t / 900), 0, 0];
+    const b = .012 * Math.sin(t / 1800);                        // brain: slow breath
+    return [1 + b, 1 + b, 0, 0, 0];
+  }
+
   function mount(canvas) {
     const net = NET;
+    const look = (O && (O.look || LOOKS[O.name])) || LOOKS.brain;
+    const VIOLET = look.fib, WHITE = look.lit;                  // shadow the defaults for this form
     // a soft glow doesn't need full Retina resolution: 1.25× looks the same and draws ~60% fewer pixels
     const ctx = canvas.getContext("2d"), dpr = Math.min(1.25, devicePixelRatio || 1);
     let lastDraw = 0, slow = 0, frameGap = 1000 / 30;                           // idle: 30 fps; busier machines drop further
@@ -194,7 +217,7 @@ window.NeuralBrain = (() => {
       const f = fibres.getContext("2d"); f.setTransform(dpr, 0, 0, dpr, 0, 0); f.clearRect(0, 0, W, H); f.lineCap = "round";
       const [cx, cy] = project(C[0], C[1], 0), R = size * view.zoom;
       const aura = f.createRadialGradient(cx, cy, R * 0.05, cx, cy, R * 0.42);
-      aura.addColorStop(0, "rgba(210,30,60,.10)"); aura.addColorStop(.6, "rgba(210,30,60,.04)"); aura.addColorStop(1, "rgba(0,0,0,0)");
+      aura.addColorStop(0, `rgba(${VIOLET},.10)`); aura.addColorStop(.6, `rgba(${VIOLET},.04)`); aura.addColorStop(1, "rgba(0,0,0,0)");
       f.fillStyle = aura; f.fillRect(0, 0, W, H);
       const buckets = [[], [], []];                                                // hairline fibres in three depth layers
       net.edges.forEach(e => { const s = (shade(e[0]) + shade(e[1])) / 2; buckets[s > 0.75 ? 2 : s > 0.45 ? 1 : 0].push(e); });
@@ -241,6 +264,8 @@ window.NeuralBrain = (() => {
       lastDraw = t; const w0 = performance.now();
       if (dirty) render();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      const [mx, my, mk, dx, dy] = motion(look.move, t), [ccx, ccy] = project(C[0], C[1], 0);   // the form's own movement
+      ctx.setTransform(dpr * mx, 0, dpr * mk, dpr * my, dpr * (ccx - ccx * mx - ccy * mk + dx), dpr * (ccy - ccy * my + dy));
       ctx.globalAlpha = 0.9 + 0.1 * Math.sin(t / 2000); ctx.drawImage(fibres, 0, 0, W, H); ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "lighter";
       const warm = (i, R, a) => { const [x, y] = P(i), g = ctx.createRadialGradient(x, y, 0, x, y, R);
