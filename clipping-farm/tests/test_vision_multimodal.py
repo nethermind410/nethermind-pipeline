@@ -73,6 +73,7 @@ class VisionMultimodalTests(unittest.TestCase):
             visual={"relevance": .9, "evidence": ["visual action confirmed"]},
         )
         self.assertGreater(with_visual.confidence, no_visual.confidence)
+        self.assertGreater(with_visual.scores["visual"], 0)
         self.assertIn("visual", no_visual.missing_modalities)
 
     def test_fusion_does_not_invent_missing_audio(self):
