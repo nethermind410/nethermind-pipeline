@@ -6,6 +6,7 @@ from .evidence import EvidencePacket
 from .harness import Harness
 from .model_registry import ModelRegistry
 from .providers import BrainProvider, ProviderResult
+from .provider_contracts import validate_packet, validate_result
 
 
 @dataclass
@@ -77,6 +78,7 @@ class AdaptiveBrain:
 
         self.harness.budget.reserve(job_id, spec.estimated_cost, budget)
         result = provider.analyse(packet)
+        validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
         result.estimated_cost = spec.estimated_cost
         self._store(key, result)
         trace.append({"model": provider_name, "status": "executed",
@@ -84,11 +86,13 @@ class AdaptiveBrain:
         return result, budget - spec.estimated_cost
 
     def analyse(self, packet: EvidencePacket, *, job_id="brain", budget=0.0):
+        validate_packet(packet.to_dict())
         trace = [{"model": "deterministic", "status": "executed"}]
         deterministic = self.providers.get("deterministic")
         if deterministic is None:
             raise RuntimeError("deterministic provider is required")
         result = deterministic.analyse(packet)
+        validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
 
         if result.confidence >= self.required_confidence and not self._needs_escalation(result):
             return AdaptiveResult(result, trace)
