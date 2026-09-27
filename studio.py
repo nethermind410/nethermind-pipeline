@@ -105,7 +105,8 @@ def restore_queue():
                         ("build", "build_nofetch") else None)
             already_resumed = bool(running.get("resumed"))
             dead = agent_sub and nether.is_dead_lettered(agent_sub[0], agent_sub[1], vid or None)
-            if not already_resumed and not dead:
+            posting = action.startswith("post_") or action in ("undo", "reschedule")   # never re-send without her
+            if not already_resumed and not dead and not posting:
                 resume_running = (action, vid)
             else:
                 JOB.update(id=JOB["id"] + 1, action=action, video=vid, label=running.get("label", ""),
