@@ -22,19 +22,22 @@ class AdaptiveBrainTests(unittest.TestCase):
     def tearDown(self):
         self.f.close()
 
-    def packet(self, standalone, hook=.2, payoff=.2, context=.3):
+    def packet(self, standalone, hook=.2, payoff=.2, context=.3,
+               information=.2, novelty=.2, peak=.1):
         c = Candidate(
             0, 12, "candidate",
             {"hook": hook, "payoff": payoff, "context": context,
-             "standalone": standalone, "information": .2, "novelty": .2},
+             "standalone": standalone, "information": information,
+             "novelty": novelty},
         )
         return build_packet(
             c, [{"start": 0, "end": 12, "text": "candidate"}],
-            {"peak": .1}, [], [], {"duration": 12},
+            {"peak": peak}, [], [], {"duration": 12},
         )
 
     def test_high_confidence_does_not_pay(self):
-        packet = self.packet(.9, hook=.9, payoff=.9, context=.9)
+        packet = self.packet(.9, hook=.9, payoff=.9, context=.9,
+                             information=.9, novelty=.9, peak=.1)
         out = self.adaptive.analyse(packet, budget=.10)
         self.assertEqual(out.result.model, "deterministic")
         self.assertFalse(any(x.get("status") == "executed" and x.get("model") == "cheap-mock"
