@@ -302,7 +302,7 @@
       <h2>Money you can make now</h2><p class="nx-meta">For many faceless channels, ads are just one revenue stream — typical splits vary and nothing here is guaranteed. These don't need YouTube's permission.</p>
       <div class="mo-streams">${streams}</div>
       <div class="mo-setup">
-        <h2>One-time setup</h2><div class="card nx-setup"><ul>${setup}</ul></div>
+        <h2>One-time setup</h2><div class="card mo-onetime"><ul>${setup}</ul></div>
       </div>
         <details class="mo-details"><summary><h2>Links in every description</h2></summary>
         <form class="card nx-bform" id="nx-bform">

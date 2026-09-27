@@ -171,6 +171,7 @@
     e.preventDefault(); e.stopPropagation(); act(b.dataset.nx, b);
   }, true);
   document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && root) { root.remove(); root = null; return; }  // hide for now; it returns next launch until finished
     if (e.key === "Enter" && root && e.target.matches?.(".nx-setup input:not([type=checkbox])")) {
       e.preventDefault(); root.querySelector(".nx-foot .nx-btn.primary")?.click(); }
   });
