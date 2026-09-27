@@ -24,6 +24,12 @@ class Budget:
    (actual_cost,reservation_id))
   if cur.rowcount != 1: raise RuntimeError(f"reservation {reservation_id} is not open")
   return True
+
+ def release(self,reservation_id):
+  cur=self.db.cx.execute(
+   "UPDATE costs SET status='RELEASED' WHERE id=? AND status='RESERVED'",
+   (reservation_id,))
+  return cur.rowcount == 1
 class ModelRouter:
  DETERMINISTIC={"silence_detection","scene_detection","metadata","hash","duplicate_detection","audio_levels","frame_sampling"}
  def __init__(self,db): self.db=db
