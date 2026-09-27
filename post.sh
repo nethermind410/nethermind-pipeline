@@ -1,8 +1,10 @@
 #!/bin/bash
 # post.sh — queue a built video on Buffer for YouTube + Instagram + TikTok.
 #
-#   ./post.sh <id>          DRY RUN: prints exactly what would post, touches nothing
-#   ./post.sh <id> --live   uploads to R2 and adds the posts to Buffer's queue
+#   ./post.sh <id>                    DRY RUN: prints exactly what would post (and when), touches nothing
+#   ./post.sh <id> --live             schedules each platform at its own best time to post (default)
+#   ./post.sh <id> --live now         posts right away, on all platforms
+#   ./post.sh <id> --live 2026-10-02T18:00:00-04:00   schedules every platform at that exact time
 #
 # YouTube gets the title + full description; Buffer's API has no tags field, so
 # paste youtube_tags into YouTube Studio after it goes live (and the pinned comment).
@@ -11,7 +13,10 @@ SRC="$(cd "$(dirname "$0")" && pwd)"
 cd "${NETHER_DATA:-$SRC}"   # the data folder (cfg/, out/, …); the code folder unless NETHER_DATA is set
 
 ID="${1:-}"
-if [[ -z "$ID" || ! "$ID" =~ ^[a-z0-9_]+$ ]]; then echo "usage: ./post.sh <id> [--live]"; exit 1; fi
+if [[ -z "$ID" || ! "$ID" =~ ^[a-z0-9_]+$ ]]; then echo "usage: ./post.sh <id> [--live] [best|now|<ISO time>]"; exit 1; fi
+LIVE=""; WHEN="best"
+if [[ "${2:-}" == "--live" ]]; then LIVE=1; WHEN="${3:-best}"
+elif [[ -n "${2:-}" ]]; then WHEN="$2"; fi
 PY="$SRC/.venv/bin/python"; [[ -x "$PY" ]] || PY="$(command -v python3)"
 FILE=$($PY -c "import json;print(json.load(open('cfg/$ID.json')).get('file','$ID'))")
 LAND=$($PY -c "import json;print(json.load(open('cfg/$ID.json')).get('format','') == 'landscape')")
@@ -27,11 +32,11 @@ for f in "${NEED[@]}"; do
   [[ -f "$f" ]] || { echo "missing $f — build it and write the packaging first"; exit 1; }
 done
 
-if [[ "${2:-}" == "--live" ]]; then
+if [[ -n "$LIVE" ]]; then
   # --record makes this safe to re-run: platforms that already succeeded are skipped
-  $PY "$SRC/buffer_post.py" "${ARGS[@]}" --record "$ID"
+  $PY "$SRC/buffer_post.py" "${ARGS[@]}" --when "$WHEN" --record "$ID"
   echo; echo "Still to do by hand once live: YouTube tags + pinned comment (see packaging/$ID.json)."
 else
-  $PY "$SRC/buffer_post.py" "${ARGS[@]}" --dry-run
+  $PY "$SRC/buffer_post.py" "${ARGS[@]}" --when "$WHEN" --dry-run
   echo; echo "That was a dry run. To post for real:  ./post.sh $ID --live"
 fi

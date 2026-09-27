@@ -41,6 +41,8 @@ ACTIONS = {
     "build_nofetch": lambda i: ["./build.sh", i, "--no-fetch"],
     "post_dry": lambda i: ["./post.sh", i],
     "post_live": lambda i: ["./post.sh", i, "--live"],
+    "post_now": lambda i: ["./post.sh", i, "--live", "now"],
+    "post_at": lambda i: ["./post.sh", i.split("|", 1)[0], "--live", i.split("|", 1)[1]],
     "undo": lambda i: [PY, "undo_post.py", i],
     "stats": lambda i: ["./refresh.sh"],
     "demand": lambda i: [PY, "idea_demand.py"] + ([i] if i else []),
@@ -49,9 +51,11 @@ ACTIONS = {
     "reschedule": lambda i: [PY, "reschedule_post.py", *i.split("|", 1)],
 }
 FREE_ARG = {"stats": r"^$", "demand": r"^[a-z0-9_]{0,48}$", "replies": r"^[A-Za-z0-9_-]{10,80}$",
-            "reschedule": r"^[a-f0-9]{24}\|\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d)?(\.\d+)?(Z|[+-]\d\d:\d\d)$"}
+            "reschedule": r"^[a-f0-9]{24}\|\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d)?(\.\d+)?(Z|[+-]\d\d:\d\d)$",
+            "post_at": r"^[a-z0-9_]+\|\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d)?(\.\d+)?(Z|[+-]\d\d:\d\d)$"}
 LABELS = {"build": "Making", "build_nofetch": "Re-making", "post_dry": "Checking the post for",
-          "post_live": "Scheduling", "undo": "Taking back", "stats": "Refreshing numbers from YouTube and Buffer",
+          "post_live": "Scheduling", "post_now": "Posting", "post_at": "Scheduling",
+          "undo": "Taking back", "stats": "Refreshing numbers from YouTube and Buffer",
           "demand": "Checking YouTube demand", "replies": "Drafting replies", "score": "Scoring titles with vidIQ",
           "reschedule": "Moving the post"}
 JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True, "code": None, "friendly": None}
@@ -183,8 +187,8 @@ def run_job(action, vid):
             except Exception:
                 pass
         events.publish("job", {"type": "finished", **snap})
-        if action == "post_live" and code == 0:
-            api.set_done(f"ready:{vid}")
+        if action in ("post_live", "post_now", "post_at") and code == 0:
+            api.set_done(f"ready:{vid.split('|', 1)[0] if action == 'post_at' else vid}")
         if action in ("build", "build_nofetch") and code == 0:
             api.set_done(f"ready:{vid}", False)  # a fresh build needs a fresh review
         with LOCK:                               # next in line
@@ -495,9 +499,11 @@ class H(BaseHTTPRequestHandler):
             return self.send(404, {"error": "not found"})
         action, vid = b.get("action"), str(b.get("id", ""))
         ok_arg = re.match(FREE_ARG[action], vid) if action in FREE_ARG else (ID_RE.match(vid) and (CFG / f"{vid}.json").exists())
+        if ok_arg and action == "post_at" and not (CFG / f"{vid.split('|', 1)[0]}.json").exists():
+            ok_arg = None
         if action not in ACTIONS or not ok_arg:
             return self.send(400, {"error": "bad action or video"})
-        if action == "post_live" and b.get("confirm") is not True:
+        if action in ("post_live", "post_now", "post_at") and b.get("confirm") is not True:
             return self.send(400, {"error": "Confirm the schedule first."})
         with LOCK:
             if JOB["done"] and not QUEUE:

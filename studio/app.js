@@ -227,36 +227,9 @@ function hookHtml(h) {
       <div class="t">${esc(o.text)}</div></label>`).join("")}
     <p class="fine">Past hooks are compared by real YouTube views, not a prediction.</p></div>`;
 }
-async function scheduleSheet(v) {
-  const t = await get("/api/insights/times").catch(() => null);
-  const yt = t && t.platforms.find(p => p.key === "youtube");
-  const vd = yt && yt.verdict;
-  const bandNow = vd && vd.call ? t.bands[vd.band] : null;
-  const timeWhy = vd ? `<div class="card">
-      <div class="pc-head"><b>Posting time</b><span class="pill conf-${esc((vd.level || "").toLowerCase())}">${esc(vd.level || "")} confidence</span></div>
-      <details class="why"><summary>Why now?</summary><p class="fine">${esc(vd.text)}${vd.note ? ` — ${esc(vd.note)}.` : ""}</p></details>
-      ${bandNow ? `<p class="fine">It'll go out at your next open Buffer slot — that's usually close to ${esc(bandNow.name)} (${esc(bandNow.hours)}), the band that's done best so far.
-        Not that band? <button class="btn small" id="not-band" type="button">A different time works better</button></p>` : ""}
-    </div>` : "";
-  sheet(`<h3>Schedule "${esc(v.title)}"?</h3>
-    <p>It goes to YouTube, Instagram and TikTok, each at your next open slot in Buffer. While it's still waiting, you can take it back.</p>
-    <p>After it's live on YouTube, Today will remind you to add the tags and pinned comment.</p>
-    ${timeWhy}
-    <div class="row-end"><button class="btn" data-close>Cancel</button><button class="btn primary" id="go">Schedule</button></div>`,
-    (el, close) => {
-      $("#go", el).onclick = () => { close(); runJob("post_live", v.id, {confirm: true}); };
-      $("#go", el).focus();
-      const nb = $("#not-band", el);
-      if (nb) nb.onclick = async () => {
-        const other = t.bands.map(b => b.name).filter(n => n !== bandNow.name);
-        const pick = prompt(`Which time works better?\n${other.join(", ")}`, other[0]);
-        if (pick && other.includes(pick)) {
-          await post("/api/override", {kind: "time", lane: "youtube", ai: bandNow.name, user: pick});
-          toast("Noted — this feeds tomorrow's confidence, but the send time is still Buffer's next open slot for now.");
-        }
-      };
-    });
-}
+// scheduleSheet(v) lives in ext_post.js (loaded after this file via /ext.js) — it needs its
+// own preview player + best/now/pick-a-time choices, which would push this file well past
+// its size; see ext_post.js and ext_post.css.
 function changesSheet(v) {
   sheet(`<h3>What should change?</h3><p>Be specific, e.g. "the second picture doesn't show a worm" or "hook is too slow". Tomorrow's 7:00 build will redo it, and the note teaches future builds.</p>
     <textarea id="note" aria-label="What should change"></textarea>
@@ -470,10 +443,12 @@ async function showQueue() {
 }
 function jobDone(j, a) {
   if (j.code !== 0) return toast(`Error: ${j.label} didn't finish.`, {label: "See why", run: () => window.showFailure ? showFailure({job: true}) : a.click()});
-  if (j.action === "post_live") {
+  if (j.action === "post_live" || j.action === "post_at") {
     const due = [...j.log.matchAll(/Posting to (\w+)[\s\S]*?due (\S+)/g)].map(m => `${PLAT[m[1]] || m[1]} ${when(m[2])}`);
-    toast("Scheduled" + (due.length ? ": " + due.join(" · ") : "."), {label: "Undo", run: () => runJob("undo", j.video)});
-  } else if (j.action === "undo") toast("Taken back out of the queue.");
+    const vid = j.action === "post_at" ? j.video.split("|")[0] : j.video;
+    toast("Scheduled" + (due.length ? ": " + due.join(" · ") : "."), {label: "Undo", run: () => runJob("undo", vid)});
+  } else if (j.action === "post_now") toast("Posted — it's live now.");
+  else if (j.action === "undo") toast("Taken back out of the queue.");
   else if (j.action === "reschedule") toast("Moved.", lastMove ? {label: "Undo", run: () => { const m = lastMove; lastMove = null; runJob("reschedule", `${m.pid}|${m.back}`); }} : null);
   else if (j.action === "replies") toast("Drafts ready.");
   else if (j.action === "score") toast("Scored with vidIQ.");

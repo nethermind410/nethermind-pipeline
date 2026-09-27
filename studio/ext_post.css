@@ -1,0 +1,9 @@
+/* ext_post.css — the Schedule sheet (ext_post.js): compact preview + best/now/pick-a-time cards. */
+.post-preview{width:auto;max-width:100%;max-height:220px;display:block;margin:0 auto;border-radius:var(--radius-md);background:#000;box-shadow:var(--shadow)}
+.post-choices{display:grid;gap:var(--sp-2)}
+.post-choices .opt>div{flex:1;min-width:0}
+.post-choices .t{font-size:var(--fs-4);font-weight:600}
+.post-choices .s{margin-top:var(--sp-1)}
+.post-plat{font-size:var(--fs-3);padding:var(--sp-1) 0}
+.post-plat .why{margin-top:2px}
+.post-choices input[type="datetime-local"]{margin-top:var(--sp-1)}
