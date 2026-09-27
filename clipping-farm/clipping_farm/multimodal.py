@@ -70,6 +70,8 @@ class MultimodalCandidateBrain:
                 evidence.extend(context["reasons"])
             if "score" in context and "context" not in scores:
                 scores["context"] = self._clamp(context["score"])
+                if "context" in missing:
+                    missing.remove("context")
 
         available_weights = [(k, w) for k, w in self.WEIGHTS.items() if k in scores]
         denominator = sum(w for _, w in available_weights)
