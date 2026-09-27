@@ -55,7 +55,7 @@ class AdaptiveBrain:
         self.db.put_artifact(key, "brain_provider_result", f"cache://{key}",
                              key, payload)
 
-    def _run_paid(self, provider_name, packet, *, job_id, budget, trace):
+    def _run_paid(self, provider_name, packet, *, job_id, budget, total_budget, trace):
         spec = self.registry.get(provider_name)
         if not spec or not spec.available:
             trace.append({"model": provider_name, "status": "unavailable"})
@@ -76,7 +76,7 @@ class AdaptiveBrain:
             trace.append({"model": provider_name, "status": "adapter_missing"})
             return None, budget
 
-        self.harness.budget.reserve(job_id, spec.estimated_cost, budget)
+        self.harness.budget.reserve(job_id, spec.estimated_cost, total_budget)
         result = provider.analyse(packet)
         validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
         result.estimated_cost = spec.estimated_cost
