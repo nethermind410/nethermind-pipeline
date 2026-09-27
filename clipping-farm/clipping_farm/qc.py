@@ -26,7 +26,7 @@ def run_qc(candidate, *, rights_authorised=True, audio_ok=True, visual_ok=True,
     text=(getattr(candidate,"text","") or "").strip()
     standalone="PASS" if candidate.scores.get("standalone",0)>=.65 else "FAIL"
     opening="PASS" if candidate.duration>=8 and len(text.split())>=8 else "FAIL"
-    ending="PASS" if text[-1:] in ".!?)]”'"" else "FAIL"
+    ending="PASS" if text[-1:] in ".!?)]”'" else "FAIL"
     return QCResult(
         standalone, "PASS" if audio_ok else "FAIL", "PASS" if visual_ok else "FAIL",
         "PASS" if rights_authorised else "FAIL", opening, ending,
