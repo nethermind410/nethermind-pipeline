@@ -30,6 +30,18 @@
  "long_hashtags": "#nethermind #comics #history #science",
  "replies_about": "Marvel history, space and weird animals",
  "narration_voice": "am_liam",
+ "long_voice": "own",
+ "identity": {
+  "tone": "like a caffeinated raccoon: high-energy, gleeful, rummaging for the weird bit; low-key geek — knows the lore, never gatekeeps or shows off",
+  "personality": ["caffeinated raccoon energy", "low-key geek", "Kiwi (New Zealand) voice and phrasing"],
+  "voice": "curious, direct, a little dry — a knowledgeable friend, never a lecture; no scripted catchphrases, sounds like the creator talking naturally",
+  "pace_wpm": 155,
+  "viewer_promise": "genuinely strange things that are actually true, explained fast — always fact-checked and sourced",
+  "do_words": ["cool cool", "amazing....", "stretched-out words for emphasis (e.g. \"butttttt\")", "following this vibe, what are the options"],
+  "dont_words": ["dive into", "explore", "journey", "unlock", "unleash", "rage-bait framing (\"they don't want you to know\")",
+                 "filler intros (\"hey guys, in today's video\")", "overclaiming (\"scientists are baffled\")", "circle of life / nature is metal clichés",
+                 "political takes or culture-war framing", "curiosity-gap clickbait the video doesn't pay off"]
+ },
  "youtube_channel_id": "UCpE0Ce-qXmVWCwwqiW5bvxw",
  "dashboard_url": "https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B",
  "jarvis": {

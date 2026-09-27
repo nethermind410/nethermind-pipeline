@@ -42,19 +42,15 @@ DEFAULTS = {
     "replies_about": "",                   # comment replies: what the channel is about
     "reply_voice": "direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one)",
     "narration_voice": "am_liam",          # Kokoro voice id
+    "long_voice": "",                      # "own" → every weekly long-form drafts as own_voice (icebergs opt out); "" → Kokoro, as before
     # identity: the channel's voice/personality, brought in from the creator's brand workspace (company.yaml).
     # Feeds every script-writing prompt (drafter.py, drafter_long.py) alongside reply_voice/narration_voice above,
     # which keep doing their own separate jobs (comment replies, Kokoro's TTS voice id) untouched.
-    "identity": {
-        "tone": "like a caffeinated raccoon: high-energy, gleeful, rummaging for the weird bit; low-key geek — knows the lore, never gatekeeps or shows off",
-        "personality": ["caffeinated raccoon energy", "low-key geek", "Kiwi (New Zealand) voice and phrasing"],
-        "voice": "curious, direct, a little dry — a knowledgeable friend, never a lecture; no scripted catchphrases, sounds like the creator talking naturally",
-        "pace_wpm": 155,
-        "viewer_promise": "genuinely strange things that are actually true, explained fast — always fact-checked and sourced",
-        "do_words": ["cool cool", "amazing....", "stretched-out words for emphasis (e.g. \"butttttt\")", "following this vibe, what are the options"],
-        "dont_words": ["dive into", "explore", "journey", "unlock", "unleash", "rage-bait framing (\"they don't want you to know\")",
-                       "filler intros (\"hey guys, in today's video\")", "overclaiming (\"scientists are baffled\")", "circle of life / nature is metal clichés"],
-    },
+    # {} here on purpose — this is a neutral default shared by every install (fresh setup, demo data, a second
+    # channel). It is a whole block, not a patch (see _merge): channel.json's own "identity" always replaces
+    # this, it never merges into it. Nethermind's own identity lives in channel_nethermind.json (the "original
+    # channel's values" file, loaded only for that legacy install — see the module docstring above).
+    "identity": {},
     "youtube_channel_id": "",              # UC… — for true YouTube numbers (optional)
     "buffer_channels": {"youtube": "", "instagram": "", "tiktok": ""},   # Buffer's channel ids (setup finds them)
     "dashboard_url": "",                   # a phone dashboard link shown in Settings (optional)
@@ -127,7 +123,9 @@ _cache = {}
 def _merge(base, over):
     out = json.loads(json.dumps(base))
     for k, v in (over or {}).items():
-        if k in out and isinstance(out[k], dict) and isinstance(v, dict):
+        if k == "identity" and isinstance(v, dict):
+            out[k] = v                      # a whole block, not a patch — {} really means "none set" (see DEFAULTS)
+        elif k in out and isinstance(out[k], dict) and isinstance(v, dict):
             out[k].update(v)
         elif k in out:
             out[k] = v

@@ -99,7 +99,7 @@ specificity + evergreen value, each 0–10. Source column keeps the idea's statu
 | Hook | Format | Verify at |
 |---|---|---|
 | What Happens When a Whale Dies Two Miles Down | long | 55/60 · made (EP01, episodes/ep_whale_fall_two_miles_down.json) · own-Short (bone worm) + API-90d |
-| The Star That Keeps Dimming and Nobody Knows Why | long | 53/60 · ready · own-Short (Boyajian) + comment ("OH HELL NO!") |
+| The Star That Keeps Dimming and Nobody Knows Why | long | 53/60 · ready (1890-dimming claim is disputed; say so) · own-Short (Boyajian) + comment ("OH HELL NO!") |
 | Marvel's Biggest Hero Started Out Grey | long | 52/60 · ready · own-Short (Hulk, top video) |
 | The Video Game America Buried in the Desert | long | 52/60 · ready · evergreen (Atari landfill) |
 | Scientists Still Can't Agree What This Fossil Is | long | 50/60 · ready · API-90d (Tully monster) |

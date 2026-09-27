@@ -63,7 +63,7 @@ def day():
     recording = None if w.get("long") else own_voice_awaiting_recording()
     if recording:
         steps.append(_step("long", "Record this week's long-form", f"“{recording['title']}” is approved and waiting for your voiceover — "
-                           "record the whole episode, upload it, then render.", f"desk/content/episodes", "make"))
+                           "record the whole episode, upload it, then render.", "make", "make"))
         seen.add(recording["id"])
     elif w.get("long") is None and datetime.date.today().weekday() >= 4:
         steps.append(_step("long", "Line up this week's long-form", "Nothing started yet — draft an iceberg or episode so Sunday has something to render.",

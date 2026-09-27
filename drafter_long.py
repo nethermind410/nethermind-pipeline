@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""drafter_long.py — the Content agent's long-form: one topic researched deeply → a 10–12 minute episode.
+"""drafter_long.py — the Content agent's long-form: one topic researched deeply → a 10–15 minute episode.
 
     python3 drafter_long.py "topic"                 draft episodes/<id>.json (+ packaging/<id>_long.json), as a draft
     python3 drafter_long.py --redraft <id> "notes"  rewrite with your notes (research kept)
@@ -24,10 +24,10 @@ HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
 import channel
 EPS, PKG, DRAFTS = DATA / "episodes", DATA / "packaging", DATA / "out" / "drafts"
-TARGET_WORDS = (1400, 2100)          # ≈ 9–13 minutes at Kokoro's ~2.8 words/sec
+TARGET_WORDS = (1400, 2500)          # ≈ 8–15 minutes at Kokoro's ~2.8 words/sec
 MAX_AI_IMAGES = 12                   # Cloudflare's free tier makes ~30 images a day; real photos fill the rest
 
-LONG_RULES = """Long-form rules (YouTube, 16:9, 10–12 minutes): open cold on the single most surprising claim (no
+LONG_RULES = """Long-form rules (YouTube, 16:9, 10–15 minutes): open cold on the single most surprising claim (no
 "welcome back", no channel intro); make a promise in the first 30 seconds of what the viewer will know by the end;
 every chapter is a mini-story with its own question, turn and payoff, and ends on a line that pulls into the next;
 re-hook every 60–90 seconds; state caveats honestly; the outro names next week's episode. Voice: curious, direct,
@@ -204,6 +204,12 @@ def draft(topic, notes=None, eid=None, style=None):
         cur = nether.begin("content", "Write the episode", sub="episodes", parent=parent)
         current = json.loads(read(EPS / f"{eid}.json") or "null") if redo else None
         ep, words = clean_episode(write_episode(topic, eid, facts, notes, current, style), eid)
+        if redo and current:                            # a redraft rewrites the script — never silently drop
+            for k in ("own_voice", "confirm", "sources", "credit"):     # editorial state kept from the last version
+                if k in current:
+                    ep[k] = current[k]
+        elif not redo and channel.get("long_voice") == "own" and not is_iceberg(topic, style):
+            ep["own_voice"] = True                        # the weekly slot: her voice, not Kokoro (icebergs opt out)
         if is_iceberg(topic, style):                   # the tier chart the renderer draws for each chapter card
             cols = ["a", "a", "a", "a2", "a2"]
             ep["iceberg"] = {"tiers": [{"label": str(c.get("tier_label") or f"TIER {i + 1}").upper(),
@@ -259,11 +265,12 @@ def save_lines(eid, lines):
     for s in ep.get("intro", []) + [x for c in ep["chapters"] for x in c["segments"]] + ep.get("outro", []):
         if s["id"] in lines:
             new = re.sub(r"\s+", " ", str(lines[s["id"]])).strip()
+            if new == s["text"]:
+                continue                                  # unchanged — never reject it, however long (e.g. an import)
             if not new or len(new) > 400:
-                raise ValueError(f"Line {s['id']} is empty or too long.")
-            if new != s["text"]:
-                s["text"] = new
-                changed.append(s["id"])
+                raise ValueError(f"Line {s['id']} is empty or over the 400 character limit.")
+            s["text"] = new
+            changed.append(s["id"])
     (EPS / f"{eid}.json").write_text(json.dumps(ep, indent=1, ensure_ascii=False))
     return {"ok": True, "changed": changed}
 
@@ -303,6 +310,10 @@ def drafts():
         eid = p.stem
         pkg = json.loads(read(PKG / f"{eid}_long.json") or "{}")
         rec = json.loads(read(DRAFTS / f"{eid}.json") or "{}")
+        # out/drafts/<id>.json is gitignored working state — for an episode that arrived any other way
+        # (imported, or moved to a fresh data folder), fall back to what's tracked on the episode itself.
+        research = rec.get("research") or ep.get("research")
+        rec_notes = rec.get("notes") or ep.get("notes") or []
         lines = []
         for chap, segs in [("Cold open", ep.get("intro", []))] + [(c["title"], c["segments"]) for c in ep["chapters"]] \
                           + [("Outro", ep.get("outro", []))]:
@@ -319,7 +330,7 @@ def drafts():
                     "title_pkg": f"{eid}_long", "hook_options": [], "lines": lines, "minutes": round(words / 168, 1),
                     "chapters": [c["title"] for c in ep["chapters"]], "end": [f"NEXT WEEK: {ep.get('next', '')}"],
                     "thumbnails": [pkg.get("thumbnail", {})] + pkg.get("thumbnail_options", []),
-                    "research": rec.get("research"), "check": None, "notes": rec.get("notes", []),
+                    "research": research, "check": None, "notes": rec_notes,
                     "confirm": confirm, "needs_checking": bool(confirm)})
     return out
 

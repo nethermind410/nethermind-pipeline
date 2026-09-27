@@ -198,23 +198,15 @@
    "hook": {
     "lines": [
      [
-      "OKAY,",
+      "A WHALE LANDS.",
       "w"
      ],
      [
-      "PICTURE",
+      "2,000 YEARS",
       "w"
      ],
      [
-      "WHERE",
-      "w"
-     ],
-     [
-      "THIS",
-      "w"
-     ],
-     [
-      "MORE.",
+      "OF FOOD.",
       "a"
      ]
     ],
@@ -236,7 +228,10 @@
        "query": "deep ocean depth gauge abyssal zone"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch1_s2",
@@ -252,7 +247,10 @@
        "query": "marine snow deep sea particles"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch1_s3",
@@ -288,7 +286,7 @@
     },
     {
      "id": "ch1_s5",
-     "text": "So when did humans notice? The first hints were honestly accidental. Back in 1854, someone pulled a brand new species of mussel off a floating chunk of whale blubber. Then in the 1960s, deep-sea trawlers kept dragging up limpets, little cone-shaped snail things, stuck to whale bones. Nobody had seen those species before either.",
+     "text": "So when did humans notice? The first hints were honestly accidental. Back in 1854, someone pulled a brand new species of mussel off a floating chunk of whale blubber. Weird, but okay. Then in the 1960s, deep-sea trawlers kept dragging up limpets, little cone-shaped snail things, stuck to whale bones. Nobody had seen those species before either.",
      "vis": {
       "t": "kb",
       "src": "whale_fall_ch1_s5.jpg",
@@ -300,7 +298,10 @@
        "query": "historic whaling ship engraving 1800s"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch1_s6",
@@ -316,7 +317,10 @@
        "query": "Trieste II bathyscaphe submersible"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch1_s7",
@@ -364,11 +368,14 @@
        "query": "research vessel deck whale carcass"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch1_s10",
-     "text": "A 2022 study counted thirty-eight whale falls that humans had deliberately placed, next to only forty-five natural ones anyone had found. And watching them is how we know the story I'm about to tell you. Because it turns out a whale fall isn't one event. It's four.",
+     "text": "Researchers sank whale carcasses themselves, then came back again and again, for years, to watch what happened. [CONFIRM: where the carcasses came from] A 2022 study counted thirty-eight whale falls that humans had deliberately placed, next to only forty-five natural ones anyone had found. And watching them is how we know the story I'm about to tell you. Because it turns out a whale fall isn't one event. It's four.",
      "vis": {
       "t": "kb",
       "src": "whale_fall_ch1_s10.jpg",
@@ -380,7 +387,10 @@
        "query": "scientists research vessel deep sea"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     }
    ]
   },
@@ -390,23 +400,15 @@
    "hook": {
     "lines": [
      [
-      "STAGE",
+      "A DEAD WHALE",
       "w"
      ],
      [
-      "ONE",
+      "IS A BOSS",
       "w"
      ],
      [
-      "STARTS",
-      "w"
-     ],
-     [
-      "PRETTY",
-      "w"
-     ],
-     [
-      "MORE.",
+      "DROP.",
       "a"
      ]
     ],
@@ -428,7 +430,10 @@
        "query": "hagfish deep sea eel"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s2",
@@ -444,7 +449,10 @@
        "query": "sleeper shark deep sea"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s3",
@@ -460,7 +468,10 @@
        "query": "whale carcass scavengers feeding seafloor"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s4",
@@ -476,7 +487,10 @@
        "query": "Nautilus research vessel livestream ROV"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s5",
@@ -492,7 +506,10 @@
        "query": "Davidson Seamount whale fall ROV footage"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s6",
@@ -508,7 +525,10 @@
        "query": "whale skeleton partially scavenged"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s7",
@@ -524,7 +544,10 @@
        "query": "polychaete worms sediment macro"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch2_s8",
@@ -540,7 +563,10 @@
        "query": "whale skeleton bare bones seafloor"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     }
    ]
   },
@@ -550,23 +576,15 @@
    "hook": {
     "lines": [
      [
-      "WHALE",
+      "NO MOUTH.",
       "w"
      ],
      [
-      "BONES",
+      "NO GUT.",
       "w"
      ],
      [
-      "ARE",
-      "w"
-     ],
-     [
-      "PACKED",
-      "w"
-     ],
-     [
-      "MORE.",
+      "NO PROBLEM.",
       "a"
      ]
     ],
@@ -588,7 +606,10 @@
        "query": "whale bone vertebra closeup"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s2",
@@ -604,7 +625,10 @@
        "query": "Monterey Canyon deep sea research"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s3",
@@ -668,7 +692,10 @@
        "query": "Osedax worm tube females males diagram"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s7",
@@ -700,7 +727,10 @@
        "query": "chemosynthetic bacteria mats whale bone"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s9",
@@ -716,7 +746,10 @@
        "query": "whale skeleton decades seafloor time-lapse"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s10",
@@ -732,7 +765,10 @@
        "query": "hydrothermal vent mussels comparison"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s11",
@@ -748,7 +784,10 @@
        "query": "ocean floor map whale carcasses distribution"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s12",
@@ -764,7 +803,10 @@
        "query": "larvae stepping stones ocean diagram"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s13",
@@ -780,7 +822,10 @@
        "query": "whale bone reef filter feeders"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s14",
@@ -796,7 +841,10 @@
        "query": "plesiosaur fossil bone CT scan"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch3_s15",
@@ -812,7 +860,10 @@
        "query": "whale silhouette disappearing ocean"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     }
    ]
   },
@@ -822,23 +873,15 @@
    "hook": {
     "lines": [
      [
-      "FIRST,",
+      "485 WHALES.",
       "w"
      ],
      [
-      "THE",
+      "ONE",
       "w"
      ],
      [
-      "GRAVEYARD",
-      "w"
-     ],
-     [
-      "I",
-      "w"
-     ],
-     [
-      "MORE.",
+      "GRAVEYARD.",
       "a"
      ]
     ],
@@ -876,11 +919,14 @@
        "query": "whale fossil seafloor survey sonar"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch4_s3",
-     "text": "In some patches, the remains are packed in at hundreds per square kilometre. They even found a whale species nobody knew existed: an extinct beaked whale they named Pterocetus diamantinae. They're calling it a whale necropolis. A city of the dead.",
+     "text": "In some patches, the remains are packed in at hundreds per square kilometre. [CONFIRM: ~760/km2 figure — check against the Nature paper directly] They even found a whale species nobody knew existed: an extinct beaked whale they named Pterocetus diamantinae. They're calling it a whale necropolis. A city of the dead.",
      "vis": {
       "t": "kb",
       "src": "whale_fall_ch4_s3.jpg",
@@ -892,7 +938,10 @@
        "query": "fossil whale skull ancient seafloor"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch4_s4",
@@ -908,7 +957,10 @@
        "query": "sonar survey seafloor California"
       }
      },
-     "gap": 0.15
+     "gap": 0.15,
+     "in": [
+      "long"
+     ]
     },
     {
      "id": "ch4_s5",
@@ -1040,6 +1092,73 @@
   "[CONFIRM: image rights per source] — MBARI stills are copyrighted (ask permission or use illustration); check E/V Nautilus/OET media-use terms before using any clip; log each Wikimedia Commons file's licence individually",
   "[CONFIRM: the next-episode pick and the ocean & weird biology playlist link] — before publishing (end screen)"
  ],
+ "notes": [
+  {
+   "at": "2026-09-27T00:00:00",
+   "notes": "Imported from the youtube-agency workspace (workspace/drafts/2026-09-24--whale-fall-RESEARCH.md + -SCRIPT.md), Idea Farm #1 (55/60). NEEDS CHECKING before you record/publish: 760/km2 remains-per-area figure — check against the Nature paper directly (F21); The 2022 study's exact counts (45 natural / 38 implanted / 78 fossil whale falls) — verify before publishing (F25); Image rights per source: MBARI stills are copyrighted (ask permission or use illustration); check E/V Nautilus/OET media-use terms before using any clip; log each Wikimedia Commons file's licence individually; Confirm the next-episode pick and the ocean & weird biology playlist link before publishing (end screen)"
+  }
+ ],
+ "research": {
+  "angle": "A whale fall isn't one event, it's four stages spanning a century, ending in a species that eats bone with no mouth.",
+  "sources_for_description": [
+   "Wikipedia: Whale fall (F1, F2, F6-F9, F11-F14, F23-F25)",
+   "Frontiers in Ecology and Evolution, 2022 review (F3, F4)",
+   "Smith & Baco 2003, Oceanography (F5-F9, F14)",
+   "MBARI Osedax project / news (F15-F18)",
+   "Science, 2004, Rouse/Goffredi/Vrijenhoek 'Osedax: Bone-Eating Marine Worms with Dwarf Males' (F17)",
+   "PMC (Danise & Higgs 2015, Osedax borings in ~100M-year-old plesiosaur/turtle bone) (F19)",
+   "Nautilus Live, Davidson Seamount whale fall 2019 + return 2020 (F20)",
+   "Nature (2026) + Nature news + CNN: Diamantina Zone whale necropolis (F21)",
+   "NOAA Fisheries FAQ / Scripps 2023 sonar survey (F22)"
+  ],
+  "facts": [
+   {
+    "claim": "Wikipedia: Whale fall (F1, F2, F6-F9, F11-F14, F23-F25)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "Frontiers in Ecology and Evolution, 2022 review (F3, F4)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "Smith & Baco 2003, Oceanography (F5-F9, F14)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "MBARI Osedax project / news (F15-F18)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "Science, 2004, Rouse/Goffredi/Vrijenhoek 'Osedax: Bone-Eating Marine Worms with Dwarf Males' (F17)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "PMC (Danise & Higgs 2015, Osedax borings in ~100M-year-old plesiosaur/turtle bone) (F19)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "Nautilus Live, Davidson Seamount whale fall 2019 + return 2020 (F20)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "Nature (2026) + Nature news + CNN: Diamantina Zone whale necropolis (F21)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   },
+   {
+    "claim": "NOAA Fisheries FAQ / Scripps 2023 sonar survey (F22)",
+    "source_title": "see episodes/ep_whale_fall_two_miles_down.json sources",
+    "source_url": ""
+   }
+  ]
+ },
  "draft": {
   "at": "2026-09-27T00:00:00",
   "topic": "What Happens When a Whale Dies Two Miles Down",

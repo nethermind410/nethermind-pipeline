@@ -114,33 +114,47 @@ def upload(body):
     else:
         raise ValueError("Upload an audio recording (m4a, wav or mp3) — that file's type doesn't look like audio.")
     UPLOADS.mkdir(parents=True, exist_ok=True)
-    for old in UPLOADS.glob(f"{eid}.*"):
+    tmp = UPLOADS / f"{eid}__uploading{ext}"           # validate before touching the old upload — a bad
+    tmp.write_bytes(raw)                               # re-upload must never destroy the good original
+    # ("__uploading" so this temp name never matches the "{eid}.*" cleanup glob below)
+    try:
+        total = _dur(tmp)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise ValueError("That file doesn't look like a readable audio recording — try re-exporting it and upload again.")
+    for old in UPLOADS.glob(f"{eid}.*"):                # only now that the new file is confirmed readable
         old.unlink(missing_ok=True)
     src = UPLOADS / f"{eid}{ext}"
-    src.write_bytes(raw)
-    try:
-        total = _dur(src)
-    except Exception:
-        src.unlink(missing_ok=True)
-        raise ValueError("That file doesn't look like a readable audio recording — try re-exporting it and upload again.")
+    tmp.rename(src)
 
     words = [len(_norm(s["text"]).split()) for s in lines]
     total_words = sum(words) or len(words)
     dst = VOICE / eid
     dst.mkdir(parents=True, exist_ok=True)
-    for f in dst.glob("*"):
-        f.unlink(missing_ok=True)
+    manual = set()                                      # line ids with a take that isn't this upload's own —
+    for f in dst.glob("*.json"):                         # a ● Record button take (voice.save(), no "source" key)
+        try:                                             # must survive both the clear below and the re-split loop.
+            if json.loads(f.read_text()).get("source") == "upload":
+                f.with_suffix(".mp3").unlink(missing_ok=True)
+                f.unlink(missing_ok=True)
+            else:
+                manual.add(f.stem)
+        except Exception:
+            pass
     t = 0.0
     done = 0
     for s, w in zip(lines, words):
         secs = total * (w / total_words)
+        if s["id"] in manual:                            # keep her individually-recorded take for this line
+            t += secs
+            continue
         out = dst / f"{s['id']}.mp3"
         try:
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-t", f"{max(secs, 0.2):.3f}", "-i", str(src),
                             "-ac", "1", "-ar", "48000", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-b:a", "192k", str(out)],
                            check=True, capture_output=True, timeout=60)
             clip_secs = _dur(out)
-            (dst / f"{s['id']}.json").write_text(json.dumps({"text": _norm(s["text"]), "seconds": round(clip_secs, 2)}))
+            (dst / f"{s['id']}.json").write_text(json.dumps({"text": _norm(s["text"]), "seconds": round(clip_secs, 2), "source": "upload"}))
             done += 1
         except Exception:
             out.unlink(missing_ok=True)
@@ -153,11 +167,19 @@ def upload(body):
 
 def clear(body):
     eid = _eid(body)
-    for f in (VOICE / eid).glob("*") if (VOICE / eid).exists() else []:
-        f.unlink(missing_ok=True)
+    d = VOICE / eid
+    for f in (d.glob("*.json") if d.exists() else []):
+        # keep any per-line take recorded with the ● Record button (no "source" key) — Remove only
+        # throws away what this upload split, matching what the panel says it does.
+        try:
+            if json.loads(f.read_text()).get("source") == "upload":
+                f.with_suffix(".mp3").unlink(missing_ok=True)
+                f.unlink(missing_ok=True)
+        except Exception:
+            pass
     for f in UPLOADS.glob(f"{eid}.*"):
         f.unlink(missing_ok=True)
-    return {"ok": True, "reply": "Your recording for this episode was removed — Kokoro will narrate it instead."}
+    return {"ok": True, "reply": "Your uploaded recording was removed — any lines you recorded individually with ● Record are kept; Kokoro narrates the rest."}
 
 
 def render(body):
@@ -167,6 +189,10 @@ def render(body):
         raise ValueError("Approve the episode first.")
     if not st["recorded"]:
         raise ValueError("Upload your recording first — there's no line with your voice on it yet.")
+    missing = st["lines"] - st["recorded"]
+    if missing and not body.get("confirm"):
+        raise ValueError(f"{missing} of {st['lines']} line{'s' if missing != 1 else ''} will use the AI voice, not "
+                          "your own recording. Render anyway?")
     import studio_ext_make
     return studio_ext_make.render_long({"id": eid})
 

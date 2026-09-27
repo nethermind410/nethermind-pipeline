@@ -14,7 +14,7 @@
         ? "Every line has your voice. Render below to build the episode with it."
         : st.recorded
           ? "Word-count timing, not speech alignment — if a line's window sounds off, trim episodes/&lt;id&gt;.json's beat or re-upload."
-          : "Record the whole episode in one take (any order of chapters is fine), then upload the file — m4a, wav or mp3."}</p>
+          : "Record the whole script in order, start to finish (intro, chapters, outro), with no long pauses or retakes left in, then upload the file — m4a, wav or mp3."}</p>
       <div class="row-end">
         <label class="btn small">${st.uploaded ? "Replace recording" : "Upload recording"}<input type="file" accept="audio/*" class="ov-file" hidden></label>
         ${st.uploaded ? `<button class="btn small ov-clear">Remove</button>` : ""}
@@ -29,15 +29,14 @@
   }
 
   async function decorate() {
-    if (location.hash.slice(1) !== "make") return;
+    if (!["make", "content"].includes(location.hash.slice(1))) return;
     const host = main.querySelector(".page");
     if (!host) return;
     let d; try { d = await get("/api/drafts"); } catch { return; }
     const own = (d.episodes || []).filter(e => e.own_voice);
     host.querySelectorAll(".ov-panel").forEach(n => n.remove());
     for (const e of own) {
-      const btn = host.querySelector(`[data-nx-long="${e.id}"]`);
-      const card = btn ? btn.closest(".nx-ep") : null;
+      const card = host.querySelector(`.nx-ep[data-nx-ep="${e.id}"]`);
       if (!card) continue;
       let st; try { st = await get(`/api/ownvoice/status/${e.id}`); } catch { continue; }
       card.insertAdjacentHTML("beforeend", panel(st));
@@ -61,12 +60,20 @@
       };
       p.querySelector(".ov-render").onclick = async () => {
         try { toast((await post("/api/ownvoice/render", {episode: e.id})).reply); decorate(); }
-        catch (err) { toast(err.message); }
+        catch (err) {
+          if (/render anyway/i.test(err.message) && confirm(err.message)) {
+            try { toast((await post("/api/ownvoice/render", {episode: e.id, confirm: true})).reply); decorate(); }
+            catch (err2) { toast(err2.message); }
+          } else toast(err.message);
+        }
       };
     }
   }
 
+  // window.PAGES.content is aliased to this same (wrapped) function once every extension has
+  // registered its pages (see ext_nether.js's DOMContentLoaded handler) — wrapping PAGES.make here
+  // is enough for both hashes; decorate() itself accepts either.
   const base = window.PAGES.make;
   if (base) window.PAGES.make = async (...a) => { await base(...a); await decorate(); };
-  window.addEventListener("hashchange", () => { if (location.hash.slice(1) === "make") setTimeout(decorate, 50); });
+  window.addEventListener("hashchange", () => { if (["make", "content"].includes(location.hash.slice(1))) setTimeout(decorate, 50); });
 })();
