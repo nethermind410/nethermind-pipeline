@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NETHER User Test</title>
+<style>
+:root{--bg:#f6f5f2;--surface:#fff;--line:#e2e0da;--text:#1d1c1a;--muted:#6b6862;--accent:#3b5bdb;--ok:#2b8a3e;--warn:#e67700;--bad:#c92a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--surface:#1f1e1c;--line:#34322e;--text:#eeece7;--muted:#a19d95;--accent:#7c93f0;--ok:#69db7c;--warn:#ffa94d;--bad:#ff8787}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:28px 0 8px}h3{font-size:15px;margin:0 0 6px}
+p.lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,textarea,select{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
+textarea{min-height:60px;resize:vertical}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.say{border-left:3px solid var(--accent);padding:4px 12px;margin:8px 0;font-style:italic}
+.watch{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.btn{border:0;background:var(--accent);color:#fff;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer;margin:4px 8px 4px 0}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+ol li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>NETHER User Test</h1>
+<p class="lead">Step 6: three people, five tasks each, about 30 minutes per person. Notes save in this browser only. Use "Download notes" to keep them.</p>
+
+<div class="card">
+<h3>Before each session</h3>
+<ol>
+<li>Start NETHER with the <b>demo channel</b> (fresh setup, no real keys needed).</li>
+<li>Pick testers who have never seen NETHER and ideally make or want to make Shorts.</li>
+<li>Ask them to think out loud. Don't help, point, or explain. If they're stuck for 2 minutes, mark "Needed help" and give the smallest hint.</li>
+<li>Read the words in the quote boxes exactly, so all three hear the same thing.</li>
+</ol>
+<div class="say">"We're testing the app, not you. If something is confusing, that's our problem to fix. Please say what you're thinking as you go."</div>
+</div>
+
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panel"></div>
+
+<h2>Summary</h2>
+<div class="card" id="summary"></div>
+<button class="btn" id="dl">Download notes</button>
+<button class="btn ghost" id="clear">Clear all notes</button>
+</main>
+<script>
+const TASKS=[
+ {t:"Find out what to do today",say:"You've just opened this app for the first time. What does it want you to do today?",watch:"Do they find the Today pill / next step? Do they understand it without reading everything?"},
+ {t:"Start a new video",say:"Pick an idea you like and get NETHER started on a video about it.",watch:"Do they find Make and the topic chips? Do they know when it's working and when it's done?"},
+ {t:"Review and fix a video",say:"Open a finished video. Decide if it's good to post. If something's wrong, ask NETHER to fix it.",watch:"Do they read the verdict first? Can they find Send to fix? Do they trust the title and hook?"},
+ {t:"Question an AI choice",say:"NETHER picked a title for this video. Find out why, and change it to one you prefer.",watch:"Do they find Why? and the confidence pill? Is the override obvious?"},
+ {t:"Check what's working",say:"Find the best time to post and what NETHER has learned about your channel so far.",watch:"Insights and Memory: do lobes, brightness and Keep/Test/Drop make sense?"}
+];
+const TESTERS=["Tester 1","Tester 2","Tester 3"];
+const KEY="nether-user-test-v1";
+let data={};try{data=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+let cur=0;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}renderSummary()};
+const g=(p,k)=>((data[p]||{})[k]||"");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function tabs(){const el=document.getElementById("tabs");el.innerHTML="";TESTERS.forEach((n,i)=>{const b=document.createElement("button");b.role="tab";b.textContent=g(i,"name")||n;b.setAttribute("aria-selected",i===cur);b.onclick=()=>{cur=i;tabs();panel()};el.appendChild(b)})}
+function field(k,lab,type){const v=esc(g(cur,k));if(type==="area")return `<label>${lab}</label><textarea data-k="${k}">${v}</textarea>`;
+ if(type==="res")return `<label>${lab}</label><select data-k="${k}"><option value=""></option>${["Did it alone","Needed help","Couldn't do it"].map(o=>`<option ${g(cur,k)===o?"selected":""}>${o}</option>`).join("")}</select>`;
+ if(type==="ease")return `<label>${lab}</label><select data-k="${k}"><option value=""></option>${[1,2,3,4,5].map(o=>`<option ${g(cur,k)==o?"selected":""}>${o}</option>`).join("")}</select>`;
+ return `<label>${lab}</label><input data-k="${k}" type="${type||"text"}" value="${v}">`}
+function panel(){const p=document.getElementById("panel");
+ p.innerHTML=`<div class="card"><div class="row">${field("name","Name or initials")}${field("who","Who they are (e.g. new creator)")}${field("date","Date","date")}</div></div>`+
+ TASKS.map((t,i)=>`<div class="card"><h3>Task ${i+1}: ${t.t}</h3><div class="say">"${t.say}"</div><p class="watch">Watch for: ${t.watch}</p>
+ <div class="row">${field("r"+i,"Result","res")}${field("m"+i,"Minutes","number")}${field("e"+i,"Their ease rating, 1 hard to 5 easy","ease")}</div>
+ ${field("s"+i,"Where they got stuck or confused","area")}${field("q"+i,"Best thing they said (word for word)","area")}</div>`).join("")+
+ `<div class="card"><h3>At the end, ask</h3>
+ ${field("a1",'"In one sentence, what does NETHER do?"',"area")}${field("a2",'"What was the most confusing moment?"',"area")}${field("a3",'"Would you pay for this? What would make you say yes?"',"area")}</div>`;
+ p.querySelectorAll("[data-k]").forEach(el=>el.addEventListener("input",()=>{(data[cur]=data[cur]||{})[el.dataset.k]=el.value;if(el.dataset.k==="name")tabs();save()}))}
+function renderSummary(){const cls={"Did it alone":"ok","Needed help":"warn","Couldn't do it":"bad"};
+ let h=`<table><tr><th>Task</th>${TESTERS.map((n,i)=>`<th>${esc(g(i,"name")||n)}</th>`).join("")}<th>Avg ease</th></tr>`;
+ TASKS.forEach((t,j)=>{const es=TESTERS.map((_,i)=>+g(i,"e"+j)).filter(Boolean);
+  h+=`<tr><td>${j+1}. ${t.t}</td>${TESTERS.map((_,i)=>{const r=g(i,"r"+j);return `<td class="${cls[r]||""}">${r?esc(r):"—"}${g(i,"m"+j)?` · ${esc(g(i,"m"+j))}m`:""}</td>`}).join("")}<td>${es.length?(es.reduce((a,b)=>a+b)/es.length).toFixed(1):"—"}</td></tr>`});
+ h+="</table>";const stuck=[];TASKS.forEach((t,j)=>TESTERS.forEach((_,i)=>{const s=g(i,"s"+j);if(s)stuck.push(`<li><b>Task ${j+1}</b> (${esc(g(i,"name")||TESTERS[i])}): ${esc(s)}</li>`)}));
+ h+=stuck.length?`<h3 style="margin-top:16px">Stuck points to fix</h3><ul>${stuck.join("")}</ul><p class="watch">Fix first: anything "Couldn't do it", then anything 2 or more people got stuck on.</p>`:`<p class="watch">Stuck points appear here as you take notes.</p>`;
+ document.getElementById("summary").innerHTML=h}
+document.getElementById("dl").onclick=()=>{let t="NETHER user test notes\n\n";TESTERS.forEach((n,i)=>{t+=`== ${g(i,"name")||n} (${g(i,"who")}) ${g(i,"date")}\n`;TASKS.forEach((k,j)=>{t+=`Task ${j+1} ${k.t}: ${g(i,"r"+j)} | ${g(i,"m"+j)} min | ease ${g(i,"e"+j)}\n  stuck: ${g(i,"s"+j)}\n  said: ${g(i,"q"+j)}\n`});t+=`What it does: ${g(i,"a1")}\nMost confusing: ${g(i,"a2")}\nWould pay: ${g(i,"a3")}\n\n`});
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/plain"}));a.download="nether-user-test-notes.txt";a.click()};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all notes for all three testers?")){data={};save();panel();tabs()}};
+tabs();panel();renderSummary();
+</script>
+</body>
+</html>
