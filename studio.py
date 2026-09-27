@@ -228,7 +228,7 @@ class H(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def send_file(self, f, ctype):
+    def send_file(self, f, ctype, cache="no-store"):
         """Serve with HTTP Range support — WebKit won't play <video> without it."""
         size = f.stat().st_size
         rng = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers.get("Range", ""))
@@ -248,7 +248,7 @@ class H(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(data)))
         if rng:
             self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
-        self.send_header("Cache-Control", "no-store")
+        self.send_header("Cache-Control", cache)
         self.end_headers()
         try:
             self.wfile.write(data)
@@ -313,7 +313,9 @@ class H(BaseHTTPRequestHandler):
         if path in STATIC:
             name, ctype = STATIC[path]
             f = UI / name
-            return self.send_file(f, ctype) if f.exists() else self.send(404, {"error": "not found"})
+            # the app's own JS/CSS/icon change only when Studio restarts, so a short cache lets a page
+            # reload (or the next tab) skip re-downloading ~400 KB of scripts every single time.
+            return self.send_file(f, ctype, cache="public, max-age=300") if f.exists() else self.send(404, {"error": "not found"})
         routes = {"/api/today": api.today, "/api/videos": api.videos, "/api/performance": api.performance,
                   "/api/ideas": api.ideas, "/api/health": api.health, "/api/channel": chan.channel,
                   "/api/calendar": chan.calendar, "/api/comments": lambda: chan.comments(api.done_map()),
@@ -326,7 +328,7 @@ class H(BaseHTTPRequestHandler):
                          else f'document.write(\'<script src="/{n}"><\\/script>\');' for n in names)
             data = js.encode()
             self.send_response(200); self.send_header("Content-Type", "text/javascript"); self.send_header("Content-Length", str(len(data)))
-            self.send_header("Cache-Control", "no-store"); self.end_headers(); return self.wfile.write(data)
+            self.send_header("Cache-Control", "public, max-age=300"); self.end_headers(); return self.wfile.write(data)
         routes.update(EXT_GET)
         if path in routes:
             return self.send(200, routes[path]())

@@ -4,7 +4,14 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const V = Date.now();
 const media = f => !f ? "" : /^(\/|https?:)/.test(f) ? f : `/media/${encodeURIComponent(f)}?v=${V}`;
 const main = $("#main");
-const get = p => fetch(p).then(r => r.json());
+// never leaks a raw status code, stack or JSON body to the screen — always a plain-word message to throw/show
+const get = p => fetch(p).then(async r => {
+  let j = null;
+  try { j = await r.json(); } catch { /* not JSON, or empty — j stays null */ }
+  if (!r.ok) throw new Error((j && (j.error || j.reply)) || "Nethermind's server didn't answer that. Try again.");
+  if (j === null) throw new Error("Nethermind's server sent back something that couldn't be read. Try again.");
+  return j;
+}).catch(e => { throw e instanceof TypeError ? new Error("Can't reach Nethermind. Make sure Studio is running, then retry.") : e; });
 // the button you just pressed shows it's working until the server answers (so nothing ever feels ignored)
 let pressed = null, pressedAt = 0;
 document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest("button,.btn"); if (b) { pressed = b; pressedAt = Date.now(); } }, true);
@@ -127,8 +134,9 @@ async function pageVideos() {
     : `<details class="more"><summary>${name} (${list.length})</summary><div class="grid" style="margin-top:12px">${list.map(tile).join("")}</div></details>`) : "";
   const by = s => vs.filter(v => v.stage === s);
   main.innerHTML = `<div class="page"><div class="head"><h1>Videos</h1><p>Everything you've made, newest first.</p></div>
-    ${group("Scripts to approve", by("draft"))}${group("Ready for you", by("ready"))}${group("Being made", by("making"))}${group("Scheduled", by("scheduled"))}
-    ${group("Live", by("live"))}${group("Made earlier", by("earlier"), false)}</div>`;
+    ${vs.length ? `${group("Scripts to approve", by("draft"))}${group("Ready for you", by("ready"))}${group("Being made", by("making"))}${group("Scheduled", by("scheduled"))}
+    ${group("Live", by("live"))}${group("Made earlier", by("earlier"), false)}`
+    : `<div class="nx-state nx-empty"><b>No videos yet</b><p>Pick what gets made next and the 7:00 build takes it from there.</p><button class="btn primary" data-go="ideas">Go to Ideas</button></div>`}</div>`;
 }
 
 /* ---------- One video (review) ---------- */
@@ -570,10 +578,15 @@ async function route() {
   markNav();
   if (name !== "home") document.body.classList.remove("on-brain");
   window.onRoute && window.onRoute(name);
+  if (name !== "home") window.nxState?.loading(main, "Loading");   // the brain page paints its own thing — skip the skeleton there
   try {
     if (name === "video" && id) { current = await get("/api/video/" + encodeURIComponent(id)); await pageVideo(id); }
     else await (window.PAGES[name] || window.PAGES.home || pageToday)();
-  } catch (e) { main.innerHTML = `<div class="page"><div class="caught"><b>Couldn't load this</b>${esc(e.message)}</div></div>`; }
+  } catch (e) {
+    const retry = () => route();
+    if (window.nxState) window.nxState.error(main, {message: e.message || "Couldn't load this. Try again.", retry});
+    else main.innerHTML = `<div class="page"><div class="caught"><b>Couldn't load this</b>${esc(e.message)}</div></div>`;
+  }
   markNav();
   if (NAVGROUP[routeName] === "channel" && main.firstElementChild) main.insertAdjacentHTML("afterbegin", channelBar(routeName));
   window.nxDay?.reload();                          // the Today count comes from Today's run, so it matches everywhere
