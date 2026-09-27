@@ -156,8 +156,11 @@ def scout_rights(topic):
 
 
 def scout_sources(topic):
-    r = requests.get("https://en.wikipedia.org/w/api.php", headers={"User-Agent": UA}, timeout=15,
-                     params={"action": "query", "list": "search", "srsearch": topic, "format": "json", "srlimit": 3})
+    import resilience, time
+    time.sleep(1.5)       # the Visuals scout just hit Wikimedia; back-to-back requests get the connection cut
+    get = lambda: requests.get("https://en.wikipedia.org/w/api.php", headers={"User-Agent": UA}, timeout=15,
+                               params={"action": "query", "list": "search", "srsearch": topic, "format": "json", "srlimit": 3})
+    r = resilience.retry_network(get, delays=(3, 10))    # short gaps: someone is usually waiting on this screen
     r.raise_for_status()
     hits = r.json().get("query", {}).get("search", [])
     arts = [{"title": h["title"], "url": "https://en.wikipedia.org/wiki/" + h["title"].replace(" ", "_"),
