@@ -108,7 +108,7 @@ async function pageToday() {
   const now = t.cards.filter(c => c.kind !== "queued"), wait = t.cards.filter(c => c.kind === "queued");
   const n = t.cards.length; window.nxDay?.reload();
   main.innerHTML = `<div class="page">
-    <div class="head"><h1>Today</h1><p>${n ? "Everything waiting on you, in one list — each clears when it's done. Today's run (bottom-right) takes you through it in order." : "Nothing needs you."}</p></div>
+    <div class="head"><h1>Today</h1>${n ? `<p>Today's run (bottom-right) walks you through everything below, in order.</p>` : ""}</div>
     ${now.length ? `<h2>Do now</h2><div class="card list">${now.map(row).join("")}</div>` : ""}
     ${wait.length ? `<h2>Waiting to go out</h2><div class="card list">${wait.map(row).join("")}</div>` : ""}
     ${n ? "" : `<div class="card"><div class="caught"><b>You're all caught up</b>The next video is made at 7:00. Pick what it'll be in <button class="link" data-go="ideas">Ideas</button>.</div></div>`}
@@ -132,6 +132,21 @@ async function pageVideos() {
 }
 
 /* ---------- One video (review) ---------- */
+function videoVerdict(v) {
+  const Q = "Is this video ready to go out?";
+  if (v.stage === "making") return [Q, "Not yet — press Make video to render it", "The script's approved. Rendering fetches the photos, generates the art, and builds the Short.", "warn"];
+  if (v.stage === "ready") return [Q, "Almost — it's waiting on your review", "Watch it, pick a title if there's more than one, then schedule.", "warn"];
+  if (v.stage === "scheduled") {
+    const due = v.scheduled.map(s => `${PLAT[s.platform] || s.platform} ${when(s.dueAt)}`).join(" · ");
+    return [Q, "Yes — it's queued", due || "Waiting in Buffer's queue.", "good"];
+  }
+  if (v.youtube_url || v.posts.length) {
+    const views = v.posts.reduce((a, x) => a + Number(x.views || 0), 0);
+    return [Q, "Yes — it's live", v.posts.length ? `${fmt(views)} views so far` : "", "good"];
+  }
+  if (v.stage === "earlier") return [Q, "No — it was made but never posted", "Nothing is scheduled for it. Post it from here, or archive it from Videos if it's stale.", "warn"];
+  return null;
+}
 async function pageVideo(id) {
   const v = await get("/api/video/" + encodeURIComponent(id));
   const p = v.packaging || {};
@@ -141,9 +156,13 @@ async function pageVideo(id) {
   else if (v.stage === "making") cta = `<button class="btn primary" data-act="build">Make video</button>`;
   else if (v.stage === "scheduled") cta = `<button class="btn danger" data-act="undo">Take back from queue</button>`;
   else if (v.youtube_url) cta = `<a class="btn primary" href="${esc(v.youtube_url)}" target="_blank" rel="noopener">Watch on YouTube</a>`;
+  else if (v.stage === "earlier") cta = `<button class="btn primary" data-act="schedule">Schedule…</button><button class="btn" data-go="videos">Back to Videos to archive it</button>`;
   const sched = v.scheduled.length ? `<div class="card list">${v.scheduled.map(s => `<div class="row"><div class="body"><div class="t">${PLAT[s.platform] || esc(s.platform)}</div><div class="s">Goes out ${esc(when(s.dueAt))}</div></div></div>`).join("")}</div>` : "";
   const live = v.posts.length ? `<div class="card list">${v.posts.map(x => `<div class="row"><div class="body"><div class="t">${PLAT[x.platform] || esc(x.platform)}</div><div class="s">${fmt(x.views)} views · posted ${esc(when(x.sentAt))}</div></div>${x.url ? `<a class="btn small" href="${esc(x.url)}" target="_blank" rel="noopener">Open</a>` : ""}</div>`).join("")}</div>` : "";
+  const vd = videoVerdict(v);
+  const vdHtml = vd ? `<section class="vd ${vd[3]}"><span class="vd-q">${esc(vd[0])}</span><div class="vd-a">${esc(vd[1])}</div>${vd[2] ? `<p>${esc(vd[2])}</p>` : ""}</section>` : "";
   main.innerHTML = `<div class="page"><button class="back" data-go="videos">‹ Videos</button>
+    ${vdHtml}
     <div class="review ${v.format === "landscape" ? "wide" : ""}">
       <div class="player">
         ${v.video ? `<video id="player" controls playsinline preload="metadata" src="${media(v.video)}"></video>

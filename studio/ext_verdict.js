@@ -2,7 +2,7 @@
 /* Every page opens with its answer: one question, the answer from real data, and the next action.
    (studio_ext_verdict.py works the answers out; this puts them at the top of each page.) */
 (() => {
-  const PAGES = ["comments", "today", "videos", "calendar", "performance", "retention", "channel", "agents", "settings", "ideas", "insights"];
+  const PAGES = ["comments", "today", "videos", "calendar", "performance", "retention", "channel", "agents", "settings", "ideas", "insights", "make"];
   async function show(name) {
     let v; try { v = await get("/api/verdict/" + name); } catch (e) { return; }
     const page = main.firstElementChild; if (!page || !v.answer || page.querySelector(".vd")) return;
@@ -11,8 +11,10 @@
     el.innerHTML = `<span class="vd-q">${esc(v.q)}</span><div class="vd-a">${esc(v.answer)}</div>
       ${v.detail ? `<p>${esc(v.detail)}</p>` : ""}
       ${v.actions.length ? `<div class="vd-acts">${v.actions.map((a, i) => `<button class="btn ${a.primary ? "primary" : ""}" data-vd="${i}">${esc(a.label)}</button>`).join("")}</div>` : ""}`;
-    const after = page.querySelector(".head-row") || page.querySelector(".head") || page.querySelector(".hub");
-    after ? after.after(el) : page.prepend(el);
+    // the answer belongs right under the title, ahead of any subtitle or hub chrome
+    const head = page.querySelector(".head-row") || page.querySelector(".head") || page.querySelector(".hub");
+    const h1 = head && head.querySelector("h1");
+    h1 ? h1.after(el) : head ? head.after(el) : page.prepend(el);
     el.querySelectorAll("[data-vd]").forEach(b => b.onclick = async () => {
       const a = v.actions[+b.dataset.vd];
       if (a.go) return go(a.go);
