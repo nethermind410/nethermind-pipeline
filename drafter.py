@@ -26,11 +26,11 @@ ID_RE = re.compile(r"^[a-z0-9_]{3,48}$")
 
 
 # ------------------------------------------------------------------ Claude
-def ask(prompt, tools=(), timeout=900, job=None, check=None):
+def ask(prompt, tools=(), timeout=900, job=None, check=None, video=None):
     """Writing goes through llm.py, which picks the engine for this job (Claude subscription by default)."""
     if job:
         import llm
-        return llm.ask(job, prompt, tools, timeout, check)
+        return llm.ask(job, prompt, tools, timeout, check, video=video)
     env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY")}
     env["PATH"] = f"{Path.home()}/.local/bin:" + env.get("PATH", "/usr/bin:/bin")
     try:
@@ -188,7 +188,7 @@ Rules for the config:
 {ideas}
 Reply with ONLY the JSON config."""
     import llm
-    return ask(prompt, job="script", check=llm.check_script)
+    return ask(prompt, job="script", check=llm.check_script, video=vid)
 
 
 def write_packaging(cfg, facts):
@@ -214,7 +214,7 @@ Reply with ONLY this JSON:
   "pinned_comment": "a question that makes people answer",
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 2, "cx": 0.5, "cy": 0.4, "zoom": 1.0}}}}"""
     import llm
-    return ask(prompt, job="packaging", check=llm.check_packaging_short)
+    return ask(prompt, job="packaging", check=llm.check_packaging_short, video=cfg.get("id") or cfg.get("file"))
 
 
 # ------------------------------------------------------------------ checks + files

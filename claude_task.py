@@ -73,6 +73,8 @@ def score(vid):
     pkg["title_options"] = [{"title": t, **({"score": by[t]["score"], "note": by[t].get("note", ""), "scored": stamp, "source": "vidIQ"}
                                            if t in by else {})} for t in titles]
     p.write_text(json.dumps(pkg, indent=1, ensure_ascii=False) + "\n")
+    import llm
+    llm.log_paid_call("vidiq", "titles", count=len(titles), est_cost=0.0, video=vid, credits=5 * len(titles))
     print("Scored:", *(f"{s['score']}  {s['title']}" for s in res.get("scores", [])), sep="\n")
 
 

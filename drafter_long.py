@@ -112,7 +112,7 @@ chapter is its cold open: 8 words or fewer, leading with the number or the claim
 {MAX_AI_IMAGES} AI images in the whole episode; reuse each image on 2–4 consecutive beats with different zoom/centre.
 Reply with ONLY the JSON."""
     import llm
-    return ask(prompt, timeout=1500, job="episode", check=llm.check_episode)
+    return ask(prompt, timeout=1500, job="episode", check=llm.check_episode, video=eid)
 
 
 def write_packaging(ep, facts):
@@ -133,7 +133,7 @@ Reply with ONLY this JSON:
   "thumbnail": {{"lines": ["2–3", "SHORT", "LINES"], "accent": 1, "cx": 0.5, "cy": 0.4, "zoom": 1.0}},
   "thumbnail_options": [{{"lines": ["..."], "accent": 1}}, {{"lines": ["..."], "accent": 1}}]}}"""
     import llm
-    return ask(prompt, job="packaging", check=llm.check_packaging_long)
+    return ask(prompt, job="packaging", check=llm.check_packaging_long, video=ep.get("id"))
 
 
 # ------------------------------------------------------------------ checks + files

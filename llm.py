@@ -197,7 +197,31 @@ def _claude(prompt, tools, timeout, cfg, job=None):
         raise EngineError("Claude didn't answer. Is it logged in? Run `claude` in Terminal and type /login. " + (r.stderr or "")[-300:])
     if res.get("is_error"):
         raise EngineError(f"Claude: {res.get('result')}")
-    return _json(res.get("result", ""), "Claude"), {"model": "subscription", "cost": 0.0}
+    return _json(res.get("result", ""), "Claude"), _claude_meta(res, m)
+
+
+def _claude_meta(res, model_flag):
+    """The `claude -p --output-format json` CLI reports its own cost/tokens/timing — even on the subscription,
+    where the run is still metered against your weekly limit. Pull whatever this CLI version gives us; fields
+    vary across CLI versions, so everything here is best-effort and missing ones are just left out."""
+    meta = {"model": model_flag or "subscription", "cost": round(res.get("total_cost_usd") or res.get("cost_usd") or 0.0, 6)}
+    u = res.get("usage") or {}
+    if isinstance(u, dict) and (u.get("input_tokens") or u.get("output_tokens")):
+        meta["in"] = (u.get("input_tokens") or 0) + (u.get("cache_read_input_tokens") or 0) + (u.get("cache_creation_input_tokens") or 0)
+        meta["out"] = u.get("output_tokens") or 0
+    # per-model breakdown some CLI versions report (a dict keyed by model id) — use it for the real model name
+    mu = res.get("modelUsage") or res.get("model_usage")
+    if isinstance(mu, dict) and mu:
+        first_model, first_u = next(iter(mu.items()))
+        meta["model"] = model_flag or first_model
+        if "in" not in meta:
+            meta["in"] = sum((v.get("inputTokens") or v.get("input_tokens") or 0) for v in mu.values())
+            meta["out"] = sum((v.get("outputTokens") or v.get("output_tokens") or 0) for v in mu.values())
+    if res.get("duration_ms") is not None:
+        meta["duration_ms"] = res["duration_ms"]
+    if res.get("num_turns") is not None:
+        meta["num_turns"] = res["num_turns"]
+    return meta
 
 
 def _anthropic(prompt, tools, timeout, cfg):
@@ -306,9 +330,28 @@ def _log(row):
         f.write(json.dumps(row) + "\n")
 
 
-def ask(job, prompt, tools=(), timeout=900, check=None):
+def log_paid_call(kind, job, count=1, est_cost=0.0, video=None, **extra):
+    """Record a paid call that isn't a writing job on the llm.py chain — Cloudflare AI art, vidIQ scoring, etc.
+    Written to the same out/llm_usage.jsonl (so /api/usage's one reader covers every paid call), with `engine`
+    set to `kind` (e.g. "cloudflare_art", "vidiq") so it doesn't get mistaken for a Claude/Anthropic/etc job.
+    `count` is how many units this call covers (images generated, titles scored); `est_cost` is a dollar
+    estimate where one is knowable, otherwise 0.0. Never raises — a usage-log write is never worth failing a job."""
+    row = {"at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "job": job, "engine": kind,
+           "fallback": False, "ok": True, "count": count, "cost": round(est_cost or 0.0, 4)}
+    if video:
+        row["video"] = video
+    row.update({k: v for k, v in extra.items() if v is not None})
+    try:
+        _log(row)
+    except Exception:
+        pass
+
+
+def ask(job, prompt, tools=(), timeout=900, check=None, video=None):
     """Run a writing job on its chain of engines. `check(result)` raises ValueError when an answer isn't good
-    enough; the next engine then takes over. Returns the parsed JSON answer."""
+    enough; the next engine then takes over. Returns the parsed JSON answer.
+    `video`: the video/episode id this call is for, if the caller already has one — logged alongside the
+    call so Studio's usage view can show "drafting for <video>" instead of just "job: script"."""
     chain = settings()["routes"].get(job, ["claude"])
     if tools:
         chain = [e for e in chain if ENGINES[e]["web"]] or ["claude"]
@@ -316,6 +359,8 @@ def ask(job, prompt, tools=(), timeout=900, check=None):
     for i, engine in enumerate(chain):
         t0 = time.time()
         row = {"at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"), "job": job, "engine": engine, "fallback": i > 0}
+        if video:
+            row["video"] = video
         try:
             result, meta = call(engine, prompt, tools, timeout, job)
         except NotSetUp as e:
