@@ -6,7 +6,8 @@
    window.nxSound.play("tick" | "handoff" | "done" | "celebrate")   window.nxSound.music.toggle() */
 (() => {
   const LS = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
-  const S = {sfx: LS("nx-sfx") === "1", vol: +(LS("nx-vol") || 0.5), src: LS("nx-src") || "drift", on: LS("nx-music") === "1",
+  const S = {sfx: LS("nx-sfx") !== "0",   // on unless you turned it off (each window keeps its own setting)
+             vol: +(LS("nx-vol") || 0.5), src: LS("nx-src") || "drift", on: LS("nx-music") === "1",
              drums: LS("nx-drums") !== "0"};
   let ctx = null, master = null, sfxBus = null, musicBus = null;
   function audio() {
