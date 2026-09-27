@@ -1,5 +1,5 @@
 """Deterministic audio intelligence. No model/API required."""
-import json, math, struct, wave
+import hashlib, json, math, struct, wave
 from pathlib import Path
 from .media import FFmpegMedia
 
@@ -33,6 +33,6 @@ class AudioAnalyzer:
               "peak":round(max((abs(v) for v in vals),default=0)/32768,6),
               "windows":windows,"silence_windows":silence}
         if self.db:
-            digest=str(hash(json.dumps(data,sort_keys=True)))
+            digest=hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
             self.db.put_artifact(key,"audio_analysis",str(wav),digest,data)
         return data
