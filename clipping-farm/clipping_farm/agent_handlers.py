@@ -61,7 +61,12 @@ class LocalHandlers:
    frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=12) if duration else []
    packet=build_packet(c,transcript,audio,scenes,frames,meta)
    d=self.brain.analyse(packet,job_id=j["id"],budget=float(j.get("budget") or 0))
-   c.scores.update(d.result.scores); c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"evidence_digest":packet.digest()})
+   visual=self.vision.analyse(frames,c.__dict__).to_dict()
+   fused=self.fusion.analyse(c.__dict__,visual=visual,audio=audio,transcript=transcript,context=ctx)
+   c.scores.update(d.result.scores)
+   c.scores.update(fused.scores)
+   c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"fusion_confidence":fused.confidence,"fusion_decision":fused.decision,"fusion_evidence":fused.evidence,"missing_modalities":fused.missing_modalities,"visual_evidence":visual,"evidence_digest":packet.digest()})
+   c.decision=fused.decision.upper()
    scored.append(c.__dict__)
   return {"decision":"complete","candidates":scored,"actual_cost":0}
  def select_candidates(self,j):
