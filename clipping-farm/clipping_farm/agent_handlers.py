@@ -23,6 +23,7 @@ class LocalHandlers:
  def __init__(self,db,workdir="clipping_farm_work",transcriber=None):
   self.db=db; self.workdir=Path(workdir); self.workdir.mkdir(parents=True,exist_ok=True)
   self.transcriber=transcriber or FixtureTranscriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db)
+  self.vision=VisionBrain(db, max_frames=6); self.fusion=MultimodalCandidateBrain()
   self.brain=AdaptiveBrain(db)
   self.brain.register_provider(DeterministicProvider(DeterministicBrain()))
   for provider in build_configured_providers(): self.brain.register_provider(provider)
