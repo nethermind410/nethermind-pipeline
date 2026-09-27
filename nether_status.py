@@ -42,12 +42,15 @@ def _spoken_when(dt, now):
     """"today 4:30 PM" / "tomorrow 11:00 AM" / "Tuesday 7:00 PM" — same words best_times.py uses."""
     if dt is None:
         return None
+    dt = dt.astimezone(now.tzinfo) if dt.tzinfo else dt   # Buffer stores UTC; speak it in this Mac's time
     if dt.date() == now.date():
         day = "today"
     elif dt.date() == (now.date() + datetime.timedelta(days=1)):
         day = "tomorrow"
-    else:
+    elif (dt.date() - now.date()).days < 7:
         day = dt.strftime("%A")
+    else:
+        day = dt.strftime("%A %-d %B")                    # a week or more out: a bare weekday would be ambiguous
     return f"{day} {dt.strftime('%-I:%M %p')}"
 
 
@@ -58,9 +61,13 @@ PLATFORM_NAMES = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instag
 def _gather_next_step():
     import studio_ext_day as day
     d = day.day()
-    first = d["post"]
-    return {"title": first["title"], "why": first["why"], "done": bool(first["done"]),
-            "left": d.get("left"), "streak": d.get("streak"), "out": d.get("out")}
+    steps = d.get("steps") or [d["post"]]
+    todo = [s for s in steps if not s.get("done")]
+    first = todo[0] if todo else steps[0]         # the first thing still to do, not a step already ticked off
+    post = d.get("post") or {}
+    return {"title": first["title"], "why": first.get("why") or "", "done": not todo,
+            "left": len(todo), "post_done": bool(post.get("done")), "post_title": post.get("title") or "",
+            "streak": d.get("streak"), "out": d.get("out")}
 
 
 def _gather_reviews(vids):
@@ -87,11 +94,16 @@ def _gather_scheduled(vids, now):
         if v["scheduled"]:
             for s in v["scheduled"]:
                 dt = studio_api.parse_dt(s.get("dueAt"))
+                if dt and dt.tzinfo is None:
+                    dt = dt.astimezone()
+                if dt and dt < now:
+                    continue            # stats.json can lag Buffer — never announce a time that has already passed
                 scheduled.append({"video": v["id"], "title": v["title"], "platform": s.get("platform"),
-                                  "when_iso": s.get("dueAt"), "when_spoken": _spoken_when(dt, now) if dt else None})
+                                  "when_iso": s.get("dueAt"), "when_spoken": _spoken_when(dt, now) if dt else None,
+                                  "_ts": dt.timestamp() if dt else float("inf")})
         elif v["stage"] == "ready":
             ready_unscheduled.append(v)
-    scheduled.sort(key=lambda s: s["when_iso"] or "")
+    scheduled.sort(key=lambda s: s.pop("_ts"))
     next_slots = []
     if ready_unscheduled:
         import best_times
@@ -218,7 +230,12 @@ def _md(data):
 
     ns = data.get("next_step")
     if ns:
-        p.append(f"Today's next step: {ns['title']}. {ns['why']}")
+        if ns.get("post_done") and ns.get("post_title"):
+            p.append(f"{ns['post_title']}.")
+        if ns.get("done"):
+            p.append("Everything on today's list is done.")
+        else:
+            p.append(f"Today's next step: {ns['title']}. {ns['why']}".rstrip())
         extra = (ns.get("left") or 0) - (0 if ns.get("done") else 1)
         if extra > 0:
             p.append(f"There {'is' if extra == 1 else 'are'} also {extra} other thing{'' if extra == 1 else 's'} on today's list.")

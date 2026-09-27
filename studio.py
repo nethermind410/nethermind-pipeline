@@ -549,8 +549,8 @@ def serve(open_browser=True):
         restore_queue()
     except Exception:
         log.error("restore_queue failed:\n%s", traceback.format_exc())
-    try:
-        import nether_status; nether_status.write()   # Jarvis's status brief, fresh as of this boot
+    try:   # Jarvis's status brief, fresh as of this boot — in the background so its quality checks never delay startup
+        import nether_status; threading.Thread(target=nether_status.write, daemon=True, name="jarvis-status-boot").start()
     except Exception:
         log.error("nether_status.write failed:\n%s", traceback.format_exc())
     try:
