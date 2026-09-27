@@ -14,6 +14,8 @@ from .providers import DeterministicProvider
 from .provider_adapters import build_configured_providers
 from .context import standalone_evidence
 from .evidence import build_packet
+from .vision import VisionBrain
+from .multimodal import MultimodalCandidateBrain
 from .qc import run_qc
 from .repair import repair_candidate
 from .export import write_review_manifest
