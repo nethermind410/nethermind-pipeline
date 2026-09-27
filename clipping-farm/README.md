@@ -24,3 +24,7 @@ python -m clipping_farm.cli status
 ```
 
 The implementation is intentionally small and dependency-light. FFmpeg, Whisper, vision models and external providers plug into the same contracts later.
+
+
+## Next integration gate
+The next implementation step is wiring real local media analysis/transcription/render adapters behind these contracts, with end-to-end fixture tests before touching the existing Nethermind factory.
