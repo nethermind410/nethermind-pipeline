@@ -22,14 +22,18 @@
       ${t.bands.map((b, bi) => `<span class="in-bh"><b>${b.name}</b><em>${b.hours}</em></span>${t.days.map((_, di) => `<span class="in-cell">${cell(di, bi)}</span>`).join("")}`).join("")}
     </div>`;
   }
+  const READ_GUIDE = "Read it: each dot is a video, placed by the day and time band it went out — bigger, brighter dot = more views. A faint ring means it wasn't measured at a comparable age, so it's left out of the pattern.";
   function platCard(p, t) {
     const rows = [...p.dots].sort((a, b) => b.views - a.views);
+    const enough = p.comparable >= t.min_videos;
+    const gridHtml = p.dots.length ? grid(p, t) : `<div class="caught"><b>Nothing posted to ${esc(p.name)} yet</b></div>`;
     return `<section class="card in-plat">
       <div class="in-ph"><i class="sw ${PCOL[p.key]}"></i><b>${esc(p.name)}</b>
         <span class="pill">${p.videos} posted · ${p.comparable} at a comparable age</span><span class="in-asof">as of ${esc(asOf(p.as_of))}</span></div>
       <p class="in-verdict ${p.verdict.call ? "call" : ""}">${esc(p.verdict.text)}</p>
-      ${p.dots.length ? grid(p, t) : `<div class="caught"><b>Nothing posted to ${esc(p.name)} yet</b></div>`}
-      <p class="fine">${esc(p.source)}. Filled dot = measured at 2–7 days old; hollow = measured outside that window, so not compared. Dot size = views.</p>
+      ${p.dots.length ? `<p class="fine in-guide">${esc(READ_GUIDE)}</p>` : ""}
+      ${enough || !p.dots.length ? gridHtml : `<details class="more"><summary>Show the grid anyway (${p.comparable} measured — too few for a pattern yet)</summary><div style="margin-top:8px">${gridHtml}</div></details>`}
+      <p class="fine">${esc(p.source)}.</p>
       ${rows.length ? `<details><summary>Every video (${rows.length})</summary><div class="table-wrap"><table class="in-tbl"><thead><tr><th>Video</th><th>Posted (${esc(t.tz)})</th><th>Views</th><th>Measured at</th></tr></thead><tbody>
         ${rows.map(d => `<tr class="${d.comparable ? "" : "off"}"><td><a href="${esc(d.url || "#")}" target="_blank" rel="noopener">${esc(d.title)}</a></td><td>${esc(d.local)}</td>
           <td><b>${fmt(d.views)}</b></td><td>${d.age_days} days old${d.comparable ? "" : " · not comparable"}</td></tr>`).join("")}</tbody></table></div></details>` : ""}

@@ -34,10 +34,13 @@ async function pageHome() {
     return;
   }
   const next = cal.items.find(i => i.state === "scheduled");
-  const goals = c.goals.map(g => `<div class="card goal">${goalRing(g.value, g.goal)}<div>
-      <div class="k">${esc(g.label)}</div><div class="gv">${fmt(g.value)} <span>/ ${fmt(g.goal)}</span></div>
-      <p>${g.per_day != null ? `${g.per_day >= 0 ? "+" : ""}${g.per_day.toFixed(1)} a day lately${g.eta ? ` · at this pace: ${g.eta === "10+ years" ? "10+ years" : new Date(g.eta).toLocaleDateString(undefined, {month: "short", year: "numeric"})}` : ""}` : "Pace shows once there are a few days of history."}</p>
-      <p class="fine">${esc(g.note)}</p></div></div>`).join("");
+  // the full monetisation breakdown (both milestones, the fastest route, what's blocking it) lives on Money —
+  // Home shows one glance number and links there, instead of repeating the same subs/views goals twice.
+  const subsGoal = c.goals.find(g => g.key === "subs");
+  const moneyGlance = subsGoal ? `<button class="card goal money-glance" data-go="money">${goalRing(subsGoal.value, subsGoal.goal)}<div>
+      <div class="k">Monetisation</div><div class="gv">${fmt(subsGoal.value)} <span>/ ${fmt(subsGoal.goal)} subscribers</span></div>
+      <p>${subsGoal.per_day != null ? `${subsGoal.per_day >= 0 ? "+" : ""}${subsGoal.per_day.toFixed(1)} a day lately` : "Pace shows once there are a few days of history."}</p>
+      <span class="link">The road to getting paid ›</span></div></button>` : "";
   const w = c.weekly;
   main.innerHTML = `<div class="page">
     <div class="chan-head"><img src="${esc(c.channel.avatar)}" alt="" onerror="this.src='/icon.png'">
@@ -48,7 +51,7 @@ async function pageHome() {
       <button class="card gl" data-go="calendar"><span class="k">Next post</span><b>${next ? esc(new Date(next.at).toLocaleString(undefined, {weekday: "short", hour: "numeric", minute: "2-digit"})) : "—"}</b><span>${next ? `${PLAT[next.platform]} · ${esc(next.title)}` : "Nothing queued"}</span></button>
       <button class="card gl" data-go="ideas"><span class="k">Up next to make</span><b>${ideas.next ? "Picked" : "Auto"}</b><span>${ideas.next ? esc(ideas.next.hook) : "The 7:00 build chooses"}</span></button>
     </div>
-    <h2>Monetisation goals</h2><div class="goals">${goals}</div>
+    <h2>Monetisation</h2><div class="goals">${moneyGlance}</div>
     <div class="stats">
       <div class="card stat"><span class="k">Views on your videos</span><span class="v">${fmt(c.channel.views)}</span><span class="k">${c.channel.videos} videos on YouTube</span></div>
       <div class="card stat"><span class="k">Average per video</span><span class="v">${fmt(c.avg_views)}</span><span class="k">YouTube views</span></div>

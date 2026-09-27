@@ -65,8 +65,9 @@
       <div class="row"><div class="body"><div class="t">Time</div><div class="s">A 90-minute catch-up runs automatically if the Mac was asleep, or the morning run failed.</div></div>
         <input type="time" id="cx-sched-time" value="${esc(s.time)}"><button class="cx-btn small" id="cx-sched-save">Save</button></div>
       <p class="cx-note" id="cx-sched-note"></p></div></div>`;
-    const wrap = page.querySelector(".cx-wrap");
-    if (wrap) wrap.insertAdjacentHTML("afterend", html); else page.insertAdjacentHTML("beforeend", html);
+    const more = page.querySelector("#settings-more");
+    if (more) more.insertAdjacentHTML("afterbegin", html);
+    else { const wrap = page.querySelector(".cx-wrap"); if (wrap) wrap.insertAdjacentHTML("afterend", html); else page.insertAdjacentHTML("beforeend", html); }
   }
 
   document.addEventListener("click", async e => {

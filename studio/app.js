@@ -378,17 +378,21 @@ function addIdeaSheet() {
 }
 
 /* ---------- Settings ---------- */
+/* First screen: the verdict (ext_verdict.js) + Connections — everything else (schedule, backups, alerts,
+   handy links) is settings a working setup doesn't need daily, so it's tucked under "More". */
 async function pageSettings() {
   const hs = await get("/api/health");
   main.innerHTML = `<div class="page"><div class="head"><h1>Settings</h1><p>Everything Nethermind depends on, at a glance.</p></div>
     <h2>Connections</h2><div class="card list">${hs.map(h => `<div class="row"><span class="dot ${h.ok ? "ok" : ""}" aria-label="${h.ok ? "Working" : "Needs attention"}"></span>
       <div class="body"><div class="t">${esc(h.name)}</div><div class="s">${esc(h.detail)}</div></div></div>`).join("")}</div>
-    <h2>Handy</h2><div class="card list">
-      <div class="row"><div class="body"><div class="t">Daily dashboard</div><div class="s">The same summary, on your phone or any browser.</div></div>
-        <a class="btn small" href="https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B" target="_blank" rel="noopener">Open</a></div>
-      <div class="row"><div class="body"><div class="t">Open Nethermind when you log in</div><div class="s">System Settings → General → Login Items → + → choose Nethermind in Applications.</div></div></div>
-      <div class="row"><div class="body"><div class="t">Talk to Jarvis</div><div class="s">Press ⌘K here, or ⌘⇧J anywhere once Jarvis's voice client is running.</div></div></div>
-    </div></div>`;
+    <details class="more" id="settings-more"><summary>More</summary>
+      <h2>Handy</h2><div class="card list">
+        <div class="row"><div class="body"><div class="t">Daily dashboard</div><div class="s">The same summary, on your phone or any browser.</div></div>
+          <a class="btn small" href="https://claude.ai/artifact/H7zHPA7sX1urnaWbt9yR7B" target="_blank" rel="noopener">Open</a></div>
+        <div class="row"><div class="body"><div class="t">Open Nethermind when you log in</div><div class="s">System Settings → General → Login Items → + → choose Nethermind in Applications.</div></div></div>
+        <div class="row"><div class="body"><div class="t">Talk to Jarvis</div><div class="s">Press ⌘K here, or ⌘⇧J anywhere once Jarvis's voice client is running.</div></div></div>
+      </div>
+    </details></div>`;
 }
 
 /* ---------- jobs ---------- */
