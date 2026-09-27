@@ -8,6 +8,9 @@ from .transcript import FixtureTranscriber
 from .candidates import generate_candidates,rank,Candidate
 from .selection import select
 from .brain import DeterministicBrain
+from .adaptive_brain import AdaptiveBrain
+from .mock_providers import CheapMockProvider, PremiumMockProvider
+from .providers import DeterministicProvider
 from .context import standalone_evidence
 from .evidence import build_packet
 from .qc import run_qc
@@ -50,8 +53,8 @@ class LocalHandlers:
    ctx=standalone_evidence(c,transcript)
    frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=12) if duration else []
    packet=build_packet(c,transcript,audio,scenes,frames,meta)
-   d=self.brain.analyse(c,context=ctx,audio=audio,scenes=scenes,frames=frames)
-   c.scores.update(d.scores); c.scores.update({"brain_confidence":d.confidence,"brain_decision":d.decision,"brain_evidence":d.evidence,"evidence_digest":packet.digest()})
+   d=self.brain.analyse(packet,job_id=j["id"],budget=float(j.get("budget") or 0))
+   c.scores.update(d.result.scores); c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"evidence_digest":packet.digest()})
    scored.append(c.__dict__)
   return {"decision":"complete","candidates":scored,"actual_cost":0}
  def select_candidates(self,j):
