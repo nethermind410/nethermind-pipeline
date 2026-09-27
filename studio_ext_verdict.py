@@ -179,14 +179,30 @@ def v_ideas():
     import intelligence
     items = desk.open_ideas()
     off = [i for s, i in items if desk.idea_lane(s, i["hook"]) in OFF_LANES]
-    lanes = sum(1 for s, i in items if desk.idea_lane(s, i["hook"]) in desk.CHANNEL_LANES)
+    on_topic = sum(1 for s, i in items if desk.idea_lane(s, i["hook"]) in desk.CHANNEL_LANES)
     acts = [{"label": "Scout the next 3", "post": "/api/desk/scout_backlog", "body": {}, "primary": True}]
     if off:
-        acts.append({"label": f"Dismiss {len(off)} off-lane ideas", "post": "/api/ideas/dismiss_offlane", "body": {},
-                     "confirm": f"Dismiss {len(off)} space/ocean ideas? They stay in TOPICS.md and can be restored from Ideas."})
-    return V("Is the backlog full of the right ideas?", f"{lanes} ideas in your lanes · {len(off)} off-lane",
-             "Off-lane ideas (old space/ocean backlog) never get picked for Shorts, but they clutter this list." if off else "The backlog is on-channel.",
+        acts.append({"label": f"Clear {len(off)} idea{'s' if len(off) != 1 else ''} that don't fit", "post": "/api/ideas/dismiss_offlane", "body": {},
+                     "confirm": f"Clear {len(off)} old space/ocean idea{'s' if len(off) != 1 else ''}? They stay in TOPICS.md and can be restored from Ideas."})
+    return V("Is the backlog full of the right ideas?", f"{on_topic} fit your channel · {len(off)} don't",
+             "The old space/ocean ideas never get picked for Shorts, but they clutter this list." if off else "Every idea here fits what this channel is about.",
              "warn" if off else "good", acts)
+
+
+def v_make():
+    import studio_ext_make
+    d = studio_ext_make.drafts()
+    n = len(d["drafts"])
+    if d["busy"]:
+        return V("Is anything waiting for your approval?", f"Not yet — writing “{d['busy'][:60]}”",
+                 "Content is researching and drafting it now — usually 3–15 minutes. This answers itself once it's done.", "info")
+    if n:
+        top = d["drafts"][0]
+        return V("Is anything waiting for your approval?", f"{n} script{'s' if n != 1 else ''} waiting",
+                 f"Newest: “{(top.get('title') or top.get('topic') or '')[:70]}”", "warn",
+                 [{"label": "Read & approve", "go": f"draft/{top['id']}", "primary": True}])
+    return V("Is anything waiting for your approval?", "No — nothing waiting",
+             "Draft one above, or wait for the 7:00 daily run to write the next Short.", "good")
 
 
 def v_comments():
@@ -204,7 +220,7 @@ def v_comments():
 
 
 PAGES = {"comments": v_comments, "today": v_today, "videos": v_videos, "calendar": v_calendar, "performance": v_performance, "retention": v_retention,
-         "channel": v_channel, "agents": v_agents, "settings": v_settings, "ideas": v_ideas}
+         "channel": v_channel, "agents": v_agents, "settings": v_settings, "ideas": v_ideas, "make": v_make}
 
 
 def verdict(page):
