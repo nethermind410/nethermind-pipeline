@@ -42,6 +42,15 @@ DEFAULTS = {
     "replies_about": "",                   # comment replies: what the channel is about
     "reply_voice": "direct, warm, short, a little playful; never corporate; no hashtags; no emoji spam (max one)",
     "narration_voice": "am_liam",          # Kokoro voice id
+    "long_voice": "",                      # "own" → every weekly long-form drafts as own_voice (icebergs opt out); "" → Kokoro, as before
+    # identity: the channel's voice/personality, brought in from the creator's brand workspace (company.yaml).
+    # Feeds every script-writing prompt (drafter.py, drafter_long.py) alongside reply_voice/narration_voice above,
+    # which keep doing their own separate jobs (comment replies, Kokoro's TTS voice id) untouched.
+    # {} here on purpose — this is a neutral default shared by every install (fresh setup, demo data, a second
+    # channel). It is a whole block, not a patch (see _merge): channel.json's own "identity" always replaces
+    # this, it never merges into it. Nethermind's own identity lives in channel_nethermind.json (the "original
+    # channel's values" file, loaded only for that legacy install — see the module docstring above).
+    "identity": {},
     "youtube_channel_id": "",              # UC… — for true YouTube numbers (optional)
     "buffer_channels": {"youtube": "", "instagram": "", "tiktok": ""},   # Buffer's channel ids (setup finds them)
     "dashboard_url": "",                   # a phone dashboard link shown in Settings (optional)
@@ -114,7 +123,9 @@ _cache = {}
 def _merge(base, over):
     out = json.loads(json.dumps(base))
     for k, v in (over or {}).items():
-        if k in out and isinstance(out[k], dict) and isinstance(v, dict):
+        if k == "identity" and isinstance(v, dict):
+            out[k] = v                      # a whole block, not a patch — {} really means "none set" (see DEFAULTS)
+        elif k in out and isinstance(out[k], dict) and isinstance(v, dict):
             out[k].update(v)
         elif k in out:
             out[k] = v
@@ -182,6 +193,38 @@ def whose():
 def tag():
     """The channel hashtag without '#', lower-case; '' when the channel has none."""
     return re.sub(r"[^a-z0-9_]", "", str(get("hashtag") or "").lower())
+
+
+def identity():
+    """This channel's voice/personality block ({} for a fresh channel with none set)."""
+    d = get("identity") or {}
+    return d if isinstance(d, dict) else {}
+
+
+def identity_brief():
+    """Identity, formatted for a script-writing prompt (Researcher/Script writer/Packaging). '' when unset —
+    every prompt that calls this degrades gracefully to just the channel's name/about, as it did before."""
+    d = identity()
+    if not d:
+        return ""
+    who = str(get("owner") or "").strip()
+    creator = "the creator" if who.lower() in ("", "you") else who
+    lines = [f"Creator identity — write so it sounds like {creator}:"]
+    if d.get("tone"):
+        lines.append(f"- Tone: {d['tone']}")
+    if d.get("personality"):
+        lines.append(f"- Personality: {', '.join(d['personality'])}")
+    if d.get("voice"):
+        lines.append(f"- Voice: {d['voice']}")
+    if d.get("pace_wpm"):
+        lines.append(f"- Pace: about {d['pace_wpm']} words per minute when spoken aloud.")
+    if d.get("viewer_promise"):
+        lines.append(f"- What viewers can always count on: {d['viewer_promise']}")
+    if d.get("do_words"):
+        lines.append(f"- Phrases/patterns to use naturally (never force them): {', '.join(d['do_words'])}")
+    if d.get("dont_words"):
+        lines.append(f"- Never use: {', '.join(d['dont_words'])}")
+    return "\n".join(lines)
 
 
 def jarvis():

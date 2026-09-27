@@ -40,11 +40,32 @@ def post_step():
                  "make", "post"), w
 
 
+def own_voice_awaiting_recording():
+    """An approved own-voice episode that hasn't been rendered yet (desk.week()'s "long" only notices a
+    script still at draft, or a cfg/<id>_long.json that render_long() writes — an approved own-voice
+    episode sits in between, waiting on her recording, so it needs its own check here)."""
+    import json
+    from channel import DATA
+    for p in sorted((DATA / "episodes").glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
+        try:
+            ep = json.loads(p.read_text())
+        except Exception:
+            continue
+        if ep.get("own_voice") and not ep.get("draft") and not (DATA / "cfg" / f"{p.stem}_long.json").exists():
+            return {"id": p.stem, "title": ep.get("title", p.stem)}
+    return None
+
+
 def day():
     import studio_api
     first, w = post_step()
     steps, seen = [first], {first["go"].split("/")[-1]}
-    if w.get("long") is None and datetime.date.today().weekday() >= 4:
+    recording = None if w.get("long") else own_voice_awaiting_recording()
+    if recording:
+        steps.append(_step("long", "Record this week's long-form", f"“{recording['title']}” is approved and waiting for your voiceover — "
+                           "record the whole episode, upload it, then render.", "make", "make"))
+        seen.add(recording["id"])
+    elif w.get("long") is None and datetime.date.today().weekday() >= 4:
         steps.append(_step("long", "Line up this week's long-form", "Nothing started yet — draft an iceberg or episode so Sunday has something to render.",
                            "desk/content/episodes", "make"))
     elif w.get("long") and w["long"]["stage"] in ("draft", "ready"):

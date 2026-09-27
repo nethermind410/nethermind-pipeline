@@ -90,6 +90,7 @@ def example_cfg():
 
 
 RULES = f"""Channel: {channel.get("name")} — {channel.about()}
+{channel.identity_brief()}
 Retention rules: the hook is frame zero — line 1 is 8 words or fewer and says what the on-screen hook says;
 show one hero number (the thing people repeat) in the first 3 seconds if the story allows; most lines 8–18
 words so the picture changes every few seconds; a real payoff (a reveal, not a summary); state the honest
@@ -195,6 +196,7 @@ def write_packaging(cfg, facts):
     TAG_INCL, TAG_TAGS, TAG_INCL2 = (f" incl. #{t}", f", include {t}", f" incl #{t}") if t else ("", "", "")
     script = " ".join(s["text"] for s in cfg["segments"])
     prompt = f"""You are the Packaging agent for {channel.get("name")} (faceless fact-checked Shorts). Package this video.
+{channel.identity_brief()}
 Script: {script}
 Sources: {json.dumps(facts.get("sources_for_description") or [f.get("source_title") for f in facts.get("facts", [])], ensure_ascii=False)}
 Hero number: {json.dumps(facts.get("hero_number"), ensure_ascii=False)}

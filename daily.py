@@ -68,8 +68,9 @@ def pick_topic(skip=()):
     rank = lambda s: next((n for n, k in enumerate(lanes) if s["name"].lower().startswith(k)), len(lanes))
     for s in sorted(sections, key=rank):
         for i in s["items"]:
-            if not i["made"] and not i["dismissed"] and fresh(i["hook"]) and "iceberg" not in i["hook"].lower():
-                return i["hook"], f"next open idea in {s['name']}"          # icebergs are long-form, never a Short
+            if (not i["made"] and not i["dismissed"] and fresh(i["hook"]) and "iceberg" not in i["hook"].lower()
+                    and i.get("format") != "long"):
+                return i["hook"], f"next open idea in {s['name']}"          # icebergs/long-form are the weekly slot, never a Short
     return None, "no open ideas left"
 
 
@@ -97,13 +98,19 @@ def scout_backlog(n=3):
 
 
 def pick_long_topic():
-    """A long-form wants a big topic: an iceberg idea from the backlog first, else the best open idea."""
+    """A long-form wants a big topic: the Idea Farm's Long-form backlog first (highest score), else
+    an iceberg idea from the backlog, else the best open idea."""
     import studio_api
     done = drafted_topics() | {_norm(json.loads(p.read_text()).get("draft", {}).get("topic", ""))
                                for p in (DATA / "episodes").glob("*.json") if not p.stem.startswith("_")}
     import intelligence
     items = [(s["name"], i) for s in studio_api.ideas()["sections"] for i in s["items"]
              if not i["made"] and not i["dismissed"] and _norm(i["hook"]) not in done]
+    long_form = [i for _, i in items if i.get("format") == "long"]
+    if long_form:
+        score = lambda i: int(m.group(1)) if (m := re.search(r"(\d+)/60", i.get("source", ""))) else -1
+        long_form.sort(key=score, reverse=True)
+        return long_form[0]["hook"], f"top of the Long-form backlog ({score(long_form[0])}/60)"
     # the iceberg is a template for any topic: take one in the channel's lanes, rotating away from last week's lane
     eps = sorted((p for p in (DATA / "episodes").glob("*.json") if not p.stem.startswith("_")), key=lambda p: p.stat().st_mtime)
     last = intelligence.lane_of(json.loads(eps[-1].read_text()).get("title", "")) if eps else None

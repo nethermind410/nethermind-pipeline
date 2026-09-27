@@ -264,7 +264,7 @@ a{{color:var(--accent)}}</style></head><body><main>
 <div class="t"><span class="k">Videos</span><b>{len(stats.get("videos", {}))}</b></div></div>
 <span class="k">Views by platform</span><table>{rows}</table>
 <p><span class="k">Strongest topics</span><br>{e(lane_txt) or "—"}</p>
-<p><span class="k">Formats</span><br>Integrated read (15–30s) in a weekly 10–12 minute episode · dedicated Short · pinned-comment link.</p>
+<p><span class="k">Formats</span><br>Integrated read (15–30s) in a weekly 10–15 minute episode · dedicated Short · pinned-comment link.</p>
 <p><span class="k">Contact</span><br>{f'<a href="mailto:{e(s["sponsor_email"])}">{e(s["sponsor_email"])}</a>' if s["sponsor_email"] else "Add your sponsor email in Studio → Business → Money."}</p>
 <p class="k">Numbers from YouTube and Buffer, {e(str(stats.get("updated", "")))}. Engagement = (likes + comments + shares + saves) ÷ views.</p>
 </main></body></html>"""

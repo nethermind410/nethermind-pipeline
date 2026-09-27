@@ -354,7 +354,8 @@ async function pageIdeas() {
         <details><summary>Proof from YouTube</summary>${dem[i.slug].top.map(v => `<a href="${esc(v.url)}" target="_blank" rel="noopener">${fmt(v.views)} · ${esc(v.title)}</a>`).join("")}</details></div>`
         : `<button class="link small" data-demand="${esc(i.slug)}">Check demand on YouTube</button>`}
       <div class="idea-actions">
-        ${d.next && d.next.slug === i.slug ? `<span class="pill scheduled">Up next</span>` : `<button class="btn small primary" data-next="${esc(i.slug)}" data-hook="${esc(i.hook)}">Make this next</button>`}
+        ${i.format === "long" ? `<button class="btn small primary" data-nx-draftlong="${esc(i.hook)}" title="Content researches and writes the weekly episode now; you approve before it renders">Draft as weekly episode</button>`
+          : d.next && d.next.slug === i.slug ? `<span class="pill scheduled">Up next</span>` : `<button class="btn small primary" data-next="${esc(i.slug)}" data-hook="${esc(i.hook)}">Make this next</button>`}
         <button class="btn small" data-toseries="${esc(i.hook)}">+ Series</button>
         <button class="btn small" data-ask="${esc(`Is this a strong next Nethermind video, and what's the surprising true version? "${i.hook}" (${i.source})`)}">Ask Jarvis</button>
       </div></article>`;
