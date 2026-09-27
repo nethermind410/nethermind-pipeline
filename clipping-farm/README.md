@@ -17,11 +17,15 @@ DURABLE DAG / JOB QUEUE
           ↓
    candidate generation
           ↓
+   compact EvidencePacket
+          ↓
       Brain scoring
+          ↓
+   adaptive escalation
           ↓
     diversity selection
           ↓
-       FFmpeg cuts
+        FFmpeg cuts
           ↓
           QC
           ↓
@@ -55,6 +59,10 @@ DURABLE DAG / JOB QUEUE
 - approval gate
 - artifact cache
 - cost/model-router scaffolding
+- capability-based model registry
+- adaptive Brain → cheap → premium escalation
+- provider prompt/result contracts
+- reservation → settlement cost ledger
 - explicit AgentRequest/AgentResult contracts
 
 ### Deterministic analysis
@@ -66,6 +74,7 @@ DURABLE DAG / JOB QUEUE
 - candidate generation and scoring
 - standalone/context evidence
 - deterministic Brain with confidence/evidence/escalation flag
+- compact evidence packets with stable SHA-256 digests
 - temporal diversity selection
 
 ### Production
@@ -76,7 +85,7 @@ DURABLE DAG / JOB QUEUE
 - publishing remains blocked until approval
 
 ### Worker execution
-The DAG now has concrete local handlers rather than placeholder completions. Handler results are persisted through jobs, so a worker can die and another worker can continue from the DB.
+The DAG now has concrete local handlers rather than placeholder completions. Scoring uses the Adaptive Brain; the default paid adapters are offline mocks for exercising routing and tests, not production model calls. Handler results are persisted through jobs, so a worker can die and another worker can continue from the DB.
 
 ## Run locally
 
