@@ -58,7 +58,8 @@ LABELS = {"build": "Making", "build_nofetch": "Re-making", "post_dry": "Checking
           "undo": "Taking back", "stats": "Refreshing numbers from YouTube and Buffer",
           "demand": "Checking YouTube demand", "replies": "Drafting replies", "score": "Scoring titles with vidIQ",
           "reschedule": "Moving the post"}
-JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True, "code": None, "friendly": None}
+JOB = {"id": 0, "action": "", "video": "", "label": "", "log": "", "done": True, "code": None, "friendly": None,
+       "resumed": False}   # True once this job was auto-resumed after an interrupted app close — see restore_queue()
 LOCK = threading.Lock()
 QUEUE = []   # jobs waiting their turn: one runs at a time (renders need the whole Mac), the rest line up here
 QSEQ = [0]
@@ -74,7 +75,8 @@ def label_for(action, vid):
 def _persist_queue():
     """Snapshot the queue + whatever's running to disk, atomically. Caller must hold LOCK —
     this never acquires it itself, since every call site is already inside a `with LOCK:` block."""
-    running = None if JOB["done"] else {"action": JOB["action"], "video": JOB["video"], "label": JOB["label"]}
+    running = None if JOB["done"] else {"action": JOB["action"], "video": JOB["video"], "label": JOB["label"],
+                                         "resumed": JOB.get("resumed", False)}
     try:
         atomic_write_json(OUT / QUEUE_FILE_NAME, {"running": running, "queue": queue_view()})
     except Exception:
@@ -82,33 +84,52 @@ def _persist_queue():
 
 
 def restore_queue():
-    """Called once at boot. A job that was actually *running* when the app closed can't be
-    resumed (its process is gone) — mark_interrupted() already failed its task, and here we
-    surface it once as an interrupted job on Home's activity pill. Jobs that were only
-    *waiting* never started, so they're safe to restore and the first one starts immediately."""
+    """Called once at boot, after nether.mark_interrupted() has already failed whatever task was
+    "working" when the app closed. A job that was actually *running* is auto-resumed here — once:
+    if it was already resumed before (queue.json's "resumed" flag) or its last real failure was a
+    repeat of the same error (nether.is_dead_lettered), it's left parked instead, so a job that
+    can never succeed doesn't get relaunched forever across restarts. Jobs that were only
+    *waiting* never started, so they're always safe to restore."""
     try:
         data = json.loads((OUT / QUEUE_FILE_NAME).read_text()) if (OUT / QUEUE_FILE_NAME).exists() else {}
     except Exception:
         data = {}
     running, saved_queue = data.get("running"), data.get("queue") or []
+    resume_running = None
     with LOCK:
         if running:
-            JOB.update(id=JOB["id"] + 1, action=running.get("action", ""), video=running.get("video", ""),
-                       label=running.get("label", ""), log="", done=True, code=None,
-                       friendly="Nethermind was closed while this was running — interrupted. Retry it below.")
+            action, vid = running.get("action", ""), running.get("video", "")
+            # builds report their own top-level task (sub=None) straight from build.sh, not via
+            # STUDIO_ACTIONS — cover both so a stuck build gets the same dead-letter guard.
+            agent_sub = nether.STUDIO_ACTIONS.get(action) or (("production", None) if action in
+                        ("build", "build_nofetch") else None)
+            already_resumed = bool(running.get("resumed"))
+            dead = agent_sub and nether.is_dead_lettered(agent_sub[0], agent_sub[1], vid or None)
+            posting = action.startswith("post_") or action in ("undo", "reschedule")   # never re-send without her
+            if not already_resumed and not dead and not posting:
+                resume_running = (action, vid)
+            else:
+                JOB.update(id=JOB["id"] + 1, action=action, video=vid, label=running.get("label", ""),
+                           log="", done=True, code=None,
+                           friendly=("Needs you — this failed the same way before and won't retry itself. See Repair below."
+                                     if dead else "Nethermind was closed while this was running — interrupted. Retry it below."))
         QUEUE.clear()
         QUEUE.extend(q for q in saved_queue if isinstance(q, dict) and "qid" in q)
         QSEQ[0] = max([q.get("qid", 0) for q in QUEUE] + [QSEQ[0]])
-        nxt = QUEUE.pop(0) if QUEUE and JOB["done"] else None
-        if nxt:
-            start_job(nxt["action"], nxt["video"])
+        if resume_running:
+            start_job(*resume_running, resumed=True)
+        elif QUEUE and JOB["done"]:
+            q = QUEUE.pop(0)
+            start_job(q["action"], q["video"])
         _persist_queue()
 
 
-def start_job(action, vid):
-    """Start a job now. Caller holds LOCK and has checked nothing is running."""
+def start_job(action, vid, resumed=False):
+    """Start a job now. Caller holds LOCK and has checked nothing is running. `resumed=True`
+    marks this as an automatic once-only resume of a job interrupted by an app close — see
+    restore_queue(), which uses the flag to avoid resuming the same stuck job forever."""
     JOB.update(id=JOB["id"] + 1, action=action, video=vid, task=None, label=label_for(action, vid),
-               log="", done=False, code=None, friendly=None)
+               log="", done=False, code=None, friendly=None, resumed=resumed)
     _persist_queue()
     events.publish("job", {"type": "started", **{k: JOB[k] for k in ("id", "action", "video", "label", "done", "code", "friendly")}})
     threading.Thread(target=run_job, args=(action, vid), daemon=True).start()

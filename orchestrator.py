@@ -20,6 +20,7 @@ import datetime, json, sqlite3, sys
 from pathlib import Path
 
 import events
+import resilience
 
 HERE = Path(__file__).resolve().parent
 from channel import DATA  # the data folder (this folder unless NETHER_DATA is set)
@@ -128,9 +129,35 @@ def begin(agent, title, sub=None, parent=None, video=None, input=None, retry=Non
 
 
 def _close(c, tid, status, output=None, error=None):
+    if status == "failed" and error:
+        error = _with_dead_letter_note(c, tid, error)
     c.execute("UPDATE tasks SET status=?, output=COALESCE(?, output), error=COALESCE(?, error), finished=? "
               "WHERE id=? AND status != 'cancelled'", (status, _j(output), error, now(), tid))   # a cancel sticks
     events.publish("task", {"id": tid, "status": status})
+
+
+def _with_dead_letter_note(c, tid, error):
+    """If this failure is the same as this job's previous real attempt (same agent/sub/video —
+    sub and video both NULL for a job that has neither), append a plain-words dead-letter note so
+    it doesn't look like a fresh, retryable problem. An automatic retry path (see
+    is_dead_lettered) should stop there and park it instead of repeating it blindly."""
+    row = c.execute("SELECT agent, sub, video FROM tasks WHERE id=?", (tid,)).fetchone()
+    if not row:
+        return error
+    prev = c.execute("SELECT error FROM tasks WHERE agent=? AND COALESCE(sub,'')=COALESCE(?,'') AND "
+                      "COALESCE(video,'')=COALESCE(?,'') AND id<? AND status='failed' ORDER BY id DESC LIMIT 1",
+                      (row["agent"], row["sub"], row["video"], tid)).fetchone()
+    if prev and _is_real_failure(prev["error"]) and resilience.is_repeat_failure(prev["error"], error):
+        return error + resilience.DEAD_LETTER_NOTE
+    return error
+
+
+def _is_real_failure(error_text):
+    """False for the synthetic "app was closed"/"stopped without reporting" failures left by
+    mark_interrupted()/_sweep(), which aren't real attempts at the job and shouldn't count as a
+    "previous attempt" for dead-letter comparisons."""
+    err = error_text or ""
+    return "was closed while this ran" not in err and "Stopped without reporting back" not in err
 
 
 def finish(tid, output=None):
@@ -141,6 +168,22 @@ def finish(tid, output=None):
 def fail(tid, error, output=None):
     with db() as c:
         _close(c, tid, "failed", output, str(error)[-4000:])
+
+
+def is_dead_lettered(agent, sub, video=None):
+    """True if this job's most recent *real* failure already carries the dead-letter note (see
+    _with_dead_letter_note) — an automatic retry path (e.g. resuming an interrupted job on boot)
+    should skip it and leave it parked rather than running it again."""
+    with db() as c:
+        rows = c.execute("SELECT error FROM tasks WHERE agent=? AND COALESCE(sub,'')=COALESCE(?,'') AND "
+                         "COALESCE(video,'')=COALESCE(?,'') AND status='failed' ORDER BY id DESC LIMIT 5",
+                         (agent, sub, video)).fetchall()
+    for r in rows:
+        err = r["error"] or ""
+        if not _is_real_failure(err):
+            continue
+        return resilience.is_dead_lettered(err)
+    return False
 
 
 def cancel(tid):
