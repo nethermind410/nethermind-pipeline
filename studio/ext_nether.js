@@ -433,7 +433,7 @@
     }
     const drafts = d.drafts.map(x => `<button class="card nx-draft" data-go="draft/${esc(x.id)}">
         <div><b>${esc(x.title || x.topic)}</b> <span class="pill ${x.kind === "long" ? "scheduled" : ""}">${x.kind === "long" ? `Long-form · ${x.minutes} min` : "Short"}</span>${x.needs_checking ? `<span class="pill ready" title="${esc((x.confirm || []).join(" · "))}">Needs checking (${x.confirm.length})</span>` : ""}
-          <div class="nx-meta">${x.kind === "long" ? `${x.chapters.length} chapters` : `${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"}`} · ${ago(x.at)}</div></div>
+          <div class="nx-meta">${x.kind === "long" ? `${x.chapters.length} chapters` : `${x.lines.length} lines · retention check ${x.check ? x.check.score + "/10" : "–"}${x.held && x.held.length ? " · held back — under the bar" : ""}`} · ${ago(x.at)}</div></div>
         <span class="btn small primary">Read &amp; approve</span></button>`).join("");
     const longs = d.episodes.filter(e => e.kind === "long"), recaps = d.episodes.filter(e => e.kind !== "long");
     const epCard = e => `<div class="card nx-ep" data-nx-ep="${esc(e.id)}">
@@ -510,6 +510,7 @@
           <p class="nx-meta">${long ? "Production fetches the real photos and art, renders the 16:9 episode with chapter cards, runs QA, fills in the real YouTube chapter timestamps and renders 3 thumbnails. 20–45 minutes. You review it before anything posts." : "Production fetches the photos, generates the art, renders the Short and its TikTok cut, runs QA and makes the thumbnail. You review the finished video before anything posts."}</p>
           <textarea id="nx-notes" rows="3" placeholder="Or: what should change? e.g. 'open on the 1 cell number', 'less about the comic, more about the worm'"></textarea>
           <div class="row-end"><button class="btn" id="nx-redraft">Redraft with notes</button><button class="btn danger" id="nx-discard">Discard</button></div></div>
+        ${d.held && d.held.length ? `<div class="card nx-held"><b>Held back.</b> NETHER tried ${(d.check.improved || []).filter(x => /^rewrite/.test(x)).length || "its free"} fix${(d.check.improved || []).filter(x => /^rewrite/.test(x)).length === 1 ? "" : "es"} but this is still ${d.check.score}/10 (the bar is ${d.check.bar || 8}). Discard it, or ask for changes with a new angle.</div>` : ""}
         ${d.check ? `<div class="card nx-checkc"><span class="k">Hook &amp; retention check · ${d.check.score}/10</span><ul class="rt-list">${d.check.rows.map(([ok, m]) => `<li class="${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${esc(m)}</li>`).join("")}</ul></div>` : ""}
         ${d.policy_flags && d.policy_flags.length ? `<div class="card nx-checkc"><span class="k">Trademark/character check</span><ul class="rt-list">${d.policy_flags.map(m => `<li class="no">✗ ${esc(m)}</li>`).join("")}</ul><p class="nx-meta">Fix this before approving — AI art and thumbnails must stay archetype-only; narration may still name the character.</p></div>` : ""}
         <div class="card nx-research"><span class="k">Research · every line comes from these</span>

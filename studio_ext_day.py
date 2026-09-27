@@ -16,6 +16,17 @@ import studio_ext_desk as desk
 import channel
 
 
+def _held(vid):
+    """True when quality_loop held this draft back (still under the bar after its fixes and rewrites)."""
+    try:
+        import json
+        from channel import OUT
+        rec = json.loads((OUT / "drafts" / f"{vid}.json").read_text())
+        return bool((rec.get("check") or {}).get("held"))
+    except Exception:
+        return False
+
+
 def _step(key, title, why, go, kind, done=False):
     return {"key": key, "title": title, "why": why, "go": go, "kind": kind, "done": done}
 
@@ -87,6 +98,8 @@ def day():
             continue
         k = c["kind"]
         if k == "draft":
+            if _held(vid):                  # under the quality bar after NETHER's own fixes — not worth her time
+                continue
             steps.append(_step(c["key"], "Approve a script", f"“{c['title']}” {c['text'].lstrip('— ')}", f"draft/{vid}", "approve"))
         elif k == "ready":
             steps.append(_step(c["key"], "Review a finished video", f"“{c['title']}” is ready — watch it and queue it for a coming day.", f"video/{vid}", "approve"))

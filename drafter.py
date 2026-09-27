@@ -337,8 +337,10 @@ def draft(topic, notes=None, vid=None):
         nether.finish(cur, {"title": pkg["title"]})
 
         cur = nether.begin("content", "Hook & retention check", sub="hooks", parent=parent)
-        score, rows = retention.check(cfg)
-        nether.finish(cur, {"score": score, "misses": [m for ok, m in rows if not ok]})
+        import quality_loop                              # free fixes, then up to 2 rewrites, until it reaches the bar
+        cfg, score, rows, improved, held = quality_loop.improve(
+            cfg, pkg, lambda n, c: clean_cfg(write_script(topic, vid, facts, n, c), vid))
+        nether.finish(cur, {"score": score, "misses": [m for ok, m in rows if not ok], "improved": improved, "held": bool(held)})
         cur = None
 
         # Defense in depth: the validators in clean_segments/llm.check_packaging already reject a blocked
@@ -357,7 +359,8 @@ def draft(topic, notes=None, vid=None):
         cfg["draft"] = {"at": nether.now(), "topic": topic, "task": parent}
         if notes:
             record["notes"].append({"at": nether.now(), "notes": notes})
-        record.update(check={"score": score, "rows": [[ok, m] for ok, m in rows]}, task=parent, policy_flags=flags)
+        record.update(check={"score": score, "rows": [[ok, m] for ok, m in rows], "improved": improved,
+                             "bar": quality_loop.BAR, "held": held}, task=parent, policy_flags=flags)
         save(vid, cfg, pkg, record)
         nether.finish(parent, {"id": vid, "title": pkg["title"], "retention": score})
         return vid
@@ -413,7 +416,8 @@ def drafts():
                                "kind": "real photo" if s["vis"].get("real") else "AI art" if s["vis"].get("prompt") else "same picture, new framing"}
                               for s in cfg["segments"]],
                     "end": (cfg.get("end") or {}).get("lines", []), "research": rec.get("research"),
-                    "check": rec.get("check"), "notes": rec.get("notes", []), "policy_flags": rec.get("policy_flags", [])})
+                    "check": rec.get("check"), "notes": rec.get("notes", []), "policy_flags": rec.get("policy_flags", []),
+                    "held": (rec.get("check") or {}).get("held") or []})
     return out
 
 
