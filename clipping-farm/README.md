@@ -141,3 +141,28 @@ These require model/provider capacity or later product integration:
 - automatic learning from retention/views/shares
 
 The deterministic infrastructure is designed so those capabilities can be plugged in without replacing the Farm's orchestration layer.
+
+## Real provider adapters
+
+The Farm now supports vendor-neutral HTTP adapters without hard-coding a provider.
+
+Configuration is environment-only:
+
+CLIP_FARM_CHEAP_BASE_URL=
+CLIP_FARM_CHEAP_API_KEY_ENV=
+CLIP_FARM_CHEAP_MODEL=
+CLIP_FARM_CHEAP_COST=0.005
+CLIP_FARM_CHEAP_QUALITY=0.82
+
+CLIP_FARM_PREMIUM_BASE_URL=
+CLIP_FARM_PREMIUM_API_KEY_ENV=
+CLIP_FARM_PREMIUM_MODEL=
+CLIP_FARM_PREMIUM_COST=0.05
+CLIP_FARM_PREMIUM_QUALITY=0.92
+
+CLIP_FARM_OLLAMA_BASE_URL=http://127.0.0.1:11434
+CLIP_FARM_OLLAMA_MODEL=
+
+provider_adapters.py speaks an OpenAI-compatible /chat/completions contract and Ollama's /api/generate contract. Provider credentials are never committed. The Adaptive Brain handles health, timeout/protocol failure, budget reservation, cache, and fallback.
+
+A real provider is therefore an adapter, not an architectural dependency.
