@@ -76,10 +76,15 @@ class AdaptiveBrain:
             trace.append({"model": provider_name, "status": "adapter_missing"})
             return None, budget
 
-        self.harness.budget.reserve(job_id, spec.estimated_cost, total_budget)
-        result = provider.analyse(packet)
-        validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
-        result.estimated_cost = spec.estimated_cost
+        reservation_id = self.harness.budget.reserve(job_id, spec.estimated_cost, total_budget)
+        try:
+            result = provider.analyse(packet)
+            validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
+            result.estimated_cost = spec.estimated_cost
+            self.harness.budget.settle(reservation_id, result.actual_cost or spec.estimated_cost)
+        except Exception:
+            self.harness.budget.release(reservation_id)
+            raise
         self._store(key, result)
         trace.append({"model": provider_name, "status": "executed",
                       "cost": spec.estimated_cost})
