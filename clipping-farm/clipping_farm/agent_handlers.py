@@ -58,7 +58,7 @@ class LocalHandlers:
   scored=[]
   for c in [Candidate(**x) for x in self._find(r,"candidates",[])]:
    ctx=standalone_evidence(c,transcript)
-   frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=12) if duration else []
+   frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=6,start=max(0.0,c.start-1.0),end=min(duration,c.end+1.0)) if duration else []
    packet=build_packet(c,transcript,audio,scenes,frames,meta)
    d=self.brain.analyse(packet,job_id=j["id"],budget=float(j.get("budget") or 0))
    visual=self.vision.analyse(frames,c.__dict__).to_dict()
