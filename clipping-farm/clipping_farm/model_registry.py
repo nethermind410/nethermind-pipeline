@@ -57,6 +57,7 @@ class ModelRegistry:
 def default_specs() -> List[ModelSpec]:
     return [
         ModelSpec("deterministic-local", "brain.reasoning", "multimodal", "deterministic", 0.0, 0.62, 1.0),
+        ModelSpec("deterministic-vision", "brain.vision", "image", "deterministic", 0.0, 0.72, 1.0),
         ModelSpec("cheap-mock", "brain.reasoning", "multimodal", "cheap", 0.005, 0.84, 0.85),
         ModelSpec("premium-mock", "brain.reasoning", "multimodal", "premium", 0.05, 0.96, 0.55),
     ]
