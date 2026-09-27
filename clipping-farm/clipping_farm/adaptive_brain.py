@@ -7,6 +7,8 @@ from .harness import Harness
 from .model_registry import ModelRegistry
 from .providers import BrainProvider, ProviderResult
 from .provider_contracts import validate_packet, validate_result
+from .provider_health import ProviderHealth
+from .provider_adapters import ProviderUnavailable, ProviderTimeout, ProviderProtocolError
 
 
 @dataclass
@@ -18,12 +20,13 @@ class AdaptiveResult:
 
 class AdaptiveBrain:
     def __init__(self, db, *, harness=None, registry=None, providers=None,
-                 required_confidence=0.78):
+                 required_confidence=0.78, health=None):
         self.db = db
         self.harness = harness or Harness(db)
         self.registry = registry or ModelRegistry()
         self.providers = providers or {}
         self.required_confidence = required_confidence
+        self.health = health or ProviderHealth()
 
     def register_provider(self, provider: BrainProvider):
         self.providers[provider.name] = provider
@@ -71,6 +74,9 @@ class AdaptiveBrain:
             trace.append({"model": provider_name, "status": "cache_hit"})
             return cached, budget
 
+        if not self.health.available(provider_name):
+            trace.append({"model": provider_name, "status": "health_blocked"})
+            return None, budget
         provider = self.providers.get(provider_name)
         if provider is None:
             trace.append({"model": provider_name, "status": "adapter_missing"})
@@ -82,9 +88,15 @@ class AdaptiveBrain:
             validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
             result.estimated_cost = spec.estimated_cost
             self.harness.budget.settle(reservation_id, result.actual_cost or spec.estimated_cost)
+        except (ProviderUnavailable, ProviderTimeout, ProviderProtocolError) as exc:
+            self.harness.budget.release(reservation_id)
+            self.health.failure(provider_name, exc)
+            trace.append({"model": provider_name, "status": "provider_failed", "error": str(exc)})
+            return None, budget
         except Exception:
             self.harness.budget.release(reservation_id)
             raise
+        self.health.success(provider_name)
         self._store(key, result)
         trace.append({"model": provider_name, "status": "executed",
                       "cost": spec.estimated_cost})
