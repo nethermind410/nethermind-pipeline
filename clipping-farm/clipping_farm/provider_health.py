@@ -19,7 +19,7 @@ class ProviderHealth:
             h.state="HEALTHY"
         return h.state
     def available(self,name):
-        return self.state(name) in {"HEALTHY","DEGRADED"}
+        return self.state(name) == "HEALTHY"
     def success(self,name):
         self.states[name]=Health("HEALTHY")
     def failure(self,name,error):
