@@ -178,7 +178,8 @@ def thumb_for(ep, cfg, first, n):
     lines = [l for l in th.get("lines", []) if l][:2] or wrap_title(first, 12, 2)
     if n > 1:
         lines = lines + [f"+{n - 1} MORE"]
-    src = th.get("src") or cfg["segments"][1 if len(cfg["segments"]) > 1 else 0]["vis"]["src"]
+    src = th.get("src") or next((s["vis"]["src"] for s in cfg["segments"] if s["vis"].get("t") == "kb"), None) \
+        or cfg["segments"][1 if len(cfg["segments"]) > 1 else 0]["vis"]["src"]
     return {"src": src, "lines": lines, "accent": len(lines) - 1, "cx": th.get("cx", 0.5), "cy": th.get("cy", 0.4),
             "zoom": th.get("zoom", 1.0)}
 
