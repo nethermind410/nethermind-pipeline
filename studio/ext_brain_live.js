@@ -83,7 +83,8 @@
     await base(...a);
     let d; try { d = await get("/api/organ"); } catch (e) { return; }
     const page = main.querySelector(".page"); if (!page || $("#bx-form")) return;
-    page.insertAdjacentHTML("beforeend", `<h2>NETHER's form</h2><div class="card bx-form" id="bx-form">
+    const top = page.querySelector("h1")?.closest(".head, .head-row") || page.querySelector("h1");   // near the top, easy to find
+    (top || page).insertAdjacentHTML(top ? "afterend" : "afterbegin", `<h2>NETHER's form</h2><div class="card bx-form" id="bx-form">
       <div class="bx-choices" role="radiogroup" aria-label="NETHER's form">${d.choices.map(c => `<button class="bx-choice" role="radio" data-organ="${esc(c.name)}">
         <b>${esc(c.title)}</b><span>${esc(c.blurb)}</span></button>`).join("")}</div>
       <div class="bx-prev"><canvas id="bx-preview" role="img" aria-label="Preview of NETHER's form — drag to turn it"></canvas><ul class="bx-map" id="bx-map"></ul></div>

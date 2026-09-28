@@ -531,9 +531,15 @@ const NAVGROUP = {
   content: "make", production: "make", make: "make", videos: "make", draft: "make", video: "make",
   analytics: "channel", publishing: "channel", business: "channel", comments: "channel", money: "channel",
   calendar: "channel", performance: "channel", retention: "channel",
-  control: "settings", agents: "settings", settings: "settings", engines: "settings",
+  control: "settings", agents: "settings", settings: "settings", engines: "settings", fixes: "settings",
   today: "today",
 };
+/* Settings = its own pages, one tab bar on every one of them so you can always get back. */
+const SETTINGS_TABS = [["settings", "Settings"], ["agents", "Task log"], ["fixes", "Fix tickets"], ["engines", "AI engines"], ["control", "System"]];
+function settingsBar(name) {
+  return `<div class="chan-tabs" role="tablist" aria-label="Settings">${SETTINGS_TABS.map(([r, l]) =>
+    `<button role="tab" aria-selected="${r === name}" class="${r === name ? "on" : ""}" data-go="${r}">${esc(l)}</button>`).join("")}</div>`;
+}
 /* Channel = Analytics + Publishing + Business + Insights, switched with an in-page tab bar. */
 const CHANNEL_TABS = [["analytics", "Performance"], ["publishing", "Calendar"], ["business", "Business"], ["retention", "Insights"]];
 const CHAN_NORM = {performance: "analytics", calendar: "publishing", money: "business", comments: "business"};
@@ -565,6 +571,7 @@ async function route() {
   }
   markNav();
   if (NAVGROUP[routeName] === "channel" && main.firstElementChild) main.insertAdjacentHTML("afterbegin", channelBar(routeName));
+  if (NAVGROUP[routeName] === "settings" && main.firstElementChild) main.insertAdjacentHTML("afterbegin", settingsBar(routeName));
   window.nxDay?.reload();                          // the Today count comes from Today's run, so it matches everywhere
 }
 window.addEventListener("hashchange", () => { route(); main.scrollTop = 0; });
