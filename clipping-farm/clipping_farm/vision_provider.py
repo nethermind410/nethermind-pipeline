@@ -208,7 +208,9 @@ class AdaptiveVisionBrain:
         selected=self.deterministic.select_frames(request.frames)
         if not selected:
             return self.deterministic.analyse([],{"start":0,"end":0}), [{"stage":"deterministic","status":"no_frames"}]
-        base=self.deterministic.analyse(selected,{"start":0,"end":0})
+        start=min(float(f["time"]) for f in selected)
+        end=max(float(f["time"]) for f in selected)
+        base=self.deterministic.analyse(selected,{"start":start,"end":end})
         trace=[{"stage":"deterministic","status":"executed","confidence":base.confidence}]
         if base.confidence >= request.quality_required:
             return base, trace
