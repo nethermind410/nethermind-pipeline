@@ -239,7 +239,7 @@ class LearningBrain:
         version=f"strategy-{number}"
         self.db.cx.execute("UPDATE strategy_versions SET status='SUPERSEDED',deactivated_at=? WHERE status='ACTIVE'",(time.time(),))
         self.db.cx.execute("INSERT INTO strategy_versions VALUES(?,?,?,?,?,?,?,?,?,?)",
-            (str(uuid.uuid4()),version,parent,"ACTIVE",time.time(),time.time(),None,created_by,json.dumps(recommendation_ids)))
+            (str(uuid.uuid4()),version,parent,"ACTIVE",time.time(),time.time(),None,created_by,"Learning Brain recommendation activation",json.dumps(recommendation_ids)))
         return version
     def create_experiment(self,*,name,hypothesis,control_strategy,test_strategy,target_metric="normalised_performance",
                           minimum_sample=100,minimum_duration=24,allocation_control=.8,allocation_test=.2):
