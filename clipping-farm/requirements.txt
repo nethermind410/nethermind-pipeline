@@ -1,2 +1,3 @@
 
 # Optional local transcription: pip install openai-whisper
+Pillow>=10.0,<13
