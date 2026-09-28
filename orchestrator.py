@@ -301,6 +301,17 @@ def system():
         top = {r["agent"]: dict(r) for r in c.execute(
             "SELECT * FROM tasks WHERE id IN (SELECT MAX(id) FROM tasks WHERE parent IS NULL GROUP BY agent)")}
         counts = dict(c.execute("SELECT status, COUNT(*) FROM tasks WHERE parent IS NULL GROUP BY status").fetchall())
+        # "failed" means still needs you: a failure from the last 3 days that nothing has since redone successfully
+        # (same agent + desk + video). Old or already-fixed failures stay in the Task log but stop alarming.
+        cutoff = (datetime.datetime.now().astimezone() - datetime.timedelta(days=3)).isoformat()
+        tops = [dict(r) for r in c.execute("SELECT id, agent, sub, video, status, created FROM tasks WHERE parent IS NULL ORDER BY id")]
+        done_after = {}
+        for r in tops:
+            if r["status"] == "complete":
+                done_after[(r["agent"], r["sub"], r["video"])] = r["id"]
+        counts["failed"] = len({(r["agent"], r["sub"], r["video"]) for r in tops         # one problem = one, however many retries
+                                if r["status"] == "failed" and (r["created"] or "") >= cutoff
+                                and done_after.get((r["agent"], r["sub"], r["video"]), -1) < r["id"]})
 
     def state(rec):
         if not rec:

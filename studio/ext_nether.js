@@ -45,8 +45,7 @@
 
   const HUBS = {intelligence: [["brief", "Brief"], ["investigate", "Investigate"], ["ideas", "Ideas"]], content: [["make", "Make"]],
     production: [["videos", "Videos"]], publishing: [["calendar", "Calendar"]],
-    analytics: [["performance", "Performance"], ["retention", "Retention"]],
-    business: [["money", "Money"], ["comments", "Comments"], ["channel", "Channel"]], control: []};   // Settings pages get their own tab bar from app.js
+    analytics: [], business: [], control: []};   // Channel and Settings pages have their own tab bars (app.js)
   const OWNER = Object.fromEntries(Object.entries(HUBS).flatMap(([a, tabs]) => tabs.map(([r]) => [r, a])));
   Object.assign(OWNER, {draft: "content", video: "production"});
   const FLOW = {intelligence: "content", content: "production", production: "publishing", publishing: "analytics",
@@ -243,10 +242,9 @@
     const a = sys.agents.find(x => x.key === akey); if (!a) return;
     const tabs = HUBS[akey] || [];
     page.classList.add("in-hub");
-    page.insertAdjacentHTML("afterbegin", `<div class="hub">
-      <div class="hub-top">${glyph(a)}<div><b>${esc(a.name.toUpperCase())}</b><div class="nx-meta">${esc(a.lobe)} · ${esc(a.role)} · <span class="st-${a.state}">${STATE[a.state]}</span></div></div>${pips(a.recent)}</div>
-      ${tabs.length > 1 ? `<div class="hub-tabs">${tabs.map(([r, l]) => `<button class="${r === routeName ? "on" : ""}" data-go="${r}">${l}</button>`).join("")}</div>` : ""}
-      <div class="hub-subs">${a.subs.map(s => `<button class="nx-chip ${s.state}" data-sub="${akey}:${s.key}" title="${esc(s.what)}">${esc(s.name)}</button>`).join("")}</div></div>`);
+    // work pages stay about the work: the agent's anatomy and desk chips live on the home brain, not here
+    if (tabs.length > 1) page.insertAdjacentHTML("afterbegin", `<div class="hub"><div class="hub-tabs">${tabs.map(([r, l]) =>
+      `<button class="${r === routeName ? "on" : ""}" data-go="${r}">${l}</button>`).join("")}</div></div>`);
   }
   const ORIG = {};
   function wrap(name) {
@@ -410,7 +408,7 @@
 
   /* ---------- Content → Make: draft, approve, build ---------- */
   let makeKind = "short";
-  const KINDS = {short: ["Short", "45–70s vertical · 3–6 min to draft"], long: ["Long-form", "10–12 min 16:9 episode in chapters · 8–15 min to draft"],
+  const KINDS = {short: ["Short", "45–70s vertical · 3–6 min to draft"], long: ["Long-form", "10–15 min 16:9 episode in chapters, you narrate · 8–15 min to draft"],
                  iceberg: ["Iceberg", "a template for any topic: 5 tiers, from what every fan knows down to what almost nobody does"]};
   const ICE_EG = ["The Dragon Ball Iceberg", "The Pokémon Iceberg", "The X-Men Iceberg", "The Cancelled Video Games Iceberg",
                   "The Real-Life Superpowers Iceberg", "The Studio Ghibli Iceberg", "The Nintendo Iceberg", "The Spider-Man Iceberg"];
@@ -674,6 +672,8 @@
   Object.assign(window.PAGES, {desk: pageDesk, money: pageMoney, brief: pageBrief, investigate: pageInvestigate, make: pageMake, draft: pageDraft, agents: pageAgents});
   document.addEventListener("DOMContentLoaded", () => {      // after every extension has registered its pages,
     Object.keys(OWNER).forEach(wrap);                        // before the app's first route (window load)
-    Object.entries(HUBS).forEach(([akey, tabs]) => { window.PAGES[akey] = window.PAGES[tabs[0][0]]; });
+    const LANDING = {analytics: "performance", business: "money", control: "settings"};   // sections whose tabs live in app.js
+    Object.entries(HUBS).forEach(([akey, tabs]) => { const first = tabs[0] ? tabs[0][0] : LANDING[akey];
+      if (first && window.PAGES[first]) window.PAGES[akey] = window.PAGES[first]; });
   });
 })();

@@ -464,6 +464,7 @@ function jobDone(j, a) {
 function renderActivity(j) {
   const a = $("#activity"); if (!a) return;
   const n = j.queue ? j.queue.length : 0, more = n ? ` · <span class="q-badge">${n} queued</span>` : "";
+  if (j.done && !j.label && !n) { a.hidden = true; return; }   // nothing has run since NETHER opened — no bar, no false "Error"
   a.hidden = false; a.classList.toggle("busy", !j.done); a.classList.toggle("err", j.done && j.code !== 0);
   a.classList.toggle("interrupted", j.done && j.code === null && /interrupted/i.test(j.friendly || ""));
   const cancel = !j.done ? `<button class="cancel" data-cancel-pill aria-label="Cancel">Cancel</button>` : "";
@@ -535,7 +536,7 @@ const NAVGROUP = {
   today: "today",
 };
 /* Settings = its own pages, one tab bar on every one of them so you can always get back. */
-const SETTINGS_TABS = [["settings", "Settings"], ["agents", "Task log"], ["fixes", "Fix tickets"], ["engines", "AI engines"], ["control", "System"]];
+const SETTINGS_TABS = [["settings", "Settings"], ["agents", "Task log"], ["fixes", "Fix tickets"], ["engines", "AI engines"]];
 function settingsBar(name) {
   return `<div class="chan-tabs" role="tablist" aria-label="Settings">${SETTINGS_TABS.map(([r, l]) =>
     `<button role="tab" aria-selected="${r === name}" class="${r === name ? "on" : ""}" data-go="${r}">${esc(l)}</button>`).join("")}</div>`;

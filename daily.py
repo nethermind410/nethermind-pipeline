@@ -185,7 +185,9 @@ def main(dry=False):
     try:                                              # step 2: scout backlog ideas (scout_backlog already
         cur = nether.begin("intelligence", "Scout 3 backlog ideas", sub="demand", parent=parent)
         scouted = scout_backlog(3)                     # never lets one idea's failure stop the others)
-        nether.finish(cur, {"scouted": scouted})
+        import learning
+        made, skipped = learning.auto_decide()         # clear winners/losers decided; only the middle asks her
+        nether.finish(cur, {"scouted": scouted, "auto_made": made, "auto_skipped": skipped})
         report["scouted"] = scouted
     except Exception as e:
         nether.fail(cur, f"{type(e).__name__}: {e}")

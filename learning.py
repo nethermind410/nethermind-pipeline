@@ -43,7 +43,8 @@ def _words(text):
 
 # ------------------------------------------------------------------ collaboration
 def taste(lane):
-    calls = [c["decision"]["choice"] for c in _cards() if c.get("lane") == lane and c.get("decision")]
+    calls = [c["decision"]["choice"] for c in _cards() if c.get("lane") == lane and c.get("decision")
+             and not c["decision"].get("auto")]              # only her own calls teach her taste
     if len(calls) < 2:
         return {"score": 0.5, "calls": len(calls),
                 "say": f"You've judged {len(calls)} {lane} topic(s) so far — your taste counts as neutral until 2."}
@@ -52,13 +53,29 @@ def taste(lane):
             "say": f"You said \"make it\" to {calls.count('make')} of {len(calls)} {lane} topics."}
 
 
-def decide(slug, choice, reason=""):
+MAKE_AT, SKIP_BELOW = 75, 50        # clear-cut scorecards are decided for her; only the middle band asks
+
+
+def auto_decide():
+    """Decide the obvious scorecards so Today only asks about the borderline ones. Returns (made, skipped)."""
+    made = skipped = 0
+    for c in _cards():
+        if c.get("decision") or c.get("score") is None:
+            continue
+        if c["score"] >= MAKE_AT:
+            decide(c["slug"], "make", f"NETHER's call: scored {c['score']}/100 (≥{MAKE_AT}) — change it any time", auto=True); made += 1
+        elif c["score"] < SKIP_BELOW:
+            decide(c["slug"], "skip", f"NETHER's call: scored {c['score']}/100 (under {SKIP_BELOW}) — change it any time", auto=True); skipped += 1
+    return made, skipped
+
+
+def decide(slug, choice, reason="", auto=False):
     p = INTEL / f"{slug}.json"
     if choice not in ("make", "skip") or not re.fullmatch(r"[a-z0-9_]+", slug) or not p.exists():
         raise ValueError("Pick Make it or Not for us.")
     card = json.loads(p.read_text())
     import orchestrator as nether
-    card["decision"] = {"choice": choice, "reason": str(reason).strip()[:300], "at": nether.now()}
+    card["decision"] = {"choice": choice, "reason": str(reason).strip()[:300], "at": nether.now(), **({"auto": True} if auto else {})}
     _save(card)
     DECISIONS.parent.mkdir(parents=True, exist_ok=True)
     with open(DECISIONS, "a") as f:

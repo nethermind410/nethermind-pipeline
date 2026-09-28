@@ -378,8 +378,9 @@ def health():
         {"name": "AI art (Cloudflare)", "ok": has("CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"), "detail": "Comic-panel images"},
         {"name": "YouTube (true numbers)", "ok": has("YOUTUBE_API_KEY") and bool((jload(OUT / "youtube.json", {}) or {}).get("fetched")),
          "detail": f"Views, subscribers, comments · fetched {when((jload(OUT / 'youtube.json', {}) or {}).get('fetched'))}" if (OUT / "youtube.json").exists() else "Tap Refresh on Home"},
-        {"name": "vidIQ (title scores)", "ok": (jload(OUT / "vidiq_balance.json", {}) or {}).get("credits", 0) >= 5,
-         "detail": (lambda b: f"{b.get('credits', '?')} credits (5 per score) · refills {str(b.get('resets', ''))[:10]}")(jload(OUT / "vidiq_balance.json", {}) or {})},
+        {"name": "vidIQ (title scores)", "ok": True,      # low credits isn't broken — title scores just pause until the refill
+         "detail": (lambda b: f"{b.get('credits', '?')} credits left (5 per score)" + (f" — title scores pause until {str(b.get('resets', ''))[:10]}"
+                    if (b.get("credits") or 0) < 5 else ""))(jload(OUT / "vidiq_balance.json", {}) or {})},
         *([{"name": "Jarvis", "ok": jarvis_up(), "detail": "Answers questions (⌘K)" if jarvis_up() else f"Not running. {chcfg.get('app_name')} starts it for you."}]
           if chcfg.jarvis()["enabled"] else []),
         *daily_and_tools(),
