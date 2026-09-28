@@ -158,6 +158,8 @@ def access_token():
 class _CallbackHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         qs = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        if qs.get("state", [None])[0] != getattr(self.server, "state", object()):   # not our sign-in: ignore it
+            self.send_response(400); self.end_headers(); return
         self.server.result = {"code": qs.get("code", [None])[0], "error": qs.get("error", [None])[0]}
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
@@ -199,7 +201,9 @@ def begin_connect(open_browser=True):
     server = http.server.HTTPServer(("127.0.0.1", port), _CallbackHandler)
     server.timeout = CONNECT_TIMEOUT
     server.result = None
-    params = {"client_id": cfg["client_id"], "redirect_uri": redirect_uri, "response_type": "code",
+    import secrets
+    server.state = secrets.token_urlsafe(24)           # anti-forgery: Google hands it back; anything else is ignored
+    params = {"client_id": cfg["client_id"], "redirect_uri": redirect_uri, "response_type": "code", "state": server.state,
               "scope": SCOPE, "access_type": "offline", "prompt": "consent", "include_granted_scopes": "true"}
     auth_url = AUTH_URL + "?" + urllib.parse.urlencode(params)
     _write_state(status="waiting")
