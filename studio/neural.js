@@ -91,6 +91,13 @@ window.NeuralBrain = (() => {
       });
       near.sort((p, q) => p[1] - q[1]).slice(0, 3).forEach(([j]) => { if (j > i) { edges.push([i, j]); a.n.push(j); nodes[j].n.push(i); } });
     });
+    nodes.forEach((a, i) => {                                                    // seal the two halves along the edge: one whole shape
+      if (!a.rim) return;
+      let best = -1, bd = 0.0016;
+      nodes.forEach((b, j) => { if (!b.rim || b.side === a.side || b.g !== a.g) return;
+        const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2; if (d < bd) { bd = d; best = j; } });
+      if (best > i) { edges.push([i, best]); a.n.push(best); nodes[best].n.push(i); a.seam = nodes[best].seam = true; }
+    });
     // inside: arcs (the brain's corpus callosum, a heart's septum), blobs (thalamus, lens) and an inner wall, all finely meshed
     const I = org.interior || {}, first = nodes.length;
     const arcAt = (A, t) => [A.x[0] + A.x[1] * t, A.y[0] + A.y[1] * Math.sin(Math.PI * t) + A.y[2] * t];
@@ -197,7 +204,7 @@ window.NeuralBrain = (() => {
       return [ox + C[0] * size + x1 * p * size * view.zoom + view.px, oy + C[1] * size + y2 * p * size * view.zoom + view.py, z2];
     }
     const P = i => [proj[i * 3], proj[i * 3 + 1]];
-    const shade = i => Math.max(0.22, Math.min(1, 0.62 - proj[i * 3 + 2] * 1.6));   // near side bright, far side dim
+    const shade = i => Math.max(0.1, Math.min(1, 0.7 - proj[i * 3 + 2] * 2.2));    // near side bright, far side faint   // near side bright, far side dim
     const sprite = (() => {                                                        // one soft node, stamped many times
       const s = document.createElement("canvas"); s.width = s.height = 32; const g = s.getContext("2d");
       const r = g.createRadialGradient(16, 16, 0, 16, 16, 16);
@@ -220,18 +227,23 @@ window.NeuralBrain = (() => {
       aura.addColorStop(0, `rgba(${VIOLET},.10)`); aura.addColorStop(.6, `rgba(${VIOLET},.04)`); aura.addColorStop(1, "rgba(0,0,0,0)");
       f.fillStyle = aura; f.fillRect(0, 0, W, H);
       const buckets = [[], [], []];                                                // hairline fibres in three depth layers
-      net.edges.forEach(e => { const s = (shade(e[0]) + shade(e[1])) / 2; buckets[s > 0.75 ? 2 : s > 0.45 ? 1 : 0].push(e); });
+      net.edges.forEach(e => { const s = (shade(e[0]) + shade(e[1])) / 2, seam = net.nodes[e[0]].side !== net.nodes[e[1]].side && net.nodes[e[0]].rim;
+        buckets[seam ? 0 : s > 0.75 ? 2 : s > 0.45 ? 1 : 0].push(e); });
       buckets.forEach((list, b) => {
-        f.strokeStyle = `rgba(${VIOLET},${[0.09, 0.18, 0.28][b]})`; f.lineWidth = 0.5; f.beginPath();
+        f.strokeStyle = `rgba(${VIOLET},${[0.06, 0.2, 0.42][b]})`; f.lineWidth = [0.5, 0.7, 0.95][b]; f.beginPath();
         list.forEach(([i, j]) => { f.moveTo(proj[i * 3], proj[i * 3 + 1]); f.lineTo(proj[j * 3], proj[j * 3 + 1]); });
         f.stroke();
       });
+      f.strokeStyle = `rgba(${WHITE},.34)`; f.lineWidth = 1.1; f.beginPath();       // the outline, so the shape reads at a glance
+      net.edges.forEach(([i, j]) => { const a = net.nodes[i], b = net.nodes[j];
+        if (a.rim && b.rim && a.side === b.side && shade(i) > 0.3 && shade(j) > 0.3) { f.moveTo(proj[i * 3], proj[i * 3 + 1]); f.lineTo(proj[j * 3], proj[j * 3 + 1]); } });
+      f.stroke();
       f.globalCompositeOperation = "lighter";
       f.strokeStyle = `rgba(${WHITE},.07)`; f.beginPath();                          // the interior, faint pink-white
       net.edges.forEach(([i, j]) => { if (net.nodes[i].g === 3 && net.nodes[j].g === 3) { f.moveTo(proj[i * 3], proj[i * 3 + 1]); f.lineTo(proj[j * 3], proj[j * 3 + 1]); } });
       f.stroke();
       net.nodes.forEach((n, i) => {
-        const k = n.wall ? shade(i) * 0.7 : n.mid ? 0.8 : shade(i), s = (0.35 + n.n.length * 0.16) * 2.8 * Math.sqrt(view.zoom) * (0.7 + 0.4 * k);
+        const k = n.wall ? shade(i) * 0.7 : n.mid ? 0.8 : shade(i), s = (0.35 + n.n.length * 0.16) * 1.9 * Math.sqrt(view.zoom) * (0.7 + 0.4 * k);
         f.globalAlpha = k; f.drawImage(sprite, proj[i * 3] - s, proj[i * 3 + 1] - s, s * 2, s * 2);
       });
       f.globalAlpha = 1; f.globalCompositeOperation = "source-over";
