@@ -15,6 +15,7 @@ from .provider_adapters import build_configured_providers
 from .context import standalone_evidence
 from .evidence import build_packet
 from .vision import VisionBrain
+from .vision_provider import AdaptiveVisionBrain, VisionRequest, build_configured_vision_providers
 from .multimodal import MultimodalCandidateBrain
 from .qc import run_qc
 from .repair import repair_candidate
@@ -23,7 +24,7 @@ class LocalHandlers:
  def __init__(self,db,workdir="clipping_farm_work",transcriber=None):
   self.db=db; self.workdir=Path(workdir); self.workdir.mkdir(parents=True,exist_ok=True)
   self.transcriber=transcriber or FixtureTranscriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db)
-  self.vision=VisionBrain(db, max_frames=6); self.fusion=MultimodalCandidateBrain()
+  self.vision=VisionBrain(db, max_frames=6); self.vision_adaptive=AdaptiveVisionBrain(db, deterministic=self.vision, providers=build_configured_vision_providers()); self.fusion=MultimodalCandidateBrain()
   self.brain=AdaptiveBrain(db)
   self.brain.register_provider(DeterministicProvider(DeterministicBrain()))
   for provider in build_configured_providers(): self.brain.register_provider(provider)
@@ -61,11 +62,13 @@ class LocalHandlers:
    frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=6,start=max(0.0,c.start-1.0),end=min(duration,c.end+1.0)) if duration else []
    packet=build_packet(c,transcript,audio,scenes,frames,meta)
    d=self.brain.analyse(packet,job_id=j["id"],budget=float(j.get("budget") or 0))
-   visual=self.vision.analyse(frames,c.__dict__).to_dict()
+   vr=VisionRequest(j["id"],f"{j['id']}:{c.start:.3f}:{c.end:.3f}","candidate visual evidence",frames,quality_required=.78,budget_remaining=float(j.get("budget") or 0))
+   visual_result,visual_trace=self.vision_adaptive.analyse(vr)
+   visual=visual_result.to_dict() if hasattr(visual_result,"to_dict") else visual_result
    fused=self.fusion.analyse(c.__dict__,visual=visual,audio=audio,transcript=transcript,context=ctx)
    c.scores.update(d.result.scores)
    c.scores.update(fused.scores)
-   c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"fusion_confidence":fused.confidence,"fusion_decision":fused.decision,"fusion_evidence":fused.evidence,"missing_modalities":fused.missing_modalities,"visual_evidence":visual,"evidence_digest":packet.digest()})
+   c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"fusion_confidence":fused.confidence,"fusion_decision":fused.decision,"fusion_evidence":fused.evidence,"missing_modalities":fused.missing_modalities,"visual_evidence":visual,"visual_trace":visual_trace,"evidence_digest":packet.digest()})
    c.decision=fused.decision.upper()
    scored.append(c.__dict__)
   return {"decision":"complete","candidates":scored,"actual_cost":0}
