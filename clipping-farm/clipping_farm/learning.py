@@ -219,14 +219,14 @@ class LearningBrain:
                  CALIBRATION_VERSION,status))
             bands.append({"band":f"{lo:.1f}-{hi:.1f}","n":len(g),"predicted":predicted,"observed":observed,"error":err})
         status="DIAGNOSTIC_ONLY" if len(rows)<100 else "CALIBRATED"
-        if any(b["predicted"]>b["observed"]+.10 for b in bands):status="OVERCONFIDENT_HIGH_SCORE_RANGE"
+        if len(rows)>=100 and any(b["predicted"]>b["observed"]+.10 for b in bands):status="OVERCONFIDENT_HIGH_SCORE_RANGE"
         return {"status":status,"sample_size":len(rows),"bands":bands}
     def recommend(self,run_id,patterns):
         ids=[]
         for p in patterns:
             if p.status not in ("SUPPORTED","VALIDATED") or p.effect_size<=0 or p.confidence<.60 or p.stability<.50:continue
             rid=str(uuid.uuid4())
-            self.db.cx.execute("""INSERT INTO strategy_recommendations VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            self.db.cx.execute("""INSERT INTO strategy_recommendations VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (rid,"feature_association",p.feature_name,p.segment_definition,p.segment_definition,
                  p.effect_size,p.confidence,p.sample_size,p.stability,json.dumps([p.feature_name]),
                  run_id,ALGORITHM_VERSION,FEATURE_VERSION,"PROPOSED",time.time()))
@@ -245,7 +245,7 @@ class LearningBrain:
                           minimum_sample=100,minimum_duration=24,allocation_control=.8,allocation_test=.2):
         if abs(allocation_control+allocation_test-1)>.00001:raise ValueError("allocations must sum to 1")
         eid=str(uuid.uuid4())
-        self.db.cx.execute("INSERT INTO experiments VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        self.db.cx.execute("INSERT INTO experiments VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (eid,name,hypothesis,control_strategy,test_strategy,allocation_control,allocation_test,target_metric,
              minimum_sample,minimum_duration,"PROPOSED",time.time(),None,None))
         return eid
