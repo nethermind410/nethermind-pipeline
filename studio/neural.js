@@ -64,8 +64,32 @@ window.NeuralBrain = (() => {
   }
   function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 
+  // real anatomy, sampled offline onto the organ's own surface (organs/<name>_mesh.json, e.g. a CC-licensed
+  // brain scan) instead of a 2D side silhouette puffed into two synthetic shells: every point already carries
+  // its own measured depth, so it reads as one whole shape from any angle, not just from the side.
+  function buildFromMesh(mesh) {
+    const nodes = mesh.points.map(([x, y, z, gg, side, rim]) => ({x, y, z, g: gg, side, n: [], rim: !!rim}));
+    const cell = 0.03, grid = new Map(), key = (i, j) => i * 1000 + j;           // spatial hash for neighbours
+    nodes.forEach((a, i) => { const k = key(Math.floor(a.x / cell), Math.floor(a.y / cell)); (grid.get(k) || grid.set(k, []).get(k)).push(i); });
+    const edges = [];
+    nodes.forEach((a, i) => {                                                    // nearest 2-3 by real 3D distance;
+      const gi = Math.floor(a.x / cell), gj = Math.floor(a.y / cell), near = [];  // no g/side split needed — the
+      for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) (grid.get(key(gi + di, gj + dj)) || []).forEach(j => {
+        if (j === i) return; const b = nodes[j];                                 // depth is real, not a duplicate layer
+        const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2; if (d < 0.0012) near.push([j, d]);
+      });
+      near.sort((p, q) => p[1] - q[1]).slice(0, 3).forEach(([j]) => { if (j > i) { edges.push([i, j]); a.n.push(j); nodes[j].n.push(i); } });
+    });
+    return {nodes, edges};
+  }
+
   function build(org, g) {
-    const {region, fold, half, inside} = g, r = rng(org.seed || 42), nodes = [], S = org.sample, RIM = org.rim;
+    const {region, fold, half, inside} = g, r = rng(org.seed || 42), S = org.sample, RIM = org.rim;
+    if (org.mesh && org.mesh.points && org.mesh.points.length) {
+      const {nodes, edges} = buildFromMesh(org.mesh);
+      return buildInterior(org, g, r, nodes, edges);
+    }
+    const nodes = [];
     const add = (x, y, rim) => {
       const gg = region(x, y), side = r() < 0.5 ? -1 : 1;                        // -1 faces you at rest
       nodes.push({x, y, z: side * (half(x, y, gg) * (0.86 + 0.14 * r()) + 0.012), g: gg, side, n: [], rim});
@@ -98,8 +122,12 @@ window.NeuralBrain = (() => {
         const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2; if (d < bd) { bd = d; best = j; } });
       if (best > i) { edges.push([i, best]); a.n.push(best); nodes[best].n.push(i); a.seam = nodes[best].seam = true; }
     });
+    return buildInterior(org, g, r, nodes, edges);
+  }
+
+  function buildInterior(org, g, r, nodes, edges) {
     // inside: arcs (the brain's corpus callosum, a heart's septum), blobs (thalamus, lens) and an inner wall, all finely meshed
-    const I = org.interior || {}, first = nodes.length;
+    const {region, fold} = g, I = org.interior || {}, first = nodes.length;
     const arcAt = (A, t) => [A.x[0] + A.x[1] * t, A.y[0] + A.y[1] * Math.sin(Math.PI * t) + A.y[2] * t];
     (I.arcs || []).forEach(A => { for (let k = 0; k < A.n; k++) {
       const t = r(), [x, y] = arcAt(A, t), thick = A.thick[0] + A.thick[1] * Math.sin(Math.PI * t) + (A.tail && t > A.tail[0] ? A.tail[1] : 0);
