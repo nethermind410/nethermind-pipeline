@@ -24,6 +24,12 @@ None of these components are modified beyond ordinary use through their document
 | [ffmpeg](https://ffmpeg.org/) | **LGPL v2.1+, or GPL v2+/v3+ depending on build configuration** | Required on the buyer's Mac (`brew install ffmpeg`), **not bundled**. A stock Homebrew build is typically LGPL; a build with extra encoders enabled can be GPL — buyers who build ffmpeg themselves should check `ffmpeg -version`'s configuration line if this matters to them. Nether only calls the `ffmpeg`/`ffprobe` binaries as external processes; it does not link against ffmpeg's libraries. |
 | [Anthropic Python SDK](https://github.com/anthropics/anthropic-sdk-python) (`anthropic`, optional) | MIT | Only used if the buyer opts into the "Anthropic API key" engine in Control → AI engines. |
 
+## Bundled as a derived data asset (not code)
+
+| Component | Licence | Notes |
+|---|---|---|
+| [Detailed Human Brain Model (3D)](https://3d.nih.gov/entries/3DPX-021161), by Johnson J, NIH 3D (3d.nih.gov) | CC BY 4.0 | The home page's brain wireframe places its nodes on this real anatomical scan instead of a synthetic silhouette. Downloaded once from NIH 3D's own file-download API and decimated offline (see the comment atop `organs/brain_mesh.json`) to a ~3000-point surface sample; the small derived JSON is committed, the original glTF is not. Attribution: "Detailed Human Brain Model (3D)" by Johnson J, NIH 3D, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). |
+
 ## Used via their own hosted service, not bundled
 
 - **Claude Code** / the buyer's Claude subscription — used headless (`claude -p`) for drafting; governed by Anthropic's own Consumer/Commercial Terms, not by this notice.

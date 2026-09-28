@@ -49,6 +49,12 @@ def _organ(name):
     if not NAME_RE.match(name or "") or not (ORGANS / f"{name}.json").is_file():
         raise ValueError("No such form.")
     o = json.loads((ORGANS / f"{name}.json").read_text())
+    mesh_f = ORGANS / f"{name}_mesh.json"
+    if mesh_f.is_file():           # a real 3D surface sample (organs/<name>_mesh.json) neural.js builds nodes
+        try:                       # from directly, in place of puffing the 2D silhouette into synthetic shells
+            o["mesh"] = json.loads(mesh_f.read_text())
+        except (OSError, ValueError):
+            pass
     if name != "brain":            # the brain's section anchors, so callers' brain coordinates map onto this organ
         b = json.loads((ORGANS / "brain.json").read_text())
         pts = [pt for part in b["parts"] for pt in part["poly"]]
