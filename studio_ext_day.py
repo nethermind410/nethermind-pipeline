@@ -88,6 +88,11 @@ def day():
     t = studio_api.today()
     fin = [c for c in t["cards"] if c["kind"] == "finish"]
     if fin:
+        try:                                # auto-finish newly-live videos, if that's turned on (off by default)
+            import studio_ext_ytfinish
+            studio_ext_ytfinish.autorun_check(fin)
+        except Exception:
+            pass
         left = sum(1 for c in fin for s in c.get("steps", []) if not s["done"])
         steps.append(_step("finish:" + ",".join(sorted(c["video"] for c in fin))[:120], f"Finish {len(fin)} live video{'s' if len(fin) > 1 else ''} on YouTube",
                            f"{left} small step{'s' if left != 1 else ''} in YouTube Studio — tags, pinned comment, playlist, Related video — "
