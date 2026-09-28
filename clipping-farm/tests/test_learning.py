@@ -18,7 +18,7 @@ class LearningBrainTests(unittest.TestCase):
                 duration_seconds=20 if high else 45,scoring_version="score-v1")
             self.store.add_performance(clip_id=clip,platform="youtube",account_id="a",
                 observation_window_hours=24,views=(200 if high else 100) if effect else 100,
-                retention_percent=80 if high else 60,completion_rate=80 if high else 60,impressions=1000)
+                retention_percent=(80 if high else 60) if effect else 70,completion_rate=(80 if high else 60) if effect else 70,impressions=1000)
     def test_001_empty_is_insufficient(self):
         r=self.brain.run(); self.assertEqual(r["status"],"INSUFFICIENT_DATA"); self.assertEqual(r["recommendations"],[])
     def test_002_nine_cannot_recommend(self):
