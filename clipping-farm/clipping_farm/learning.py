@@ -238,7 +238,7 @@ class LearningBrain:
         number=int(parent.rsplit("-",1)[-1])+1 if parent and parent.rsplit("-",1)[-1].isdigit() else 1
         version=f"strategy-{number}"
         self.db.cx.execute("UPDATE strategy_versions SET status='SUPERSEDED',deactivated_at=? WHERE status='ACTIVE'",(time.time(),))
-        self.db.cx.execute("INSERT INTO strategy_versions VALUES(?,?,?,?,?,?,?,?,?)",
+        self.db.cx.execute("INSERT INTO strategy_versions VALUES(?,?,?,?,?,?,?,?,?,?)",
             (str(uuid.uuid4()),version,parent,"ACTIVE",time.time(),time.time(),None,created_by,json.dumps(recommendation_ids)))
         return version
     def create_experiment(self,*,name,hypothesis,control_strategy,test_strategy,target_metric="normalised_performance",
