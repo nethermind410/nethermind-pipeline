@@ -20,6 +20,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip Pillow
+
       - name: Run clipping-farm tests
         env:
           PYTHONPATH: clipping-farm
