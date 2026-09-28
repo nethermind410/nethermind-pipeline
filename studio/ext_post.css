@@ -7,3 +7,10 @@
 .post-plat{font-size:var(--fs-3);padding:var(--sp-1) 0}
 .post-plat .why{margin-top:2px}
 .post-choices input[type="datetime-local"]{margin-top:var(--sp-1)}
+
+/* keep each choice a normal row: a small radio dot on the left, the words beside it (a global input rule stretched it) */
+.post-choices .opt{display:flex;align-items:flex-start;gap:var(--sp-3);padding:var(--sp-3);cursor:pointer}
+.post-choices .opt input[type="radio"]{flex:none;width:18px;height:18px;min-height:0;margin:3px 0 0;padding:0;appearance:auto;background:none;border:0}
+.post-choices .opt input[type="datetime-local"]{width:100%}
+/* a tall sheet always scrolls, so the Schedule button can be reached */
+.scrim .sheet{max-height:calc(100vh - 48px);overflow-y:auto}
