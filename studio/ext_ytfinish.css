@@ -1,0 +1,7 @@
+.yf-card h2{margin:0 0 10px;font:700 13px var(--grotesk,inherit);letter-spacing:.08em;color:var(--muted,#909083);text-transform:none}
+.yf-steps{margin:8px 0;padding-left:22px;color:var(--muted,#909083);font-size:13px;line-height:1.55}
+.yf-steps li{margin-bottom:4px}
+.yf-result{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:12.5px;color:var(--muted,#909083)}
+.yf-result li{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.yf-result li.yf-bad{color:#FF6B6B}
+button.yf-run.busy{opacity:.6;pointer-events:none}
