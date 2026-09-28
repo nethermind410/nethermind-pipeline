@@ -67,7 +67,15 @@ def register_configured_specs(registry: ModelRegistry) -> ModelRegistry:
     """Add real providers only when configured; mocks remain the offline fallback."""
     from .provider_config import load_provider_configs
     for config in load_provider_configs():
-        if config.name == "ollama-local" and config.enabled and config.model:
+        if config.name in {"vision-cheap", "vision-premium"} and config.base_url and config.enabled:
+            tier = "premium" if config.name == "vision-premium" else "cheap"
+            registry.register(ModelSpec(
+                config.name, "brain.vision", "image", tier,
+                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_COST", "0.06" if tier=="premium" else "0.006")),
+                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_QUALITY", "0.94" if tier=="premium" else "0.84")),
+                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_SPEED", "0.50" if tier=="premium" else "0.78")),
+                limits={"max_frames":6,"max_dimension":1280,"max_payload_bytes":4194304}))
+        elif config.name == "ollama-local" and config.enabled and config.model:
             registry.register(ModelSpec(
                 config.name, "brain.reasoning", "multimodal", "deterministic",
                 0.0, float(os.getenv("CLIP_FARM_OLLAMA_QUALITY", "0.72")), 0.65))
@@ -78,12 +86,4 @@ def register_configured_specs(registry: ModelRegistry) -> ModelRegistry:
                 float(os.getenv("CLIP_FARM_"+tier.upper()+"_COST", "0.05" if tier=="premium" else "0.005")),
                 float(os.getenv("CLIP_FARM_"+tier.upper()+"_QUALITY", "0.92" if tier=="premium" else "0.82")),
                 float(os.getenv("CLIP_FARM_"+tier.upper()+"_SPEED", "0.55" if tier=="premium" else "0.80"))))
-        elif config.name in {"vision-cheap", "vision-premium"} and config.base_url and config.enabled:
-            tier = "premium" if config.name == "vision-premium" else "cheap"
-            registry.register(ModelSpec(
-                config.name, "brain.vision", "image", tier,
-                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_COST", "0.06" if tier=="premium" else "0.006")),
-                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_QUALITY", "0.94" if tier=="premium" else "0.84")),
-                float(os.getenv("CLIP_FARM_VISION_"+tier.upper()+"_SPEED", "0.50" if tier=="premium" else "0.78")),
-                limits={"max_frames":6,"max_dimension":1280,"max_payload_bytes":4194304}))
     return registry
