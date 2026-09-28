@@ -119,7 +119,7 @@ class LearningStore:
         caption_style=None,crop_type=None,topic=None,source_type=None,model_version=None,
         prompt_version=None,scoring_version=None):
         fid=str(uuid.uuid4())
-        self.cx.execute("""INSERT INTO feature_snapshots VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        self.cx.execute("""INSERT INTO feature_snapshots VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (fid,clip_id,candidate_id,feature_version,hook_score,payoff_score,context_score,
              emotion_score,information_score,visual_score,audio_score,standalone_score,novelty_score,
              duration_seconds,opening_type,ending_type,caption_style,crop_type,topic,source_type,
@@ -151,7 +151,7 @@ class LearningBrain:
         if not overall:return 0.0
         size=max(1,len(values)//3); chunks=[values[:size],values[size:2*size],values[2*size:]]
         effects=[statistics.mean(c)/overall-1 for c in chunks if c]
-        return round(max(0,min(1,1-statistics.pstdev(effects)/.50)),4) if len(effects)>1 else 0.0
+        return round(max(0,min(1,1-statistics.pstdev(effects)/.25)),4) if len(effects)>1 else 0.0
     def _joined(self):
         return [dict(r) for r in self.db.cx.execute(
             """SELECT f.*,o.platform,o.window_hours,o.normalised_performance,o.performance_percentile
