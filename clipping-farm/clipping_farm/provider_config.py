@@ -49,4 +49,22 @@ def load_provider_configs():
             int(os.getenv("CLIP_FARM_OLLAMA_RETRIES", "1")),
             os.getenv("CLIP_FARM_OLLAMA_ENABLED", "1") != "0",
         ),
+        ProviderConfig(
+            "vision-cheap",
+            os.getenv("CLIP_FARM_VISION_CHEAP_BASE_URL", os.getenv("CLIP_FARM_CHEAP_BASE_URL", "")),
+            os.getenv("CLIP_FARM_VISION_CHEAP_API_KEY_ENV", os.getenv("CLIP_FARM_CHEAP_API_KEY_ENV", "")),
+            os.getenv("CLIP_FARM_VISION_CHEAP_MODEL", os.getenv("CLIP_FARM_CHEAP_MODEL", "")),
+            float(os.getenv("CLIP_FARM_VISION_CHEAP_TIMEOUT", "45")),
+            int(os.getenv("CLIP_FARM_VISION_CHEAP_RETRIES", "2")),
+            os.getenv("CLIP_FARM_VISION_CHEAP_ENABLED", os.getenv("CLIP_FARM_CHEAP_ENABLED", "1")) != "0",
+        ),
+        ProviderConfig(
+            "vision-premium",
+            os.getenv("CLIP_FARM_VISION_PREMIUM_BASE_URL", os.getenv("CLIP_FARM_PREMIUM_BASE_URL", "")),
+            os.getenv("CLIP_FARM_VISION_PREMIUM_API_KEY_ENV", os.getenv("CLIP_FARM_PREMIUM_API_KEY_ENV", "")),
+            os.getenv("CLIP_FARM_VISION_PREMIUM_MODEL", os.getenv("CLIP_FARM_PREMIUM_MODEL", "")),
+            float(os.getenv("CLIP_FARM_VISION_PREMIUM_TIMEOUT", "60")),
+            int(os.getenv("CLIP_FARM_VISION_PREMIUM_RETRIES", "2")),
+            os.getenv("CLIP_FARM_VISION_PREMIUM_ENABLED", os.getenv("CLIP_FARM_PREMIUM_ENABLED", "1")) != "0",
+        ),
     ]
