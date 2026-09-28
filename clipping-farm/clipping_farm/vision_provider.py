@@ -163,3 +163,88 @@ class FakeVisionProvider:
         self.calls += 1
         return VisionResult(.8,.7,.85,.75,.8,.8,False,False,[],["visible_scene"],
                              ["fake provider evidence"],self.confidence,self.name,0.0,0.0)
+
+def build_configured_vision_providers():
+    from .provider_config import load_provider_configs
+    out=[]
+    for config in load_provider_configs():
+        if config.name in {"vision-cheap","vision-premium"} and config.enabled and config.base_url:
+            out.append(OpenAICompatibleVisionProvider(config))
+    return out
+
+class AdaptiveVisionBrain:
+    """Deterministic visual evidence first; paid image models only when justified."""
+    VERSION="adaptive-vision-v1"
+    def __init__(self, db, *, harness=None, registry=None, health=None,
+                 deterministic=None, providers=None, required_confidence=.78):
+        from .harness import Harness
+        from .model_registry import ModelRegistry, register_configured_specs
+        from .provider_health import ProviderHealth
+        from .vision import VisionBrain
+        self.db=db
+        self.harness=harness or Harness(db)
+        self.registry=registry or register_configured_specs(ModelRegistry())
+        self.health=health or ProviderHealth()
+        self.deterministic=deterministic or VisionBrain(db,max_frames=MAX_FRAMES)
+        self.providers={p.name:p for p in (providers or [])}
+        self.required_confidence=required_confidence
+
+    def register_provider(self, provider): self.providers[provider.name]=provider
+
+    def _key(self, request, model):
+        frame_hashes=[(f.get("sha256",""),f.get("time")) for f in request.frames]
+        raw=json.dumps({"v":self.VERSION,"task":request.task,"candidate":request.candidate_id,
+                        "prompt":request.prompt_version,"model":model,"frames":frame_hashes,
+                        "quality":request.quality_required},sort_keys=True)
+        return "adaptive-vision:"+hashlib.sha256(raw.encode()).hexdigest()
+
+    def _cached(self,key):
+        row=self.db.get_artifact(key)
+        if not row:return None
+        try:return validate_vision_result(json.loads(row["metadata"])["result"])
+        except Exception:return None
+
+    def analyse(self, request):
+        selected=self.deterministic.select_frames(request.frames)
+        if not selected:
+            return self.deterministic.analyse([],{"start":0,"end":0}), [{"stage":"deterministic","status":"no_frames"}]
+        base=self.deterministic.analyse(selected,{"start":0,"end":0})
+        trace=[{"stage":"deterministic","status":"executed","confidence":base.confidence}]
+        if base.confidence >= request.quality_required:
+            return base, trace
+        remaining=request.budget_remaining
+        for tier in ("cheap","premium"):
+            spec=self.registry.choose("brain.vision",tier=tier,quality_required=request.quality_required,
+                                      budget=remaining,modality="image")
+            if not spec:
+                trace.append({"stage":tier,"status":"blocked"})
+                continue
+            key=self._key(request,spec.name)
+            cached=self._cached(key)
+            if cached:
+                trace.append({"stage":tier,"status":"cache_hit","model":spec.name})
+                if cached.confidence >= request.quality_required:return cached,trace
+                continue
+            if not self.health.available(spec.name):
+                trace.append({"stage":tier,"status":"health_blocked","model":spec.name}); continue
+            provider=self.providers.get(spec.name)
+            if not provider:
+                trace.append({"stage":tier,"status":"adapter_missing","model":spec.name}); continue
+            reservation=self.harness.budget.reserve(request.job_id,spec.estimated_cost,request.budget_remaining)
+            try:
+                result=provider.analyse_images(VisionRequest(
+                    request.job_id,request.candidate_id,request.task,selected,
+                    request.prompt_version,request.quality_required,remaining))
+                result.estimated_cost=spec.estimated_cost
+                self.harness.budget.settle(reservation,result.actual_cost or spec.estimated_cost)
+            except (VisionProviderUnavailable,VisionProviderTimeout,VisionProviderProtocolError) as exc:
+                self.harness.budget.release(reservation); self.health.failure(spec.name,exc)
+                trace.append({"stage":tier,"status":"provider_failed","model":spec.name,"error":str(exc)})
+                continue
+            self.health.success(spec.name)
+            self.db.put_artifact(key,"vision_provider_result","cache://"+key,key,{"result":result.to_dict()})
+            remaining-=spec.estimated_cost
+            trace.append({"stage":tier,"status":"executed","model":spec.name,"cost":spec.estimated_cost,
+                          "confidence":result.confidence})
+            if result.confidence >= request.quality_required:return result,trace
+        return base,trace
