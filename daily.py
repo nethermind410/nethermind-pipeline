@@ -125,6 +125,23 @@ def pick_long_topic():
     return (items[0][1]["hook"], "first open idea") if items else (None, "no open ideas")
 
 
+LOGIN_MSG = "skipped — your Claude login has expired (open Terminal, type claude, then /login)"
+
+
+def _claude_login_expired():
+    """True only when `claude auth status` (free) says logged out; then a Mac notification says how to fix it."""
+    try:
+        import shutil, studio_api
+        claude = shutil.which("claude") or str(Path.home() / ".local/bin/claude")
+        if studio_api.claude_logged_in(claude) is False:
+            import notify
+            notify.send("NETHER can't write today", "Your Claude login expired. Open Terminal, type claude, then /login.")
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def main(dry=False):
     import drafter
     if dry:
@@ -151,6 +168,8 @@ def main(dry=False):
     # and a failing step never stops the others.
     online = resilience.wait_online(max_wait=600)
     report["online"] = online
+    no_login = _claude_login_expired()               # expired login: skip the writing steps cleanly and tell her,
+    report["claude_login"] = "expired" if no_login else "ok"   # instead of three steps failing with "Not logged in"
 
     try:                                              # step 1: numbers refresh + learning loop
         cur = nether.begin("analytics", "Numbers refresh + learning loop", sub="stats", parent=parent)
@@ -176,7 +195,9 @@ def main(dry=False):
     try:                                              # step 3: draft the next video
         waiting = [d["id"] for d in drafter.drafts()]
         cur = nether.begin("content", "Draft the next video", sub="script", parent=parent)
-        if waiting:
+        if no_login:
+            nether.finish(cur, {"skipped": LOGIN_MSG}); report["draft"] = LOGIN_MSG
+        elif waiting:
             nether.finish(cur, {"skipped": f"{waiting[0]} is still waiting for your approval"})
             report["draft"] = f"skipped — {waiting[0]} still waiting for you"
         else:
@@ -202,22 +223,30 @@ def main(dry=False):
     try:                                              # step 4: research tomorrow's topic ahead
         cur = nether.begin("content", "Research tomorrow's topic ahead", sub="research", parent=parent)
         nxt, _ = pick_topic(skip=[t for t in (cur_topic,) if t])   # not the one just drafted
-        if nxt and not drafter.cached_research(nxt):
+        if no_login:
+            nether.finish(cur, {"skipped": LOGIN_MSG})
+        elif nxt and not drafter.cached_research(nxt):
             f = drafter.research(nxt)
             nether.finish(cur, {"topic": nxt, "facts": len(f["facts"])})
             report["researched"] = nxt
         else:
             nether.finish(cur, {"skipped": "already researched" if nxt else "no next topic"})
     except Exception as e:                            # never stops the run
-        nether.fail(cur, f"{type(e).__name__}: {e}")
-        report["researched"] = f"failed: {type(e).__name__}: {e}"
+        if "took longer than" in str(e):              # optional head start, not a failure: the draft researches anyway
+            nether.finish(cur, {"skipped": "research ran long — it'll be done when this topic is drafted"})
+            report["researched"] = "ran long — left for the draft"
+        else:
+            nether.fail(cur, f"{type(e).__name__}: {e}")
+            report["researched"] = f"failed: {type(e).__name__}: {e}"
     cur = None
 
     if datetime.date.today().weekday() == 6:          # Sundays: the week's long-form, written for your approval
         try:
             import drafter_long
             cur = nether.begin("content", "Draft the weekly long-form", sub="episodes", parent=parent)
-            if drafter_long.drafts():
+            if no_login:
+                nether.finish(cur, {"skipped": LOGIN_MSG}); report["long"] = LOGIN_MSG
+            elif drafter_long.drafts():
                 nether.finish(cur, {"skipped": "a long-form is still waiting for your approval"})
                 report["long"] = "skipped — one is still waiting for you"
             else:
