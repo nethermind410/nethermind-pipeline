@@ -22,6 +22,20 @@ CREATE TABLE IF NOT EXISTS artifacts (
  id TEXT PRIMARY KEY, cache_key TEXT UNIQUE NOT NULL, kind TEXT NOT NULL,
  path TEXT NOT NULL, content_hash TEXT NOT NULL, metadata TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL
 );
+CREATE TABLE IF NOT EXISTS sources (
+ source_id TEXT PRIMARY KEY,
+ location TEXT NOT NULL,
+ kind TEXT NOT NULL,
+ sha256 TEXT,
+ size_bytes INTEGER,
+ metadata TEXT NOT NULL DEFAULT '{}',
+ provenance TEXT NOT NULL DEFAULT '{}',
+ first_seen_at REAL NOT NULL,
+ last_seen_at REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_sources_sha256 ON sources(sha256);
+CREATE INDEX IF NOT EXISTS idx_sources_location ON sources(location);
+
 CREATE TABLE IF NOT EXISTS rights (
  source_id TEXT PRIMARY KEY, state TEXT NOT NULL, evidence TEXT NOT NULL DEFAULT '{}', updated_at REAL NOT NULL
 );
@@ -89,7 +103,9 @@ class DB:
                 self.cx.execute("COMMIT"); return None
             self.event(row["id"],"claimed",{"worker":worker_id,"lease_until":until})
             self.cx.execute("COMMIT")
-            return dict(self.cx.execute("SELECT * FROM jobs WHERE id=?",(row["id"],)).fetchone())
+            claimed = dict(self.cx.execute("SELECT * FROM jobs WHERE id=?",(row["id"],)).fetchone())
+            claimed["payload"] = json.loads(claimed["payload"] or "{}")
+            return claimed
         except Exception:
             self.cx.execute("ROLLBACK"); raise
     def start(self,jid,worker_id):
@@ -97,7 +113,7 @@ class DB:
         if cur.rowcount==1: self.event(jid,"started",{"worker":worker_id})
         return cur.rowcount==1
     def finish(self,jid,worker_id,result,actual_cost=0):
-        cur=self.cx.execute("UPDATE jobs SET state='COMPLETE',result=?,actual_cost=?,finished_at=?,lease_owner=NULL,lease_until=NULL WHERE id=? AND state IN ('CLAIMED','RUNNING') AND lease_owner=?",
+        cur=self.cx.execute("UPDATE jobs SET state='COMPLETE',result=?,actual_cost=?,finished_at=?,lease_owner=NULL,lease_until=NULL,error=NULL WHERE id=? AND state IN ('CLAIMED','RUNNING') AND lease_owner=?",
                             (json.dumps(result),actual_cost,self.now(),jid,worker_id))
         if cur.rowcount!=1: raise RuntimeError(f"job {jid} no longer owned by {worker_id}")
         self.event(jid,"complete",{"actual_cost":actual_cost})
@@ -125,6 +141,149 @@ class DB:
     def get_artifact(self,cache_key):
         r=self.cx.execute("SELECT * FROM artifacts WHERE cache_key=?",(cache_key,)).fetchone()
         return dict(r) if r else None
+
+    def verify_artifact(self,cache_key):
+        """Verify an artifact according to its storage semantics."""
+        row = self.get_artifact(cache_key)
+        if row is None:
+            return {"exists": False, "valid": False, "reason": "not_found"}
+
+        import hashlib
+
+        kind = row["kind"]
+        path_value = row["path"]
+
+        # Virtual/provider artifacts have no filesystem payload.
+        if path_value.startswith("cache://"):
+            return {
+                "exists": True,
+                "valid": True,
+                "virtual": True,
+                "cache_key": cache_key,
+                "content_hash": row["content_hash"],
+            }
+
+        # Metadata/analysis artifacts hash their canonical JSON payload,
+        # not the source media file stored in `path`.
+        payload_kinds = {
+            "metadata",
+            "audio_analysis",
+            "vision_provider_result",
+            "brain_provider_result",
+        }
+
+        if kind in payload_kinds:
+            try:
+                metadata = json.loads(row["metadata"] or "{}")
+            except (TypeError, json.JSONDecodeError):
+                return {
+                    "exists": True,
+                    "valid": False,
+                    "virtual": False,
+                    "cache_key": cache_key,
+                    "reason": "invalid_metadata_json",
+                }
+
+            # Match the serialization used by artifact producers.
+            canonical = json.dumps(
+                metadata,
+                sort_keys=True,
+            ).encode()
+
+            actual_hash = hashlib.sha256(canonical).hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "artifact_metadata",
+            }
+
+        # Files/directories represented by a real filesystem path.
+        path = Path(path_value).expanduser()
+
+        if not path.exists():
+            return {
+                "exists": False,
+                "valid": False,
+                "virtual": False,
+                "cache_key": cache_key,
+                "reason": "missing_file",
+                "path": str(path),
+            }
+
+        if path.is_file():
+            digest = hashlib.sha256()
+            with path.open("rb") as fh:
+                while True:
+                    chunk = fh.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    digest.update(chunk)
+
+            actual_hash = digest.hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "path": str(path),
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "file",
+            }
+
+        # Directory artifacts such as extracted frame sets need a stable
+        # representation rather than hashing the directory itself.
+        if path.is_dir():
+            entries = []
+            for child in sorted(path.rglob("*")):
+                if child.is_file():
+                    file_hash = hashlib.sha256()
+                    with child.open("rb") as fh:
+                        while True:
+                            chunk = fh.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            file_hash.update(chunk)
+                    entries.append(
+                        (str(child.relative_to(path)), file_hash.hexdigest())
+                    )
+
+            canonical = json.dumps(
+                entries,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode()
+            actual_hash = hashlib.sha256(canonical).hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "path": str(path),
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "directory_manifest",
+            }
+
+        return {
+            "exists": False,
+            "valid": False,
+            "virtual": False,
+            "cache_key": cache_key,
+            "reason": "unsupported_path_type",
+            "path": str(path),
+        }
     def set_rights(self,source_id,state,evidence=None):
         if state not in {"UNKNOWN","PENDING","AUTHORISED","REJECTED","EXPIRED"}: raise ValueError(state)
         self.cx.execute("INSERT INTO rights VALUES(?,?,?,?) ON CONFLICT(source_id) DO UPDATE SET state=excluded.state,evidence=excluded.evidence,updated_at=excluded.updated_at",

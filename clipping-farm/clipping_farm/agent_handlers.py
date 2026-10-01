@@ -77,20 +77,72 @@ class LocalHandlers:
   chosen=select(rank(cs),limit=10)
   return {"decision":"complete","selected":[c.__dict__ for c in chosen],"actual_cost":0}
  def produce_clips(self,j):
+  import hashlib
   from .media import FFmpegMedia
   media=FFmpegMedia(self.db); selected=self._find(self._deps(j),"selected",[]); source=j["payload"]["source_id"]; outdir=self.workdir/source/"clips"; outdir.mkdir(parents=True,exist_ok=True); results=[]
   for i,raw in enumerate(selected,1):
-   c=Candidate(**raw); out=outdir/f"clip_{i:03d}.mp4"; media.cut(self._path(j),out,c.start,c.end); results.append({**raw,"path":str(out)})
+   c=Candidate(**raw)
+   out=outdir/f"clip_{i:03d}.mp4"
+   media.cut(self._path(j),out,c.start,c.end)
+
+   digest=hashlib.sha256()
+   with out.open("rb") as fh:
+    while True:
+     chunk=fh.read(1024*1024)
+     if not chunk:
+      break
+     digest.update(chunk)
+   content_hash=digest.hexdigest()
+
+   cache_key=f"clip:{source}:{i}:{c.start}:{c.end}:{content_hash}"
+   self.db.put_artifact(
+    cache_key=cache_key,
+    kind="video_clip",
+    path=str(out),
+    content_hash=content_hash,
+    metadata={
+     "source_id":source,
+     "clip_index":i,
+     "start":c.start,
+     "end":c.end,
+     "candidate_decision":c.decision,
+    },
+   )
+
+   results.append({
+    **raw,
+    "path":str(out),
+    "artifact_cache_key":cache_key,
+    "artifact_hash":content_hash,
+   })
   return {"decision":"complete","clips":results,"actual_cost":0}
  def qc(self,j):
   results=[]
   for raw in self._find(self._deps(j),"clips",[]):
-   c=Candidate(**{k:v for k,v in raw.items() if k in {"start","end","text","scores","decision"}}); q=run_qc(c); results.append({"candidate":raw,"qc":q.asdict()})
+   c=Candidate(**{k:v for k,v in raw.items() if k in {"start","end","text","scores","decision"}})
+
+   artifact_key=raw.get("artifact_cache_key")
+   artifact_verification=None
+   artifact_ok=True
+
+   if artifact_key:
+    artifact_verification=self.db.verify_artifact(artifact_key)
+    artifact_ok=artifact_verification.get("valid",False)
+
+   q=run_qc(c,visual_ok=artifact_ok)
+
+   results.append({
+    "candidate":raw,
+    "qc":q.asdict(),
+    "artifact_verification":artifact_verification,
+   })
+
   return {"decision":"complete","qc":results,"actual_cost":0}
  def repair(self,j):
   repaired=[]
   for item in self._find(self._deps(j),"qc",[]):
-   c=Candidate(**item["candidate"]); q=run_qc(c)
+   raw=item["candidate"]
+   c=Candidate(**{k:v for k,v in raw.items() if k in {"start","end","text","scores","decision"}}); q=run_qc(c)
    if not q.passed and q.repairable:c,q,_=repair_candidate(c,run_qc,max_repairs=2)
    repaired.append({"candidate":c.__dict__,"qc":q.asdict()})
   return {"decision":"complete","clips":repaired,"actual_cost":0}
