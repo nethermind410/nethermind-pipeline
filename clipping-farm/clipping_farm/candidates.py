@@ -10,6 +10,7 @@ class Candidate:
     text: str
     scores: dict
     decision: str = "REVIEW"
+    source_modality: str = "speech"
 
     @property
     def duration(self): return max(0.0, self.end - self.start)

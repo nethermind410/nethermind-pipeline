@@ -1,116 +1,131 @@
-import argparse, json
+import argparse, json, uuid
+from pathlib import Path
+
 from .db import DB
 from .worker import Worker
 from .pipeline import ClippingPipeline
 from .agent_handlers import LocalHandlers
 from .ingest import Source, SourceIngestor
-from .reference import ReferenceInspector
+from .reference import ReferenceInspector, ReferenceDownloader
 from .runner import PipelineRunner
+from .hud import serve as serve_hud
+from .dna import write_reference_dna
 
-TASKS=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates","score_candidates","select_candidates","produce_clips","qc","repair","export_review"]
+TASKS=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates",
+       "score_candidates","select_candidates","produce_clips","qc","repair","export_review"]
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("cmd",choices=["init","demo","plan","run","worker","status","ingest","source","reference","artifact"])
+    p.add_argument("cmd",choices=["init","demo","plan","run","worker","status","snapshot","hud",
+                                   "authorise","ingest","source","reference","artifact","assets",
+                                   "asset","acquire","run-reference","clip-reference","dna"])
     p.add_argument("--db",default="clipping_farm.db")
     p.add_argument("--source-id",default="demo-source")
+    p.add_argument("--asset-id")
     p.add_argument("--source-path")
     p.add_argument("--budget",type=float,default=0.0)
     p.add_argument("--kind",default="file")
+    p.add_argument("--purpose",default="production_source",choices=["production_source","reference","both"])
     p.add_argument("--url")
     p.add_argument("--cache-key")
     a=p.parse_args(); db=DB(a.db)
+
     if a.cmd=="init":
         print(f"Initialised {a.db}")
 
+    elif a.cmd=="authorise":
+        db.set_rights(a.source_id,"AUTHORISED",{"basis":"explicit operator authorisation"})
+        # Keep an existing asset synchronised if present.
+        row=db.cx.execute("SELECT asset_id FROM assets WHERE source_id=?",(a.source_id,)).fetchone()
+        if row: db.update_asset(row["asset_id"],rights_state="AUTHORISED")
+        print(json.dumps({"source_id":a.source_id,"rights_state":"AUTHORISED"},indent=2))
+
     elif a.cmd=="ingest":
-        if not a.source_path:
-            p.error("ingest requires --source-path")
-        source = Source(
-            source_id=a.source_id,
-            location=a.source_path,
-            kind=a.kind,
-        )
-        result = SourceIngestor(db).ingest_file(source)
-        print(json.dumps(result, indent=2))
+        if not a.source_path: p.error("ingest requires --source-path")
+        source=Source(a.source_id,a.source_path,a.kind,{"purpose":a.purpose})
+        print(json.dumps(SourceIngestor(db).ingest_file(source),indent=2))
 
     elif a.cmd=="artifact":
-        if not a.cache_key:
-            p.error("artifact requires --cache-key")
-
-        result = db.get_artifact(a.cache_key)
-        if result is None:
-            raise SystemExit(f"Artifact not found: {a.cache_key}")
-
-        result["verification"] = db.verify_artifact(a.cache_key)
-        print(json.dumps(result, indent=2))
+        if not a.cache_key: p.error("artifact requires --cache-key")
+        result=db.get_artifact(a.cache_key)
+        if result is None: raise SystemExit(f"Artifact not found: {a.cache_key}")
+        result["verification"]=db.verify_artifact(a.cache_key)
+        print(json.dumps(result,indent=2))
 
     elif a.cmd=="source":
-        result = SourceIngestor(db).get_source(a.source_id)
-        if result is None:
-            raise SystemExit(f"Source not found: {a.source_id}")
-        print(json.dumps(result, indent=2))
+        result=SourceIngestor(db).get_source(a.source_id)
+        if result is None: raise SystemExit(f"Source not found: {a.source_id}")
+        print(json.dumps(result,indent=2))
+
+    elif a.cmd=="assets":
+        print(json.dumps(db.list_assets(a.purpose if a.purpose!="production_source" else None),indent=2,ensure_ascii=False))
+
+    elif a.cmd=="asset":
+        if not a.asset_id: p.error("asset requires --asset-id")
+        result=db.asset_snapshot(a.asset_id)
+        if result is None: raise SystemExit(f"Asset not found: {a.asset_id}")
+        print(json.dumps(result,indent=2,ensure_ascii=False))
 
     elif a.cmd=="reference":
-        if not a.url:
-            p.error("reference requires --url")
+        if not a.url: p.error("reference requires --url")
+        result=ReferenceInspector().persist(db,ReferenceInspector().inspect(a.url))
+        print(json.dumps(result,indent=2,ensure_ascii=False))
 
-        inspector = ReferenceInspector()
-        result = inspector.inspect(a.url)
-        persisted = inspector.persist(db, result)
-
-        print(json.dumps(persisted, indent=2))
+    elif a.cmd=="acquire":
+        if not a.url: p.error("acquire requires --url")
+        result=ReferenceDownloader().acquire(db,a.url,purpose=a.purpose)
+        print(json.dumps(result,indent=2,ensure_ascii=False))
 
     elif a.cmd in ("demo","plan"):
         if a.cmd=="demo": db.set_rights(a.source_id,"AUTHORISED",{"basis":"user-authorised fixture"})
-        plan=ClippingPipeline(db).create(a.source_id,source_path=a.source_path,budget=a.budget)
+        plan=ClippingPipeline(db).create(a.source_id,source_path=a.source_path,budget=a.budget,asset_id=a.asset_id)
         print(json.dumps(plan.jobs if a.cmd=="plan" else {"source_id":a.source_id,"jobs":plan.jobs},indent=2))
+
     elif a.cmd=="run":
-        if not a.source_id:
-            p.error("run requires --source-id")
+        if not a.source_path: p.error("run requires --source-path")
+        db.set_rights(a.source_id,"AUTHORISED",{"basis":"user-authorised local source"})
+        ingested=SourceIngestor(db).ingest_file(Source(a.source_id,a.source_path,"file",{"purpose":a.purpose}))
+        asset_id=ingested["asset_id"]
+        plan=ClippingPipeline(db).create(a.source_id,source_path=ingested["library_path"],budget=a.budget,asset_id=asset_id)
+        result=PipelineRunner(db,LocalHandlers(db).handlers(),capabilities=TASKS).run(plan.source_id,plan.jobs)
+        print(json.dumps({"source_id":result.source_id,"asset_id":asset_id,"state":result.state,"processed":result.processed,"jobs":result.jobs},indent=2))
+        if result.state!="COMPLETE": raise SystemExit(1)
 
-        if not a.source_path:
-            p.error("run requires --source-path")
+    elif a.cmd=="run-reference":
+        if not a.asset_id: p.error("run-reference requires --asset-id")
+        asset=db.get_asset(a.asset_id)
+        if not asset: raise SystemExit(f"Asset not found: {a.asset_id}")
+        if asset["purpose"] not in {"reference","both"}: raise SystemExit("Asset purpose is not reference/both")
+        if asset["rights_state"]!="AUTHORISED": raise SystemExit("Asset must be AUTHORISED before processing")
+        plan=ClippingPipeline(db).create(asset["source_id"] or asset["asset_id"],source_path=asset["local_path"],budget=a.budget,mode="REFERENCE",asset_id=asset["asset_id"])
+        result=PipelineRunner(db,LocalHandlers(db).handlers(),capabilities=TASKS).run(plan.source_id,plan.jobs)
+        dna_path=None
+        if result.state=="COMPLETE":
+            _, dna_path=write_reference_dna(db,asset["asset_id"])
+        print(json.dumps({"asset_id":asset["asset_id"],"state":result.state,"processed":result.processed,"jobs":result.jobs,"reference_dna":str(dna_path) if dna_path else None},indent=2))
+        if result.state!="COMPLETE": raise SystemExit(1)
 
-        db.set_rights(
-            a.source_id,
-            "AUTHORISED",
-            {"basis": "user-authorised local source"},
-        )
+    elif a.cmd=="clip-reference":
+        if not a.asset_id: p.error("clip-reference requires --asset-id")
+        asset=db.get_asset(a.asset_id)
+        if not asset: raise SystemExit(f"Asset not found: {a.asset_id}")
+        if not asset["local_path"]: raise SystemExit("Asset has no local media")
+        if asset["purpose"] not in {"reference","both"}: raise SystemExit("Asset is not a reference asset")
+        if asset["rights_state"]!="AUTHORISED": raise SystemExit("Asset must be AUTHORISED")
+        plan=ClippingPipeline(db).create(asset["source_id"] or asset["asset_id"],source_path=asset["local_path"],budget=a.budget,mode="REFERENCE",asset_id=asset["asset_id"])
+        result=PipelineRunner(db,LocalHandlers(db).handlers(),capabilities=TASKS).run(plan.source_id,plan.jobs)
+        print(json.dumps({"asset_id":asset["asset_id"],"state":result.state,"processed":result.processed},indent=2))
+        if result.state!="COMPLETE": raise SystemExit(1)
 
-        plan = ClippingPipeline(db).create(
-            a.source_id,
-            source_path=a.source_path,
-            budget=a.budget,
-        )
-
-        handlers = LocalHandlers(db).handlers()
-
-        runner = PipelineRunner(
-            db,
-            handlers,
-            capabilities=TASKS,
-        )
-
-        result = runner.run(
-            plan.source_id,
-            plan.jobs,
-        )
-
-        print(json.dumps({
-            "source_id": result.source_id,
-            "state": result.state,
-            "processed": result.processed,
-            "jobs": result.jobs,
-        }, indent=2))
-
-        if result.state != "COMPLETE":
-            raise SystemExit(1)
+    elif a.cmd=="dna":
+        if not a.asset_id: p.error("dna requires --asset-id")
+        dna,path=write_reference_dna(db,a.asset_id)
+        print(json.dumps({"asset_id":a.asset_id,"path":str(path),"dna":dna},indent=2,ensure_ascii=False))
 
     elif a.cmd=="worker":
-        h=LocalHandlers(db)
-        w=Worker(db,capabilities=TASKS)
-        print("processed",w.run_once(h.handlers()))
+        h=LocalHandlers(db); print("processed",Worker(db,capabilities=TASKS).run_once(h.handlers()))
     elif a.cmd=="status": print(json.dumps(db.status(),indent=2))
+    elif a.cmd=="snapshot": print(json.dumps(db.run_snapshot(a.source_id),indent=2))
+    elif a.cmd=="hud": serve_hud(a.db,a.source_id)
 
 if __name__=="__main__": main()

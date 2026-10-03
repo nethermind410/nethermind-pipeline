@@ -143,11 +143,6 @@ class SourceIngestor:
                     "sha256": sha256,
                     "rights_state_at_ingestion": rights["state"],
                 },
-                # Each HUD upload/source gets its own Asset identity.
-                # Physical-media duplication is tracked separately through
-                # duplicate_of rather than collapsing the new source into
-                # an existing Asset.
-                dedupe=False,
             )
             asset_id=asset["asset_id"]
         else:

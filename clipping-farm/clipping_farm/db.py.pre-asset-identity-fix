@@ -320,18 +320,18 @@ class DB:
                      source_id=None, source_url=None, original_filename=None,
                      title=None, creator=None, media_type=None, local_path=None,
                      sha256=None, duration=None, metadata=None, provenance=None,
-                     parent_asset_id=None, asset_id=None, dedupe=True):
+                     parent_asset_id=None, asset_id=None):
         if purpose not in {"production_source", "reference", "both"}:
             raise ValueError("purpose must be production_source, reference, or both")
         now = self.now()
-        if dedupe and sha256:
+        if sha256:
             row = self.cx.execute(
                 "SELECT * FROM assets WHERE sha256=? ORDER BY created_at LIMIT 1",
                 (sha256,),
             ).fetchone()
             if row:
                 return self.get_asset(row["asset_id"]), True
-        if dedupe and source_url:
+        if source_url:
             row = self.cx.execute(
                 "SELECT * FROM assets WHERE source_url=? ORDER BY created_at LIMIT 1",
                 (source_url,),
@@ -505,35 +505,11 @@ class DB:
             ).fetchone()
             asset = self.get_asset(source_row["asset_id"]) if source_row else None
 
-        review_row = self.cx.execute(
-            """
-            SELECT result
-            FROM jobs
-            WHERE json_extract(payload, '$.source_id')=?
-              AND task='score_candidates'
-              AND state='COMPLETE'
-            ORDER BY created_at DESC
-            LIMIT 1
-            """,
-            (source_id,),
-        ).fetchone()
-        review_candidates = []
-        if review_row:
-            try:
-                scored = json.loads(review_row["result"] or "{}")
-                review_candidates = [
-                    candidate for candidate in scored.get("candidates", [])
-                    if str(candidate.get("decision", "")).upper() == "REVIEW"
-                ]
-            except (TypeError, ValueError, json.JSONDecodeError):
-                review_candidates = []
-
         return {
             "source_id": source_id,
             "asset": asset,
             "jobs": [dict(row) for row in rows],
             "artifacts": [dict(row) for row in artifacts],
             "outputs": outputs,
-            "review_candidates": review_candidates,
             "events": [dict(row) for row in events],
         }

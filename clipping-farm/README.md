@@ -166,3 +166,53 @@ CLIP_FARM_OLLAMA_MODEL=
 provider_adapters.py speaks an OpenAI-compatible /chat/completions contract and Ollama's /api/generate contract. Provider credentials are never committed. The Adaptive Brain handles health, timeout/protocol failure, budget reservation, cache, and fallback.
 
 A real provider is therefore an adapter, not an architectural dependency.
+
+## Asset Library / Reference Workflow
+
+Every imported media item is registered as an `ASSET-000001` style Asset. Local media is copied into the deterministic `clipping_farm_library/assets/<asset_id>/` tree. Existing `clipping_farm_work/` output remains supported for production runs.
+
+Inspect a URL without downloading:
+
+```bash
+clipping-farm reference --db clipping_farm.db --url "https://www.youtube.com/watch?v=..."
+```
+
+The command returns a source ID with `UNKNOWN` rights. Explicitly authorise it:
+
+```bash
+clipping-farm authorise --db clipping_farm.db --source-id "reference:Youtube:VIDEO_ID"
+```
+
+Then acquire it into the Asset Library:
+
+```bash
+clipping-farm acquire --db clipping_farm.db \
+  --url "https://www.youtube.com/watch?v=..." \
+  --purpose reference
+```
+
+List assets:
+
+```bash
+clipping-farm assets --db clipping_farm.db
+```
+
+Run the reference pipeline and generate Reference DNA:
+
+```bash
+clipping-farm run-reference \
+  --db clipping_farm.db \
+  --asset-id ASSET-000001
+```
+
+The resulting reference clips are stored under the asset's `clips/` directory and `reference_dna.json` is stored under `dna/`.
+
+Launch the HUD:
+
+```bash
+clipping-farm hud \
+  --db clipping_farm.db \
+  --source-id demo-source
+```
+
+The HUD provides local upload, URL inspection, explicit authorisation/acquisition, asset visibility, pipeline state and event monitoring.

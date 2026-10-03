@@ -12,6 +12,8 @@ import json
 
 import yt_dlp
 
+from .library import AssetLibrary
+
 
 class ReferenceError(RuntimeError):
     """Base error for reference ingestion."""
@@ -109,17 +111,19 @@ class ReferenceInspector:
             ),
         )
 
-        # The rights table is authoritative. Inspecting a reference
-        # never establishes publishing rights.
-        db.set_rights(
-            source_id,
-            "UNKNOWN",
-            {
-                "basis": "reference URL inspected via yt-dlp",
-                "source_url": metadata["source_url"],
-                "rights_established": False,
-            },
-        )
+        # The rights table is authoritative. Inspection never establishes
+        # rights, but it must not erase an existing explicit authorisation.
+        existing_rights = db.rights(source_id)
+        if not existing_rights or existing_rights["state"] != "AUTHORISED":
+            db.set_rights(
+                source_id,
+                "UNKNOWN",
+                {
+                    "basis": "reference URL inspected via yt-dlp",
+                    "source_url": metadata["source_url"],
+                    "rights_established": False,
+                },
+            )
 
         return {
             "source_id": source_id,
@@ -191,6 +195,70 @@ class ReferenceDownloader:
                 "rights_established": False,
             },
         }
+
+    def acquire(self, db, url: str, *, purpose="reference", asset_id=None):
+        """Inspect and acquire a URL into the Asset Library after DB authorisation."""
+        inspected = ReferenceInspector().inspect(url)
+        persisted = ReferenceInspector().persist(db, inspected)
+        source_id = persisted["source_id"]
+        rights = db.rights(source_id)
+        if not rights or rights["state"] != "AUTHORISED":
+            raise PermissionError(
+                f"URL {url} is not AUTHORISED; inspect first, then explicitly authorise {source_id}"
+            )
+
+        aid = asset_id
+        existing = db.cx.execute(
+            "SELECT asset_id FROM assets WHERE source_url=? LIMIT 1", (url,)
+        ).fetchone()
+        if existing:
+            aid = existing["asset_id"]
+        else:
+            asset, _ = db.create_asset(
+                asset_id=aid,
+                source_id=source_id,
+                source_url=url,
+                source_type="url",
+                purpose=purpose,
+                original_filename=None,
+                title=inspected.get("title"),
+                creator=inspected.get("uploader") or inspected.get("channel"),
+                media_type="video",
+                duration=inspected.get("duration"),
+                metadata=inspected,
+                provenance={
+                    "method": "yt-dlp",
+                    "source_url": url,
+                    "rights_state_at_acquisition": rights["state"],
+                },
+            )
+            aid=asset["asset_id"]
+
+        library=AssetLibrary()
+        paths=library.ensure(aid)
+        result=self.download(url, paths["original"], authorised=True)
+        downloaded=Path(result["path"])
+        # yt-dlp may choose a container extension different from the URL.
+        db.update_asset(
+            aid,
+            original_filename=downloaded.name,
+            local_path=str(downloaded),
+            sha256=result["sha256"],
+            duration=inspected.get("duration"),
+            title=inspected.get("title"),
+            creator=inspected.get("uploader") or inspected.get("channel"),
+            rights_state=rights["state"],
+            acquisition_state="ACQUIRED",
+            metadata=inspected,
+            provenance={
+                **persisted["provenance"],
+                **result["provenance"],
+                "rights_state_at_acquisition": rights["state"],
+            },
+        )
+        asset=db.get_asset(aid)
+        library.manifest(asset)
+        return {"asset": asset, "download": result}
 
     @staticmethod
     def _sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:

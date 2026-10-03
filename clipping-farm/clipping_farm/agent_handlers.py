@@ -4,7 +4,8 @@ from .analysis import MediaAnalyzer
 from .audio import AudioAnalyzer
 from .frames import FrameSampler
 from .scenes import SceneDetector
-from .transcript import FixtureTranscriber
+from .transcript import build_transcriber
+from .screen_text import ScreenTextAnalyzer
 from .candidates import generate_candidates,rank,Candidate
 from .selection import select
 from .brain import DeterministicBrain
@@ -20,10 +21,11 @@ from .multimodal import MultimodalCandidateBrain
 from .qc import run_qc
 from .repair import repair_candidate
 from .export import write_review_manifest
+from .library import AssetLibrary
 class LocalHandlers:
  def __init__(self,db,workdir="clipping_farm_work",transcriber=None):
-  self.db=db; self.workdir=Path(workdir); self.workdir.mkdir(parents=True,exist_ok=True)
-  self.transcriber=transcriber or FixtureTranscriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db)
+  self.db=db; self.workdir=Path(workdir); self.workdir.mkdir(parents=True,exist_ok=True); self.library=AssetLibrary()
+  self.transcriber=transcriber if transcriber is not None else build_transcriber(); self.meta=MediaAnalyzer(db); self.audio=AudioAnalyzer(db); self.frames=FrameSampler(db); self.scenes=SceneDetector(db); self.screen_text=ScreenTextAnalyzer()
   self.vision=VisionBrain(db, max_frames=6); self.vision_adaptive=AdaptiveVisionBrain(db, deterministic=self.vision, providers=build_configured_vision_providers()); self.fusion=MultimodalCandidateBrain()
   self.brain=AdaptiveBrain(db)
   self.brain.register_provider(DeterministicProvider(DeterministicBrain()))
@@ -47,11 +49,26 @@ class LocalHandlers:
  def metadata(self,j): return {"decision":"complete","metadata":self.meta.metadata(j["payload"]["source_id"],self._path(j)),"actual_cost":0}
  def analyse_audio(self,j): return {"decision":"complete","audio":self.audio.analyse(j["payload"]["source_id"],self._path(j)),"actual_cost":0}
  def analyse_scenes(self,j): return {"decision":"complete","scenes":self.scenes.detect(self._path(j)),"actual_cost":0}
+ def analyse_screen_text(self,j):
+  results=self._deps(j); transcript=self._find(results,"transcript",[])
+  if any((item.get("text") or "").strip() for item in transcript):
+   return {"decision":"complete","screen_text":[],"status":"skipped_speech_transcript_available","actual_cost":0}
+  meta=self._find(results,"metadata",{}); duration=float(meta.get("format",{}).get("duration",0) or 0)
+  if duration<=0: return {"decision":"complete","screen_text":[],"status":"missing_duration","actual_cost":0}
+  source=j["payload"]["source_id"]; path=self._path(j); count=min(60,max(2,int(duration/3)+1))
+  frames=self.frames.sample(source,path,duration,count=count,start=0.0,end=duration)
+  segments=self.screen_text.detect(frames,duration=duration)
+  return {"decision":"complete","screen_text":segments,"status":"changes_detected" if segments else "no_meaningful_screen_changes","actual_cost":0}
  def transcribe(self,j):
   tr=self.transcriber.transcribe(self._path(j))
   return {"decision":"complete","transcript":[s.__dict__ for s in tr.segments],"language":tr.language,"actual_cost":0}
  def generate_candidates(self,j):
-  r=self._deps(j); cs=generate_candidates(self._find(r,"transcript",[]))
+  r=self._deps(j); transcript=self._find(r,"transcript",[])
+  if any((item.get("text") or "").strip() for item in transcript): cs=generate_candidates(transcript)
+  else:
+   cs=generate_candidates(self._find(r,"screen_text",[]))
+   for candidate in cs:
+    candidate.source_modality="screen_ocr"; candidate.decision="REVIEW"
   return {"decision":"complete","candidates":[c.__dict__ for c in cs],"actual_cost":0}
  def score_candidates(self,j):
   r=self._deps(j); transcript=self._find(r,"transcript",[]); audio=self._find(r,"audio",{}); scenes=self._find(r,"scenes",[]); meta=self._find(r,"metadata",{})
@@ -61,28 +78,32 @@ class LocalHandlers:
    ctx=standalone_evidence(c,transcript)
    frames=self.frames.sample(j["payload"]["source_id"],self._path(j),duration,count=6,start=max(0.0,c.start-1.0),end=min(duration,c.end+1.0)) if duration else []
    packet=build_packet(c,transcript,audio,scenes,frames,meta)
-   d=self.brain.analyse(packet,job_id=j["id"],budget=float(j.get("budget") or 0))
-   vr=VisionRequest(j["id"],f"{j['id']}:{c.start:.3f}:{c.end:.3f}","candidate visual evidence",frames,quality_required=.78,budget_remaining=float(j.get("budget") or 0))
+   d=self.brain.analyse(c,context=ctx,audio=audio,scenes=scenes,frames=frames)
+   budget_remaining=max(0.0,float(j.get("budget") or 0)-float(getattr(d,"actual_cost",0) or 0))
+   vr=VisionRequest(j["id"],f"{j['id']}:{c.start:.3f}:{c.end:.3f}","candidate visual evidence",frames,quality_required=.78,budget_remaining=budget_remaining)
    visual_result,visual_trace=self.vision_adaptive.analyse(vr)
    visual=visual_result.to_dict() if hasattr(visual_result,"to_dict") else visual_result
    fused=self.fusion.analyse(c.__dict__,visual=visual,audio=audio,transcript=transcript,context=ctx)
    c.scores.update(d.result.scores)
    c.scores.update(fused.scores)
    c.scores.update({"brain_confidence":d.result.confidence,"brain_decision":d.result.decision,"brain_evidence":d.result.evidence,"brain_provider":d.result.model,"brain_trace":d.trace,"fusion_confidence":fused.confidence,"fusion_decision":fused.decision,"fusion_evidence":fused.evidence,"missing_modalities":fused.missing_modalities,"visual_evidence":visual,"visual_trace":visual_trace,"evidence_digest":packet.digest()})
-   c.decision=fused.decision.upper()
+   c.decision="REVIEW" if c.source_modality=="screen_ocr" else fused.decision.upper()
    scored.append(c.__dict__)
   return {"decision":"complete","candidates":scored,"actual_cost":0}
  def select_candidates(self,j):
-  cs=[Candidate(**x) for x in self._find(self._deps(j),"candidates",[])]
+  cs=[Candidate(**x) for x in self._find(self._deps(j),"candidates",[]) if str(x.get("decision", "REVIEW")).upper() == "ACCEPT"]
   chosen=select(rank(cs),limit=10)
   return {"decision":"complete","selected":[c.__dict__ for c in chosen],"actual_cost":0}
  def produce_clips(self,j):
   import hashlib
   from .media import FFmpegMedia
-  media=FFmpegMedia(self.db); selected=self._find(self._deps(j),"selected",[]); source=j["payload"]["source_id"]; outdir=self.workdir/source/"clips"; outdir.mkdir(parents=True,exist_ok=True); results=[]
+  media=FFmpegMedia(self.db); selected=self._find(self._deps(j),"selected",[]); selected=[raw for raw in selected if str(raw.get("decision", "REVIEW")).upper() == "ACCEPT"]; source=j["payload"]["source_id"]; asset_id=j["payload"].get("asset_id")
+  reference_mode=str(j["payload"].get("mode","")).upper()=="REFERENCE"
+  outdir=self.library.ensure(asset_id)["clips"] if reference_mode and asset_id else self.workdir/source/"clips"
+  outdir.mkdir(parents=True,exist_ok=True); results=[]
   for i,raw in enumerate(selected,1):
    c=Candidate(**raw)
-   out=outdir/f"clip_{i:03d}.mp4"
+   out=outdir/(f"reference_{i:03d}.mp4" if reference_mode else f"clip_{i:03d}.mp4")
    media.cut(self._path(j),out,c.start,c.end)
 
    digest=hashlib.sha256()
@@ -102,6 +123,7 @@ class LocalHandlers:
     content_hash=content_hash,
     metadata={
      "source_id":source,
+     "asset_id":asset_id,
      "clip_index":i,
      "start":c.start,
      "end":c.end,
@@ -144,10 +166,16 @@ class LocalHandlers:
    raw=item["candidate"]
    c=Candidate(**{k:v for k,v in raw.items() if k in {"start","end","text","scores","decision"}}); q=run_qc(c)
    if not q.passed and q.repairable:c,q,_=repair_candidate(c,run_qc,max_repairs=2)
-   repaired.append({"candidate":c.__dict__,"qc":q.asdict()})
+   clip={"candidate":c.__dict__,"qc":q.asdict()}
+   if "path" in raw: clip["path"]=raw["path"]
+   if "artifact_cache_key" in raw: clip["artifact_cache_key"]=raw["artifact_cache_key"]
+   if "artifact_hash" in raw: clip["artifact_hash"]=raw["artifact_hash"]
+   repaired.append(clip)
   return {"decision":"complete","clips":repaired,"actual_cost":0}
  def export_review(self,j):
-  source=j["payload"]["source_id"]; repaired=self._find(self._deps(j),"clips",[]); path=self.workdir/source/"review_manifest.json"; path.parent.mkdir(parents=True,exist_ok=True)
-  return {"decision":"complete","manifest":write_review_manifest(path,source,repaired),"actual_cost":0}
+  source=j["payload"]["source_id"]; deps=self._deps(j); clips=self._find(deps,"clips",[]); review=self._find(deps,"review_candidates",[])
+  if not clips and not review: raise RuntimeError("no reviewable output available")
+  path=self.workdir/source/"review_manifest.json"; path.parent.mkdir(parents=True,exist_ok=True)
+  return {"decision":"complete","manifest":write_review_manifest(path,source,clips,review),"actual_cost":0}
  def handlers(self):
-  return {"metadata":self.metadata,"analyse_audio":self.analyse_audio,"analyse_scenes":self.analyse_scenes,"transcribe":self.transcribe,"generate_candidates":self.generate_candidates,"score_candidates":self.score_candidates,"select_candidates":self.select_candidates,"produce_clips":self.produce_clips,"qc":self.qc,"repair":self.repair,"export_review":self.export_review}
+  return {"metadata":self.metadata,"analyse_audio":self.analyse_audio,"analyse_scenes":self.analyse_scenes,"analyse_screen_text":self.analyse_screen_text,"transcribe":self.transcribe,"generate_candidates":self.generate_candidates,"score_candidates":self.score_candidates,"select_candidates":self.select_candidates,"produce_clips":self.produce_clips,"qc":self.qc,"repair":self.repair,"export_review":self.export_review}

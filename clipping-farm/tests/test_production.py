@@ -1,4 +1,4 @@
-import tempfile, unittest
+import tempfile, unittest, json
 from pathlib import Path
 from clipping_farm.db import DB
 from clipping_farm.pipeline import ClippingPipeline
@@ -19,6 +19,20 @@ class ProductionTests(unittest.TestCase):
         for key in ("metadata","analyse_audio","analyse_scenes","transcribe"):
             self.assertEqual(rows[p.jobs[key]]["state"],"READY")
         self.assertEqual(rows[p.jobs["generate_candidates"]]["state"],"PENDING")
+    def test_pipeline_idempotency_key_tracks_pipeline_version(self):
+        p=ClippingPipeline(self.db).create("s",budget=.50)
+        row=self.db.cx.execute("SELECT idempotency_key FROM jobs WHERE id=?",(p.jobs["metadata"],)).fetchone()
+        self.assertIn(ClippingPipeline.VERSION,row["idempotency_key"])
+    def test_score_stage_directly_depends_on_audio_analysis(self):
+        p=ClippingPipeline(self.db).create("s",budget=.50)
+        row=self.db.cx.execute("SELECT depends_on FROM jobs WHERE id=?",(p.jobs["score_candidates"],)).fetchone()
+        self.assertIn(p.jobs["analyse_audio"],json.loads(row["depends_on"]))
+    def test_screen_text_fallback_waits_for_transcript_and_metadata(self):
+        p=ClippingPipeline(self.db).create("s",budget=.50)
+        row=self.db.cx.execute("SELECT depends_on FROM jobs WHERE id=?",(p.jobs["analyse_screen_text"],)).fetchone()
+        self.assertEqual(set(json.loads(row["depends_on"])),{p.jobs["metadata"],p.jobs["transcribe"]})
+        candidates=self.db.cx.execute("SELECT depends_on FROM jobs WHERE id=?",(p.jobs["generate_candidates"],)).fetchone()
+        self.assertIn(p.jobs["analyse_screen_text"],json.loads(candidates["depends_on"]))
     def test_candidates_rank_and_diversify(self):
         cs=generate_candidates([
             {"start":0,"end":12,"text":"Why this works is actually surprising and useful."},

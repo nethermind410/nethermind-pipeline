@@ -22,12 +22,9 @@ class FFmpegMedia:
 
     def cut(self,path,out,start,end):
         if end <= start: raise ValueError("end must be greater than start")
-        try:
-            self._run(["ffmpeg","-y","-ss",str(start),"-i",str(path),"-t",str(end-start),
-                       "-vf","scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2",
-                       "-c:v","libx264","-c:a","aac",str(out)])
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"cut failed: {e.stderr or e}") from e
+        self._run(["ffmpeg","-y","-ss",str(start),"-i",str(path),"-t",str(end-start),
+                   "-vf","scale=1080:1920:force_original_aspect_ratio=decrease",
+                   "-c:v","libx264","-c:a","aac",str(out)])
         return str(out)
 
 def wav_stats(path):

@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 
-def write_review_manifest(path, source_id, clips):
-    payload={"state":"READY_FOR_REVIEW","source_id":source_id,"clips":clips}
+def write_review_manifest(path, source_id, clips, review_candidates=None):
+    payload={"state":"READY_FOR_REVIEW","source_id":source_id,"clips":clips,"review_candidates":review_candidates or []}
     Path(path).write_text(json.dumps(payload,indent=2),encoding="utf-8")
     return payload
 
