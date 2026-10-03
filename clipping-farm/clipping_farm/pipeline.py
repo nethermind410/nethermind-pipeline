@@ -11,10 +11,17 @@ class PipelinePlan:
     jobs: dict
 
 class ClippingPipeline:
-    VERSION="screen-ocr-v1"
+    VERSION="screen-ocr-v2"
     def __init__(self, db: DB):
         self.db=db; self.harness=Harness(db)
     def create(self, source_id: str, *, source_path=None, budget=0.0, mode="FREE-FIRST", asset_id=None):
+        if asset_id:
+            asset = self.db.get_asset(asset_id)
+            if not asset:
+                raise ValueError(f"Asset {asset_id} not found")
+            source_id = asset["source_id"]
+            if not source_path:
+                source_path = asset.get("local_path")
         self.harness.rights.check(source_id)
         common={"source_id":source_id,"asset_id":asset_id,"source_path":str(source_path) if source_path else None,"mode":mode}
         path_token=""

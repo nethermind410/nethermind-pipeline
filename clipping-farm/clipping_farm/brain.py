@@ -21,4 +21,10 @@ class DeterministicBrain:
         multimodal_ok = total >= .62 and scores.get("standalone",0) >= .65
         decision="accept" if (multimodal_ok or (audio_strong and scores.get("standalone",0) >= .65)) else "reject"
         confidence=float(min(.99,max(.5,total)))
-        return BrainDecision(decision,round(confidence,3),"deterministic evidence threshold" if decision=="accept" else "insufficient standalone/evidence",evidence,{k:round(v,3) for k,v in scores.items()},confidence<.78)
+        return BrainDecision(decision,round(confidence,3),"deterministic evidence threshold" if decision=="accept" else "insufficient standalone/evidence",evidence,{
+            k: (
+                v if isinstance(v, (dict, list, str, type(None), bool))
+                else round(v, 3)
+            )
+            for k, v in scores.items()
+        },confidence<.78)

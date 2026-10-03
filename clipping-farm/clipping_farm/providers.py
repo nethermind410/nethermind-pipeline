@@ -11,6 +11,34 @@ class DeterministicProvider(BrainProvider):
     def __init__(self,brain): self.brain=brain
     def analyse(self,packet):
         from .candidates import Candidate
+
+        # EvidencePacket is the canonical provider boundary.
+        # Normalize only the Candidate object; preserve modality
+        # structures because DeterministicBrain expects their native
+        # list/dict shapes.
         c=Candidate(**packet.candidate)
-        d=self.brain.analyse(c,context={"score":c.scores.get("standalone",0),"reasons":[]},audio=packet.audio,scenes=packet.scenes,frames=packet.frames)
-        return ProviderResult(d.decision,d.confidence,d.reason,d.evidence,d.scores,self.name)
+
+        context={
+            "score": c.scores.get("standalone", 0),
+            "reasons": [],
+            "context_before": packet.context_before,
+            "context_after": packet.context_after,
+            "transcript": packet.transcript,
+        }
+
+        d=self.brain.analyse(
+            c,
+            context=context,
+            audio=packet.audio,
+            scenes=packet.scenes,
+            frames=packet.frames,
+        )
+
+        return ProviderResult(
+            d.decision,
+            d.confidence,
+            d.reason,
+            d.evidence,
+            d.scores,
+            self.name,
+        )

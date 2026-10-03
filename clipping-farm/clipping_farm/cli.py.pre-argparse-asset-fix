@@ -12,7 +12,7 @@ from .hud import serve as serve_hud
 from .dna import write_reference_dna
 
 TASKS=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates",
-       "score_candidates","select_candidates","produce_clips","qc","repair","export_review", "analyse_screen_text"]
+       "score_candidates","select_candidates","produce_clips","qc","repair","export_review"]
 
 def main():
     p=argparse.ArgumentParser()
@@ -78,29 +78,11 @@ def main():
 
     elif a.cmd in ("demo","plan"):
         if a.cmd=="demo": db.set_rights(a.source_id,"AUTHORISED",{"basis":"user-authorised fixture"})
-        if getattr(a, 'asset_id', None):
-            _resolved_asset = db.get_asset(a.asset_id)
-            if not _resolved_asset:
-                raise ValueError(f"Asset {a.asset_id} not found")
-            _resolved_source_id = _resolved_asset['source_id']
-            _resolved_source_path = _resolved_asset.get('local_path')
-        else:
-            _resolved_source_id = a.source_id
-            _resolved_source_path = a.source_path
-        plan=ClippingPipeline(db).create(_resolved_source_id,source_path=_resolved_source_path,budget=a.budget,asset_id=a.asset_id)
+        plan=ClippingPipeline(db).create(a.source_id,source_path=a.source_path,budget=a.budget,asset_id=a.asset_id)
         print(json.dumps(plan.jobs if a.cmd=="plan" else {"source_id":a.source_id,"jobs":plan.jobs},indent=2))
 
     elif a.cmd=="run":
-        if getattr(a, 'asset_id', None):
-            _asset = db.get_asset(a.asset_id)
-            if not _asset:
-                raise ValueError(f"Asset {a.asset_id} not found")
-            if not getattr(a, 'source_id', None):
-                a.source_id = _asset['source_id']
-            if not getattr(a, 'source_path', None):
-                a.source_path = _asset.get('local_path')
-        if not getattr(a, 'source_path', None):
-            raise ValueError("run requires --source-path or --asset-id with a local_path")
+        if not a.source_path: p.error("run requires --source-path")
         db.set_rights(a.source_id,"AUTHORISED",{"basis":"user-authorised local source"})
         ingested=SourceIngestor(db).ingest_file(Source(a.source_id,a.source_path,"file",{"purpose":a.purpose}))
         asset_id=ingested["asset_id"]
