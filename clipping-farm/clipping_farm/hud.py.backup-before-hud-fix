@@ -1,0 +1,164 @@
+"""Local Clipping Farm HUD and intake control centre."""
+
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from email.parser import BytesParser
+from email.policy import default
+from urllib.parse import urlparse
+from pathlib import Path
+import json, tempfile, uuid
+
+from .db import DB
+from .ingest import Source, SourceIngestor
+from .reference import ReferenceInspector, ReferenceDownloader
+from .pipeline import ClippingPipeline
+from .agent_handlers import LocalHandlers
+from .runner import PipelineRunner
+TASKS=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates","score_candidates","select_candidates","produce_clips","qc","repair","export_review"]
+
+HTML = r"""<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clipping Farm HUD</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090909;color:#eee;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+header{padding:20px 28px;border-bottom:1px solid #292929;display:flex;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:20px;letter-spacing:3px}h2{font-size:13px;letter-spacing:2px;color:#bbb}
+main{padding:20px;max-width:1500px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.card{border:1px solid #292929;background:#101010;padding:15px}.label{font-size:10px;color:#777;letter-spacing:1px}.value{font-size:22px;margin-top:7px}
+.intake{margin-bottom:20px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select{background:#080808;color:#eee;border:1px solid #333;padding:10px;font-family:inherit;min-width:220px}
+button{background:#eee;color:#111;border:0;padding:10px 14px;font-family:inherit;cursor:pointer}
+button.alt{background:#222;color:#eee;border:1px solid #444}.notice{margin-top:10px;color:#aaa;font-size:12px}
+.pipeline{margin-top:20px}.stage{display:grid;grid-template-columns:190px 120px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid #202020;align-items:center}
+.pass{color:#7dff9b}.fail{color:#ff7474}.pending{color:#ffd166}.bar{height:6px;background:#252525;overflow:hidden}.fill{height:100%;background:#ddd}
+.events{margin-top:20px;max-height:330px;overflow:auto}.event{padding:7px 0;border-bottom:1px solid #181818;color:#aaa;font-size:11px}
+.asset{margin-top:20px}.mono{font-size:11px;color:#bbb;word-break:break-all}.pill{display:inline-block;padding:4px 7px;border:1px solid #444;margin:2px;font-size:10px}
+#file{display:none}@media(max-width:700px){.stage{grid-template-columns:1fr}main{padding:12px}}
+</style></head>
+<body>
+<header><h1>CLIPPING FARM / HUD</h1><div><span id="run">NO RUN</span> <button class="alt" onclick="load()">REFRESH</button></div></header>
+<main>
+<section class="card intake">
+<h2>ADD ASSET</h2>
+<div class="row">
+<button onclick="document.getElementById('file').click()">UPLOAD VIDEO</button>
+<input id="url" placeholder="YouTube / site URL">
+<select id="purpose"><option value="reference">REFERENCE</option><option value="production_source">PRODUCTION</option><option value="both">BOTH</option></select>
+<button onclick="inspectUrl()">INSPECT URL</button>
+<input id="localPath" placeholder="Local path (optional)">
+<button onclick="ingestLocal()">INGEST LOCAL</button>
+</div>
+<input id="file" type="file" accept="video/*" onchange="uploadFile()">
+<div id="notice" class="notice">URL inspection never grants rights. Authorise an inspected source before acquisition.</div>
+</section>
+
+<section class="grid">
+<div class="card"><div class="label">STATE</div><div class="value" id="state">—</div></div>
+<div class="card"><div class="label">JOBS</div><div class="value" id="jobs">—</div></div>
+<div class="card"><div class="label">COMPLETE</div><div class="value" id="complete">—</div></div>
+<div class="card"><div class="label">COST</div><div class="value" id="cost">—</div></div>
+</section>
+
+<section class="card asset"><h2>ASSET</h2><div id="asset">No asset loaded.</div></section>
+<section class="pipeline"><h2>PIPELINE</h2><div id="pipeline"></div></section>
+<section class="events"><h2>EVENT STREAM</h2><div id="events"></div></section>
+</main>
+<script>
+const stages=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates","score_candidates","select_candidates","produce_clips","qc","repair","export_review"];
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function note(x){document.getElementById("notice").textContent=x;}
+async function api(path,body,opts={}){const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),...opts});const d=await r.json();if(!r.ok)throw new Error(d.error||"request failed");return d;}
+async function inspectUrl(){try{const d=await api("/api/intake",{url:document.getElementById("url").value,purpose:document.getElementById("purpose").value});note("INSPECTED: "+d.source_id+" — rights "+d.rights_state+". Use AUTHORISE then ACQUIRE.");if(confirm("Authorise this source now?")){await api("/api/authorise",{source_id:d.source_id});note("AUTHORISED: "+d.source_id);if(confirm("Acquire/download now?")){const a=await api("/api/acquire",{source_id:d.source_id,purpose:document.getElementById("purpose").value});note("ACQUIRED "+a.asset.asset_id);load();}}}catch(e){note("ERROR: "+e.message)}}
+async function ingestLocal(){try{const path=document.getElementById("localPath").value;if(!path)throw Error("enter a local path");const d=await api("/api/intake",{local_path:path,purpose:document.getElementById("purpose").value});note("INGESTED "+d.asset_id+" from "+d.library_path);load();}catch(e){note("ERROR: "+e.message)}}
+async function uploadFile(){try{const f=document.getElementById("file").files[0];if(!f)return;const fd=new FormData();fd.append("file",f);fd.append("purpose",document.getElementById("purpose").value);const r=await fetch("/api/upload",{method:"POST",body:fd});const d=await r.json();if(!r.ok)throw Error(d.error||"upload failed");note("UPLOADED "+d.asset_id+" → "+d.library_path);load();}catch(e){note("ERROR: "+e.message)}}
+async function load(){try{const r=await fetch("/api/snapshot");const data=await r.json();document.getElementById("run").textContent="RUN: "+esc(data.source_id);const jobs=data.jobs||[],complete=jobs.filter(j=>j.state==="COMPLETE").length,failed=jobs.filter(j=>j.state==="DEAD_LETTER").length,cost=jobs.reduce((n,j)=>n+Number(j.actual_cost||0),0);let state="RUNNING";if(!jobs.length)state="IDLE";if(jobs.length&&complete===jobs.length)state="COMPLETE";if(failed)state="FAILED";document.getElementById("state").textContent=state;document.getElementById("jobs").textContent=jobs.length;document.getElementById("complete").textContent=complete+" / "+jobs.length;document.getElementById("cost").textContent=cost.toFixed(4);
+const a=data.asset;if(a){document.getElementById("asset").innerHTML="<div><b>"+esc(a.asset_id)+"</b> <span class='pill'>"+esc(a.purpose)+"</span> <span class='pill'>"+esc(a.rights_state)+"</span> <span class='pill'>"+esc(a.acquisition_state)+"</span></div><div class='mono'>"+esc(a.title||a.original_filename||"")+"<br>"+esc(a.source_url||a.local_path||"")+"<br>"+esc(a.local_path||"")+"</div>"}else document.getElementById("asset").textContent="No asset registered for this run.";
+const byTask=Object.fromEntries(jobs.map(j=>[j.task,j]));document.getElementById("pipeline").innerHTML=stages.map(task=>{const job=byTask[task],status=job?job.state:"WAITING",cls=status==="COMPLETE"?"pass":status==="DEAD_LETTER"?"fail":"pending";return `<div class="stage"><div><b>${esc(task)}</b></div><div class="${cls}">${esc(status)}</div><div class="bar"><div class="fill" style="width:${status==="COMPLETE"?100:status==="RUNNING"?60:15}%"></div></div></div>`}).join("");
+document.getElementById("events").innerHTML=(data.events||[]).map(e=>`<div class="event"><b>${esc(e.event)}</b> ${esc(e.data)}</div>`).join("");
+}catch(e){note("HUD ERROR: "+e.message)}}
+load();setInterval(load,3000);
+</script></body></html>
+"""
+
+def _json(handler, code, payload):
+    body=json.dumps(payload,ensure_ascii=False).encode()
+    handler.send_response(code); handler.send_header("Content-Type","application/json; charset=utf-8")
+    handler.send_header("Content-Length",str(len(body))); handler.end_headers(); handler.wfile.write(body)
+
+class HUDHandler(BaseHTTPRequestHandler):
+    db_path=None; source_id=None
+
+    def _body_json(self):
+        n=int(self.headers.get("Content-Length","0")); raw=self.rfile.read(n)
+        return json.loads(raw or b"{}")
+
+    def do_GET(self):
+        parsed=urlparse(self.path)
+        if parsed.path=="/":
+            body=HTML.encode(); self.send_response(200); self.send_header("Content-Type","text/html; charset=utf-8")
+            self.send_header("Content-Length",str(len(body))); self.end_headers(); self.wfile.write(body); return
+        if parsed.path=="/api/snapshot":
+            db=DB(self.db_path); _json(self,200,db.run_snapshot(self.source_id)); return
+        self.send_error(404)
+
+    def do_POST(self):
+        try:
+            parsed=urlparse(self.path)
+            db=DB(self.db_path)
+            if parsed.path=="/api/intake":
+                data=self._body_json()
+                purpose=data.get("purpose","reference")
+                if data.get("local_path"):
+                    source_id=f"hud:{uuid.uuid4().hex[:12]}"
+                    db.set_rights(source_id,"AUTHORISED",{"basis":"explicit operator action in local HUD"})
+                    result=SourceIngestor(db).ingest_file(Source(source_id,data["local_path"],"file",{"purpose":purpose}))
+                    _json(self,200,result); return
+                url=data.get("url")
+                if not url: _json(self,400,{"error":"url or local_path required"}); return
+                result=ReferenceInspector().persist(db,ReferenceInspector().inspect(url))
+                # Create an asset at inspection time; acquisition remains gated.
+                asset,_=db.create_asset(source_id=result["source_id"],source_url=url,source_type="url",
+                    purpose=purpose,title=result["metadata"].get("title"),creator=result["metadata"].get("uploader"),
+                    media_type="video",duration=result["metadata"].get("duration"),metadata=result["metadata"],provenance=result["provenance"])
+                _json(self,200,{"source_id":result["source_id"],"asset_id":asset["asset_id"],"rights_state":"UNKNOWN","acquisition_state":"PENDING"}); return
+            if parsed.path=="/api/authorise":
+                data=self._body_json(); sid=data.get("source_id")
+                if not sid: _json(self,400,{"error":"source_id required"}); return
+                db.set_rights(sid,"AUTHORISED",{"basis":"explicit operator action in local HUD"})
+                row=db.cx.execute("SELECT asset_id FROM assets WHERE source_id=?",(sid,)).fetchone()
+                if row: db.update_asset(row["asset_id"],rights_state="AUTHORISED")
+                _json(self,200,{"source_id":sid,"rights_state":"AUTHORISED"}); return
+            if parsed.path=="/api/acquire":
+                data=self._body_json(); sid=data.get("source_id")
+                row=db.cx.execute("SELECT * FROM sources WHERE source_id=?",(sid,)).fetchone()
+                if not row: _json(self,404,{"error":"source not found"}); return
+                url=row["location"]; result=ReferenceDownloader().acquire(db,url,purpose=data.get("purpose","reference"))
+                _json(self,200,result); return
+            if parsed.path=="/api/upload":
+                n=int(self.headers.get("Content-Length","0"))
+                if n>1024*1024*1024: _json(self,413,{"error":"upload exceeds 1GB limit"}); return
+                raw=self.rfile.read(n)
+                content_type=self.headers.get("Content-Type","")
+                msg=BytesParser(policy=default).parsebytes(("Content-Type: "+content_type+"\r\n\r\n").encode()+raw)
+                file_part=next((p for p in msg.iter_parts() if p.get_filename()),None)
+                if file_part is None: _json(self,400,{"error":"file field required"}); return
+                purpose=next((p.get_content() for p in msg.iter_parts() if p.get_param("name",header="content-disposition")=="purpose"),"reference")
+                tempdir=Path(self.db_path).resolve().parent/"clipping_farm_uploads"; tempdir.mkdir(parents=True,exist_ok=True)
+                target=tempdir/(uuid.uuid4().hex+"_"+Path(file_part.get_filename()).name); target.write_bytes(file_part.get_payload(decode=True))
+                sid=f"hud:{uuid.uuid4().hex[:12]}"; db.set_rights(sid,"AUTHORISED",{"basis":"explicit operator upload in local HUD"})
+                result=SourceIngestor(db).ingest_file(Source(sid,str(target),"file",{"purpose":purpose}))
+                _json(self,200,result); return
+            _json(self,404,{"error":"not found"})
+        except Exception as exc:
+            _json(self,500,{"error":f"{type(exc).__name__}: {exc}"})
+
+    def log_message(self,*_): pass
+
+def serve(db_path, source_id, host="127.0.0.1", port=8765):
+    HUDHandler.db_path=db_path; HUDHandler.source_id=source_id
+    server=ThreadingHTTPServer((host,port),HUDHandler)
+    print(f"Clipping Farm HUD: http://{host}:{port}")
+    print(f"Source/run: {source_id}")
+    print("Press Ctrl-C to stop.")
+    try: server.serve_forever()
+    except KeyboardInterrupt: print("\nHUD stopped.")
+    finally: server.server_close()

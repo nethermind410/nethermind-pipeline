@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nethermind — Metro Map</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
+#canvas { width: 100vw; height: 100vh; display: block; }
+.sidebar { position: fixed; top: 20px; left: 20px; width: 280px; z-index: 10; pointer-events: none; }
+.sidebar h1 { font-size: 1.2em; color: #58a6ff; margin-bottom: 4px; letter-spacing: 0.05em; }
+.sidebar p { font-size: 0.75em; color: #6e7681; }
+.stat-row { display: flex; gap: 12px; margin-top: 14px; pointer-events: auto; flex-wrap: wrap; }
+.stat { background: rgba(35,134,54,0.08); border: 1px solid rgba(35,134,54,0.2); border-radius: 8px; padding: 8px 12px; flex: 1; min-width: 80px; }
+.stat .val { font-size: 1.4em; font-weight: 700; color: #58a6ff; }
+.stat .lbl { font-size: 0.65em; color: #6e7681; text-transform: uppercase; }
+.tooltip { position: fixed; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px; font-size: 0.8em; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 20; max-width: 220px; }
+.tooltip.show { opacity: 1; }
+.line-legend { position: fixed; bottom: 20px; left: 20px; display: flex; gap: 14px; font-size: 0.7em; color: #6e7681; }
+.line-legend span { display: flex; align-items: center; gap: 4px; }
+.line-legend .line { width: 18px; height: 3px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="sidebar">
+  <h1>NETHERMIND</h1>
+  <p>Metro Map — transit workflow</p>
+  <div class="stat-row">
+    <div class="stat"><div class="val">0</div><div class="lbl">Lines</div></div>
+    <div class="stat"><div class="val">0</div><div class="lbl">Trains</div></div>
+    <div class="stat"><div class="val">0</div><div class="lbl">Delays</div></div>
+  </div>
+</div>
+<div class="tooltip" id="tip"></div>
+<div class="line-legend">
+  <span><span class="line" style="background:#58a6ff"></span> Trending → Script</span>
+  <span><span class="line" style="background:#d2a8ff"></span> Script → Ref</span>
+  <span><span class="line" style="background:#f0883e"></span> Approval gate</span>
+  <span><span class="line" style="background:#3fb950"></span> Production</span>
+</div>
+<script>
+const C = document.getElementById('canvas');
+const ctx = C.getContext('2d');
+const tip = document.getElementById('tip');
+let W, H;
+function resize() { W = C.width = window.innerWidth; H = C.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+// Station positions in a metro-grid layout
+const stations = [
+  { name: 'Trending',     x: 0.12, y: 0.25, lines: ['blue'] },
+  { name: 'Script Writer', x: 0.32, y: 0.18, lines: ['blue','purple'] },
+  { name: 'Referencer',   x: 0.52, y: 0.28, lines: ['purple','orange'] },
+  { name: 'Approval',     x: 0.32, y: 0.55, lines: ['orange'] },
+  { name: 'Production',   x: 0.52, y: 0.65, lines: ['orange','green'] },
+  { name: 'QC / Learn',   x: 0.72, y: 0.5,  lines: ['green','blue'] },
+  { name: 'Poster',       x: 0.88, y: 0.35, lines: ['green'] },
+];
+
+const lines = {
+  blue:   { color: '#58a6ff', stations: [0,1,5] },
+  purple: { color: '#d2a8ff', stations: [1,2] },
+  orange: { color: '#f0883e', stations: [2,3,4] },
+  green:  { color: '#3fb950', stations: [4,5,6] },
+};
+
+const routes = [
+  ['blue', 0, 1], ['blue', 1, 5],
+  ['purple', 1, 2],
+  ['orange', 2, 3], ['orange', 3, 4],
+  ['green', 4, 5], ['green', 5, 6],
+];
+
+let trains = [];
+function spawnTrain() {
+  const r = routes[Math.floor(Math.random() * routes.length)];
+  trains.push({
+    line: r[0], from: r[1], to: r[2],
+    t: 0, speed: 0.004 + Math.random() * 0.006,
+  });
+}
+
+let time = 0;
+function draw() {
+  time++;
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+
+  // draw subway lines
+  for (const [name, line] of Object.entries(lines)) {
+    ctx.strokeStyle = line.color + '33';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 6]);
+    ctx.lineDashOffset = -time * 0.3;
+    ctx.beginPath();
+    for (let i = 0; i < line.stations.length; i++) {
+      const s = stations[line.stations[i]];
+      if (i === 0) ctx.moveTo(s.x * W, s.y * H);
+      else ctx.lineTo(s.x * W, s.y * H);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // trains
+  for (let i = trains.length - 1; i >= 0; i--) {
+    const tr = trains[i];
+    const from = stations[tr.from], to = stations[tr.to];
+    tr.t += tr.speed;
+    if (tr.t > 1) { trains.splice(i, 1); continue; }
+    const x = from.x * W + (to.x * W - from.x * W) * tr.t;
+    const y = from.y * H + (to.y * H - from.y * H) * tr.t;
+    const col = lines[tr.line].color;
+
+    // train glow
+    ctx.fillStyle = col + '44';
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // train dot
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // label
+    ctx.fillStyle = '#c9d1d9';
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${tr.line.toUpperCase()} ${Math.round(tr.t*100)}%`, x, y - 10);
+  }
+
+  // stations
+  for (const s of stations) {
+    const sx = s.x * W, sy = s.y * H;
+    // outer ring
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 14, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // inner dot
+    ctx.fillStyle = '#c9d1d9';
+    ctx.beginPath();
+    ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // label
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = '12px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.name, sx, sy + 28);
+
+    // line indicators
+    const lineColors = s.lines.map(l => lines[l].color);
+    lineColors.forEach((c, i) => {
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      ctx.arc(sx - 8 + i * 8, sy - 18, 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  if (Math.random() < 0.04) spawnTrain();
+  requestAnimationFrame(draw);
+}
+
+C.addEventListener('mousemove', e => {
+  const mx = e.clientX, my = e.clientY;
+  let hit = null;
+  for (const s of stations) {
+    const dx = mx - s.x * W, dy = my - s.y * H;
+    if (Math.sqrt(dx*dx+dy*dy) < 20) { hit = s; break; }
+  }
+  if (hit) {
+    tip.classList.add('show');
+    tip.style.left = (mx + 16) + 'px';
+    tip.style.top = (my - 10) + 'px';
+    tip.innerHTML = `<strong>${hit.name}</strong><br>Lines: ${hit.lines.join(', ')}<br>Trains: ${trains.filter(t=>t.from===stations.indexOf(hit)||t.to===stations.indexOf(hit)).length}`;
+  } else {
+    tip.classList.remove('show');
+  }
+});
+
+draw();
+</script>
+</body>
+</html>

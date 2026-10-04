@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nethermind — Petri Dish</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #060d06; color: #c8f7c8; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
+#canvas { width: 100vw; height: 100vh; display: block; }
+.sidebar { position: fixed; top: 20px; left: 20px; width: 260px; z-index: 10; pointer-events: none; }
+.sidebar h1 { font-size: 1.2em; color: #4ade80; margin-bottom: 4px; letter-spacing: 0.05em; }
+.sidebar p { font-size: 0.75em; color: #6b7280; }
+.stat-row { display: flex; gap: 12px; margin-top: 14px; pointer-events: auto; }
+.stat { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 8px 12px; flex: 1; }
+.stat .val { font-size: 1.4em; font-weight: 700; color: #4ade80; }
+.stat .lbl { font-size: 0.65em; color: #6b7280; text-transform: uppercase; }
+.tooltip { position: fixed; background: #111911; border: 1px solid #16a34a; border-radius: 8px; padding: 10px 14px; font-size: 0.8em; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 20; max-width: 220px; }
+.tooltip.show { opacity: 1; }
+.legend { position: fixed; bottom: 20px; left: 20px; display: flex; gap: 16px; font-size: 0.7em; color: #6b7280; pointer-events: none; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="sidebar">
+  <h1>NETHERMIND</h1>
+  <p>Petri Dish — growth-based workflow</p>
+  <div class="stat-row">
+    <div class="stat"><div class="val">0</div><div class="lbl">Pipelines</div></div>
+    <div class="stat"><div class="val">6</div><div class="lbl">Agents</div></div>
+    <div class="stat"><div class="val">0</div><div class="lbl">Active</div></div>
+  </div>
+</div>
+<div class="tooltip" id="tip"></div>
+<div class="legend">
+  <span><span class="dot" style="background:#4ade80"></span> Active</span>
+  <span><span class="dot" style="background:#16a34a33"></span> Idle</span>
+  <span><span class="dot" style="background:#facc15"></span> Pending</span>
+  <span><span class="dot" style="background:#f87171"></span> Error</span>
+</div>
+<script>
+const C = document.getElementById('canvas');
+const ctx = C.getContext('2d');
+const tip = document.getElementById('tip');
+let W, H;
+function resize() { W = C.width = window.innerWidth; H = C.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const agents = [
+  { name: 'Trending', x: 0.2, y: 0.25, size: 28, status: 'idle' },
+  { name: 'Script', x: 0.42, y: 0.18, size: 28, status: 'idle' },
+  { name: 'Referencer', x: 0.62, y: 0.28, size: 28, status: 'idle' },
+  { name: 'Approval', x: 0.42, y: 0.55, size: 28, status: 'pending' },
+  { name: 'Production', x: 0.62, y: 0.65, size: 28, status: 'idle' },
+  { name: 'QC / Learn', x: 0.2, y: 0.7, size: 28, status: 'idle' },
+];
+
+const edges = [
+  [0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[1,4],[0,3]
+];
+
+const colonies = [];
+for (let i = 0; i < 40; i++) {
+  colonies.push({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 8 + Math.random() * 25,
+    speed: 0.0003 + Math.random() * 0.0006,
+    phase: Math.random() * Math.PI * 2,
+    color: Math.random() > 0.85 ? '#facc15' : (Math.random() > 0.9 ? '#f87171' : '#16a34a33'),
+  });
+}
+
+let particles = [];
+function spawnParticle() {
+  const e = edges[Math.floor(Math.random() * edges.length)];
+  const a = agents[e[0]], b = agents[e[1]];
+  particles.push({
+    x: a.x * W, y: a.y * H,
+    tx: b.x * W, ty: b.y * H,
+    t: 0, speed: 0.005 + Math.random() * 0.008,
+    color: e[2] || '#4ade80',
+  });
+}
+
+let time = 0;
+function draw() {
+  time++;
+  ctx.fillStyle = '#060d06';
+  ctx.fillRect(0, 0, W, H);
+
+  // agar background texture
+  ctx.fillStyle = '#0a1a0a';
+  ctx.fillRect(0, 0, W, H);
+  for (const c of colonies) {
+    const grow = Math.sin(time * c.speed + c.phase) * 0.3 + 0.7;
+    const r = Math.max(1, c.r * grow);
+    const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, r);
+    grad.addColorStop(0, c.color);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(c.x - r, c.y - r, r * 2, r * 2);
+  }
+
+  // edges as faint mycelium
+  for (const [i, j] of edges) {
+    const a = agents[i], b = agents[j];
+    ctx.strokeStyle = 'rgba(74,222,128,0.08)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    const mx = (a.x + b.x) / 2 * W + (Math.sin(time * 0.01 + i) * 20);
+    const my = (a.y + b.y) / 2 * H + (Math.cos(time * 0.01 + j) * 20);
+    ctx.moveTo(a.x * W, a.y * H);
+    ctx.quadraticCurveTo(mx, my, b.x * W, b.y * H);
+    ctx.stroke();
+  }
+
+  // particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.t += p.speed;
+    if (p.t > 1) { particles.splice(i, 1); continue; }
+    const x = p.x + (p.tx - p.x) * p.t;
+    const y = p.y + (p.ty - p.y) * p.t;
+    ctx.fillStyle = p.color || '#4ade80';
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fill();
+    // trail
+    ctx.fillStyle = (p.color || '#4ade80') + '33';
+    ctx.beginPath();
+    ctx.arc(x - (p.tx - p.x) * p.t * 0.4, y - (p.ty - p.y) * p.t * 0.4, 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // agents
+  for (const a of agents) {
+    const ax = a.x * W, ay = a.y * H;
+    const pulse = Math.sin(time * 0.03 + a.x * 10) * 0.15 + 0.85;
+    const baseColor = a.status === 'pending' ? '#facc15' : a.status === 'active' ? '#4ade80' : '#16a34a';
+    const col = a.status === 'pending' ? `rgba(250,204,21,${pulse})` : a.status === 'active' ? `rgba(74,222,128,${pulse})` : `rgba(22,163,74,${pulse * 0.5})`;
+
+    // glow
+    const grad = ctx.createRadialGradient(ax, ay, 0, ax, ay, a.size * 1.5 * pulse);
+    grad.addColorStop(0, col);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(ax - a.size * 2, ay - a.size * 2, a.size * 4, a.size * 4);
+
+    // colony circle
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.arc(ax, ay, Math.max(1, a.size * pulse), 0, Math.PI * 2);
+    ctx.fill();
+
+    // inner ring
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(ax, ay, Math.max(1, a.size * 0.5), 0, Math.PI * 2);
+    ctx.stroke();
+
+    // label
+    ctx.fillStyle = '#c8f7c8';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.name, ax, ay + a.size + 16);
+  }
+
+  if (Math.random() < 0.03) spawnParticle();
+  requestAnimationFrame(draw);
+}
+
+// hover
+C.addEventListener('mousemove', e => {
+  const mx = e.clientX, my = e.clientY;
+  let hit = null;
+  for (const a of agents) {
+    const dx = mx - a.x * W, dy = my - a.y * H;
+    if (Math.sqrt(dx*dx+dy*dy) < a.size + 10) { hit = a; break; }
+  }
+  if (hit) {
+    tip.classList.add('show');
+    tip.style.left = (mx + 16) + 'px';
+    tip.style.top = (my - 10) + 'px';
+    tip.innerHTML = `<strong>${hit.name}</strong><br>Status: ${hit.status}<br>Size: colony ${Math.round(hit.size)}μ`;
+  } else {
+    tip.classList.remove('show');
+  }
+});
+
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Optional local transcription: pip install openai-whisper
+Pillow>=10.0,<13
+pytest>=8,<10
+
+yt-dlp>=2025.1.0

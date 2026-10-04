@@ -1,0 +1,480 @@
+"""Local Clipping Farm HUD and intake control centre."""
+
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from email.parser import BytesParser
+from email.policy import default
+from urllib.parse import urlparse, parse_qs
+from pathlib import Path
+import json, tempfile, uuid, threading
+
+from .db import DB
+from .ingest import Source, SourceIngestor
+from .reference import ReferenceInspector, ReferenceDownloader
+from .pipeline import ClippingPipeline
+from .agent_handlers import LocalHandlers
+from .runner import PipelineRunner
+TASKS=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates","score_candidates","select_candidates","produce_clips","qc","repair","export_review"]
+
+HTML = r"""<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clipping Farm HUD</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090909;color:#eee;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+header{padding:20px 28px;border-bottom:1px solid #292929;display:flex;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:20px;letter-spacing:3px}h2{font-size:13px;letter-spacing:2px;color:#bbb}
+main{padding:20px;max-width:1500px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.card{border:1px solid #292929;background:#101010;padding:15px}.label{font-size:10px;color:#777;letter-spacing:1px}.value{font-size:22px;margin-top:7px}
+.intake{margin-bottom:20px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select{background:#080808;color:#eee;border:1px solid #333;padding:10px;font-family:inherit;min-width:220px}
+button{background:#eee;color:#111;border:0;padding:10px 14px;font-family:inherit;cursor:pointer}
+button.alt{background:#222;color:#eee;border:1px solid #444}.notice{margin-top:10px;color:#aaa;font-size:12px}
+.pipeline{margin-top:20px}.stage{display:grid;grid-template-columns:190px 120px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid #202020;align-items:center}
+.pass{color:#7dff9b}.fail{color:#ff7474}.pending{color:#ffd166}.bar{height:6px;background:#252525;overflow:hidden}.fill{height:100%;background:#ddd}
+.events{margin-top:20px;max-height:330px;overflow:auto}.event{padding:7px 0;border-bottom:1px solid #181818;color:#aaa;font-size:11px}
+.asset{margin-top:20px}.mono{font-size:11px;color:#bbb;word-break:break-all}.pill{display:inline-block;padding:4px 7px;border:1px solid #444;margin:2px;font-size:10px}
+#file{display:none}@media(max-width:700px){.stage{grid-template-columns:1fr}main{padding:12px}}
+</style></head>
+<body>
+<header><h1>CLIPPING FARM / HUD</h1><div><span id="run">NO RUN</span> <button class="alt" onclick="load()">REFRESH</button></div></header>
+<main>
+<section class="card intake">
+<h2>ADD ASSET</h2>
+<div class="row">
+<button onclick="const f=document.getElementById('file');f.value='';f.click()">UPLOAD VIDEO</button>
+<button class="alt" onclick="runBuild()">RUN BUILD 20.3</button>
+<input id="url" placeholder="YouTube / site URL">
+<select id="purpose"><option value="reference">REFERENCE</option><option value="production_source">PRODUCTION</option><option value="both">BOTH</option></select>
+<button onclick="inspectUrl()">INSPECT URL</button>
+<input id="localPath" placeholder="Local path (optional)">
+<input id="localFile" type="file" accept="video/*" style="display:none" onchange="ingestSelectedFile()"><button onclick="document.getElementById('localFile').click()">SELECT VIDEO</button><button onclick="runComplete()">RUN BUILD 20.3</button>
+</div>
+<input id="file" type="file" accept="video/*" onchange="uploadFile()">
+<div id="notice" class="notice">URL inspection never grants rights. Authorise an inspected source before acquisition.</div>
+</section>
+
+<section class="grid">
+<div class="card"><div class="label">STATE</div><div class="value" id="state">—</div></div>
+<div class="card"><div class="label">JOBS</div><div class="value" id="jobs">—</div></div>
+<div class="card"><div class="label">COMPLETE</div><div class="value" id="complete">—</div></div>
+<div class="card"><div class="label">COST</div><div class="value" id="cost">—</div></div>
+</section>
+
+<section class="card asset"><h2>ASSET</h2><div id="asset">No asset loaded.</div></section>
+<section class="pipeline"><h2>PIPELINE</h2><div id="pipeline"></div></section>
+<section class="events"><h2>EVENT STREAM</h2><div id="events"></div></section>
+</main>
+<script>
+let activeSourceId=null; let uploading=false;
+const stages=["metadata","analyse_audio","analyse_scenes","transcribe","generate_candidates","score_candidates","select_candidates","produce_clips","qc","repair","export_review"];
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function note(x){document.getElementById("notice").textContent=x;}
+async function api(path,body,opts={}){const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),...opts});const d=await r.json();if(!r.ok)throw new Error(d.error||"request failed");return d;}
+async function inspectUrl(){try{const d=await api("/api/intake",{url:document.getElementById("url").value,purpose:document.getElementById("purpose").value});activeSourceId=d.source_id;note("INSPECTED: "+d.source_id+" — rights "+d.rights_state+". Use AUTHORISE then ACQUIRE.");if(confirm("Authorise this source now?")){await api("/api/authorise",{source_id:d.source_id});note("AUTHORISED: "+d.source_id);if(confirm("Acquire/download now?")){const a=await api("/api/acquire",{source_id:d.source_id,purpose:document.getElementById("purpose").value});note("ACQUIRED "+a.asset.asset_id);load();}}}catch(e){note("ERROR: "+e.message)}}
+async function ingestSelectedFile(){
+try{
+  const file=document.getElementById("localFile").files[0];
+  if(!file) return;
+
+  note("UPLOADING "+file.name+"...");
+  const fd=new FormData();
+  fd.append("file",file);
+  fd.append("purpose",document.getElementById("purpose").value || "production");
+
+  const r=await fetch("/api/upload",{method:"POST",body:fd});
+  const d=await r.json();
+  if(!r.ok) throw Error(d.error||"upload failed");
+
+  activeSourceId=d.source_id;
+  note("READY: "+(d.asset_id||file.name));
+  load();
+}catch(e){
+  note("ERROR: "+e.message);
+}
+}catch(e){
+note("UPLOAD ERROR: "+e.message);
+}finally{
+uploading=false;
+document.getElementById("file").value="";
+}
+}
+
+
+async function runComplete(){
+try{
+  if(!activeSourceId) throw Error("Select or upload a video first.");
+  if(!confirm("Run Build 20.3 on this registered video?")) return;
+
+  note("STARTING BUILD 20.3...");
+  const r=await fetch("/api/complete_asset",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({source_id:activeSourceId})
+  });
+  const d=await r.json();
+  if(!r.ok) throw Error(d.error||"Build 20.3 failed");
+
+  activeSourceId=d.source_id || activeSourceId;
+  note("BUILD 20.3 STARTED: "+(d.run_id||""));
+  load();
+}catch(e){
+  note("BUILD ERROR: "+e.message);
+  console.error(e);
+}
+}
+
+async function runBuild(){
+try{
+if(!activeSourceId)throw Error("Select/upload a video first.");
+
+note("STARTING BUILD 20.3...");
+
+const d=await api("/api/run",{
+source_id:activeSourceId,
+budget:0,
+mode:"FREE-FIRST"
+});
+
+note("BUILD 20.3 STARTED: "+d.source_id);
+await load();
+
+}catch(e){
+note("BUILD ERROR: "+e.message);
+console.error(e);
+}
+}
+
+async function load(){
+if(uploading)return;
+try{
+note("REFRESHING...");
+const query=activeSourceId?"?source_id="+encodeURIComponent(activeSourceId):"";
+const r=await fetch("/api/snapshot"+query);
+if(!r.ok)throw Error("snapshot HTTP "+r.status);
+const data=await r.json();
+
+document.getElementById("run").textContent="RUN: "+esc(data.source_id);
+
+const jobs=data.jobs||[];
+const complete=jobs.filter(j=>j.state==="COMPLETE").length;
+const failed=jobs.filter(j=>j.state==="DEAD_LETTER").length;
+const cost=jobs.reduce((n,j)=>n+Number(j.actual_cost||0),0);
+
+let state="RUNNING";
+if(!jobs.length)state="IDLE";
+if(jobs.length&&complete===jobs.length)state="COMPLETE";
+if(failed)state="FAILED";
+
+document.getElementById("state").textContent=state;
+document.getElementById("jobs").textContent=jobs.length;
+document.getElementById("complete").textContent=complete+" / "+jobs.length;
+document.getElementById("cost").textContent=cost.toFixed(4);
+
+const a=data.asset;
+
+if(a){
+document.getElementById("asset").innerHTML="<div><b>"+esc(a.asset_id)+"</b> <span class='pill'>"+esc(a.purpose)+"</span> <span class='pill'>"+esc(a.rights_state)+"</span> <span class='pill'>"+esc(a.acquisition_state)+"</span></div><div class='mono'>"+esc(a.title||a.original_filename||"")+"<br>"+esc(a.source_url||a.local_path||"")+"<br>"+esc(a.local_path||"")+"</div>";
+}else{
+document.getElementById("asset").textContent="No asset registered for this run.";
+}
+
+const byTask=Object.fromEntries(jobs.map(j=>[j.task,j]));
+
+document.getElementById("pipeline").innerHTML=stages.map(task=>{
+const job=byTask[task];
+const status=job?job.state:"WAITING";
+const cls=status==="COMPLETE"?"pass":status==="DEAD_LETTER"?"fail":"pending";
+return `<div class="stage"><div><b>${esc(task)}</b></div><div class="${cls}">${esc(status)}</div><div class="bar"><div class="fill" style="width:${status==="COMPLETE"?100:status==="RUNNING"?60:15}%"></div></div></div>`;
+}).join("");
+
+document.getElementById("events").innerHTML=(data.events||[]).map(e=>`<div class="event"><b>${esc(e.event)}</b> ${esc(e.data)}</div>`).join("");
+
+note("REFRESHED: "+data.source_id);
+
+if(jobs.length && complete < jobs.length && !failed){
+clearTimeout(window._hudPoll);
+window._hudPoll=setTimeout(load,1500);
+}
+
+}catch(e){
+note("REFRESH ERROR: "+e.message);
+console.error(e);
+}
+}
+load();
+</script></body></html>
+"""
+
+def _json(handler, code, payload):
+    body=json.dumps(payload,ensure_ascii=False).encode()
+    handler.send_response(code); handler.send_header("Content-Type","application/json; charset=utf-8")
+    handler.send_header("Content-Length",str(len(body))); handler.end_headers(); handler.wfile.write(body)
+
+class HUDHandler(BaseHTTPRequestHandler):
+    db_path=None
+    source_id=None
+    active_runs=set()
+
+    def _body_json(self):
+        n=int(self.headers.get("Content-Length","0")); raw=self.rfile.read(n)
+        return json.loads(raw or b"{}")
+
+    def do_GET(self):
+        parsed=urlparse(self.path)
+        if parsed.path=="/":
+            body=HTML.encode(); self.send_response(200); self.send_header("Content-Type","text/html; charset=utf-8")
+            self.send_header("Content-Length",str(len(body))); self.end_headers(); self.wfile.write(body); return
+        if parsed.path=="/api/snapshot":
+            params=parse_qs(parsed.query)
+            source_id=params.get("source_id",[self.source_id])[0]
+            db=DB(self.db_path); _json(self,200,db.run_snapshot(source_id)); return
+        self.send_error(404)
+
+    def do_POST(self):
+        parsed = urlparse(self.path)
+
+        if parsed.path == "/api/upload":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                content_type = self.headers.get("Content-Type", "")
+                body = self.rfile.read(length)
+
+                if "multipart/form-data" not in content_type:
+                    _json(self, 400, {"error": "Expected multipart/form-data"})
+                    return
+
+                raw = (
+                    ("Content-Type: " + content_type +
+                     "\r\nMIME-Version: 1.0\r\n\r\n").encode()
+                    + body
+                )
+
+                msg = BytesParser(policy=default).parsebytes(raw)
+
+                filename = None
+                payload = None
+
+                for part in msg.walk():
+                    name = part.get_filename()
+                    if name:
+                        data = part.get_payload(decode=True)
+                        if data:
+                            filename = _Path(name).name
+                            payload = data
+                            break
+
+                if not filename or not payload:
+                    _json(self, 400, {"error": "No video file received"})
+                    return
+
+                db = DB(self.db_path)
+
+                sid = "upload-" + uuid.uuid4().hex[:12]
+
+                root = (
+                    _Path(self.db_path).resolve().parent
+                    / "clipping_farm_work"
+                    / sid
+                )
+                root.mkdir(parents=True, exist_ok=True)
+
+                source_path = root / filename
+                source_path.write_bytes(payload)
+
+                db.set_rights(
+                    sid,
+                    "AUTHORISED",
+                    {"basis": "operator-uploaded local source"},
+                )
+
+                ingested = SourceIngestor(db).ingest_file(
+                    Source(
+                        sid,
+                        str(source_path),
+                        "file",
+                        {"purpose": "operator-uploaded video"},
+                    )
+                )
+
+                HUDHandler.source_id = sid
+
+                print(
+                    "UPLOAD REGISTERED:",
+                    sid,
+                    ingested["asset_id"],
+                )
+
+                _json(
+                    self,
+                    200,
+                    {
+                        "source_id": sid,
+                        "asset_id": ingested["asset_id"],
+                        "filename": filename,
+                        "library_path": ingested["library_path"],
+                        "rights_state": "AUTHORISED",
+                        "state": "READY",
+                    },
+                )
+
+            except Exception as exc:
+                print("UPLOAD ERROR:", repr(exc))
+                _json(
+                    self,
+                    500,
+                    {"error": f"{type(exc).__name__}: {exc}"},
+                )
+            return
+
+        if parsed.path == "/api/run":
+            try:
+                data = self._body_json()
+                sid = data.get("source_id") or HUDHandler.source_id
+
+                if not sid:
+                    _json(self, 400, {"error": "No source_id"})
+                    return
+
+                db = DB(self.db_path)
+
+                row = db.cx.execute(
+                    """
+                    SELECT *
+                    FROM assets
+                    WHERE source_id=?
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                    """,
+                    (sid,),
+                ).fetchone()
+
+                if not row:
+                    _json(self, 404, {"error": "No asset registered"})
+                    return
+
+                asset = dict(row)
+
+                if asset.get("rights_state") != "AUTHORISED":
+                    _json(self, 403, {"error": "Asset is not authorised"})
+                    return
+
+                local_path = asset.get("local_path")
+                if not local_path or not _Path(local_path).exists():
+                    _json(self, 404, {"error": "Asset file not found"})
+                    return
+
+                if sid in HUDHandler.active_runs:
+                    _json(self, 200, {
+                        "source_id": sid,
+                        "state": "RUNNING",
+                        "already_running": True,
+                    })
+                    return
+
+                budget = float(data.get("budget", 0) or 0)
+                mode = str(data.get("mode", "FREE-FIRST") or "FREE-FIRST")
+
+                plan = ClippingPipeline(db).create(
+                    sid,
+                    source_path=local_path,
+                    budget=budget,
+                    mode=mode,
+                    asset_id=asset["asset_id"],
+                )
+
+                HUDHandler.source_id = sid
+                HUDHandler.active_runs.add(sid)
+
+                job_ids = plan.jobs
+                db_path = self.db_path
+
+                def worker():
+                    run_db = None
+                    try:
+                        run_db = DB(db_path)
+
+                        result = PipelineRunner(
+                            run_db,
+                            LocalHandlers(run_db).handlers(),
+                            capabilities=TASKS,
+                        ).run(
+                            plan.source_id,
+                            job_ids,
+                        )
+
+                        print(
+                            "BUILD 20.3:",
+                            result.source_id,
+                            result.state,
+                            "processed=",
+                            result.processed,
+                        )
+
+                    except Exception as exc:
+                        print("BUILD 20.3 ERROR:", repr(exc))
+
+                        if run_db is not None:
+                            try:
+                                for job_id in job_ids.values():
+                                    run_db.cx.execute(
+                                        """
+                                        UPDATE jobs
+                                        SET state='DEAD_LETTER', error=?
+                                        WHERE id=?
+                                        AND state NOT IN
+                                            ('COMPLETE','DEAD_LETTER')
+                                        """,
+                                        (
+                                            f"{type(exc).__name__}: {exc}",
+                                            job_id,
+                                        ),
+                                    )
+                                run_db.cx.commit()
+                            except Exception as db_exc:
+                                print(
+                                    "BUILD FAILURE RECORD ERROR:",
+                                    repr(db_exc),
+                                )
+
+                    finally:
+                        HUDHandler.active_runs.discard(sid)
+
+                threading.Thread(
+                    target=worker,
+                    name=f"clipping-farm-{sid}",
+                    daemon=True,
+                ).start()
+
+                _json(
+                    self,
+                    202,
+                    {
+                        "source_id": sid,
+                        "asset_id": asset["asset_id"],
+                        "state": "RUNNING",
+                        "jobs": job_ids,
+                    },
+                )
+
+            except Exception as exc:
+                print("RUN ERROR:", repr(exc))
+                _json(
+                    self,
+                    500,
+                    {"error": f"{type(exc).__name__}: {exc}"},
+                )
+            return
+
+        _json(self, 404, {"error": "Unknown POST endpoint"})
+
+    def log_message(self,*_): pass
+
+def serve(db_path, source_id, host="127.0.0.1", port=8765):
+    HUDHandler.db_path=db_path; HUDHandler.source_id=source_id
+    server=ThreadingHTTPServer((host,port),HUDHandler)
+    print(f"Clipping Farm HUD: http://{host}:{port}")
+    print(f"Source/run: {source_id}")
+    print("Press Ctrl-C to stop.")
+    try: server.serve_forever()
+    except KeyboardInterrupt: print("\nHUD stopped.")
+    finally: server.server_close()
+
