@@ -13,7 +13,8 @@ Dashboard running at `http://127.0.0.1:8765`
 - Stats: assets, jobs, pipelines, events, patterns, approvals
 
 ### Current state
-- 0 assets, 1 job, 0 approvals
+- 9 assets, 10 sources, 172 jobs (all complete)
+- 5 video files uploaded
 - Fresh start — ready for a real video source
 
 ### How to run
