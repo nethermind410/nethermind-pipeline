@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nethermind — Growth Workflow</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #040a04; color: #c8f7c8; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
+#canvas { width: 100vw; height: 100vh; display: block; cursor: default; }
+.sidebar { position: fixed; top: 20px; left: 20px; width: 260px; z-index: 10; pointer-events: none; }
+.sidebar h1 { font-size: 1.1em; color: #4ade80; margin-bottom: 2px; letter-spacing: 0.08em; font-weight: 600; }
+.sidebar .sub { font-size: 0.7em; color: #6b7280; margin-bottom: 14px; }
+.stat-row { display: flex; gap: 10px; pointer-events: auto; flex-wrap: wrap; }
+.stat { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); border-radius: 8px; padding: 8px 12px; flex: 1; min-width: 70px; }
+.stat .val { font-size: 1.3em; font-weight: 700; color: #4ade80; }
+.stat .lbl { font-size: 0.6em; color: #6b7280; text-transform: uppercase; margin-top: 2px; }
+.tip { position: fixed; background: #0c1a0c; border: 1px solid #16a34a; border-radius: 8px; padding: 10px 14px; font-size: 0.78em; pointer-events: none; opacity: 0; transition: opacity 0.12s; z-index: 20; max-width: 230px; line-height: 1.4; }
+.tip.show { opacity: 1; }
+.legend { position: fixed; bottom: 20px; left: 20px; display: flex; gap: 14px; font-size: 0.68em; color: #6b7280; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend .dot { width: 7px; height: 7px; border-radius: 50%; }
+.hint { position: fixed; bottom: 20px; right: 20px; font-size: 0.65em; color: #374151; pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="sidebar">
+  <h1>NETHERMIND</h1>
+  <div class="sub">growth-based workflow</div>
+  <div class="stat-row">
+    <div class="stat"><div class="val" id="nPipes">0</div><div class="lbl">Pipelines</div></div>
+    <div class="stat"><div class="val" id="nAgents">6</div><div class="lbl">Agents</div></div>
+    <div class="stat"><div class="val" id="nActive">0</div><div class="lbl">Active</div></div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<div class="legend">
+  <span><span class="dot" style="background:#4ade80"></span> Active</span>
+  <span><span class="dot" style="background:#facc15"></span> Pending</span>
+  <span><span class="dot" style="background:#f87171"></span> Error</span>
+  <span><span class="dot" style="background:#374151"></span> Idle</span>
+</div>
+<div class="hint">hover agents for detail</div>
+<script>
+const C = document.getElementById('canvas');
+const ctx = C.getContext('2d');
+const tip = document.getElementById('tip');
+let W, H;
+function resize() { W = C.width = window.innerWidth; H = C.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+// --- Agent definitions (brain regions) ---
+const agents = [
+  { name: 'Trending',     x: 0.15, y: 0.28, size: 30, status: 'idle',  color: '#4ade80', jobs: 0, quality: 0 },
+  { name: 'Script',       x: 0.38, y: 0.18, size: 28, status: 'idle',  color: '#4ade80', jobs: 0, quality: 0 },
+  { name: 'Referencer',   x: 0.58, y: 0.32, size: 32, status: 'idle',  color: '#4ade80', jobs: 0, quality: 0 },
+  { name: 'Approval',     x: 0.42, y: 0.58, size: 26, status: 'pending', color: '#facc15', jobs: 0, quality: 0 },
+  { name: 'Production',   x: 0.65, y: 0.65, size: 30, status: 'idle',  color: '#4ade80', jobs: 0, quality: 0 },
+  { name: 'QC / Learn',   x: 0.25, y: 0.75, size: 30, status: 'idle',  color: '#4ade80', jobs: 0, quality: 0 },
+];
+
+// Edges as mycelium paths between agents
+const edges = [
+  [0,1,'blue'], [1,2,'purple'], [2,3,'orange'], [3,4,'orange'], [4,5,'green'], [5,0,'green'], [1,4,'purple'], [0,3,'blue']
+];
+
+// Colony blobs — organic, textured colonies that grow when active
+class Colony {
+  constructor(agent) {
+    this.ax = agent.x; this.ay = agent.y;
+    this.baseR = agent.size;
+    this.r = agent.size * 0.3; // starts small, grows
+    this.targetR = agent.size;
+    this.status = agent.status;
+    this.phase = Math.random() * Math.PI * 2;
+    this.growthSpeed = 0.008;
+    this.nodes = []; // peripheral nodes (satellite colonies)
+    for (let i = 0; i < 5 + Math.floor(Math.random()*4); i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 0.8 + Math.random() * 1.2;
+      this.nodes.push({ angle, dist, r: 2 + Math.random() * 5, phase: Math.random() * Math.PI * 2 });
+    }
+    // tendrils — organic wavy lines extending outward
+    this.tendrils = [];
+    for (let i = 0; i < 3; i++) {
+      this.tendrils.push({
+        angle: Math.random() * Math.PI * 2,
+        length: 0.4 + Math.random() * 0.8,
+        speed: 0.0002 + Math.random() * 0.0004,
+        phase: Math.random() * Math.PI * 2,
+        width: 1 + Math.random() * 2,
+      });
+    }
+  }
+  update(t) {
+    // grow towards target
+    if (this.status === 'active') {
+      this.targetR = this.baseR * 1.2;
+    } else if (this.status === 'pending') {
+      this.targetR = this.baseR * 1.05;
+    } else {
+      this.targetR = this.baseR * 0.7;
+    }
+    this.r += (this.targetR - this.r) * 0.02;
+    this.status = agents.find(a => a.x === this.ax && a.y === this.ay)?.status || 'idle';
+  }
+  draw(ctx, t) {
+    const cx = this.ax * W, cy = this.y * H;
+    const col = this.status === 'pending' ? '#facc15' : this.status === 'active' ? '#4ade80' : '#166534';
+    const alpha = this.status === 'idle' ? 0.25 : 0.6;
+
+    // tendrils — organic wavy lines
+    for (const tr of this.tendrils) {
+      const baseAngle = tr.angle + Math.sin(t * tr.speed + tr.phase) * 0.3;
+      const len = this.r * tr.length * (0.5 + Math.sin(t * 0.001 + tr.phase) * 0.5);
+      const ex = cx + Math.cos(baseAngle) * len;
+      const ey = cy + Math.sin(baseAngle) * len;
+      ctx.strokeStyle = col + '22';
+      ctx.lineWidth = tr.width;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      // wavy path
+      const steps = 20;
+      for (let i = 1; i <= steps; i++) {
+        const frac = i / steps;
+        const px = cx + (ex - cx) * frac;
+        const py = cy + (ey - cy) * frac;
+        const wobble = Math.sin(frac * Math.PI * 2 + t * 0.002 + tr.phase) * 8;
+        const perpX = -(ey - cy) / Math.max(1, Math.sqrt((ex-cx)**2 + (ey-cy)**2));
+        const perpY = (ex - cx) / Math.max(1, Math.sqrt((ex-cx)**2 + (ey-cy)**2));
+        ctx.lineTo(px + perpX * wobble, py + perpY * wobble);
+      }
+      ctx.stroke();
+    }
+
+    // main colony — fuzzy organic shape via radial noise
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(1, this.r));
+    grad.addColorStop(0, col + '88');
+    grad.addColorStop(0.6, col + '33');
+    grad.addColorStop(1, col + '00');
+    ctx.fillStyle = grad;
+
+    // Draw with radial noise for organic edge
+    ctx.beginPath();
+    const noisePoints = 48;
+    for (let i = 0; i <= noisePoints; i++) {
+      const angle = (i / noisePoints) * Math.PI * 2;
+      const noise = Math.sin(angle * 3 + t * 0.001 + this.phase) * 0.15
+                  + Math.sin(angle * 5 + t * 0.0015 + this.phase * 2) * 0.08
+                  + Math.sin(angle * 8 + t * 0.002) * 0.04;
+      const r = Math.max(1, this.r * (1 + noise));
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // inner bright core
+    const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(1, this.r * 0.35));
+    innerGrad.addColorStop(0, col + 'cc');
+    innerGrad.addColorStop(1, col + '00');
+    ctx.fillStyle = innerGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, Math.max(1, this.r * 0.35), 0, Math.PI * 2);
+    ctx.fill();
+
+    // satellite nodes
+    for (const n of this.nodes) {
+      const nx = cx + Math.cos(n.angle + t * 0.0005) * this.r * n.dist;
+      const ny = cy + Math.sin(n.angle + t * 0.0005) * this.r * n.dist;
+      const nr = Math.max(0.5, n.r * (0.6 + Math.sin(t * 0.002 + n.phase) * 0.4));
+      ctx.fillStyle = col + '55';
+      ctx.beginPath();
+      ctx.arc(nx, ny, nr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+
+    // label
+    ctx.fillStyle = this.status === 'idle' ? '#4b5563' : '#c8f7c8';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(this.name || agents.find(a => a.x === this.ax && a.y === this.ay)?.name || '', cx, cy + this.r + 18);
+  }
+}
+
+// Work particles — moving along edges (the "growth streams")
+class WorkParticle {
+  constructor(fromIdx, toIdx) {
+    this.from = agents[fromIdx];
+    this.to = agents[toIdx];
+    this.t = 0;
+    this.speed = 0.006 + Math.random() * 0.01;
+    this.alive = true;
+  }
+  update() {
+    this.t += this.speed;
+    if (this.t > 1) this.alive = false;
+  }
+  draw(ctx) {
+    const x = this.from.x * W + (this.to.x * W - this.from.x * W) * this.t;
+    const y = this.from.y * H + (this.to.y * H - this.from.y * H) * this.t;
+    // glow
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, 12);
+    grad.addColorStop(0, '#4ade8088');
+    grad.addColorStop(1, '#4ade8000');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x - 12, y - 12, 24, 24);
+    // core
+    ctx.fillStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// Create colonies for each agent
+const colonies = agents.map(a => new Colony(a));
+
+let particles = [];
+let hoverAgent = null;
+let t = 0;
+
+function spawnParticle() {
+  const edge = edges[Math.floor(Math.random() * edges.length)];
+  particles.push(new WorkParticle(edge[0], edge[1]));
+}
+
+// Mouse tracking
+let mouseX = -1, mouseY = -1;
+C.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  hoverAgent = null;
+  for (const a of agents) {
+    const dx = mouseX - a.x * W, dy = mouseY - a.y * H;
+    if (Math.sqrt(dx*dx + dy*dy) < a.size * 1.3) { hoverAgent = a; break; }
+  }
+  if (hoverAgent) {
+    tip.classList.add('show');
+    tip.style.left = (mouseX + 18) + 'px';
+    tip.style.top = (mouseY - 8) + 'px';
+    const sc = hoverAgent.status === 'active' ? '#4ade80' : hoverAgent.status === 'pending' ? '#facc15' : hoverAgent.status === 'error' ? '#f87171' : '#4b5563';
+    tip.innerHTML = `<strong style="color:${sc}">${hoverAgent.name}</strong><br>Status: ${hoverAgent.status}<br>Jobs: ${hoverAgent.jobs}<br>Quality: ${hoverAgent.quality.toFixed(2)}`;
+  } else {
+    tip.classList.remove('show');
+  }
+});
+C.addEventListener('mouseleave', () => { tip.classList.remove('show'); hoverAgent = null; });
+
+// Main draw loop
+function draw() {
+  t++;
+
+  // background — dark agar with subtle texture
+  ctx.fillStyle = '#040a04';
+  ctx.fillRect(0, 0, W, H);
+
+  // subtle agar texture (random dots)
+  if (t % 8 === 0) {
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * W, y = Math.random() * H;
+      ctx.fillStyle = `rgba(22,163,74,${0.01 + Math.random() * 0.02})`;
+      ctx.beginPath();
+      ctx.arc(x, y, 1 + Math.random() * 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // growth rings — subtle expanding rings from active agents
+  for (const a of agents) {
+    if (a.status === 'active' && t % 60 === 0) {
+      const ax = a.x * W, ay = a.y * H;
+      ctx.strokeStyle = '#4ade8015';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(ax, ay, a.size + 5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  // update & draw colonies
+  for (const c of colonies) c.update(t);
+  for (const c of colonies) c.draw(ctx, t);
+
+  // update & draw work particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    if (!particles[i].alive) { particles.splice(i, 1); continue; }
+    particles[i].draw(ctx);
+  }
+
+  // spawn new work
+  if (Math.random() < 0.04) spawnParticle();
+
+  // update sidebar stats
+  const active = agents.filter(a => a.status === 'active').length;
+  document.getElementById('nActive').textContent = active;
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
