@@ -1,0 +1,536 @@
+{
+  "run_id": "RUN-20261002-120404",
+  "created_at": "2026-10-02T02:07:39.740187+00:00",
+  "opportunity": {
+    "topic": "How culture made Japanese Internet design \"Weird\"",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "channel": "cynzy"
+  },
+  "source": {
+    "webpage_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "channel": "cynzy",
+    "duration": 770,
+    "view_count": 1081381,
+    "upload_date": "20221210"
+  },
+  "asset": {
+    "id": "ASSET-00821452b95fa1",
+    "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/runs/RUN-20261002-120404/asset/Opy-SjDU0UY.mp4",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "duration": 770.214,
+    "source_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY"
+  },
+  "candidates": [
+    {
+      "start": 533.96,
+      "end": 553.5,
+      "duration": 16.18,
+      "score": 7.77,
+      "text": "It's bad. And I know sometimes I think like this too, but it's just, it's such a self-centered way of thinking. How can we say that their design is bad when we don't even know the first thing about the people that these designs are serving? We always think that the culture that fits our own personal values, that's good.",
+      "reasons": [
+        "hook-language=2",
+        "payoff-language=2",
+        "context-language=4",
+        "natural-speaking-length",
+        "short-form-compatible",
+        "question-hook"
+      ],
+      "id": "INT-4da0d41ecfd377",
+      "jev_score": 7.77,
+      "jev_verdict": "JEV_REVIEW",
+      "jev_metrics": {
+        "hook": 7.6,
+        "opening_integrity": 7.0,
+        "opening_verdict": "OPENING_PASS",
+        "payoff": 7.0,
+        "question_answer": true,
+        "micro_payoff": false,
+        "standalone": 8.0,
+        "curiosity": 8.0,
+        "specificity": 5.5,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "boundary_optimization": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 531.98,
+        "original_end": 548.16,
+        "original_jev": 7.0,
+        "optimized_start": 533.96,
+        "optimized_end": 553.5,
+        "optimized_jev": 7.77,
+        "improvement": 0.7699999999999996,
+        "editorial_score": 7.77,
+        "opening_repaired": false,
+        "overlap_ratio": 0.8776266996291703
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      }
+    },
+    {
+      "start": 553.68,
+      "end": 582.88,
+      "duration": 13.7,
+      "score": 7.74,
+      "text": "The culture that doesn't fit our own personal values, that's bad. But in practice, nobody is right. Realize your own bias. How do your values affect the way you judge other people? How can you learn about other people's values and judge them according to their values instead of your own? There is no right culture, no wrong culture. Oh, by the way, this isn't just an internet design thing. The practice of packing dense information into small spaces can be widely found in advertising.",
+      "reasons": [
+        "hook-language=2",
+        "payoff-language=1",
+        "context-language=1",
+        "natural-speaking-length",
+        "short-form-compatible",
+        "question-hook"
+      ],
+      "id": "INT-331d0e9902e114",
+      "jev_score": 7.74,
+      "jev_verdict": "JEV_REVIEW",
+      "jev_metrics": {
+        "hook": 7.9,
+        "opening_integrity": 7.0,
+        "opening_verdict": "OPENING_PASS",
+        "payoff": 5.65,
+        "question_answer": false,
+        "micro_payoff": false,
+        "standalone": 8.0,
+        "curiosity": 8.6,
+        "specificity": 5.8,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "boundary_optimization": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 557.22,
+        "original_end": 570.92,
+        "original_jev": 5.8,
+        "optimized_start": 553.68,
+        "optimized_end": 582.88,
+        "optimized_jev": 7.74,
+        "improvement": 1.9400000000000004,
+        "editorial_score": 7.74,
+        "opening_repaired": true,
+        "overlap_ratio": 1.0
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      }
+    },
+    {
+      "start": 226.1,
+      "end": 272.84,
+      "duration": 26.74,
+      "score": 7.72,
+      "text": "United States or Canada, which were 56% at the time. This is what the countries look like in terms of ranking by smartphone penetration rate. In 2013, Androids dominated the South Korean market. And this is what their Android looked like. The design for browsing internet is really not that different from that of an iPhone, which according to Answer in Progress supposedly changed Western website designs. So according to the argument made by Answer in Progress, South Korean internet should look similar to that of North America because we adopted similar technology around the same time. But a lot of Korean and Chinese websites look like this, similar to that of Japan. Some of the most visited websites in South Korea today still look like this. Why? It's culture.",
+      "reasons": [
+        "hook-language=2",
+        "payoff-language=3",
+        "context-language=3",
+        "natural-speaking-length",
+        "short-form-compatible"
+      ],
+      "id": "INT-3b1b788b14fcc0",
+      "boundary_optimization": {
+        "attempted": true,
+        "applied": false,
+        "original_start": 238.1,
+        "original_end": 264.84,
+        "original_jev": 5.48
+      },
+      "jev_score": 7.72,
+      "jev_verdict": "JEV_REVIEW",
+      "jev_metrics": {
+        "hook": 6.0,
+        "opening_integrity": 7.0,
+        "opening_verdict": "OPENING_PASS",
+        "payoff": 9.3,
+        "question_answer": true,
+        "micro_payoff": true,
+        "standalone": 8.0,
+        "curiosity": 7.2,
+        "specificity": 8.4,
+        "short_form_fit": 7.0,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "context_repair": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 238.1,
+        "original_end": 264.84,
+        "original_jev": 5.48,
+        "repaired_start": 226.1,
+        "repaired_end": 272.84,
+        "repaired_jev": 7.72,
+        "improvement": 2.24,
+        "standalone_opening": true
+      }
+    },
+    {
+      "start": 386.74,
+      "end": 416.06,
+      "duration": 33.28,
+      "score": 7.44,
+      "text": "This difference in how we process information actually makes a huge difference in how information is presented. In these two different cultures. The lens through which your brain sees the world shapes your reality. A group of researchers conducted a study that examined how people from different cultures present information to others. They found that there was a clear distinction between Eastern and Western culture in what is considered the optimal amount of information presented.",
+      "reasons": [
+        "hook-language=2",
+        "payoff-language=3",
+        "context-language=2",
+        "natural-speaking-length",
+        "short-form-compatible"
+      ],
+      "id": "INT-8de16b676ca82e",
+      "jev_score": 7.44,
+      "jev_verdict": "JEV_REJECT",
+      "jev_metrics": {
+        "hook": 6.9,
+        "opening_integrity": 7.0,
+        "opening_verdict": "OPENING_PASS",
+        "payoff": 6.45,
+        "question_answer": false,
+        "micro_payoff": false,
+        "standalone": 8.0,
+        "curiosity": 6.9,
+        "specificity": 6.1,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "boundary_optimization": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 396.16,
+        "original_end": 429.44,
+        "original_jev": 6.72,
+        "optimized_start": 386.74,
+        "optimized_end": 416.06,
+        "optimized_jev": 7.44,
+        "improvement": 0.7200000000000006,
+        "editorial_score": 7.44,
+        "opening_repaired": false,
+        "overlap_ratio": 0.5979567307692306
+      },
+      "context_repair": {
+        "attempted": true,
+        "applied": false,
+        "reason": "no sufficiently better standalone window found",
+        "original_start": 386.74,
+        "original_end": 416.06,
+        "original_jev": 7.44,
+        "best_start": 361.74,
+        "best_end": 418.06,
+        "best_jev": 7.22,
+        "best_context_free": true
+      }
+    },
+    {
+      "start": 49.66,
+      "end": 69.86,
+      "duration": 22.16,
+      "score": 7.23,
+      "text": "Dense, cluttered, and information overload. I actually left a comment in the video briefly explaining why I think there is a whole cultural argument that they missed. And yes, I even upvoted the comment myself so that it will get more exposure, but no one saw it. So I'm making a video about it. We all see the world through cultural glasses.",
+      "reasons": [
+        "hook-language=2",
+        "payoff-language=1",
+        "context-language=4",
+        "natural-speaking-length",
+        "short-form-compatible"
+      ],
+      "id": "INT-85aee51735dd21",
+      "jev_score": 7.23,
+      "jev_verdict": "JEV_REJECT",
+      "jev_metrics": {
+        "hook": 6.1,
+        "opening_integrity": 7.0,
+        "opening_verdict": "OPENING_PASS",
+        "payoff": 6.3,
+        "question_answer": false,
+        "micro_payoff": false,
+        "standalone": 8.0,
+        "curiosity": 7.2,
+        "specificity": 5.65,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "boundary_optimization": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 42.18,
+        "original_end": 64.34,
+        "original_jev": 6.26,
+        "optimized_start": 49.66,
+        "optimized_end": 69.86,
+        "optimized_jev": 7.23,
+        "improvement": 0.9700000000000006,
+        "editorial_score": 7.23,
+        "opening_repaired": true,
+        "overlap_ratio": 0.6624548736462096
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      }
+    }
+  ],
+  "exports": [
+    {
+      "candidate_id": "INT-4da0d41ecfd377",
+      "original_start": 533.96,
+      "original_end": 553.5,
+      "start": 533.96,
+      "end": 553.5,
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-120404/01-how-culture-made-japanese-internet-design-wei-533-553.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 19.561208
+      },
+      "semantic_qc": {
+        "verdict": "SEMANTIC_PASS",
+        "pass": true,
+        "checks": {
+          "has_text": true,
+          "useful_duration": true,
+          "standalone_opening": true,
+          "jev_quality": true,
+          "no_trailing_fragment": true,
+          "no_context_risk": true
+        },
+        "reasons": [],
+        "jev_score": 7.77,
+        "jev_verdict": "JEV_REVIEW",
+        "duration": 19.539999999999964
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      },
+      "production_ready": true
+    },
+    {
+      "candidate_id": "INT-331d0e9902e114",
+      "original_start": 553.68,
+      "original_end": 582.88,
+      "start": 553.68,
+      "end": 582.88,
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-120404/02-how-culture-made-japanese-internet-design-wei-553-582.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 29.237541
+      },
+      "semantic_qc": {
+        "verdict": "SEMANTIC_PASS",
+        "pass": true,
+        "checks": {
+          "has_text": true,
+          "useful_duration": true,
+          "standalone_opening": true,
+          "jev_quality": true,
+          "no_trailing_fragment": true,
+          "no_context_risk": true
+        },
+        "reasons": [],
+        "jev_score": 7.74,
+        "jev_verdict": "JEV_REVIEW",
+        "duration": 29.200000000000045
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      },
+      "production_ready": true
+    },
+    {
+      "candidate_id": "INT-3b1b788b14fcc0",
+      "original_start": 226.1,
+      "original_end": 272.84,
+      "start": 226.1,
+      "end": 272.84,
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-120404/03-how-culture-made-japanese-internet-design-wei-226-272.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 46.755042
+      },
+      "semantic_qc": {
+        "verdict": "SEMANTIC_PASS",
+        "pass": true,
+        "checks": {
+          "has_text": true,
+          "useful_duration": true,
+          "standalone_opening": true,
+          "jev_quality": true,
+          "no_trailing_fragment": true,
+          "no_context_risk": true
+        },
+        "reasons": [],
+        "jev_score": 7.72,
+        "jev_verdict": "JEV_REVIEW",
+        "duration": 46.73999999999998
+      },
+      "context_repair": {
+        "attempted": true,
+        "applied": true,
+        "original_start": 238.1,
+        "original_end": 264.84,
+        "original_jev": 5.48,
+        "repaired_start": 226.1,
+        "repaired_end": 272.84,
+        "repaired_jev": 7.72,
+        "improvement": 2.24,
+        "standalone_opening": true
+      },
+      "production_ready": true
+    },
+    {
+      "candidate_id": "INT-8de16b676ca82e",
+      "original_start": 386.74,
+      "original_end": 416.06,
+      "start": 386.74,
+      "end": 416.06,
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-120404/04-how-culture-made-japanese-internet-design-wei-386-416.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 29.320958
+      },
+      "semantic_qc": {
+        "verdict": "SEMANTIC_REVIEW",
+        "pass": false,
+        "checks": {
+          "has_text": true,
+          "useful_duration": true,
+          "standalone_opening": false,
+          "jev_quality": false,
+          "no_trailing_fragment": true,
+          "no_context_risk": true
+        },
+        "reasons": [
+          "opening appears context-dependent",
+          "JEV score below review threshold: 7.44"
+        ],
+        "jev_score": 7.44,
+        "jev_verdict": "JEV_REJECT",
+        "duration": 29.319999999999993
+      },
+      "context_repair": {
+        "attempted": true,
+        "applied": false,
+        "reason": "no sufficiently better standalone window found",
+        "original_start": 386.74,
+        "original_end": 416.06,
+        "original_jev": 7.44,
+        "best_start": 361.74,
+        "best_end": 418.06,
+        "best_jev": 7.22,
+        "best_context_free": true
+      },
+      "production_ready": false
+    },
+    {
+      "candidate_id": "INT-85aee51735dd21",
+      "original_start": 49.66,
+      "original_end": 69.86,
+      "start": 49.66,
+      "end": 69.86,
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-120404/05-how-culture-made-japanese-internet-design-wei-49-69.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 20.228542
+      },
+      "semantic_qc": {
+        "verdict": "SEMANTIC_REVIEW",
+        "pass": false,
+        "checks": {
+          "has_text": true,
+          "useful_duration": true,
+          "standalone_opening": true,
+          "jev_quality": false,
+          "no_trailing_fragment": true,
+          "no_context_risk": true
+        },
+        "reasons": [
+          "JEV score below review threshold: 7.23"
+        ],
+        "jev_score": 7.23,
+        "jev_verdict": "JEV_REJECT",
+        "duration": 20.200000000000003
+      },
+      "context_repair": {
+        "attempted": false,
+        "applied": false,
+        "reason": "opening already appears context-independent"
+      },
+      "production_ready": false
+    }
+  ],
+  "workflow": [
+    "DISCOVER",
+    "SOURCE",
+    "RIGHTS",
+    "ACQUIRE",
+    "ANALYSE",
+    "CANDIDATES",
+    "SCORE",
+    "CLIP",
+    "QC",
+    "REPAIR",
+    "EXPORT",
+    "LEARN"
+  ]
+}

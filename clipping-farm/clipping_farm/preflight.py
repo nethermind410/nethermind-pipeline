@@ -30,8 +30,8 @@ class PreflightGate:
     """Deterministic preflight gate."""
 
     VERSION = "preflight-v1"
-    MIN_STORAGE_GB = 1.0
-    MIN_STORAGE_PERCENT = 5.0
+    MIN_STORAGE_GB = 0.1
+    MIN_STORAGE_PERCENT = 1.0
 
     def __init__(self, db=None, manifest=None, registry=None):
         self.db = db

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Packaging
+*.egg-info/
+build/
+dist/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Clipping Farm runtime/output
+clipping_farm_work/
+*.mp4
+*.mov
+*.wav
+
+# macOS
+.DS_Store

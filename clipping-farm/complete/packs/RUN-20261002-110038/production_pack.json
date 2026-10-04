@@ -1,0 +1,173 @@
+{
+  "run_id": "RUN-20261002-110038",
+  "created_at": "2026-10-02T01:04:33.331770+00:00",
+  "opportunity": {
+    "topic": "How culture made Japanese Internet design \"Weird\"",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "channel": "cynzy"
+  },
+  "source": {
+    "webpage_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "channel": "cynzy",
+    "duration": 770,
+    "view_count": 1081381,
+    "upload_date": "20221210"
+  },
+  "asset": {
+    "id": "ASSET-d64f810d8059dc",
+    "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/runs/RUN-20261002-110038/asset/Opy-SjDU0UY.mp4",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "duration": 770.214,
+    "source_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY"
+  },
+  "candidates": [
+    {
+      "id": "CAND-5f4ca80f2829f2",
+      "start": 0.0,
+      "end": 45.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-84257d1b3c2210",
+      "start": 45.0,
+      "end": 90.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-919311bee7a3b4",
+      "start": 90.0,
+      "end": 135.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-71e96f521490ea",
+      "start": 135.0,
+      "end": 180.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-d10b35c2dff623",
+      "start": 180.0,
+      "end": 225.0,
+      "score": 6.0,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    }
+  ],
+  "exports": [
+    {
+      "candidate_id": "CAND-5f4ca80f2829f2",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110038/01-how-culture-made-japanese-internet-design-wei-0-45.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-84257d1b3c2210",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110038/02-how-culture-made-japanese-internet-design-wei-45-90.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-919311bee7a3b4",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110038/03-how-culture-made-japanese-internet-design-wei-90-135.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-71e96f521490ea",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110038/04-how-culture-made-japanese-internet-design-wei-135-180.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-d10b35c2dff623",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110038/05-how-culture-made-japanese-internet-design-wei-180-225.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    }
+  ],
+  "workflow": [
+    "DISCOVER",
+    "SOURCE",
+    "RIGHTS",
+    "ACQUIRE",
+    "ANALYSE",
+    "CANDIDATES",
+    "SCORE",
+    "CLIP",
+    "QC",
+    "REPAIR",
+    "EXPORT",
+    "LEARN"
+  ]
+}

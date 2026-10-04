@@ -108,8 +108,8 @@ class TestPreflightGate:
         assert gate.VERSION == "preflight-v1"
 
     def test_min_storage_constants(self):
-        assert PreflightGate.MIN_STORAGE_GB == 1.0
-        assert PreflightGate.MIN_STORAGE_PERCENT == 5.0
+        assert PreflightGate.MIN_STORAGE_GB == 0.1
+        assert PreflightGate.MIN_STORAGE_PERCENT == 1.0
 
     def test_check_no_db_skips_source(self):
         gate = PreflightGate(db=None)

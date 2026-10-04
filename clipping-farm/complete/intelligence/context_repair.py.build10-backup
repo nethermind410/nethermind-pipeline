@@ -1,0 +1,216 @@
+"""
+JEV Context Repair
+------------------
+Attempts to turn REVIEW-level transcript candidates into
+standalone short-form moments by expanding the window around
+the candidate and re-scoring the result.
+
+This is deliberately deterministic:
+- no generative rewriting
+- no invented words
+- only transcript-backed expansion
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+LEADING_CONTEXT = {
+    "however",
+    "but",
+    "and",
+    "so",
+    "because",
+    "although",
+    "though",
+    "then",
+    "also",
+    "this",
+    "that",
+    "these",
+    "those",
+    "they",
+    "it",
+    "he",
+    "she",
+    "we",
+    "given",
+    "as",
+    "which",
+    "when",
+    "while",
+}
+
+LEADING_PHRASES = (
+    "however,",
+    "but,",
+    "and,",
+    "so,",
+    "because,",
+    "given what",
+    "as i mentioned",
+    "as mentioned",
+    "like i said",
+    "as i said",
+    "this is",
+    "that is",
+)
+
+
+def _text(candidate: Any) -> str:
+    if isinstance(candidate, dict):
+        return str(candidate.get("text", "")).strip()
+    return str(getattr(candidate, "text", "")).strip()
+
+
+def looks_context_dependent(text: str) -> bool:
+    t = " ".join(text.lower().split())
+
+    if not t:
+        return True
+
+    first = t.split()[0].strip(".,!?;:\"'()[]{}")
+
+    if first in LEADING_CONTEXT:
+        return True
+
+    for phrase in LEADING_PHRASES:
+        if t.startswith(phrase):
+            return True
+
+    return False
+
+
+def _segments_to_text(segments, start, end):
+    """
+    Convert timestamped transcript segments into text covering
+    start/end. Accepts dict-like Whisper segment structures.
+    """
+    chunks = []
+
+    for seg in segments:
+        if isinstance(seg, dict):
+            s = float(seg.get("start", 0))
+            e = float(seg.get("end", s))
+            txt = str(seg.get("text", "")).strip()
+        else:
+            s = float(getattr(seg, "start", 0))
+            e = float(getattr(seg, "end", s))
+            txt = str(getattr(seg, "text", "")).strip()
+
+        if e > start and s < end and txt:
+            chunks.append(txt)
+
+    return " ".join(chunks).strip()
+
+
+def repair_candidate(candidate, segments, score_fn, max_duration=60.0):
+    """
+    Try backward expansion first, then forward expansion.
+
+    Returns the original candidate plus repair metadata if no
+    materially better standalone candidate is found.
+    """
+    if isinstance(candidate, dict):
+        original = dict(candidate)
+    else:
+        original = dict(vars(candidate))
+
+    text = _text(candidate)
+    original_score = float(original.get("jev_score", original.get("score", 0)) or 0)
+
+    if not looks_context_dependent(text):
+        original["context_repair"] = {
+            "attempted": False,
+            "reason": "opening already appears standalone",
+        }
+        return original
+
+    start = float(original.get("start", 0))
+    end = float(original.get("end", start))
+    duration = end - start
+
+    # Candidate expansion windows.
+    # Backward expansion is preferred because the failure is
+    # usually caused by entering mid-thought.
+    backward_steps = (3.0, 6.0, 10.0, 15.0)
+    forward_steps = (3.0, 6.0)
+
+    attempts = []
+
+    for delta in backward_steps:
+        new_start = max(0.0, start - delta)
+        new_end = end
+
+        if new_end - new_start > max_duration:
+            continue
+
+        new_text = _segments_to_text(segments, new_start, new_end)
+        if not new_text:
+            continue
+
+        scored = score_fn(new_text, new_start, new_end)
+        attempts.append((scored, new_start, new_end, new_text, f"backward_{delta:g}s"))
+
+    # If backward expansion didn't improve enough, test a little
+    # forward context too.
+    for delta in forward_steps:
+        new_start = start
+        new_end = end + delta
+
+        if new_end - new_start > max_duration:
+            continue
+
+        new_text = _segments_to_text(segments, new_start, new_end)
+        if not new_text:
+            continue
+
+        scored = score_fn(new_text, new_start, new_end)
+        attempts.append((scored, new_start, new_end, new_text, f"forward_{delta:g}s"))
+
+    if not attempts:
+        original["context_repair"] = {
+            "attempted": True,
+            "improved": False,
+            "reason": "no viable expansion",
+        }
+        return original
+
+    # Pick highest-scoring repaired version.
+    best = max(attempts, key=lambda x: float(x[0].get("jev_score", 0)))
+
+    scored, new_start, new_end, new_text, method = best
+    repaired_score = float(scored.get("jev_score", 0))
+
+    # Require a meaningful improvement.
+    improved = repaired_score >= original_score + 0.35
+
+    if improved:
+        original.update({
+            "start": round(new_start, 3),
+            "end": round(new_end, 3),
+            "text": new_text,
+            "jev_score": repaired_score,
+            "jev_verdict": scored.get("jev_verdict", "JEV_REVIEW"),
+            "jev_metrics": scored.get("jev_metrics", {}),
+            "jev_risks": scored.get("jev_risks", []),
+            "score": repaired_score,
+            "reason": (
+                f"{scored.get('jev_verdict', 'JEV_REVIEW')} "
+                f"JEV={repaired_score:.2f}; "
+                f"context repaired from {original_score:.2f}"
+            ),
+        })
+
+    original["context_repair"] = {
+        "attempted": True,
+        "improved": improved,
+        "method": method if improved else None,
+        "original_score": round(original_score, 2),
+        "repaired_score": round(repaired_score, 2),
+        "tested_variants": len(attempts),
+    }
+
+    return original

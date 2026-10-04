@@ -108,6 +108,8 @@ class AdaptiveBrain:
         deterministic = self.providers.get("deterministic")
         if deterministic is None:
             raise RuntimeError("deterministic provider is required")
+        c = __import__('clipping_farm.candidates', fromlist=['Candidate']).Candidate(**packet.candidate)
+        context = {"score": c.scores.get("standalone", 0), "reasons": [], "context_before": packet.context_before, "context_after": packet.context_after, "transcript": packet.transcript}
         result = deterministic.analyse(packet)
         validate_result({"decision": result.decision, "confidence": result.confidence, "reason": result.reason, "evidence": result.evidence, "scores": result.scores, "model": result.model})
 

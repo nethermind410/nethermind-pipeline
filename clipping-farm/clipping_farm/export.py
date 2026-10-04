@@ -8,7 +8,7 @@ def write_review_manifest(path, source_id, clips, review_candidates=None):
     return payload
 
 def assert_publishable(db, job_id):
-    row=db.cx.execute("SELECT state FROM approvals WHERE job_id=?",(job_id,)).fetchone()
+    row=db.cx.execute("SELECT state FROM approvals WHERE approval_id=? OR jev_id=?",(job_id,job_id)).fetchone()
     if not row or row["state"]!="APPROVED":
         raise PermissionError("Publishing blocked: explicit human approval required")
     return True

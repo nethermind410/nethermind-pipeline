@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS rights (
  source_id TEXT PRIMARY KEY, state TEXT NOT NULL, evidence TEXT NOT NULL DEFAULT '{}', updated_at REAL NOT NULL
 );
 CREATE TABLE IF NOT EXISTS approvals (
- job_id TEXT PRIMARY KEY, state TEXT NOT NULL, decided_at REAL, decided_by TEXT, notes TEXT
+    approval_id TEXT PRIMARY KEY, jev_id TEXT NOT NULL, agent TEXT NOT NULL,
+    title TEXT, state TEXT NOT NULL DEFAULT 'PENDING', created_at REAL NOT NULL,
+    reviewed_at REAL, review_notes TEXT
 );
 CREATE TABLE IF NOT EXISTS events (
  id TEXT PRIMARY KEY, job_id TEXT, event TEXT NOT NULL, data TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL
@@ -416,9 +418,10 @@ class DB:
         r=self.cx.execute("SELECT * FROM rights WHERE source_id=?",(source_id,)).fetchone()
         return dict(r) if r else None
     def approve(self,jid,approved,by="user",notes=""):
-        self.cx.execute("INSERT OR REPLACE INTO approvals VALUES(?,?,?,?,?)",(jid,"APPROVED" if approved else "REJECTED",self.now(),by,notes))
+        self.cx.execute("INSERT OR REPLACE INTO approvals(approval_id,jev_id,agent,title,state,created_at,reviewed_at,review_notes) VALUES(?,?,?,?,?,?,?,?)",
+                        (jid,"APPROVED" if approved else "REJECTED",by,"","APPROVED" if approved else "REJECTED",self.now(),self.now(),notes))
     def approval(self,jid):
-        r=self.cx.execute("SELECT * FROM approvals WHERE job_id=?",(jid,)).fetchone()
+        r=self.cx.execute("SELECT * FROM approvals WHERE approval_id=?",(jid,)).fetchone()
         return dict(r) if r else None
     def status(self):
         return [dict(r) for r in self.cx.execute("SELECT id,task,agent,state,attempts,actual_cost,error FROM jobs ORDER BY created_at DESC LIMIT 50")]

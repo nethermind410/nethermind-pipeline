@@ -1,0 +1,1 @@
+{"status": "stuck", "pipeline": "all 12 stages complete", "source": "hud:5d132058851a", "asset": "ASSET-000008", "clips_produced": 0, "review_manifest": null, "root_cause": "analyse_scenes empty, transcribe empty, screen_text no_meaningful_screen_changes -> generate_candidates empty -> empty pipeline -> export_review dead_letter"}
