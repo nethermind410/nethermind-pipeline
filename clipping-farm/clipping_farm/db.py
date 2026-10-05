@@ -1,0 +1,542 @@
+import json, sqlite3, time, uuid
+from pathlib import Path
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS jobs (
+ id TEXT PRIMARY KEY, parent_job_id TEXT, task TEXT NOT NULL, agent TEXT NOT NULL,
+ state TEXT NOT NULL, priority INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL,
+ result TEXT, idempotency_key TEXT UNIQUE, attempts INTEGER NOT NULL DEFAULT 0,
+ max_attempts INTEGER NOT NULL DEFAULT 3, lease_owner TEXT, lease_until REAL,
+ depends_on TEXT NOT NULL DEFAULT '[]', budget REAL NOT NULL DEFAULT 0,
+ estimated_cost REAL NOT NULL DEFAULT 0, actual_cost REAL NOT NULL DEFAULT 0,
+ error TEXT, created_at REAL NOT NULL, started_at REAL, finished_at REAL
+);
+CREATE INDEX IF NOT EXISTS idx_jobs_ready ON jobs(state, priority DESC, created_at);
+CREATE TABLE IF NOT EXISTS costs (
+ id TEXT PRIMARY KEY, job_id TEXT NOT NULL, agent TEXT NOT NULL, task TEXT NOT NULL,
+ model TEXT, provider TEXT, input_units REAL DEFAULT 0, output_units REAL DEFAULT 0,
+ estimated_cost REAL DEFAULT 0, actual_cost REAL DEFAULT 0, currency TEXT DEFAULT 'USD',
+ status TEXT NOT NULL, created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS artifacts (
+ id TEXT PRIMARY KEY, cache_key TEXT UNIQUE NOT NULL, kind TEXT NOT NULL,
+ path TEXT NOT NULL, content_hash TEXT NOT NULL, metadata TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sources (
+ source_id TEXT PRIMARY KEY,
+ location TEXT NOT NULL,
+ kind TEXT NOT NULL,
+ sha256 TEXT,
+ size_bytes INTEGER,
+ metadata TEXT NOT NULL DEFAULT '{}',
+ provenance TEXT NOT NULL DEFAULT '{}',
+ first_seen_at REAL NOT NULL,
+ last_seen_at REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_sources_sha256 ON sources(sha256);
+CREATE INDEX IF NOT EXISTS idx_sources_location ON sources(location);
+
+CREATE TABLE IF NOT EXISTS assets (
+ asset_id TEXT PRIMARY KEY,
+ source_id TEXT,
+ source_url TEXT,
+ source_type TEXT NOT NULL,
+ original_filename TEXT,
+ title TEXT,
+ creator TEXT,
+ media_type TEXT,
+ purpose TEXT NOT NULL DEFAULT 'production_source',
+ rights_state TEXT NOT NULL DEFAULT 'UNKNOWN',
+ acquisition_state TEXT NOT NULL DEFAULT 'PENDING',
+ local_path TEXT,
+ sha256 TEXT,
+ duration REAL,
+ metadata TEXT NOT NULL DEFAULT '{}',
+ provenance TEXT NOT NULL DEFAULT '{}',
+ parent_asset_id TEXT,
+ created_at REAL NOT NULL,
+ updated_at REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_assets_source ON assets(source_id);
+CREATE INDEX IF NOT EXISTS idx_assets_sha256 ON assets(sha256);
+CREATE INDEX IF NOT EXISTS idx_assets_url ON assets(source_url);
+
+CREATE TABLE IF NOT EXISTS rights (
+ source_id TEXT PRIMARY KEY, state TEXT NOT NULL, evidence TEXT NOT NULL DEFAULT '{}', updated_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS approvals (
+    approval_id TEXT PRIMARY KEY, jev_id TEXT NOT NULL, agent TEXT NOT NULL,
+    title TEXT, state TEXT NOT NULL DEFAULT 'PENDING', created_at REAL NOT NULL,
+    reviewed_at REAL, review_notes TEXT
+);
+CREATE TABLE IF NOT EXISTS events (
+ id TEXT PRIMARY KEY, job_id TEXT, event TEXT NOT NULL, data TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS workers (
+ id TEXT PRIMARY KEY, status TEXT NOT NULL, capabilities TEXT NOT NULL DEFAULT '[]', last_seen REAL NOT NULL
+);
+"""
+
+class DB:
+    def __init__(self, path="clipping_farm.db"):
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        self.cx=sqlite3.connect(path, timeout=30, isolation_level=None)
+        self.cx.row_factory=sqlite3.Row
+        self.cx.execute("PRAGMA journal_mode=WAL")
+        self.cx.execute("PRAGMA foreign_keys=ON")
+        self.cx.executescript(SCHEMA)
+    def now(self): return time.time()
+    def event(self, job_id, event, data=None):
+        self.cx.execute("INSERT INTO events VALUES (?,?,?,?,?)",(str(uuid.uuid4()),job_id,event,json.dumps(data or {}),self.now()))
+    def add_job(self, task, agent, payload, *, idempotency_key=None, depends_on=None, priority=0, budget=0, max_attempts=3, parent_job_id=None):
+        key=idempotency_key or str(uuid.uuid4())
+        row=self.cx.execute("SELECT * FROM jobs WHERE idempotency_key=?",(key,)).fetchone()
+        if row: return dict(row), True
+        jid=str(uuid.uuid4()); now=self.now()
+        self.cx.execute("INSERT INTO jobs(id,parent_job_id,task,agent,state,priority,payload,idempotency_key,max_attempts,depends_on,budget,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (jid,parent_job_id,task,agent,"PENDING",priority,json.dumps(payload),key,max_attempts,json.dumps(depends_on or []),budget,now))
+        self.event(jid,"created",{"task":task,"agent":agent})
+        return dict(self.cx.execute("SELECT * FROM jobs WHERE id=?",(jid,)).fetchone()), False
+    def dependencies_ready(self,row):
+        deps=json.loads(row["depends_on"] or "[]")
+        if not deps: return True
+        states=[self.cx.execute("SELECT state FROM jobs WHERE id=?",(d,)).fetchone() for d in deps]
+        return all(r and r["state"]=="COMPLETE" for r in states)
+    def promote_ready(self):
+        self.cx.execute("BEGIN IMMEDIATE")
+        try:
+            rows=self.cx.execute("SELECT * FROM jobs WHERE state='PENDING' ORDER BY priority DESC,created_at").fetchall()
+            for r in rows:
+                if self.dependencies_ready(r):
+                    self.cx.execute("UPDATE jobs SET state='READY' WHERE id=? AND state='PENDING'",(r["id"],))
+                    self.event(r["id"],"ready")
+            self.cx.execute("COMMIT")
+        except Exception:
+            self.cx.execute("ROLLBACK"); raise
+    def claim(self, worker_id, lease_seconds=300, capabilities=None):
+        now=self.now(); until=now+lease_seconds; caps=set(capabilities or [])
+        self.cx.execute("BEGIN IMMEDIATE")
+        try:
+            rows=self.cx.execute("SELECT * FROM jobs WHERE state IN ('PENDING','READY') ORDER BY priority DESC,created_at").fetchall()
+            row=None
+            for candidate in rows:
+                if not self.dependencies_ready(candidate): continue
+                if caps and candidate["task"] not in caps: continue
+                row=candidate; break
+            if not row: self.cx.execute("COMMIT"); return None
+            cur=self.cx.execute("UPDATE jobs SET state='CLAIMED',lease_owner=?,lease_until=?,attempts=attempts+1,started_at=? WHERE id=? AND state IN ('PENDING','READY')",
+                                (worker_id,until,now,row["id"]))
+            if cur.rowcount != 1:
+                self.cx.execute("COMMIT"); return None
+            self.event(row["id"],"claimed",{"worker":worker_id,"lease_until":until})
+            self.cx.execute("COMMIT")
+            claimed = dict(self.cx.execute("SELECT * FROM jobs WHERE id=?",(row["id"],)).fetchone())
+            claimed["payload"] = json.loads(claimed["payload"] or "{}")
+            return claimed
+        except Exception:
+            self.cx.execute("ROLLBACK"); raise
+    def start(self,jid,worker_id):
+        cur=self.cx.execute("UPDATE jobs SET state='RUNNING' WHERE id=? AND state='CLAIMED' AND lease_owner=?",(jid,worker_id))
+        if cur.rowcount==1: self.event(jid,"started",{"worker":worker_id})
+        return cur.rowcount==1
+    def finish(self,jid,worker_id,result,actual_cost=0):
+        cur=self.cx.execute("UPDATE jobs SET state='COMPLETE',result=?,actual_cost=?,finished_at=?,lease_owner=NULL,lease_until=NULL,error=NULL WHERE id=? AND state IN ('CLAIMED','RUNNING') AND lease_owner=?",
+                            (json.dumps(result),actual_cost,self.now(),jid,worker_id))
+        if cur.rowcount!=1: raise RuntimeError(f"job {jid} no longer owned by {worker_id}")
+        self.event(jid,"complete",{"actual_cost":actual_cost})
+    def fail(self,jid,worker_id,error,retryable=True):
+        row=self.cx.execute("SELECT attempts,max_attempts,state FROM jobs WHERE id=? AND lease_owner=?",(jid,worker_id)).fetchone()
+        if not row: return False
+        state="READY" if retryable and row["attempts"]<row["max_attempts"] else "DEAD_LETTER"
+        self.cx.execute("UPDATE jobs SET state=?,error=?,lease_owner=NULL,lease_until=NULL WHERE id=? AND lease_owner=?",
+                        (state,error,jid,worker_id))
+        self.event(jid,"failed",{"error":error,"retryable":retryable,"state":state})
+        return True
+    def recover_expired(self):
+        now=self.now(); rows=self.cx.execute("SELECT id,attempts,max_attempts FROM jobs WHERE state IN ('CLAIMED','RUNNING') AND lease_until<?",(now,)).fetchall()
+        for r in rows:
+            state="READY" if r["attempts"]<r["max_attempts"] else "DEAD_LETTER"
+            self.cx.execute("UPDATE jobs SET state=?,lease_owner=NULL,lease_until=NULL,error=? WHERE id=? AND state IN ('CLAIMED','RUNNING')",
+                            (state,"worker lease expired",r["id"]))
+            self.event(r["id"],"lease_expired",{"state":state})
+    def put_artifact(self,cache_key,kind,path,content_hash,metadata=None):
+        row=self.cx.execute("SELECT * FROM artifacts WHERE cache_key=?",(cache_key,)).fetchone()
+        if row:return dict(row),True
+        aid=str(uuid.uuid4())
+        self.cx.execute("INSERT INTO artifacts VALUES(?,?,?,?,?,?,?)",(aid,cache_key,kind,path,content_hash,json.dumps(metadata or {}),self.now()))
+        return dict(self.cx.execute("SELECT * FROM artifacts WHERE id=?",(aid,)).fetchone()),False
+    def get_artifact(self,cache_key):
+        r=self.cx.execute("SELECT * FROM artifacts WHERE cache_key=?",(cache_key,)).fetchone()
+        return dict(r) if r else None
+
+    def verify_artifact(self,cache_key):
+        """Verify an artifact according to its storage semantics."""
+        row = self.get_artifact(cache_key)
+        if row is None:
+            return {"exists": False, "valid": False, "reason": "not_found"}
+
+        import hashlib
+
+        kind = row["kind"]
+        path_value = row["path"]
+
+        # Virtual/provider artifacts have no filesystem payload.
+        if path_value.startswith("cache://"):
+            return {
+                "exists": True,
+                "valid": True,
+                "virtual": True,
+                "cache_key": cache_key,
+                "content_hash": row["content_hash"],
+            }
+
+        # Metadata/analysis artifacts hash their canonical JSON payload,
+        # not the source media file stored in `path`.
+        payload_kinds = {
+            "metadata",
+            "audio_analysis",
+            "vision_provider_result",
+            "brain_provider_result",
+        }
+
+        if kind in payload_kinds:
+            try:
+                metadata = json.loads(row["metadata"] or "{}")
+            except (TypeError, json.JSONDecodeError):
+                return {
+                    "exists": True,
+                    "valid": False,
+                    "virtual": False,
+                    "cache_key": cache_key,
+                    "reason": "invalid_metadata_json",
+                }
+
+            # Match the serialization used by artifact producers.
+            canonical = json.dumps(
+                metadata,
+                sort_keys=True,
+            ).encode()
+
+            actual_hash = hashlib.sha256(canonical).hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "artifact_metadata",
+            }
+
+        # Files/directories represented by a real filesystem path.
+        path = Path(path_value).expanduser()
+
+        if not path.exists():
+            return {
+                "exists": False,
+                "valid": False,
+                "virtual": False,
+                "cache_key": cache_key,
+                "reason": "missing_file",
+                "path": str(path),
+            }
+
+        if path.is_file():
+            digest = hashlib.sha256()
+            with path.open("rb") as fh:
+                while True:
+                    chunk = fh.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    digest.update(chunk)
+
+            actual_hash = digest.hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "path": str(path),
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "file",
+            }
+
+        # Directory artifacts such as extracted frame sets need a stable
+        # representation rather than hashing the directory itself.
+        if path.is_dir():
+            entries = []
+            for child in sorted(path.rglob("*")):
+                if child.is_file():
+                    file_hash = hashlib.sha256()
+                    with child.open("rb") as fh:
+                        while True:
+                            chunk = fh.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            file_hash.update(chunk)
+                    entries.append(
+                        (str(child.relative_to(path)), file_hash.hexdigest())
+                    )
+
+            canonical = json.dumps(
+                entries,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode()
+            actual_hash = hashlib.sha256(canonical).hexdigest()
+
+            return {
+                "exists": True,
+                "valid": actual_hash == row["content_hash"],
+                "virtual": False,
+                "cache_key": cache_key,
+                "kind": kind,
+                "path": str(path),
+                "expected_hash": row["content_hash"],
+                "actual_hash": actual_hash,
+                "verification_target": "directory_manifest",
+            }
+
+        return {
+            "exists": False,
+            "valid": False,
+            "virtual": False,
+            "cache_key": cache_key,
+            "reason": "unsupported_path_type",
+            "path": str(path),
+        }
+    def next_asset_id(self):
+        row = self.cx.execute(
+            "SELECT asset_id FROM assets WHERE asset_id LIKE 'ASSET-%' ORDER BY CAST(substr(asset_id,7) AS INTEGER) DESC LIMIT 1"
+        ).fetchone()
+        number = int(row["asset_id"][6:]) + 1 if row else 1
+        return f"ASSET-{number:06d}"
+
+    def create_asset(self, *, source_type, purpose="production_source",
+                     source_id=None, source_url=None, original_filename=None,
+                     title=None, creator=None, media_type=None, local_path=None,
+                     sha256=None, duration=None, metadata=None, provenance=None,
+                     parent_asset_id=None, asset_id=None, dedupe=True):
+        if purpose not in {"production_source", "reference", "both"}:
+            raise ValueError("purpose must be production_source, reference, or both")
+        now = self.now()
+        if dedupe and sha256:
+            row = self.cx.execute(
+                "SELECT * FROM assets WHERE sha256=? ORDER BY created_at LIMIT 1",
+                (sha256,),
+            ).fetchone()
+            if row:
+                return self.get_asset(row["asset_id"]), True
+        if dedupe and source_url:
+            row = self.cx.execute(
+                "SELECT * FROM assets WHERE source_url=? ORDER BY created_at LIMIT 1",
+                (source_url,),
+            ).fetchone()
+            if row:
+                return self.get_asset(row["asset_id"]), True
+        asset_id = asset_id or self.next_asset_id()
+        self.cx.execute(
+            """INSERT INTO assets(
+                asset_id,source_id,source_url,source_type,original_filename,title,creator,
+                media_type,purpose,rights_state,acquisition_state,local_path,sha256,duration,
+                metadata,provenance,parent_asset_id,created_at,updated_at
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (asset_id,source_id,source_url,source_type,original_filename,title,creator,
+             media_type,purpose,"UNKNOWN","PENDING",local_path,sha256,duration,
+             json.dumps(metadata or {}, ensure_ascii=False),
+             json.dumps(provenance or {}, ensure_ascii=False),
+             parent_asset_id,now,now),
+        )
+        return self.get_asset(asset_id), False
+
+    def get_asset(self, asset_id):
+        row=self.cx.execute("SELECT * FROM assets WHERE asset_id=?",(asset_id,)).fetchone()
+        if not row: return None
+        out=dict(row)
+        for key in ("metadata","provenance"):
+            out[key]=json.loads(out[key] or "{}")
+        return out
+
+    def list_assets(self, purpose=None):
+        if purpose:
+            rows=self.cx.execute("SELECT * FROM assets WHERE purpose=? ORDER BY created_at DESC",(purpose,)).fetchall()
+        else:
+            rows=self.cx.execute("SELECT * FROM assets ORDER BY created_at DESC").fetchall()
+        out=[]
+        for row in rows:
+            item=dict(row)
+            item["metadata"]=json.loads(item["metadata"] or "{}")
+            item["provenance"]=json.loads(item["provenance"] or "{}")
+            out.append(item)
+        return out
+
+    def update_asset(self, asset_id, **fields):
+        allowed={"source_id","source_url","source_type","original_filename","title","creator",
+                 "media_type","purpose","rights_state","acquisition_state","local_path",
+                 "sha256","duration","metadata","provenance","parent_asset_id"}
+        unknown=set(fields)-allowed
+        if unknown: raise ValueError(f"unknown asset fields: {sorted(unknown)}")
+        if "purpose" in fields and fields["purpose"] not in {"production_source","reference","both"}:
+            raise ValueError("invalid purpose")
+        for key in ("metadata","provenance"):
+            if key in fields and not isinstance(fields[key], str):
+                fields[key]=json.dumps(fields[key], ensure_ascii=False)
+        fields["updated_at"]=self.now()
+        assignments=",".join(f"{k}=?" for k in fields)
+        values=list(fields.values())+[asset_id]
+        self.cx.execute(f"UPDATE assets SET {assignments} WHERE asset_id=?",values)
+        return self.get_asset(asset_id)
+
+    def asset_snapshot(self, asset_id):
+        asset=self.get_asset(asset_id)
+        if not asset: return None
+        jobs=self.cx.execute(
+            "SELECT id,task,agent,state,attempts,actual_cost,error,created_at,started_at,finished_at FROM jobs WHERE json_extract(payload,'$.asset_id')=? OR json_extract(payload,'$.source_id')=? ORDER BY created_at",
+            (asset_id, asset.get("source_id") or asset_id),
+        ).fetchall()
+        artifacts=self.cx.execute(
+            "SELECT kind,path,content_hash,metadata,created_at FROM artifacts WHERE json_extract(metadata,'$.asset_id')=? OR json_extract(metadata,'$.source_id')=? ORDER BY created_at",
+            (asset_id, asset.get("source_id") or asset_id),
+        ).fetchall()
+        return {
+            "asset": asset,
+            "jobs":[dict(r) for r in jobs],
+            "artifacts":[dict(r) for r in artifacts],
+        }
+
+    def set_rights(self,source_id,state,evidence=None):
+        if state not in {"UNKNOWN","PENDING","AUTHORISED","REJECTED","EXPIRED"}: raise ValueError(state)
+        self.cx.execute("INSERT INTO rights VALUES(?,?,?,?) ON CONFLICT(source_id) DO UPDATE SET state=excluded.state,evidence=excluded.evidence,updated_at=excluded.updated_at",
+                        (source_id,state,json.dumps(evidence or {}),self.now()))
+    def rights(self,source_id):
+        r=self.cx.execute("SELECT * FROM rights WHERE source_id=?",(source_id,)).fetchone()
+        return dict(r) if r else None
+    def approve(self,jid,approved,by="user",notes=""):
+        self.cx.execute("INSERT OR REPLACE INTO approvals(approval_id,jev_id,agent,title,state,created_at,reviewed_at,review_notes) VALUES(?,?,?,?,?,?,?,?)",
+                        (jid,"APPROVED" if approved else "REJECTED",by,"","APPROVED" if approved else "REJECTED",self.now(),self.now(),notes))
+    def approval(self,jid):
+        r=self.cx.execute("SELECT * FROM approvals WHERE approval_id=?",(jid,)).fetchone()
+        return dict(r) if r else None
+    def status(self):
+        return [dict(r) for r in self.cx.execute("SELECT id,task,agent,state,attempts,actual_cost,error FROM jobs ORDER BY created_at DESC LIMIT 50")]
+
+    def run_snapshot(self, source_id, asset_id=None):
+        """Return a read-only HUD snapshot for one source/run."""
+
+        rows = self.cx.execute(
+            """
+            SELECT id, task, agent, state, attempts,
+                   estimated_cost, actual_cost, error,
+                   created_at, started_at, finished_at
+            FROM jobs
+            WHERE json_extract(payload, '$.source_id')=?
+            ORDER BY created_at
+            """,
+            (source_id,),
+        ).fetchall()
+
+        artifacts = self.cx.execute(
+            """
+            SELECT kind, COUNT(*) AS count
+            FROM artifacts
+            WHERE json_extract(metadata, '$.source_id')=?
+               OR (? IS NOT NULL AND json_extract(metadata, '$.asset_id')=?)
+            GROUP BY kind
+            ORDER BY kind
+            """,
+            (source_id, asset_id, asset_id),
+        ).fetchall()
+
+        output_rows = self.cx.execute(
+            """
+            SELECT id, cache_key, kind, path, content_hash, metadata, created_at
+            FROM artifacts
+            WHERE kind='video_clip'
+              AND json_extract(metadata, '$.source_id')=?
+            ORDER BY created_at
+            """,
+            (source_id,),
+        ).fetchall()
+
+        outputs = []
+
+        for row in output_rows:
+            item = dict(row)
+
+            try:
+                item["metadata"] = json.loads(
+                    item["metadata"] or "{}"
+                )
+            except Exception:
+                item["metadata"] = {}
+
+            outputs.append(item)
+
+        events = self.cx.execute(
+            """
+            SELECT event, data, created_at
+            FROM events
+            WHERE job_id IN (
+                SELECT id
+                FROM jobs
+                WHERE json_extract(payload, '$.source_id')=?
+            )
+            ORDER BY created_at DESC
+            LIMIT 50
+            """,
+            (source_id,),
+        ).fetchall()
+
+        if asset_id:
+            asset = self.get_asset(asset_id)
+        else:
+            source_row = self.cx.execute(
+                """
+                SELECT asset_id
+                FROM assets
+                WHERE source_id=?
+                ORDER BY created_at DESC
+                LIMIT 1
+                """,
+                (source_id,),
+            ).fetchone()
+            asset = self.get_asset(source_row["asset_id"]) if source_row else None
+
+        review_row = self.cx.execute(
+            """
+            SELECT result
+            FROM jobs
+            WHERE json_extract(payload, '$.source_id')=?
+              AND task='score_candidates'
+              AND state='COMPLETE'
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (source_id,),
+        ).fetchone()
+        review_candidates = []
+        if review_row:
+            try:
+                scored = json.loads(review_row["result"] or "{}")
+                review_candidates = [
+                    candidate for candidate in scored.get("candidates", [])
+                    if str(candidate.get("decision", "")).upper() == "REVIEW"
+                ]
+            except (TypeError, ValueError, json.JSONDecodeError):
+                review_candidates = []
+
+        return {
+            "source_id": source_id,
+            "asset": asset,
+            "jobs": [dict(row) for row in rows],
+            "artifacts": [dict(row) for row in artifacts],
+            "outputs": outputs,
+            "review_candidates": review_candidates,
+            "events": [dict(row) for row in events],
+        }

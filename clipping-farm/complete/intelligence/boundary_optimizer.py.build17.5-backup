@@ -1,0 +1,397 @@
+"""
+Boundary Optimizer v1
+
+Improves transcript-derived candidate boundaries before final JEV scoring.
+
+Goal:
+- preserve the candidate's core idea
+- search nearby transcript boundaries
+- allow the clip to capture setup + payoff
+- prefer natural sentence/segment boundaries
+- never invent or rewrite transcript words
+
+This is candidate optimization, not semantic rewriting.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Callable, Dict, List
+
+
+def _segments_to_text(
+    segments: List[Dict[str, Any]],
+    start: float,
+    end: float,
+) -> str:
+    parts = []
+
+    for seg in segments:
+        seg_start = float(seg.get("start", 0))
+        seg_end = float(seg.get("end", seg_start))
+
+        if seg_end <= start:
+            continue
+
+        if seg_start >= end:
+            break
+
+        text = str(seg.get("text", "")).strip()
+
+        if text:
+            parts.append(text)
+
+    return " ".join(parts).strip()
+
+
+def _overlaps_core(
+    start: float,
+    end: float,
+    core_start: float,
+    core_end: float,
+) -> bool:
+    return end > core_start and start < core_end
+
+
+def _candidate_boundaries(
+    segments: List[Dict[str, Any]],
+    core_start: float,
+    core_end: float,
+    max_duration: float,
+) -> List[tuple[float, float]]:
+    """
+    Generate transcript-aligned windows around the original candidate.
+
+    Search deliberately covers:
+    - up to 35 seconds before the candidate
+    - up to 15 seconds after the candidate
+    - all transcript segment boundaries in that area
+
+    This allows the optimizer to discover setup -> question -> payoff
+    structures instead of assuming the original candidate boundaries
+    are already correct.
+    """
+
+    usable = []
+
+    for seg in segments:
+        start = float(seg.get("start", 0))
+        end = float(seg.get("end", start))
+
+        if end <= start:
+            continue
+
+        usable.append((start, end))
+
+    if not usable:
+        return []
+
+    # Keep the original candidate as the anchor.
+    #
+    # The previous 35-second backward search caused the optimiser
+    # to replace the actual idea with earlier setup simply because
+    # the larger window happened to score better.
+    #
+    # We want editorial boundary refinement, not wholesale
+    # candidate replacement.
+    earliest = max(0.0, core_start - 12.0)
+    latest = core_end + 12.0
+
+    start_boundaries = [
+        start
+        for start, end in usable
+        if start >= earliest and start < core_end
+    ]
+
+    end_boundaries = [
+        end
+        for start, end in usable
+        if end > core_start and end <= latest
+    ]
+
+    boundaries = []
+
+    for start in start_boundaries:
+        for end in end_boundaries:
+            if end <= start:
+                continue
+
+            duration = end - start
+
+            if duration < 8.0:
+                continue
+
+            if duration > max_duration:
+                continue
+
+            # The optimized window must retain the original idea.
+            if end <= core_start or start >= core_end:
+                continue
+
+            boundaries.append((start, end))
+
+    seen = set()
+    result = []
+
+    for start, end in boundaries:
+        key = (round(start, 2), round(end, 2))
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        result.append((start, end))
+
+    return result
+
+
+def optimize_candidate(
+    candidate: Dict[str, Any],
+    segments: List[Dict[str, Any]],
+    score_fn: Callable[[str, float, float], Dict[str, Any]],
+    max_duration: float = 60.0,
+) -> Dict[str, Any]:
+    """
+    Find the strongest transcript-aligned version of a candidate.
+
+    The original candidate is retained if optimization does not improve it.
+    """
+
+    original = dict(candidate)
+
+    core_start = float(original.get("start", 0))
+    core_end = float(original.get("end", core_start))
+
+    original_text = str(original.get("text", "")).strip()
+
+    original_score = score_fn(
+        original_text,
+        core_start,
+        core_end,
+    )
+
+    original_jev = float(
+        original_score.get("jev_score", 0)
+    )
+
+    windows = _candidate_boundaries(
+        segments,
+        core_start,
+        core_end,
+        max_duration,
+    )
+
+    best = None
+    best_score = original_score
+    best_jev = original_jev
+    best_editorial_score = original_jev
+
+    for start, end in windows:
+        candidate_text = _segments_to_text(
+            segments,
+            start,
+            end,
+        )
+
+        if not candidate_text:
+            continue
+
+        scored = score_fn(
+            candidate_text,
+            start,
+            end,
+        )
+
+        jev = float(
+            scored.get("jev_score", 0)
+        )
+
+        metrics = scored.get("metrics", {})
+
+        # ----------------------------------------------------
+        # Editorial structure signals.
+        # ----------------------------------------------------
+
+        opening_integrity = float(
+            metrics.get("opening_integrity", 7.0)
+        )
+
+        opening_verdict = str(
+            metrics.get("opening_verdict", "OPENING_PASS")
+        )
+
+        # ----------------------------------------------------
+        # Opening gate.
+        #
+        # A continuation-style opening is not allowed to win
+        # merely because its raw JEV score is higher.
+        #
+        # The only exception is when the optimiser is genuinely
+        # repairing an originally broken opening.
+        # ----------------------------------------------------
+
+        original_metrics = original_score.get("metrics", {})
+
+        original_opening_verdict = str(
+            original_metrics.get(
+                "opening_verdict",
+                "OPENING_PASS",
+            )
+        )
+
+        opening_repair = (
+            original_opening_verdict == "OPENING_REVIEW"
+            and opening_verdict == "OPENING_PASS"
+        )
+
+        if opening_verdict == "OPENING_REVIEW" and not opening_repair:
+            continue
+
+        duration = end - start
+
+        # Strongly discourage continuation-style openings.
+        opening_penalty = 0.0
+
+        if opening_verdict == "OPENING_REVIEW":
+            opening_penalty = 1.25
+
+        # Penalise excessive duration.
+        #
+        # Under ~30 sec there is no penalty.
+        # Beyond that, increasingly prefer tighter edits.
+        duration_penalty = max(0.0, duration - 30.0) * 0.04
+
+        # Small reward for clean openings.
+        opening_bonus = max(
+            0.0,
+            (opening_integrity - 7.0) * 0.08,
+        )
+
+        # Composite editorial score.
+        #
+        # JEV remains the intelligence signal, but it no longer
+        # gets to override obvious editorial problems.
+        editorial_score = (
+            jev
+            + opening_bonus
+            - opening_penalty
+            - duration_penalty
+        )
+
+        # A candidate must still contain meaningful overlap with
+        # the original idea.
+        overlap_start = max(start, core_start)
+        overlap_end = min(end, core_end)
+        overlap = max(0.0, overlap_end - overlap_start)
+
+        original_duration = max(
+            0.001,
+            core_end - core_start,
+        )
+
+        overlap_ratio = overlap / original_duration
+
+        if overlap_ratio < 0.35:
+            continue
+
+        # Prefer a genuinely better editorial candidate.
+        if editorial_score > best_editorial_score:
+            best = {
+                "start": start,
+                "end": end,
+                "text": candidate_text,
+                "score": scored,
+                "editorial_score": editorial_score,
+                "overlap_ratio": overlap_ratio,
+            }
+
+            best_score = scored
+            best_jev = jev
+            best_editorial_score = editorial_score
+
+    result = dict(original)
+
+    applied = False
+
+    if best is not None:
+        improvement = best_jev - original_jev
+
+        # Require either:
+        #   1. a meaningful JEV improvement, or
+        #   2. a materially cleaner opening at roughly equal quality.
+        #
+        # This prevents pointless boundary drift.
+        original_metrics = original_score.get("metrics", {})
+        original_opening = str(
+            original_metrics.get(
+                "opening_verdict",
+                "OPENING_PASS",
+            )
+        )
+
+        best_opening = str(
+            best["score"].get("metrics", {}).get(
+                "opening_verdict",
+                "OPENING_PASS",
+            )
+        )
+
+        opening_repaired = (
+            original_opening == "OPENING_REVIEW"
+            and best_opening == "OPENING_PASS"
+        )
+
+        meaningful_improvement = improvement >= 0.15
+
+        if meaningful_improvement or (
+            opening_repaired
+            and improvement >= -0.10
+        ):
+            result.update({
+                "start": best["start"],
+                "end": best["end"],
+                "text": best["text"],
+                "jev_score": best_score.get(
+                    "jev_score",
+                    best_jev,
+                ),
+                "jev_verdict": best_score.get(
+                    "verdict",
+                    "JEV_REJECT",
+                ),
+                "jev_metrics": best_score.get(
+                    "metrics",
+                    {},
+                ),
+                "jev_risks": best_score.get(
+                    "risks",
+                    [],
+                ),
+            })
+
+            applied = True
+
+            result["boundary_optimization"] = {
+                "attempted": True,
+                "applied": True,
+                "original_start": core_start,
+                "original_end": core_end,
+                "original_jev": original_jev,
+                "optimized_start": best["start"],
+                "optimized_end": best["end"],
+                "optimized_jev": best_jev,
+                "improvement": improvement,
+                "editorial_score": best_editorial_score,
+                "opening_repaired": opening_repaired,
+                "overlap_ratio": best["overlap_ratio"],
+            }
+
+    if not applied:
+        result["boundary_optimization"] = {
+            "attempted": True,
+            "applied": False,
+            "original_start": core_start,
+            "original_end": core_end,
+            "original_jev": original_jev,
+        }
+
+    return result

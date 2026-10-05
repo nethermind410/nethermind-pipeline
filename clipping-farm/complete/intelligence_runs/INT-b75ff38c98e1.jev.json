@@ -1,0 +1,440 @@
+{
+  "sorter": "JEV-style candidate sorter",
+  "version": "1.0",
+  "source_analysis": "complete/intelligence_runs/INT-b75ff38c98e1.json",
+  "candidate_count": 20,
+  "selected_count": 20,
+  "candidates": [
+    {
+      "rank_source": 2,
+      "start": 31.38,
+      "end": 54.86,
+      "text": "However, given what I found, I'm just not convinced that culture is the primary cause of Japan's unique web design. Well, let me convince you, Sabrina, because I think there are deep-rooted cultural reasons as to why modern websites in Japan and other East Asian countries look like this. Dense, cluttered, and information overload. I actually left a comment in the video",
+      "jev_score": 7.61,
+      "verdict": "JEV_REVIEW",
+      "duration": 23.48,
+      "metrics": {
+        "hook": 6.1,
+        "payoff": 7.45,
+        "standalone": 8.0,
+        "curiosity": 7.8,
+        "specificity": 6.7,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 1
+    },
+    {
+      "rank_source": 14,
+      "start": 364.04,
+      "end": 393.84,
+      "text": "Okay, so what does this have to do with the internet? Asians are picking up much more about both the physical environment and the social environment than Westerners are. They just see a tremendous amount more. The Japanese pick up 60% more information about the context and twice as much information about relationships. This difference in how we process information actually makes a huge difference in how information is presented.",
+      "jev_score": 7.2,
+      "verdict": "JEV_REJECT",
+      "duration": 29.8,
+      "metrics": {
+        "hook": 5.5,
+        "payoff": 6.45,
+        "standalone": 8.0,
+        "curiosity": 6.7,
+        "specificity": 7.1,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 2
+    },
+    {
+      "rank_source": 6,
+      "start": 250.06,
+      "end": 272.82,
+      "text": "to that of North America because we adopted similar technology around the same time. But a lot of Korean and Chinese websites look like this, similar to that of Japan. Some of the most visited websites in South Korea today still look like this. Why? It's culture.",
+      "jev_score": 7.18,
+      "verdict": "JEV_REJECT",
+      "duration": 22.76,
+      "metrics": {
+        "hook": 6.3,
+        "payoff": 5.15,
+        "standalone": 8.0,
+        "curiosity": 7.1,
+        "specificity": 6.7,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 3
+    },
+    {
+      "rank_source": 15,
+      "start": 42.18,
+      "end": 64.34,
+      "text": "cultural reasons as to why modern websites in Japan and other East Asian countries look like this. Dense, cluttered, and information overload. I actually left a comment in the video briefly explaining why I think there is a whole cultural argument that they missed. And yes, I even upvoted the comment myself so that it will get more exposure, but no one saw it.",
+      "jev_score": 7.17,
+      "verdict": "JEV_REJECT",
+      "duration": 22.16,
+      "metrics": {
+        "hook": 6.1,
+        "payoff": 5.65,
+        "standalone": 8.0,
+        "curiosity": 7.2,
+        "specificity": 6.1,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 4
+    },
+    {
+      "rank_source": 7,
+      "start": 531.98,
+      "end": 548.16,
+      "text": "Just because we think it's bad. It's bad. And I know sometimes I think like this too, but it's just, it's such a self-centered way of thinking. How can we say that their design is bad when we don't even know the first thing about the people that these designs are serving?",
+      "jev_score": 7.0,
+      "verdict": "JEV_REJECT",
+      "duration": 16.18,
+      "metrics": {
+        "hook": 6.3,
+        "payoff": 5.15,
+        "standalone": 8.0,
+        "curiosity": 7.1,
+        "specificity": 5.65,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 7.5
+      },
+      "risks": [],
+      "jev_rank": 5
+    },
+    {
+      "rank_source": 12,
+      "start": 540.62,
+      "end": 559.76,
+      "text": "How can we say that their design is bad when we don't even know the first thing about the people that these designs are serving? We always think that the culture that fits our own personal values, that's good. The culture that doesn't fit our own personal values, that's bad. But in practice, nobody is right.",
+      "jev_score": 6.96,
+      "verdict": "JEV_REJECT",
+      "duration": 19.14,
+      "metrics": {
+        "hook": 6.3,
+        "payoff": 4.5,
+        "standalone": 8.0,
+        "curiosity": 7.1,
+        "specificity": 5.5,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 6
+    },
+    {
+      "rank_source": 10,
+      "start": 156.54,
+      "end": 178.52,
+      "text": "internet look like this, and why the population continued to accept this design as is. So it seems like it wasn't language or culture that caused Japan's web design to fracture off from the rest of the world. Instead, it's that their websites never adopted the practices for mobile friendly web design. As they argue in the video, one of the main reasons is that Japanese designers did",
+      "jev_score": 6.85,
+      "verdict": "JEV_REJECT",
+      "duration": 21.98,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 5.8,
+        "standalone": 8.0,
+        "curiosity": 6.1,
+        "specificity": 5.95,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 7
+    },
+    {
+      "rank_source": 19,
+      "start": 495.98,
+      "end": 516.22,
+      "text": "They found that East Asians in general were faster at finding these images in the complex and lengthy websites that they've created. This is something that's been built into their brains because of the influence of culture. And because of this slight difference in a cognitive process, it changes the way that the products they use are designed.",
+      "jev_score": 6.78,
+      "verdict": "JEV_REJECT",
+      "duration": 20.24,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 6.6,
+        "standalone": 7.25,
+        "curiosity": 5.4,
+        "specificity": 6.1,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 8
+    },
+    {
+      "rank_source": 8,
+      "start": 168.0,
+      "end": 189.46,
+      "text": "the rest of the world. Instead, it's that their websites never adopted the practices for mobile friendly web design. As they argue in the video, one of the main reasons is that Japanese designers did not feel the need to adopt a mobile friendly design to accommodate the smartphone revolution. Because most people in Japan browse websites on their computers rather than their phones.",
+      "jev_score": 6.76,
+      "verdict": "JEV_REJECT",
+      "duration": 21.46,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 5.15,
+        "standalone": 8.0,
+        "curiosity": 6.1,
+        "specificity": 6.1,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 9
+    },
+    {
+      "rank_source": 9,
+      "start": 396.16,
+      "end": 429.44,
+      "text": "The lens through which your brain sees the world shapes your reality. A group of researchers conducted a study that examined how people from different cultures present information to others. They found that there was a clear distinction between Eastern and Western culture in what is considered the optimal amount of information presented. Visual cultural products of East Asia are information rich because the holistic way of thinking allows people to see all information as equally important and absorb all the information in the whole context.",
+      "jev_score": 6.72,
+      "verdict": "JEV_REJECT",
+      "duration": 33.28,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 5.3,
+        "standalone": 8.0,
+        "curiosity": 5.4,
+        "specificity": 6.4,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 10
+    },
+    {
+      "rank_source": 16,
+      "start": 178.52,
+      "end": 202.48,
+      "text": "not feel the need to adopt a mobile friendly design to accommodate the smartphone revolution. Because most people in Japan browse websites on their computers rather than their phones. This is still quite true for the older Japanese population today. But that's Japan. That's not true for South Korea. And that's not true for China, where the iPhones and the Androids dominated the",
+      "jev_score": 6.62,
+      "verdict": "JEV_REJECT",
+      "duration": 23.96,
+      "metrics": {
+        "hook": 4.5,
+        "payoff": 5.15,
+        "standalone": 8.0,
+        "curiosity": 5.7,
+        "specificity": 7.0,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 11
+    },
+    {
+      "rank_source": 18,
+      "start": 467.7,
+      "end": 495.6,
+      "text": "They put all these articles and forums all on the homepage without breaking them up and expect their users to easily find what they need. Westerners who access these types of websites tend to be overwhelmed by the amount of information that's presented all at once. But East Asians are actually used to this density. The same researchers also did another study on European Canadians and East Asians on how fast they can find relevant information within complex and dense websites.",
+      "jev_score": 6.55,
+      "verdict": "JEV_REJECT",
+      "duration": 27.9,
+      "metrics": {
+        "hook": 4.5,
+        "payoff": 5.0,
+        "standalone": 7.25,
+        "curiosity": 6.4,
+        "specificity": 6.7,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 12
+    },
+    {
+      "rank_source": 5,
+      "start": 482.14,
+      "end": 508.74,
+      "text": "But East Asians are actually used to this density. The same researchers also did another study on European Canadians and East Asians on how fast they can find relevant information within complex and dense websites. They found that East Asians in general were faster at finding these images in the complex and lengthy websites that they've created. This is something that's been built into their brains because of the influence of culture.",
+      "jev_score": 6.52,
+      "verdict": "JEV_REJECT",
+      "duration": 26.6,
+      "metrics": {
+        "hook": 5.4,
+        "payoff": 6.3,
+        "standalone": 8.0,
+        "curiosity": 7.6,
+        "specificity": 7.0,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [
+        "weak_open"
+      ],
+      "jev_rank": 13
+    },
+    {
+      "rank_source": 4,
+      "start": 238.1,
+      "end": 264.84,
+      "text": "that of an iPhone, which according to Answer in Progress supposedly changed Western website designs. So according to the argument made by Answer in Progress, South Korean internet should look similar to that of North America because we adopted similar technology around the same time. But a lot of Korean and Chinese websites look like this, similar to that of Japan. Some of the most visited websites in South Korea",
+      "jev_score": 6.4,
+      "verdict": "JEV_REJECT",
+      "duration": 26.74,
+      "metrics": {
+        "hook": 3.0,
+        "payoff": 5.8,
+        "standalone": 8.0,
+        "curiosity": 5.7,
+        "specificity": 7.0,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 14
+    },
+    {
+      "rank_source": 13,
+      "start": 144.98,
+      "end": 163.06,
+      "text": "cluttered and dense than the rest of the world. And that's not because some famous Japanese designer dictated that all the websites should look like this. There are many reasons why the modern Japanese internet look like this, and why the population continued to accept this design as is.",
+      "jev_score": 6.34,
+      "verdict": "JEV_REJECT",
+      "duration": 18.08,
+      "metrics": {
+        "hook": 4.5,
+        "payoff": 4.65,
+        "standalone": 8.0,
+        "curiosity": 5.0,
+        "specificity": 5.95,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 15
+    },
+    {
+      "rank_source": 17,
+      "start": 429.74,
+      "end": 467.48,
+      "text": "In contrast, the North American analytical way of thinking allows people to be more organized and focus on the core salient message. They also argue that because East Asians are constantly surrounded by information rich products and dense physical environments such as growing up in cities like Tokyo. Being surrounded by these things further pushes East Asians to normalize, constantly processing a lot of information all at once. This enables designers to cram a lot of information onto one single web page and it leads to websites like these.",
+      "jev_score": 6.34,
+      "verdict": "JEV_REJECT",
+      "duration": 37.74,
+      "metrics": {
+        "hook": 4.5,
+        "payoff": 4.65,
+        "standalone": 8.0,
+        "curiosity": 5.0,
+        "specificity": 7.0,
+        "short_form_fit": 8.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [],
+      "jev_rank": 16
+    },
+    {
+      "rank_source": 1,
+      "start": 20.82,
+      "end": 36.58,
+      "text": "It's actually very interesting and very well researched. You should go and watch that video for yourself and then come back here because I think they missed something very big. However, given what I found, I'm just not convinced that culture is the primary cause",
+      "jev_score": 6.03,
+      "verdict": "JEV_REJECT",
+      "duration": 15.76,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 7.45,
+        "standalone": 6.5,
+        "curiosity": 7.4,
+        "specificity": 5.65,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [
+        "needs_context"
+      ],
+      "jev_rank": 17
+    },
+    {
+      "rank_source": 0,
+      "start": 10.98,
+      "end": 31.06,
+      "text": "They go into great detail to investigate why Japanese internet looks like this, while Western internet looks like this. I'm not going to summarize what they found. It's actually very interesting and very well researched. You should go and watch that video for yourself and then come back here because I think they missed something very big.",
+      "jev_score": 5.49,
+      "verdict": "JEV_REJECT",
+      "duration": 20.08,
+      "metrics": {
+        "hook": 5.3,
+        "payoff": 5.8,
+        "standalone": 5.75,
+        "curiosity": 6.1,
+        "specificity": 5.95,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [
+        "needs_context"
+      ],
+      "jev_rank": 18
+    },
+    {
+      "rank_source": 11,
+      "start": 725.42,
+      "end": 744.24,
+      "text": "And if we manage to do this, we're going to manage to solve some of the biggest problem we're facing in society today, which is to make multicultural organization in society work well. I know I cover quite a bit, so if you have questions or thoughts, let me know in the comments and we can talk about it. I actually wrote a whole paper on how culture influences how we all see shape differently,",
+      "jev_score": 5.45,
+      "verdict": "JEV_REJECT",
+      "duration": 18.82,
+      "metrics": {
+        "hook": 3.8,
+        "payoff": 5.15,
+        "standalone": 8.0,
+        "curiosity": 6.1,
+        "specificity": 5.5,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 5.5
+      },
+      "risks": [
+        "weak_open",
+        "dense_speech"
+      ],
+      "jev_rank": 19
+    },
+    {
+      "rank_source": 3,
+      "start": 133.04,
+      "end": 156.54,
+      "text": "and Australia. In the video made by Answering Progress, they set out to investigate a theory first brought out by this blog in 2013 about how Japanese internet web designs are just more cluttered and dense than the rest of the world. And that's not because some famous Japanese designer dictated that all the websites should look like this. There are many reasons why the modern Japanese",
+      "jev_score": 5.39,
+      "verdict": "JEV_REJECT",
+      "duration": 23.5,
+      "metrics": {
+        "hook": 3.0,
+        "payoff": 4.65,
+        "standalone": 8.0,
+        "curiosity": 5.0,
+        "specificity": 7.25,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "risks": [
+        "weak_open"
+      ],
+      "jev_rank": 20
+    }
+  ]
+}

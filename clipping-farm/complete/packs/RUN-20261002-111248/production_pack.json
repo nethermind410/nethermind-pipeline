@@ -1,0 +1,95 @@
+{
+  "run_id": "RUN-20261002-111248",
+  "created_at": "2026-10-02T01:15:51.979333+00:00",
+  "opportunity": {
+    "topic": "How culture made Japanese Internet design \"Weird\"",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "channel": "cynzy"
+  },
+  "source": {
+    "webpage_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "channel": "cynzy",
+    "duration": 770,
+    "view_count": 1081381,
+    "upload_date": "20221210"
+  },
+  "asset": {
+    "id": "ASSET-bc343b87ca93c4",
+    "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/runs/RUN-20261002-111248/asset/Opy-SjDU0UY.mp4",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "duration": 770.214,
+    "source_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY"
+  },
+  "candidates": [
+    {
+      "start": 31.38,
+      "end": 54.86,
+      "duration": 23.48,
+      "score": 8.25,
+      "text": "However, given what I found, I'm just not convinced that culture is the primary cause of Japan's unique web design. Well, let me convince you, Sabrina, because I think there are deep-rooted cultural reasons as to why modern websites in Japan and other East Asian countries look like this. Dense, cluttered, and information overload. I actually left a comment in the video",
+      "reasons": [
+        "hook-language=3",
+        "payoff-language=2",
+        "context-language=3",
+        "natural-speaking-length",
+        "short-form-compatible"
+      ],
+      "id": "INT-ea80a944f95b09",
+      "jev_score": 7.61,
+      "jev_verdict": "JEV_REVIEW",
+      "jev_metrics": {
+        "hook": 6.1,
+        "payoff": 7.45,
+        "standalone": 8.0,
+        "curiosity": 7.8,
+        "specificity": 6.7,
+        "short_form_fit": 9.5,
+        "editability": 9.0,
+        "speech": 9.0
+      },
+      "jev_risks": [],
+      "context_repair": {
+        "attempted": true,
+        "improved": false,
+        "method": null,
+        "original_score": 7.61,
+        "repaired_score": 7.71,
+        "tested_variants": 6
+      }
+    }
+  ],
+  "exports": [
+    {
+      "candidate_id": "INT-ea80a944f95b09",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-111248/01-how-culture-made-japanese-internet-design-wei-31-54.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 23.481791
+      }
+    }
+  ],
+  "workflow": [
+    "DISCOVER",
+    "SOURCE",
+    "RIGHTS",
+    "ACQUIRE",
+    "ANALYSE",
+    "CANDIDATES",
+    "SCORE",
+    "CLIP",
+    "QC",
+    "REPAIR",
+    "EXPORT",
+    "LEARN"
+  ]
+}

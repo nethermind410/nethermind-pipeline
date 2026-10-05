@@ -1,0 +1,154 @@
+{
+  "run_id": "RUN-20261002-110747",
+  "source": {
+    "webpage_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "channel": "cynzy",
+    "duration": 770,
+    "view_count": 1081381,
+    "upload_date": "20221210"
+  },
+  "asset": {
+    "id": "ASSET-13a453726f5559",
+    "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/runs/RUN-20261002-110747/asset/Opy-SjDU0UY.mp4",
+    "title": "How culture made Japanese Internet design \"Weird\"",
+    "duration": 770.214,
+    "source_url": "https://www.youtube.com/watch?v=Opy-SjDU0UY"
+  },
+  "candidates": [
+    {
+      "id": "CAND-377b80cb801fec",
+      "start": 0.0,
+      "end": 45.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-ef4cbd24d98673",
+      "start": 45.0,
+      "end": 90.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-39fbe977e2331c",
+      "start": 90.0,
+      "end": 135.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-0ccf8e42534b19",
+      "start": 135.0,
+      "end": 180.0,
+      "score": 6.5,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    },
+    {
+      "id": "CAND-165b56e974d116",
+      "start": 180.0,
+      "end": 225.0,
+      "score": 6.0,
+      "reasons": [
+        "continuous-audio window",
+        "duration=45.0s"
+      ]
+    }
+  ],
+  "exports": [
+    {
+      "candidate_id": "CAND-377b80cb801fec",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110747/01-how-culture-made-japanese-internet-design-wei-0-45.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-ef4cbd24d98673",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110747/02-how-culture-made-japanese-internet-design-wei-45-90.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-39fbe977e2331c",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110747/03-how-culture-made-japanese-internet-design-wei-90-135.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-0ccf8e42534b19",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110747/04-how-culture-made-japanese-internet-design-wei-135-180.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    },
+    {
+      "candidate_id": "CAND-165b56e974d116",
+      "path": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/exports/RUN-20261002-110747/05-how-culture-made-japanese-internet-design-wei-180-225.mp4",
+      "qc": {
+        "pass": true,
+        "checks": {
+          "standalone": true,
+          "audio": true,
+          "visual": true,
+          "provenance": true,
+          "ending": true
+        },
+        "reasons": [],
+        "duration": 45.003292
+      }
+    }
+  ],
+  "production_pack": "/Users/courtneyblyde/nethermind-pipeline/clipping-farm/complete/packs/RUN-20261002-110747",
+  "created_at": "2026-10-02T01:11:34.365280+00:00"
+}
