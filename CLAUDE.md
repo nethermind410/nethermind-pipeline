@@ -1,21 +1,26 @@
 # Working agreement — read this first, every session
 
-This repo is the shared desk between **Claude Code (you, on Courtney's Mac)** and
+This repo is the shared desk between **Claude Code (you, in a cloud session)** and
 **Muse (Courtney's agent, in the cloud)**. Courtney runs the nnethermind YouTube
 studio. Two heads, two jobs:
 
 - **Muse (cloud)** decides and connects: topics, scripts, storyboards, generation
   lists/prompts, fal generations, uploads, thumbnails, analytics, final QA.
-- **You (this laptop)** do light production work: writing and fixing code, text
+- **You (Claude Code)** do light production work: writing and fixing code, text
   work, planning docs, organising files, prepping configs and briefs.
 
-## HARD RULE — this laptop
+You run in a Claude Code cloud session, not on Courtney's laptop. Her laptop is
+only the screen she watches from. The session container is temporary: anything
+worth keeping must be committed and pushed.
 
-**Never render or run heavy compute on this machine.** It is low-power and
-freezes under rendering load. No video rendering, no bulk media processing, no
-long jobs. If a task needs rendering or heavy processing, do NOT run it — write
-it into HANDOFF.md as a task for Muse and stop. Code you write runs in the
-cloud or on GitHub Actions, not here.
+## HARD RULE — no heavy compute
+
+**Never render or run heavy compute in your session, and never on Courtney's
+laptop.** The laptop is low-power and crashes under load; the session container
+is small and temporary. No video rendering, no bulk media processing, no long
+jobs. If a task needs rendering or heavy processing, do NOT run it — write it
+into HANDOFF.md as a task for Muse and stop. Rendering runs on GitHub Actions
+or with Muse, not here.
 
 ## The loop
 
