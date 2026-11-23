@@ -160,6 +160,12 @@ anymore. His watch is the publish decision, not QA.
 5. **COURTNEY'S WATCH IS THE PUBLISH DECISION, NOT QA.** A still that
    reaches him has already passed every feature, or is labelled FAIL
    with the failing feature named.
+6. **THE GENERATOR NEVER GRADES ITS OWN OUTPUT (Courtney's
+   instruction, 23 Nov 2026).** The generator never grades its own
+   output. Grading is a separate pass against Courtney's reference
+   photo and the master, judged on zoomed region crops (hair / nose /
+   chest), binary per feature, any single FAIL kills the image. No
+   whole-image glances, no set-level passes.
 
 ## State at push time (23 Nov 2026)
 
