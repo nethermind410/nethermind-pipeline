@@ -1,8 +1,8 @@
 # Shorts batch 01 — fifteen Shorts
 
-- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once she does, her wording is final.
+- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once he does, his wording is final.
 - **Two kinds, as Courtney set out:** Shorts cut from the long-form scripts (12), and Shorts on popular topics (3).
-- **Shape, copied from her published Shorts:** open on the title line, 100 to 117 words each (her 2023 Jujutsu Kaisen Short is about 110 words in 43 seconds), one "Subscribe" late on, and close by repeating the opening line so it loops.
+- **Shape, copied from his published Shorts:** open on the title line, 100 to 117 words each (his 2023 Jujutsu Kaisen Short is about 110 words in 43 seconds), one "Subscribe" late on, and close by repeating the opening line so it loops.
 - **Cut-down Shorts** each name the long video they point at. Set that video as the related video.
 - **Order to post:** the four King form and Lili Shorts first, because chapter 1200 lands Sunday 29 Nov.
 

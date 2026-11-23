@@ -1,7 +1,7 @@
 # Monkey King Luffy is not Gear 6 — long-form script
 
-- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once she does, her wording is final.
-- **Built from her own words:** the Shorts "Stop Calling It Gear 6" and "Luffy's Not Driving Anymore. Nika Is.", and the essay "Why Did Luffy Stop Using 2nd Gear?". The argument is hers; this is the long version.
+- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once he does, his wording is final.
+- **Built from his own words:** the Shorts "Stop Calling It Gear 6" and "Luffy's Not Driving Anymore. Nika Is.", and the essay "Why Did Luffy Stop Using 2nd Gear?". The argument is his; this is the long version.
 - **Deadline:** as soon as possible. Chapter 1200 is out Sunday 29 Nov and may change the picture.
 - **Length as drafted:** see the note at the bottom of this file.
 - **Series / playlist:** One Piece essays, straight after the 2nd Gear essay.
@@ -221,7 +221,7 @@ Done.
 | 8 | "He beat his chest" before it happened | Reported in leaks only | Read ch. 1198–1199; cut if wrong |
 | 9 | No name and no shout for this form | Consistent with the published Short; no outlet reports an official name | Read ch. 1198–1199 |
 | 10 | 2nd Gear was built after Aokiji beat him, so he'd never lose anyone | Used in the published 2nd Gear essay | That essay |
-| 11 | Red Hawk "named after a hawk because it sounded good" | A joke, and loose: it is widely read as a nod to Ace | Courtney's call; her 2nd Gear essay says it is Ace's fire |
+| 11 | Red Hawk "named after a hawk because it sounded good" | A joke, and loose: it is widely read as a nod to Ace | Courtney's call; his 2nd Gear essay says it is Ace's fire |
 | 12 | Impel Down jailer beasts are awakened Zoans with no mind of their own | Used in the published Short | Ch. 544 and Oda's comments |
 | 13 | The fruit has a will and evaded the Government for 800 years | Used in the published 2nd Gear essay | Ch. 1044 |
 | 14 | The giants' old book reads Nika three ways: liberation, laughter, destruction | Confirmed by search | Fandomwire (ch. 1136) |

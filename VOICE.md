@@ -1,10 +1,10 @@
 # Courtney's voice — the sheet every script is written against
 
 Built by Claude Code on 23 Nov 2026 from Courtney's own published videos and
-from what she has said directly. **Courtney owns this file.** Anything she
+from what he has said directly. **Courtney owns this file.** Anything he
 adds, changes or strikes out is final.
 
-## What she asked for (her words, 23 Nov 2026)
+## What he asked for (his words, 23 Nov 2026)
 
 > "You need to make sure the writing is me. No words id never use. Chaotic
 > and kind. With some humour."
@@ -18,7 +18,7 @@ adds, changes or strikes out is final.
 - The channel description: "Got an ADHD brain and it's all over the place,
   so the channel is too." / "Rough as fuck. x"
 
-## How she sounds
+## How he sounds
 
 1. **Short sentences. Fragments are fine.** "Didn't see it." "A house."
 2. **Answer first, then the real question.** "He didn't. That's the video.
@@ -41,33 +41,33 @@ adds, changes or strikes out is final.
 
 ## Kind
 
-- She teases the audience; she never sneers at them.
-- She is on the character's side. The worry is for Luffy, not at him.
-- She gives the other view its due before she disagrees with it.
+- He teases the audience; he never sneers at them.
+- He is on the character's side. The worry is for Luffy, not at him.
+- He gives the other view its due before he disagrees with it.
 - No dunking on other creators or on fans of a different reading.
 
 ## Humour
 
-- Deadpan. The joke is the gap between the scale of the thing and how she
+- Deadpan. The joke is the gap between the scale of the thing and how he
   says it. "Second gear took years off his life. Fifth gear takes lunch."
 - Domestic comparisons. "There is no technique for a fitted sheet."
 - One joke per beat, then on with the point. The joke never replaces the
   argument.
 
-## Words and phrases she uses (all taken from her own videos)
+## Words and phrases he uses (all taken from his own videos)
 
 Nah · that's the video · point made, moving on · you lot · scrap it out in
 the comments · tell me I'm wrong · maths · the bit that… · properly · flat
 out · folded him · handbrake off · price tag · glow-up · who's running the
 ship · biggest op · raise some hell · Done.
 
-## Words she never says
+## Words he never says
 
 **Locked by Courtney (hard fail):** mate, bastard, bloke, hype.
 
 **Courtney's own additions:** _none yet — add here._
 
-**Claude's guess at words that would not sound like her (warn only):**
+**Claude's guess at words that would not sound like him (warn only):**
 delve, tapestry, testament, realm, unleash, moreover, furthermore, crucial,
 pivotal, intricate, journey, landscape, navigate, unpack, dive in, deep dive,
 in conclusion, it's worth noting, game-changer, masterclass, truly, indeed,
@@ -75,8 +75,8 @@ ultimately, arguably, undeniably, showcase, elevate, embark, beloved,
 captivating, breathtaking, whilst, thus, hence, folks, guys, lads, bro, epic,
 insane, literally, legendary.
 
-This last list is mine, not hers. She should strike any word she does use and
-move any she truly never says into her own list.
+This last list is mine, not his. He should strike any word he does use and
+move any he truly never says into his own list.
 
 ## Fixed rules that sit alongside this sheet
 

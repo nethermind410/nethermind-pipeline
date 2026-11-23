@@ -8,7 +8,7 @@ Reads only the spoken part of each file (between "## Script" and
 "## Facts to check"; stage labels like **[COLD OPEN]** are ignored).
 
 FAIL (exit 1)  a locked banned word, or "Gear Second"-style naming.
-WARN           a word from the "would not sound like her" list, or a
+WARN           a word from the "would not sound like him" list, or a
                sentence longer than 28 words.
 Also prints the word count and the running time at 167 words a minute,
 the pace of "Why Did Luffy Stop Using 2nd Gear?" (1,629 words in 9:46).
@@ -20,7 +20,7 @@ import sys
 
 LOCKED = ["mate", "bastard", "bloke", "hype"]
 
-# Courtney's own additions go here (and in VOICE.md) as she gives them.
+# Courtney's own additions go here (and in VOICE.md) as he gives them.
 COURTNEY_NEVER = []
 
 SOUNDS_WRONG = [
@@ -70,7 +70,7 @@ def check(path):
         print(f"  FAIL  gear naming '{m.group(0)}' (use '2nd Gear' form)")
         failed = True
     for w, _, ctx in find(SOUNDS_WRONG, body):
-        print(f"  WARN  '{w}' may not sound like her: {ctx}")
+        print(f"  WARN  '{w}' may not sound like him: {ctx}")
     for s in re.split(r"(?<=[.?!])\s+", " ".join(body.split())):
         k = len(s.split())
         if k > LONG_SENTENCE:

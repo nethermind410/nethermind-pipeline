@@ -1,6 +1,6 @@
 # Doctor Doom isn't hiding his face — long-form script
 
-- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once she does, her wording is final.
+- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once he does, his wording is final.
 - **Deadline:** public well before Avengers: Doomsday opens on 18 Dec 2026.
 - **Length as drafted:** about 1,075 spoken words, roughly 6 minutes 30 seconds at the pace of the 2nd Gear essay. Needs about 270 more words to reach 8 minutes.
 - **Series / playlist:** character essays, alongside "Bruce Wayne Isn't the Mask. Neither Is Batman." (the best long-form on the channel).

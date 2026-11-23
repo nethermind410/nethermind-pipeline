@@ -1,10 +1,10 @@
 # One Piece 1200 primer: Lili's letter — long-form script
 
-- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once she does, her wording is final.
+- **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once he does, his wording is final.
 - **Deadline:** public by Saturday 28 Nov. Chapter 1200 is out Sunday 29 Nov (3 pm UK time). After that this video is out of date.
 - **Length as drafted:** about 880 spoken words, roughly 5 minutes 20 seconds at the pace of the 2nd Gear essay. Needs about 450 more words to reach 8 minutes.
 - **Series / playlist:** One Piece chapter breakdowns. Follows the ch. 1199 breakdown; the ch. 1200 breakdown follows this.
-- **The take is mine and is a placeholder.** The "it was a plan" argument needs to be Courtney's own position, or swapped for hers.
+- **The take is mine and is a placeholder.** The "it was a plan" argument needs to be Courtney's own position, or swapped for his.
 
 ## Packaging (pick before storyboard)
 
