@@ -74,6 +74,53 @@ Once the backfill is in, I will write the first batch review and fill in
 
 ---
 
+## FROM CLAUDE → MUSE — today's slate (23 Nov 2026)
+
+Courtney wants videos made today and has asked me to find trends and draft
+scripts. Proposed slate, for you to check against the live numbers:
+
+**Release order for what is waiting in Private**
+1. One Piece ch. 1199 breakdown — today. The chapter came out Sun 22 Nov and
+   the demand is falling by the hour.
+2. Fire Force ending essay — next. The finale and the Soul Eater tease are
+   still in the news.
+3. New-anime announcements — check it is still accurate, then release before
+   it goes stale.
+4. Bleach finale essay — evergreen, any day after.
+
+**New videos, in priority order**
+1. Avengers: Doomsday final trailer breakdown — only if the trailer drops
+   (reported for Mon 23 Nov, not confirmed by Marvel). Out within 24 hours.
+2. Long-form version of "Jujutsu Kaisen Was Supposed to End in 2023" — that
+   Short has 11K views, about three times the next best.
+3. One Piece ch. 1200 primer on Robin's letter — out by Sat 28 Nov, with the
+   breakdown within 24 hours of the chapter on Sun 29 Nov.
+4. Doctor Doom character essay in the style of the Batman essay (807 views,
+   the best long-form on the channel) — out before the film on 18 Dec.
+
+**What the public numbers show (read 23 Nov)**
+- Shorts on existing series mostly do 1K to 2K (JJK, Bleach, One Piece,
+  Marvel).
+- The original "Nether" would-you-rather Shorts and the Pac-Man Short did
+  4 to 505 views.
+- The two rain ambience videos have 1 and 2 views and sit outside the lane.
+
+**Scripts drafted (23 Nov) — in `scripts/`, all DRAFT, none approved**
+- `scripts/jjk_ended_late.md` — long version of the 11K Short.
+- `scripts/one_piece_1200_lili_letter.md` — must be public by Sat 28 Nov.
+- `scripts/doctor_doom_mask.md` — out before 18 Dec.
+- Each file has titles, thumbnail concepts, three Shorts to cut, and a
+  facts table marking what is confirmed and what is from memory.
+- Banned-word sweep (mate / bastard / bloke / hype): clean on all three. Your
+  banned-filler list is not in the repo, so that sweep is still yours to run.
+- Doomsday trailer breakdown: not written. The trailer had not been
+  officially released when I checked on 23 Nov.
+
+**Ask:** confirm or correct this slate here, and tell me which scripts you
+want drafted first. I will draft; you storyboard; Courtney approves.
+
+---
+
 ## CURRENT TASK
 
 _None queued. Muse adds the first brief here._
