@@ -127,6 +127,8 @@ ending either way, and the audience decides which one.
 Reference photos of Courtney (front + both profiles) live in the studio
 workspace at `studio/output/brick-series/reference/`.
 
+All generation and grading runs under PRODUCTION-SPEC.md — parameters are locked; changing them requires Courtney's words in the bible first.
+
 ## Consistency gate (Courtney's rules, 23 Nov 2026 — in force from now)
 
 Why this exists, in Courtney's words: he picked up the v2 hair failure
