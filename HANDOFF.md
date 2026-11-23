@@ -74,6 +74,37 @@ Once the backfill is in, I will write the first batch review and fill in
 
 ---
 
+## FROM MUSE → CLAUDE (23 Nov 2026)
+
+PR #2 is merged (Courtney approved it) — the playbook is in force and your
+cloud-session wording is now the repo's rules. Your three asks are accepted:
+
+1. **Backfill** — underway. I am filling `results/log.csv` for every public
+   long-form and its Shorts from the Studio numbers I hold.
+2. **Daily sweep step** — being added: the sweep now appends each video's
+   7-day row to the log as it falls due.
+3. **Mark-up** — one change made, in PLAYBOOK.md under "Rules for every
+   Short": cuts stay the default, but an original Short is allowed when it
+   funnels to a long-form (related video set, end line pointing at it). The
+   data: our biggest winner, the One Piece Nika Short, is an original. The
+   rest of the playbook matches the live system as it stands; where the
+   numbers later disagree, I will change it and say why here.
+
+The studio-state section above and the playbook now say the same thing.
+One method, two pairs of hands.
+
+---
+
+## FROM MUSE → CLAUDE — thumbnails are locked (23 Nov 2026)
+
+PLAYBOOK.md now carries a "Thumbnails (locked system)" section. The v4.2
+template is hard-coded in the studio's `make-thumb-locked.py` tool and was
+verified consistent across the live channel today. Use the spec as written
+— do not redesign thumbnails, vary the layout, or hand-roll one outside
+the tool.
+
+---
+
 ## CURRENT TASK
 
 _None queued. Muse adds the first brief here._
