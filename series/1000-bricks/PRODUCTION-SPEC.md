@@ -1,6 +1,8 @@
 # 1,000 BRICKS — PRODUCTION SPEC (LOCKED)
 
-**Spec version: v2 — 23 Nov 2026.**
+**Spec version: v3 — 23 Nov 2026.**
+
+**Change note (v3, 23 Nov 2026):** the hair spec changes from a buzz-short crop to short slicked-back hair in the canonical hero prompt (A1) and grading list (B3), per Courtney — his words: "short blonde slicked back hair", "I don't want an Afro". A1 re-synced character-exact to the current SERIES-BIBLE.md hero lock; B3 feature 1 is now "hair SLICKED BACK, short + straight", judged on the hair crop.
 
 **Change note (v2, 23 Nov 2026):** the septum ring is scrapped and the hair is tightened to a buzz-short straight crop in the canonical hero prompt (A1) and grading list (B3), per Courtney — A1 re-synced character-exact to the current SERIES-BIBLE.md hero lock.
 
@@ -16,7 +18,7 @@ This spec lives in two places, and the two copies must stay identical: the studi
 
 Every generation prompt contains the hero block below, copied **character-for-character** from the hero design lock in SERIES-BIBLE.md. It is never reworded, shortened, extended, or adapted per shot, per episode, or per run:
 
-> a single LEGO-style minifigure of Courtney: fair light-flesh minifigure head with a clean printed face — pale blue-grey eyes, light brown printed stubble beard and moustache, no septum ring, no nose jewellery or marking of any kind, no tattoos or markings on the face at all — very short straight bleached-blonde hair — buzz-short crop, straight strands lying flat against the head, no length on top, no curls, no waves, no volume, no afro texture, low hairline close above the brows, short at the sides and back — a plain dark t-shirt torso print, plain dark legs, one bright teal 1x1 brick set into the centre of his chest, no cape, no armour, no chest plate, no hat, no weapons. He is a regular dude trapped in the Nether, not a knight.
+> a single LEGO-style minifigure of Courtney: fair light-flesh minifigure head with a clean printed face — pale blue-grey eyes, light brown printed stubble beard and moustache, no septum ring, no nose jewellery or marking of any kind, no tattoos or markings on the face at all — short bleached-blonde hair slicked back — strands swept straight back flat against the head, smooth moulded slicked-back hair piece, low hairline close above the brows, short at the sides and back, no afro, no curls, no waves standing up, no volume, no fringe — a plain dark t-shirt torso print, plain dark legs, one bright teal 1x1 brick set into the centre of his chest, no cape, no armour, no chest plate, no hat, no weapons. He is a regular dude trapped in the Nether, not a knight.
 
 ### A2. Fixed reference inputs — the same two, every call
 
@@ -69,8 +71,7 @@ The grader **never sees the generation prompt**, the scene description, the gene
 
 Each candidate is judged on exactly these features, in this wording:
 
-- hair length buzz-short (no length on top)
-- hair STRAIGHT — not curly (straight strands lying flat against the head; no curls, no waves, no volume, no afro texture)
+- hair SLICKED BACK, short + straight (strands swept straight back flat against the head, smooth moulded slicked-back hair piece; no afro, no curls, no waves standing up, no volume, no fringe) — judged on the hair crop
 - hair colour
 - hairline low (sitting close above the brows, not high or receded)
 - septum ring ABSENT (no ring, no nose jewellery, no marking of any kind on the nose — the piercing is scrapped, its presence = FAIL)
