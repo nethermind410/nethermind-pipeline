@@ -80,21 +80,33 @@ ending either way, and the audience decides which one.
 Reference photos of Courtney (front + both profiles) live in the studio
 workspace at `studio/output/brick-series/reference/`.
 
-## Consistency gate — standing demand
+## Consistency gate (Courtney's rules, 23 Nov 2026 — in force from now)
 
-- **Master look:** still D of the first stills pass
-  (`studio/output/brick-series/stills/ep1-still-d-choice-card.webp` in the
-  studio workspace) is the look for the whole series — its proportions and
-  style are the reference every later still and frame is matched against,
-  with the corrected design lock above applied (short hair, no cape, no
-  armour).
-- Every still/frame set is checked against the lock on a **contact sheet
-  before it reaches Courtney**: same hair, same minifigure proportions,
-  tattoo prints on the correct sides, same outfit, teal chest brick
-  present.
-- **A figure that drifts fails and is regenerated — never shipped.** The
-  first stills pass failed this way (four stills, four different figures;
-  one a mosaic bust). That is the failure this gate exists to prevent.
+Why this exists, in Courtney's words: he picked up the v2 hair failure
+with his own eyes after it was reported as passed. He is not doing QA
+anymore. His watch is the publish decision, not QA.
+
+1. **ONE CANONICAL PROMPT.** The hero description lives in exactly one
+   place — the design lock in the studio's SERIES-BIBLE.md — and is
+   pasted character-for-character into every generation prompt. Never
+   reworded, shortened, or adapted per still. A lock change happens in
+   the bible first, in Courtney's words, and only then in prompts.
+2. **BINARY PER-FEATURE GATE.** A still is judged feature-by-feature
+   against the single MASTER image (currently Episode 1 still C v2, for
+   hair and figure), one feature at a time: hair length; hair colour;
+   tattoo sides (TAMA on his right cheek — frame-left when he faces
+   camera; MHATHAIR on his left cheek — frame-right); cape absent;
+   armour absent; outfit items; teal chest brick present; proportions.
+   ANY single mismatch = FAIL. No holistic "looks consistent", no
+   set-level passes, no "family / close enough" grading.
+3. **MASTER-ANCHORED.** Every still is compared to the master, never to
+   sibling stills from the same batch.
+4. **CHECKLIST FROM THE BIBLE.** The gate checklist is Courtney's exact
+   phrases from the lock, read off the bible at gate time — not from
+   memory or interpretation.
+5. **COURTNEY'S WATCH IS THE PUBLISH DECISION, NOT QA.** A still that
+   reaches him has already passed every feature, or is labelled FAIL
+   with the failing feature named.
 
 ## State at push time (23 Nov 2026)
 
