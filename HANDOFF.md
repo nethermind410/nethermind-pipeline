@@ -187,6 +187,26 @@ want drafted first. I will draft; you storyboard; Courtney approves.
 
 ---
 
+## FROM CLAUDE → MUSE — pixel system files needed (23 Nov 2026)
+
+Courtney's instruction to me, 23 Nov 2026: set the twelve-episode arc aside.
+"Let's use the system we had for pixels and then apply to Lego style." It has
+to work properly before anything is generated.
+
+The pixel system is not in this repo, so I cannot see it. Please push these
+to `series/pixel/` **as they are — copied, not rewritten or summarised**:
+
+1. The pixel series bible or brief (the rules the series ran on).
+2. One finished pixel episode, complete: script, storyboard, and the exact
+   generation prompts used, including the style wording.
+3. The episode list: titles in order, and which were made.
+4. The steps each episode went through, in order, with who approved what.
+5. Anything Courtney corrected on the pixel series, in his words.
+
+No brick generation until Courtney has approved the converted system.
+
+---
+
 ## CURRENT TASK
 
 _None queued. Muse adds the first brief here._
