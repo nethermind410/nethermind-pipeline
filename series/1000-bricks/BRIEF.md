@@ -66,6 +66,21 @@ the machinery, not decoration:
 - **Episode 1's loose arm plate is the first instance:** looting a
   fallen hero's piece.
 
+**The loadout — the second ledger.** Choices attach lore pieces to the
+hero permanently and visibly. The brick count is one ledger; the loadout
+is the second: pieces gained, grafted, bound or lost persist in every
+later episode's stills, and a permanent piece is added to the hero lock
+text (bible first, then prompts). Canonical illustrations:
+
+1. **The stone arm** — Episode 1's loose arm plate becomes HIS arm
+   episodes later: a stone arm in the Hellboy / Right Hand of Doom vein
+   (the first brick still ever made for this world was the Hellboy
+   stone-arm door scene). It opens some doors and can't hold others.
+2. **The adapting spirit** — a JJK-flavoured room can bind a
+   Mahoraga-style adapting spirit/wheel to him: it adapts him to
+   whatever hurt him last, every adaptation costs bricks and visibly
+   changes his body, and the audience votes whether to let it adapt.
+
 ## The hero — Courtney himself
 
 The hero is **Courtney as a minifigure**. The audience is not voting on a
