@@ -65,7 +65,7 @@ And three things stretched that map. Not one of them is "he got lazy".
 
 One. Shibuya broke the board.
 
-Before Shibuya, this series has a ceiling. One man holding it up. Gojo exists, so nothing truly terrible is allowed to happen for long.
+Before Shibuya, this series has a ceiling. One man holding it up. Gojo exists, so nothing properly terrible is allowed to happen for long.
 
 Then Shibuya puts him in a box.
 

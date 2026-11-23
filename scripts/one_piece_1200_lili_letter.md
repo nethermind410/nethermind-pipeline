@@ -166,7 +166,7 @@ Done.
 | 11 | Cobra dies in that room | Simplified: he is fatally wounded there | Ch. 1085 — adjust the line if Courtney wants it exact |
 | 12 | Robin read the Alabasta Poneglyph and lied to Crocodile | From memory | Ch. 202–203 |
 | 13 | Robin has chased the Poneglyphs "since she was eight" | From memory | Ohara flashback — check her age |
-| 14 | The letter in ch. 1199 was found in Elbaf | Reported (GameRant mentions the Owl's Library) | Read ch. 1199 on Manga Plus |
-| 15 | Whether the ch. 1199 letter is the same one the Nefertari family kept | **Unknown.** The script avoids saying either way | Read ch. 1199 |
+| 14 | The letter in ch. 1199 was found in Elbaf, in an old chest kept by Biblo's family for generations | Confirmed by search | Fandomwire |
+| 15 | Whether the ch. 1199 letter is the same one the Nefertari family kept | **Unknown.** It was found in Elbaf, so it is probably a different one. The script avoids saying either way | Read ch. 1199 |
 
 I have not read chapter 1199 itself, only coverage of it. Whoever storyboards this should read the chapter on Manga Plus first and correct rows 14 and 15.

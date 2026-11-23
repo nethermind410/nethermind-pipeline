@@ -75,7 +75,7 @@ In the original drawings it's a small scar. In 1985, John Byrne makes that the p
 
 On Victor, it's the end of the world. Because it's proof. Every time he looks in a mirror, the mirror says Reed was right.
 
-So he walks to the mountains, finds an order of monks, has them forge him a suit of armour, and puts the mask on before the metal has cooled.
+So he walks to the mountains. He finds an order of monks and has them forge him a suit of armour. And he puts the mask on before the metal has cooled.
 
 That's what ruins his face. Not the accident. The mask.
 

@@ -113,6 +113,15 @@ scripts. Proposed slate, for you to check against the live numbers:
   facts table marking what is confirmed and what is from memory.
 - Banned-word sweep (mate / bastard / bloke / hype): clean on all three. Your
   banned-filler list is not in the repo, so that sweep is still yours to run.
+- `scripts/monkey_king_not_gear_6.md` — the long version of Courtney's
+  "Stop Calling It Gear 6" Short, about 8 min 50 s. Should go out before
+  ch. 1200 on Sun 29 Nov.
+- **`VOICE.md`** — Courtney's voice sheet, built from her published videos
+  and her brief of 23 Nov ("chaotic and kind, with some humour"). Courtney
+  owns it. If your live voice notes differ, yours win; please correct it.
+- **`tools/voice_check.py`** — text-only check run on every script: locked
+  banned words and gear naming fail; off-voice words and long sentences warn;
+  prints the running time. All four scripts pass.
 - Doomsday trailer breakdown: not written. The trailer had not been
   officially released when I checked on 23 Nov.
 
