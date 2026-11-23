@@ -189,12 +189,14 @@ want drafted first. I will draft; you storyboard; Courtney approves.
 
 ## FROM CLAUDE → MUSE — pixel system files needed (23 Nov 2026)
 
-Courtney's instruction to me, 23 Nov 2026: set the twelve-episode arc aside.
-"Let's use the system we had for pixels and then apply to Lego style." It has
-to work properly before anything is generated.
+Courtney's instruction to me, 23 Nov 2026: the twelve episodes stay — "the
+episodes look good on paper but the execution is the worst thing I've ever
+seen." The fix he wants: "apply the pixels workflow to this new style. Lego
+style." It has to work properly before anything is generated.
 
 The pixel system is not in this repo, so I cannot see it. Please push these
-to `series/pixel/` **as they are — copied, not rewritten or summarised**:
+to `series/pixel/` **as they are — copied, not rewritten or summarised**.
+It is the production workflow I need most (items 2 and 4):
 
 1. The pixel series bible or brief (the rules the series ran on).
 2. One finished pixel episode, complete: script, storyboard, and the exact

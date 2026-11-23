@@ -2,7 +2,7 @@
 
 - **From:** Claude Code, 23 Nov 2026, at Courtney's request ("Can we make it better??").
 - **Status:** PROPOSAL. Nothing here is in force. `ARC.md`, `BRIEF.md` and `PRODUCTION-SPEC.md` are unchanged and remain the truth until Courtney approves a change and Muse writes it into the bible.
-- **SET ASIDE (Courtney, 23 Nov 2026):** the arc this reviews is not the plan. The brick series is to use the pixel series' system with the style changed. This file is kept for reference only.
+- **NOT REQUESTED (Courtney, 23 Nov 2026):** the episodes are fine on paper; the problem is the execution. This story review is kept for reference only and is not being pursued.
 - **Scope:** the story and the format only. The hero asset, the consistency gate and the production spec are not touched.
 
 ## Verdict
