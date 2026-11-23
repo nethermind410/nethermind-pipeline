@@ -29,6 +29,23 @@ Production rules for this lane:
   draws rooms, props, statues and creatures only; it never draws the
   hero again. If the asset is wrong, it is rebuilt once, re-graded,
   re-picked and re-locked — bible first.
+- **THE MASTER IS PICKED AND LOCKED (Courtney, 23 Nov 2026).** His
+  words: "just use the third image… make sure that you can do that
+  every time the same." The master is
+  `stills/ep1-still-c-statue-arm-MASTER.webp` in the studio workspace
+  (the v9 candidate 3, Still C scene). **Same-every-time rules:**
+  (a) the hero in every frame of every episode is THIS asset —
+  decomposed into layers (`assets/hero/`) and posed; (b) the hero is
+  never re-generated, re-drawn or re-edited per shot or per episode;
+  (c) generation produces backgrounds, rooms, props, statues and
+  creatures ONLY, with the hero area left for the asset; (d) new
+  poses/angles are derived from the master asset's layers (the
+  stop-motion method), and any genuinely new hero view is built once
+  from the master, added to the asset, and reused; (e) loadout
+  changes (stone arm, red leg, etc.) are new layers ON this asset,
+  added bible-first; (f) the production spec's reference-master path
+  points at this MASTER file. All earlier masters/candidates are
+  superseded and are never hero references again.
 - **Nothing public without Courtney's tap.** Drafts and uploads are
   Private by default; only Courtney publishes.
 
@@ -213,10 +230,15 @@ anymore. His watch is the publish decision, not QA.
   further instruction (23 Nov 2026: "Just have it shaven in the sides
   and only hair on top — this character doesn't have ears"), the hair
   is now **slicked back on TOP of the head only, sides shaven bare**,
-  and **v9 candidates** (Still C scene, top-only hair) are **in
-  production on Muse's side** — they go to a separate grading pass,
-  then to Courtney to pick. Once picked, the hero is built once as a
-  layered asset and never re-generated.
+  and **v9 candidates** (Still C scene, top-only hair) were built.
+  **Courtney then picked v9 candidate 3 himself (23 Nov 2026)** —
+  "just use the third image… make sure that you can do that every
+  time the same" — ending the candidate rounds. It is locked as
+  `stills/ep1-still-c-statue-arm-MASTER.webp`, decomposed into the
+  layered hero asset under `assets/hero/` in the studio workspace,
+  and Episode 1 was built from that asset (see the episode's
+  BUILD-REPORT.md). The same-every-time rules in the production rules
+  above govern every episode from here.
 - A **stop-motion technique proof** (the Hellboy door scene, layer-posed
   from the approved brick still) is also **in production on Muse's
   side**. It is a technique test only, not an episode.

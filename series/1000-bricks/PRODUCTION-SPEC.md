@@ -1,6 +1,8 @@
 # 1,000 BRICKS — PRODUCTION SPEC (LOCKED)
 
-**Spec version: v4 — 23 Nov 2026.**
+**Spec version: v5 — 23 Nov 2026.**
+
+**Change note (v5, 23 Nov 2026):** THE MASTER IS PICKED. Courtney ended the candidate rounds and picked the hero master himself — his words: "just use the third image… make sure that you can do that every time the same." The master is `brick-series/stills/ep1-still-c-statue-arm-MASTER.webp` (v9 candidate 3). The reference-master path in A2 and B2 now points at the MASTER file, and the new section **A6 — THE LOCKED HERO ASSET (same every time)** is in force: the hero is the master decomposed into layers and posed; he is never generated again. Sections A1/A4/A5 remain as the record of how the master was produced and as the grading anchor text; they no longer authorise generating the hero.
 
 **Change note (v4, 23 Nov 2026):** the hair shape changes — the slicked-back hair now sits on TOP of the head only and the sides of the head are shaven bare, in the canonical hero prompt (A1) and grading list (B3), per Courtney — his words: "Just have it shaven in the sides and only hair on top — this character doesn't have ears, no need to have the hairs going around ears that don't exist." A1 re-synced character-exact to the current SERIES-BIBLE.md hero lock; B3 feature 1 is now "hair SLICKED BACK ON TOP ONLY, short + straight, sides shaven bare", judged on the hair crop.
 
@@ -27,7 +29,7 @@ Every generation prompt contains the hero block below, copied **character-for-ch
 Every generation call passes exactly these two reference inputs, and no others:
 
 1. **Courtney's front photo** — `brick-series/reference/courtney-front.jpg` (identity reference).
-2. **The accepted master still** — `brick-series/stills/ep1-still-c-statue-arm-v6-master.webp` (the master named in the bible's consistency gate; hair, figure and face anchor).
+2. **The accepted master still** — `brick-series/stills/ep1-still-c-statue-arm-MASTER.webp` (Courtney's pick, locked 23 Nov 2026; the master named in the bible's consistency gate; hair, figure and face anchor).
 
 No other reference image may be added, swapped, or dropped per run. A change to the reference inputs is a spec change (see D).
 
@@ -52,6 +54,17 @@ The hero block NEVER varies. If a shot does not contain the hero, it contains no
 - The generator does **not** select a winner, does **not** grade, does **not** pass or fail anything, and does **not** describe any candidate as consistent, correct, or approved.
 - Candidates go to the grading pass (B) exactly as generated — unedited, uncomposited, unretouched.
 
+### A6. THE LOCKED HERO ASSET — same every time (in force from v5)
+
+Courtney picked the master (`brick-series/stills/ep1-still-c-statue-arm-MASTER.webp`, 23 Nov 2026) and ordered it be the same every time. These rules override any generation parameter above wherever the hero himself is concerned:
+
+- (a) The hero in **every frame of every episode** is THIS asset — the master decomposed into layers (kept in `brick-series/assets/hero/`) and posed. There is no other hero.
+- (b) The hero is **never re-generated, re-drawn or re-edited** per shot or per episode.
+- (c) Generation produces **backgrounds, rooms, props, statues and creatures ONLY**, with the hero area left empty for the asset. Scene-plate prompts contain no hero block and no hero references.
+- (d) New poses and angles are **derived from the master asset's layers** (the stop-motion method). A genuinely new hero view is built **once** from the master, added to the asset set, and reused — never improvised per shot.
+- (e) Loadout changes (the stone arm, the red leg, every future piece) are **new layers ON this asset**, added bible-first.
+- (f) The reference-master path in A2/B2 points at the MASTER file above. The front photo remains the identity reference for grading.
+
 ---
 
 ## B. GRADING PARAMETERS
@@ -63,7 +76,7 @@ Grading is done by a **different agent** from the one that generated the candida
 ### B2. What the grader receives — ONLY these four things
 
 1. Courtney's front photo — `brick-series/reference/courtney-front.jpg`.
-2. The accepted master still — `brick-series/stills/ep1-still-c-statue-arm-v6-master.webp`.
+2. The accepted master still — `brick-series/stills/ep1-still-c-statue-arm-MASTER.webp`.
 3. The candidate still(s) for the shot.
 4. The feature list (B3), copied verbatim from the bible's consistency gate.
 
