@@ -6,7 +6,7 @@
 - **Story beat:** Episode 1 as it stands in `ARC.md` (the statue's arm).
 - **Style word:** the Lego look.
 
-## Script (98 words)
+## Script (99 words)
 
 [cold, slowly] You wake up on a stone floor. You're made of bricks. A thousand of them.
 [flat] The number glows on your chest. Down the corridor stand statues. That's what zero looks like.
@@ -31,7 +31,7 @@ In Hellboy, a stone right hand is the Right Hand of Doom: the key to the one doo
 | | Pixel format (this file) | `ARC.md` as written |
 |---|---|---|
 | Who | "You" | "He", narrated |
-| Length | 98 words | about 140 |
+| Length | 99 words | about 140 |
 | Lore | Named out loud | Never named on screen |
 | Tracked | One number | The count plus a loadout |
 | Next episode | Written after the vote | All twelve mapped in advance |
