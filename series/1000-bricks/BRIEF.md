@@ -21,6 +21,14 @@ Production rules for this lane:
   before a single frame moves.
 - **Storyboard agreed by Courtney before any build.** No generation runs
   ahead of his agreement.
+- **The hero is a LOCKED ASSET — built once, never re-generated**
+  (Courtney, 23 Nov 2026: "Once we pick. You then make rules so it
+  stays like that"). The hero is built once as a layered asset from the
+  graded, Courtney-picked master and posed into scenes — the same
+  physical piece in every shot, like real stop-motion. Generation
+  draws rooms, props, statues and creatures only; it never draws the
+  hero again. If the asset is wrong, it is rebuilt once, re-graded,
+  re-picked and re-locked — bible first.
 - **Nothing public without Courtney's tap.** Drafts and uploads are
   Private by default; only Courtney publishes.
 
@@ -90,13 +98,16 @@ character; they are voting on what happens **to him**.
 hero text anywhere, including the studio's series bible until it is
 updated to match):**
 
-- **Hair: short STRAIGHT bleached-blonde hair** — cropped close to the
-  head, straight strands lying flat, **no curls, no waves, no volume,
-  no afro texture**, short at the sides and the back, with a **low
-  hairline sitting close above the brows** (brought down by Courtney,
-  23 Nov 2026). Never long, never curly, never wavy, never a high or
-  receded hairline. (The v5 master was rejected by Courtney on exactly
-  this: its hair read as a curly mini Afro.)
+- **Hair: very short STRAIGHT bleached-blonde hair — buzz-short crop**,
+  straight strands lying flat against the head, **no length on top, no
+  curls, no waves, no volume, no afro texture**, short at the sides and
+  the back, with a **low hairline sitting close above the brows**
+  (brought down by Courtney, 23 Nov 2026). Never long, never curly,
+  never wavy, never a high or receded hairline. (The v5 master was
+  rejected by Courtney on exactly this — its hair read as a curly mini
+  Afro — and all three v6 candidates were rejected on it again,
+  23 Nov 2026: "The hair is still too long and Afro — I have blonde
+  straight hair.")
 - **No cape. No armour, no chest plate.** He is not a knight — he is a
   regular dude trapped in this world: **plain dark t-shirt torso print,
   plain dark legs.**
@@ -108,12 +119,13 @@ updated to match):**
   retired and must not be used. His jaw is clean too — no jawline
   tattoos.
 - Pale blue-grey eyes; light brown printed stubble beard and moustache.
-- **Septum ring: a small silver septum ring hanging down from the
-  centre of the nose** — a thin ring/U-shape suspended below the nose,
-  opening upward into the septum, **right way up** (as in Courtney's
-  front reference photo). Never upside down, never sitting on top of
-  the nose. (The v5 master was rejected by Courtney on exactly this:
-  the ring "looks fucked, it's just upside down.")
+- **Septum ring: SCRAPPED — there is none.** Removed from the design
+  entirely (Courtney, 23 Nov 2026: "I can't trust you to do the septum
+  piercings, scrap it."). No ring, no nose jewellery, no marking of
+  any kind on the nose — in the lock, in prompts, or on the figure.
+  The gate now checks its ABSENCE: a ring appearing in any still is a
+  reject. (Generation failed it in every version — v5's was upside
+  down; the v6 candidates rendered it doubled, hooked and blobbed.)
 - **One bright teal 1x1 brick set into the centre of his chest** — the
   life counter. It is part of him, not clothing.
 
@@ -141,14 +153,15 @@ anymore. His watch is the publish decision, not QA.
    reworded, shortened, or adapted per still. A lock change happens in
    the bible first, in Courtney's words, and only then in prompts.
 2. **BINARY PER-FEATURE GATE.** A still is judged feature-by-feature
-   against the single MASTER image (currently Episode 1 still C v6
-   master, for hair, figure and face), one feature at a time: hair
-   length; hair STRAIGHT short crop — not curly (straight strands
-   lying flat, cropped close to the head; no curls, no waves, no
-   volume, no afro texture); hair colour; hairline low (close above
-   the brows, not high or receded); septum ring right way up, hanging
-   below nose (thin ring/U-shape suspended below the centre of the
-   nose, opening upward into the septum); face tattoos absent (no
+   against the single MASTER — the locked hero asset (built once from
+   the Episode 1 Still C master candidate, graded and picked by
+   Courtney; for hair, figure and face) — one feature at a time: hair
+   length buzz-short (no length on top); hair STRAIGHT — not curly
+   (straight strands lying flat against the head; no curls, no waves,
+   no volume, no afro texture); hair colour bleached blonde; hairline
+   low (close above the brows, not high or receded); septum ring
+   ABSENT (no ring, no nose jewellery, no marking on the nose — the
+   piercing is scrapped, its presence = FAIL); face tattoos absent (no
    tattoos, text or markings anywhere on the face); jaw tattoos
    absent; cape absent; armour absent; outfit items; teal chest
    brick present; proportions.
@@ -175,8 +188,15 @@ anymore. His watch is the publish decision, not QA.
   (`studio/output/brick-series/SERIES-BIBLE.md`,
   `studio/output/brick-series/EP1-STORYBOARD.md`). The bible's hero lock
   is being updated to the corrected design above.
-- **Episode 1 stills v2** (corrected design, generated from the master
-  look + Courtney's photos) are **in production on Muse's side**.
+- **Hero master:** v5 self-graded "pass" was rejected by Courtney's
+  eyes (afro hair, upside-down ring); all three v6 candidates were
+  rejected by the independent grading pass (hair + ring failed on all
+  three). The septum ring is now scrapped and the hair spec tightened
+  to a buzz-short straight crop. A **v7 locked-asset master candidate**
+  (Still C scene, no ring, buzz-short straight blonde hair) is **in
+  production on Muse's side** — it goes to a separate grading pass,
+  then to Courtney to pick. Once picked, the hero is built once as a
+  layered asset and never re-generated.
 - A **stop-motion technique proof** (the Hellboy door scene, layer-posed
   from the approved brick still) is also **in production on Muse's
   side**. It is a technique test only, not an episode.
