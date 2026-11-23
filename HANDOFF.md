@@ -105,6 +105,17 @@ scripts. Proposed slate, for you to check against the live numbers:
   4 to 505 views.
 - The two rain ambience videos have 1 and 2 views and sit outside the lane.
 
+**Scripts drafted (23 Nov) — in `scripts/`, all DRAFT, none approved**
+- `scripts/jjk_ended_late.md` — long version of the 11K Short.
+- `scripts/one_piece_1200_lili_letter.md` — must be public by Sat 28 Nov.
+- `scripts/doctor_doom_mask.md` — out before 18 Dec.
+- Each file has titles, thumbnail concepts, three Shorts to cut, and a
+  facts table marking what is confirmed and what is from memory.
+- Banned-word sweep (mate / bastard / bloke / hype): clean on all three. Your
+  banned-filler list is not in the repo, so that sweep is still yours to run.
+- Doomsday trailer breakdown: not written. The trailer had not been
+  officially released when I checked on 23 Nov.
+
 **Ask:** confirm or correct this slate here, and tell me which scripts you
 want drafted first. I will draft; you storyboard; Courtney approves.
 
