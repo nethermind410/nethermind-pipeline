@@ -98,18 +98,24 @@ character; they are voting on what happens **to him**.
 hero text anywhere, including the studio's series bible until it is
 updated to match):**
 
-- **Hair: short bleached-blonde hair SLICKED BACK** — strands swept
-  straight back flat against the head, a smooth moulded slicked-back
-  hair piece, short at the sides and the back, with a **low hairline
-  sitting close above the brows** (brought down by Courtney,
-  23 Nov 2026). **No afro, no curls, no waves standing up, no volume,
-  no fringe.** Never long, never curly, never a high or receded
-  hairline. (Courtney, 23 Nov 2026: "short blonde slicked back hair",
-  "I don't want an Afro." Slicked-back supersedes the earlier buzz-crop
-  spec: the v5 master was rejected on hair that read as a curly mini
-  Afro, all three v6 candidates were rejected on it again, and the v7
-  candidate was rejected by the independent grading pass — its hair
-  rendered as a pebbled, granular cap with length over the ears.)
+- **Hair: short bleached-blonde hair SLICKED BACK, ON TOP OF THE HEAD
+  ONLY** — strands swept straight back flat, a smooth moulded top
+  piece, with a **low hairline sitting close above the brows**
+  (brought down by Courtney, 23 Nov 2026). **The sides of the head are
+  shaven bare — no hair on the sides at all** (a minifigure head has
+  no ears; nothing wraps around the sides), back short. **No afro, no
+  curls, no waves standing up, no volume, no fringe, no hair on the
+  sides.** Never long, never curly, never a high or receded hairline.
+  (Courtney, 23 Nov 2026: "Just have it shaven in the sides and only
+  hair on top — this character doesn't have ears, no need to have the
+  hairs going around ears that don't exist." The top-only shape
+  supersedes the full-head slicked-back piece: the v8 candidates' hair
+  wrapped down the sides of the head. Earlier history: slicked-back
+  superseded the buzz crop — the v5 master was rejected on hair that
+  read as a curly mini Afro, all three v6 candidates were rejected on
+  it again, and the v7 candidate was rejected by the independent
+  grading pass, its hair a pebbled, granular cap with length over the
+  ears.)
 - **No cape. No armour, no chest plate.** He is not a knight — he is a
   regular dude trapped in this world: **plain dark t-shirt torso print,
   plain dark legs.**
@@ -158,10 +164,12 @@ anymore. His watch is the publish decision, not QA.
    against the single MASTER — the locked hero asset (built once from
    the Episode 1 Still C master candidate, graded and picked by
    Courtney; for hair, figure and face) — one feature at a time: hair
-   SLICKED BACK, short + straight (strands swept straight back flat
-   against the head, smooth moulded slicked-back hair piece; no afro,
-   no curls, no waves standing up, no volume, no fringe) — judged on
-   the hair crop; hair colour bleached blonde; hairline
+   SLICKED BACK ON TOP ONLY, short + straight, sides shaven bare
+   (strands swept straight back flat
+   against the head, smooth moulded top piece; no hair on the sides
+   at all — nothing wraps around the sides; no afro, no curls, no
+   waves standing up, no volume, no fringe) — judged on the hair
+   crop; hair colour bleached blonde; hairline
    low (close above the brows, not high or receded); septum ring
    ABSENT (no ring, no nose jewellery, no marking on the nose — the
    piercing is scrapped, its presence = FAIL); face tattoos absent (no
@@ -198,9 +206,14 @@ anymore. His watch is the publish decision, not QA.
   C scene, no ring) was also **rejected by the independent grading
   pass** — 9/11: its buzz-short hair rendered as a pebbled, granular
   cap with length over the ears, and two small cheek dots crept back.
-  On Courtney's instruction the hair spec is now **short slicked-back**
+  On Courtney's instruction the hair spec became **short slicked-back**
   ("short blonde slicked back hair", "I don't want an Afro"), and
-  **v8 candidates** (Still C scene, slicked-back hair) are **in
+  **v8 candidates** (Still C scene, slicked-back hair) were built —
+  but their hair wrapped down the sides of the head. On Courtney's
+  further instruction (23 Nov 2026: "Just have it shaven in the sides
+  and only hair on top — this character doesn't have ears"), the hair
+  is now **slicked back on TOP of the head only, sides shaven bare**,
+  and **v9 candidates** (Still C scene, top-only hair) are **in
   production on Muse's side** — they go to a separate grading pass,
   then to Courtney to pick. Once picked, the hero is built once as a
   layered asset and never re-generated.

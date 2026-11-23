@@ -1,6 +1,8 @@
 # 1,000 BRICKS — PRODUCTION SPEC (LOCKED)
 
-**Spec version: v3 — 23 Nov 2026.**
+**Spec version: v4 — 23 Nov 2026.**
+
+**Change note (v4, 23 Nov 2026):** the hair shape changes — the slicked-back hair now sits on TOP of the head only and the sides of the head are shaven bare, in the canonical hero prompt (A1) and grading list (B3), per Courtney — his words: "Just have it shaven in the sides and only hair on top — this character doesn't have ears, no need to have the hairs going around ears that don't exist." A1 re-synced character-exact to the current SERIES-BIBLE.md hero lock; B3 feature 1 is now "hair SLICKED BACK ON TOP ONLY, short + straight, sides shaven bare", judged on the hair crop.
 
 **Change note (v3, 23 Nov 2026):** the hair spec changes from a buzz-short crop to short slicked-back hair in the canonical hero prompt (A1) and grading list (B3), per Courtney — his words: "short blonde slicked back hair", "I don't want an Afro". A1 re-synced character-exact to the current SERIES-BIBLE.md hero lock; B3 feature 1 is now "hair SLICKED BACK, short + straight", judged on the hair crop.
 
@@ -18,7 +20,7 @@ This spec lives in two places, and the two copies must stay identical: the studi
 
 Every generation prompt contains the hero block below, copied **character-for-character** from the hero design lock in SERIES-BIBLE.md. It is never reworded, shortened, extended, or adapted per shot, per episode, or per run:
 
-> a single LEGO-style minifigure of Courtney: fair light-flesh minifigure head with a clean printed face — pale blue-grey eyes, light brown printed stubble beard and moustache, no septum ring, no nose jewellery or marking of any kind, no tattoos or markings on the face at all — short bleached-blonde hair slicked back — strands swept straight back flat against the head, smooth moulded slicked-back hair piece, low hairline close above the brows, short at the sides and back, no afro, no curls, no waves standing up, no volume, no fringe — a plain dark t-shirt torso print, plain dark legs, one bright teal 1x1 brick set into the centre of his chest, no cape, no armour, no chest plate, no hat, no weapons. He is a regular dude trapped in the Nether, not a knight.
+> a single LEGO-style minifigure of Courtney: fair light-flesh minifigure head with a clean printed face — pale blue-grey eyes, light brown printed stubble beard and moustache, no septum ring, no nose jewellery or marking of any kind, no tattoos or markings on the face at all — short bleached-blonde hair slicked back on TOP of the head only — strands swept straight back flat, smooth moulded top piece, low hairline close above the brows; the sides of the head are shaven bare — no hair on the sides at all (a minifigure head has no ears; nothing wraps around the sides), back short — a plain dark t-shirt torso print, plain dark legs, one bright teal 1x1 brick set into the centre of his chest, no cape, no armour, no chest plate, no hat, no weapons. He is a regular dude trapped in the Nether, not a knight.
 
 ### A2. Fixed reference inputs — the same two, every call
 
@@ -71,7 +73,7 @@ The grader **never sees the generation prompt**, the scene description, the gene
 
 Each candidate is judged on exactly these features, in this wording:
 
-- hair SLICKED BACK, short + straight (strands swept straight back flat against the head, smooth moulded slicked-back hair piece; no afro, no curls, no waves standing up, no volume, no fringe) — judged on the hair crop
+- hair SLICKED BACK ON TOP ONLY, short + straight, sides shaven bare (strands swept straight back flat, smooth moulded top piece; no hair on the sides at all — nothing wraps around the sides; no afro, no curls, no waves standing up, no volume, no fringe) — judged on the hair crop
 - hair colour
 - hairline low (sitting close above the brows, not high or receded)
 - septum ring ABSENT (no ring, no nose jewellery, no marking of any kind on the nose — the piercing is scrapped, its presence = FAIL)
