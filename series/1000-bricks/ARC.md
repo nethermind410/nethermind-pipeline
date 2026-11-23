@@ -128,7 +128,7 @@ Conventions: **Count at open** is exact and chains — Episode N+1 opens on Epis
 ### Episode 11 — "His Own Face" · Count at open: 695
 - **Room / mechanic:** The statue with his face stands up. The previous him. It does not want its arm back — the arm was never the point. It wants to walk, and the Nether's arithmetic is simple: one of them stands in the corridor, one of them walks out of this room.
 - **Dilemma:** A: give it what it asks — stand still for it, one room's worth (**−55** as it takes bricks off him to remember how walking works). B: fight it (**−55** — the wheel turns once, the stone arm breaks its grip; the cost is identical, the damage is not: fighting cracks the statue's face, and the crack is on *his* face's lines).
-- **Stakes:** Same price, two different debts. And the truth, in full, in the narration: the Kind Voice is this statue, and every statue — the voice of every hero who ever stood still, wearing the newest hero's voice. It sounds like him because last time, it *was* him. **From this episode the guardrails are off (§4, zero law):** on a low alternate path, this episode's cost can genuinely take him to zero, and if it does, the statue ending fires here and becomes the finale.
+- **Stakes:** Same price, two different debts. And the truth, in full, in the narration: the Kind Voice is this statue, and every statue — the voice of every hero who ever stood still, wearing the newest hero's voice. It sounds like him because last time, it *was* him. **From this episode the guardrails are off (§5, zero law):** on a low alternate path, this episode's cost can genuinely take him to zero, and if it does, the statue ending fires here and becomes the finale.
 - **Loadout:** No change — deliberately. He faces the Door with exactly what the crowd has made of him: stone arm, wheel, red leg, grey temples, price tag, bell, key, and the teal heart brick, brightest thing on him.
 - **Threads:** IN — T1, T2, T7 all pay off here. OUT — everything converges on the Door.
 - **Script:** ~185 words (≈70s).
@@ -136,14 +136,37 @@ Conventions: **Count at open** is exact and chains — Episode N+1 opens on Epis
 ### Episode 12 — "The Door" · Count at open: 640
 - **Room / mechanic:** The real Door, shown for the first time. The voice is waiting at the threshold to make its last collection, and the bell rings before it finishes its first sentence.
 - **Dilemma — THE FINAL VOTE:** The Door's price is everything but the heart: every brick he has except the teal one and the few that hold it in — he walks out made of almost nothing (**640 → 25**), or he refuses the price and keeps his bricks, and fights the Nether for them. A: **PAY THE DOOR.** B: **REFUSE.**
-- **Stakes:** Everything, both ways. See §5, THE END POINT — this episode's ending is locked there.
-- **Script:** ~190 words (≈70s) to the choice card; the winning ending is produced as the finale drop (see §5).
+- **Stakes:** Everything, both ways. See §6, THE END POINT — this episode's ending is locked there.
+- **Script:** ~190 words (≈70s) to the choice card; the winning ending is produced as the finale drop (see §6).
 
 ---
 
-## 4. THE BRICK LEDGER (SACRED) — AND THE ZERO LAW
+## 4. THE LORE MAP — how manga/comics power the Nether
 
-**The ledger is sacred.** Every episode's opening count is the previous episode's closing count, exactly. No resets, no quiet gains, no rounding, no "close enough." If a number appears in a script, a counter plate or a storyboard, it chains or the script fails — the ledger is checked like the other gates (see §6). The same law covers everything else that persists: **loadout pieces, debts, injuries and allies carry forward identically** — a piece lost is lost in every later script, a debt unpaid is still owed, an ally earned is still standing in the ledger until the story spends them.
+**The principle.** The Nether is where fictional powers end up when their stories die — so lore mechanics are the *physics* of this world, not cameos. Every room runs on one recognisable manga/comic mechanic, re-skinned under a Nether name. The fiction never names the IP on screen; the audience recognising it *is* the engagement. The names and sources live in the episode's caption and pinned comment, where Courtney's lore authority carries the discussion.
+
+**The map — episode → mechanic → source logic → Nether skin:**
+
+- **Ep 1 — The Statue's Arm → Hellboy's Right Hand of Doom.** The stone arm is a key made to open the end of the world. It bookends the series: the stone hand turns the Door's key in Ep 12.
+- **Ep 2 — The Kind Voice → JJK binding vows.** The voice can only speak in trades; every promise it makes binds both sides.
+- **Ep 3 — The Suit → Venom's symbiote + the arc-reactor problem.** A suit that wears you and feeds — and it wants the teal heart brick, his reactor.
+- **Ep 4 — The Toll → Chainsaw Man devil contracts + equivalent exchange.** The imp ally is a contract creature; every favour has a priced clause.
+- **Ep 5 — The Market → Death Note / soul-economy logic.** A market where the currency is pieces of people — bricks, years, names.
+- **Ep 6 — The Debt Collects → the Ep 2 vow, collected under binding-vow rules.** Break a term, lose the piece the term named — the Suit's gauntlet.
+- **Ep 7 — The Other Walker → automail logic (Fullmetal Alchemist).** A limb that isn't his: the mismatched red leg, taken from a walker who didn't make it.
+- **Ep 8 — The First Door → the Door-Door fruit (One Piece).** A door that opens anywhere except out — the Nether's tease of the real Door.
+- **Ep 9 — The Clock → Soru Soru no Mi (One Piece).** Lifespan as currency: the Clock pays bricks in years and collects the same way; its key is cut from a year of his life.
+- **Ep 10 — The Wheel → Mahoraga (JJK).** The adapting wheel: every turn adapts him to what hurt him last, costs bricks, and completes the stone arm.
+- **Ep 11 — His Own Face → the loop logic (Attack on Titan's paths / the twin thread).** The Kind Voice is the previous him; his own face on a statue is the reveal.
+- **Ep 12 — The Door → the stone hand (Ep 1, Hellboy) is the key.** The Door pays out in everything but the heart brick.
+
+**Standing rule.** One mechanic per episode. The mechanic is named — with its source — in the episode's caption and pinned comment, and never named on screen. New lore enters the series only through this arc first (the bible-first rule): if it isn't in the map, it isn't in an episode until the arc is updated and re-approved.
+
+---
+
+## 5. THE BRICK LEDGER (SACRED) — AND THE ZERO LAW
+
+**The ledger is sacred.** Every episode's opening count is the previous episode's closing count, exactly. No resets, no quiet gains, no rounding, no "close enough." If a number appears in a script, a counter plate or a storyboard, it chains or the script fails — the ledger is checked like the other gates (see §7). The same law covers everything else that persists: **loadout pieces, debts, injuries and allies carry forward identically** — a piece lost is lost in every later script, a debt unpaid is still owed, an ally earned is still standing in the ledger until the story spends them.
 
 The count at each episode's open. Canonical path; every close is the next open, exactly.
 
@@ -178,11 +201,11 @@ Alternate-path note: if Episode 1 votes B, Episode 2 opens at **985** and every 
   - **A Nether loan.** Bricks now, a debt the Clock collects — staged in Episode 9, where the Clock offers a loan alongside the years deal, at a rate the bell has opinions about. A loan taken is a debt in the ledger, collected at the worst moment, like every debt in this series.
   - **An ally's gift.** An ally in the ledger can gift him bricks — at a price the ally names (a favour owed, a door held shut instead of open, a name given up). Staged as a live option from Episode 7 onward wherever an earned ally stands.
   No valve fires automatically. If the crowd never votes for one, he stays poor. The valves exist so a cornered season always has a *story* way out — never a mechanical one.
-- **(c) From Episode 11, the guardrails come OFF.** Zero is genuinely possible. If the live ledger reaches zero in Episode 11 or Episode 12 — through the statue's tuition on a low alternate path, or the refusal fight in the finale — the statue ending fires immediately, mid-episode, and becomes the ending (see §5). From the penultimate episode the construction no longer protects him. Only the votes do.
+- **(c) From Episode 11, the guardrails come OFF.** Zero is genuinely possible. If the live ledger reaches zero in Episode 11 or Episode 12 — through the statue's tuition on a low alternate path, or the refusal fight in the finale — the statue ending fires immediately, mid-episode, and becomes the ending (see §6). From the penultimate episode the construction no longer protects him. Only the votes do.
 
 ---
 
-## 5. THE END POINT (LOCKED)
+## 6. THE END POINT (LOCKED)
 
 This section is definite. The season ends one of two ways, the final vote on Episode 12 chooses which, and both endings are written here in full so the per-episode scripts can aim at them from Episode 1.
 
@@ -207,7 +230,7 @@ He keeps his bricks and fights. He is good at it now — stone arm, wheel turnin
 
 ---
 
-## 6. ALIGNMENT RULES — for every per-episode script written from this arc
+## 7. ALIGNMENT RULES — for every per-episode script written from this arc
 
 Every script, no exceptions, must carry:
 
@@ -220,11 +243,11 @@ Every script, no exceptions, must carry:
 7. **The standing sequence.** Arc approved → per-episode script + storyboard written and locked (Courtney's agreement) → only then generation. No generation before scripts are locked. No exceptions, no "just one still."
 8. **The bible's standing gates still apply:** hero description verbatim in every prompt; the binary per-feature consistency gate against the master; banned-word sweep at zero before anything is shown; the finished episode watched end to end; nothing posts without Courtney's tap.
 9. **The ledger check (sacred).** Before a script locks, its numbers are checked against the brick ledger: opening count = previous closing count, every movement priced inside the bible's ranges, closing count recorded. Loadout, debts, injuries and allies are checked the same way — present if the ledger says present, absent if it says gone. A script that fails the ledger check does not lock.
-10. **The zero law is inherited.** Scripts for Episodes 1–10 must keep both branches survivable per §4(a) — no outcome zeroes him early, however the narration sells the danger. Pressure valves (sell-back, Nether loan, ally's gift) may only ever appear as voted dilemmas with named prices, never as narration gifts or quiet fixes. Scripts for Episodes 11–12 are written guardrails-off: if the live count can reach zero, the script must contain the statue-ending firing point, and the finale script is checked against both locked endings in §5 before it locks.
+10. **The zero law is inherited.** Scripts for Episodes 1–10 must keep both branches survivable per §5(a) — no outcome zeroes him early, however the narration sells the danger. Pressure valves (sell-back, Nether loan, ally's gift) may only ever appear as voted dilemmas with named prices, never as narration gifts or quiet fixes. Scripts for Episodes 11–12 are written guardrails-off: if the live count can reach zero, the script must contain the statue-ending firing point, and the finale script is checked against both locked endings in §6 before it locks.
 
 ---
 
-## 7. EPISODE PRODUCTION SPEC
+## 8. EPISODE PRODUCTION SPEC
 
 - **Format:** voiced brick stop-motion, vertical 9:16, 1080×1920, 12 fps from posed stills. No image-to-video AI.
 - **Length:** 45–75 seconds per episode (finale drop may run to the top of that range). Narration is the spine; the picture is posed to the narration, not the other way round.
