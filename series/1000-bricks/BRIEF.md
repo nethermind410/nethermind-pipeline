@@ -47,6 +47,25 @@ for this niche — not copied:
 Episode shape (~25s): last vote's consequence → the new room/creature →
 the price lands → A-or-B end card (vote in the comments).
 
+## Lore engine
+
+Manga and comic lore and stories are woven into the series — the lore is
+the machinery, not decoration:
+
+- **Every room and trap in the Nether runs on a lore mechanic from
+  manga/comics:** a vow that binds, a suit that wears you, a clock that
+  pays in years, a door that opens anywhere.
+- **The mechanic IS the dilemma, and it always carries a price in
+  bricks.** No room's lore is just flavour.
+- **The hero's lore knowledge is the content moat.** He — and Courtney —
+  knows how these mechanics work in their own stories, what they cost,
+  and where the trap inside them sits.
+- **Consequences of lore objects persist across episodes** — debts,
+  watchers, allies. A lore object used, taken, or refused in one episode
+  is still in play in later ones.
+- **Episode 1's loose arm plate is the first instance:** looting a
+  fallen hero's piece.
+
 ## The hero — Courtney himself
 
 The hero is **Courtney as a minifigure**. The audience is not voting on a
