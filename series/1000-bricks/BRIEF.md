@@ -91,14 +91,19 @@ hero text anywhere, including the studio's series bible until it is
 updated to match):**
 
 - **Hair: short blonde hair** — short cropped, short at the sides and the
-  back. Never long, never wavy.
+  back, with a **low hairline sitting close above the brows** (brought
+  down by Courtney, 23 Nov 2026). Never long, never wavy, never a high
+  or receded hairline.
 - **No cape. No armour, no chest plate.** He is not a knight — he is a
   regular dude trapped in this world: **plain dark t-shirt torso print,
   plain dark legs.**
-- **Face prints are his real tattoos:** "TAMA" with a small x under
-  **his right cheek**; "MHATHAIR" with three small dots under **his left
-  cheek** — **never mirrored**. His jaw is clean — no jawline tattoos
-  (removed by Courtney, 23 Nov 2026: they didn't look like his).
+- **The face is CLEAN — no face tattoos at all.** The cheek word tattoos
+  are REMOVED from the design (Courtney, 23 Nov 2026: the composited
+  prints looked stamped on and sat in the wrong place — if they can't be
+  locked in properly every time, they don't happen). No tattoos, text or
+  markings anywhere on the face; the old face-print overlay asset is
+  retired and must not be used. His jaw is clean too — no jawline
+  tattoos.
 - Pale blue-grey eyes; light brown printed stubble beard and moustache;
   a tiny silver septum ring on his nose.
 - **One bright teal 1x1 brick set into the centre of his chest** — the
@@ -126,12 +131,12 @@ anymore. His watch is the publish decision, not QA.
    reworded, shortened, or adapted per still. A lock change happens in
    the bible first, in Courtney's words, and only then in prompts.
 2. **BINARY PER-FEATURE GATE.** A still is judged feature-by-feature
-   against the single MASTER image (currently Episode 1 still C v2, for
-   hair and figure), one feature at a time: hair length; hair colour;
-   tattoo sides (TAMA on his right cheek — frame-left when he faces
-   camera; MHATHAIR on his left cheek — frame-right); jaw tattoos absent;
-   cape absent; armour absent; outfit items; teal chest brick present;
-   proportions.
+   against the single MASTER image (currently Episode 1 still C v5
+   master, for hair, figure and face), one feature at a time: hair
+   length; hair colour; hairline low (close above the brows, not high
+   or receded); face tattoos absent (no tattoos, text or markings
+   anywhere on the face); jaw tattoos absent; cape absent; armour
+   absent; outfit items; teal chest brick present; proportions.
    ANY single mismatch = FAIL. No holistic "looks consistent", no
    set-level passes, no "family / close enough" grading.
 3. **MASTER-ANCHORED.** Every still is compared to the master, never to
