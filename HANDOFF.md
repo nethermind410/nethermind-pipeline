@@ -116,6 +116,10 @@ scripts. Proposed slate, for you to check against the live numbers:
 - `scripts/monkey_king_not_gear_6.md` — the long version of Courtney's
   "Stop Calling It Gear 6" Short, about 8 min 50 s. Should go out before
   ch. 1200 on Sun 29 Nov.
+- `scripts/shorts_batch_01.md` — fifteen Shorts: three cut from each of the
+  four long scripts (each names its related long video) and three on popular
+  topics (Yamamoto's Bankai, Toji, a Gojo comedy one). 100 to 117 words each.
+  Post the King form and Lili ones before ch. 1200 on Sun 29 Nov.
 - **`VOICE.md`** — Courtney's voice sheet, built from her published videos
   and her brief of 23 Nov ("chaotic and kind, with some humour"). Courtney
   owns it. If your live voice notes differ, yours win; please correct it.
