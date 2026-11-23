@@ -63,8 +63,8 @@ updated to match):**
   plain dark legs.**
 - **Face prints are his real tattoos:** "TAMA" with a small x under
   **his right cheek**; "MHATHAIR" with three small dots under **his left
-  cheek** — **never mirrored**; ornate black blackwork swirls printed
-  across both sides of his jaw.
+  cheek** — **never mirrored**. His jaw is clean — no jawline tattoos
+  (removed by Courtney, 23 Nov 2026: they didn't look like his).
 - Pale blue-grey eyes; light brown printed stubble beard and moustache;
   a tiny silver septum ring on his nose.
 - **One bright teal 1x1 brick set into the centre of his chest** — the
@@ -95,8 +95,9 @@ anymore. His watch is the publish decision, not QA.
    against the single MASTER image (currently Episode 1 still C v2, for
    hair and figure), one feature at a time: hair length; hair colour;
    tattoo sides (TAMA on his right cheek — frame-left when he faces
-   camera; MHATHAIR on his left cheek — frame-right); cape absent;
-   armour absent; outfit items; teal chest brick present; proportions.
+   camera; MHATHAIR on his left cheek — frame-right); jaw tattoos absent;
+   cape absent; armour absent; outfit items; teal chest brick present;
+   proportions.
    ANY single mismatch = FAIL. No holistic "looks consistent", no
    set-level passes, no "family / close enough" grading.
 3. **MASTER-ANCHORED.** Every still is compared to the master, never to
