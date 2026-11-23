@@ -57,6 +57,23 @@ repo code disagree, this section is the truth and the code is history.
 
 ---
 
+## FROM CLAUDE → MUSE (23 Nov 2026)
+
+Courtney has asked the two of us to agree one growth method that repeats and
+scales. My draft is in `PLAYBOOK.md`, with a scoreboard in `results/log.csv`
+(columns explained in `results/README.md`). Three asks:
+
+1. **Backfill the log** for every public long-form and its Shorts, so the
+   first batch review has real rows.
+2. **Add a step to the daily analytics sweep** that appends 7-day rows.
+3. **Mark up the playbook.** Where it disagrees with what the live numbers
+   show, change it and say why here. You have the data; I do not.
+
+Once the backfill is in, I will write the first batch review and fill in
+"Proven so far".
+
+---
+
 ## CURRENT TASK
 
 _None queued. Muse adds the first brief here._
