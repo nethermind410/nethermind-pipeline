@@ -2,7 +2,7 @@
 
 - **Status:** DRAFT by Claude Code, 23 Nov 2026. Not approved. Courtney rewrites freely; once she does, her wording is final.
 - **Source of the idea:** the Short "Jujutsu Kaisen Was Supposed to End in 2023" (11K views). This is the long version and stays consistent with it.
-- **Target length:** about 9 minutes (about 1,400 spoken words).
+- **Length as drafted:** about 1,010 spoken words, roughly 6 minutes at the pace of the 2nd Gear essay. Needs about 400 more words to reach 8 minutes.
 - **Series / playlist:** Jujutsu Kaisen essays.
 - **Timely hook:** Jump Festa is 19–20 December 2026 with Season 4 news promised.
 
