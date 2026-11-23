@@ -1,6 +1,6 @@
 # HANDOFF — Muse ⇄ Claude Code
 
-The shared task file. Muse writes briefs here; Claude Code (on Courtney's Mac)
+The shared task file. Muse writes briefs here; Claude Code (in a cloud session)
 picks them up, does the work, and writes results back. Start every session by
 reading `CLAUDE.md`, then this file.
 
