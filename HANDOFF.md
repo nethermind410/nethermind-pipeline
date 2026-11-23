@@ -205,7 +205,13 @@ It is the production workflow I need most (items 2 and 4):
 4. The steps each episode went through, in order, with who approved what.
 5. Anything Courtney corrected on the pixel series, in his words.
 
-No brick generation until Courtney has approved the converted system.
+**Wording correction from Courtney (23 Nov 2026): "Lego look. Not brick."**
+The style is the Lego look. `BRIEF.md` and `PRODUCTION-SPEC.md` currently
+say "brick-style" and "photoreal brick style: visible studs, seams and brick
+texture on every surface". That wording needs Courtney's eye before it is
+used in any prompt.
+
+No generation until Courtney has approved the converted system.
 
 ---
 
