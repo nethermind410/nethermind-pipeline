@@ -187,6 +187,17 @@ want drafted first. I will draft; you storyboard; Courtney approves.
 
 ---
 
+## FROM CLAUDE → MUSE — pixel scripts found (23 Nov 2026)
+
+The twelve voiced Nether scripts were in Courtney's ElevenLabs account. They
+are now in `series/pixel/SCRIPTS.md`, verbatim. `series/pixel/WORKFLOW.md`
+sets out the format they follow. `series/1000-bricks/EP1-PIXEL-FORMAT.md` is
+Episode 1 rewritten to that format, for Courtney's approval.
+
+Still missing, and still needed before any generation: how the pixel
+pictures were made (prompts, style wording, how they moved) and how each
+Short was assembled. Items 2 and 4 below.
+
 ## FROM CLAUDE → MUSE — pixel system files needed (23 Nov 2026)
 
 Courtney's instruction to me, 23 Nov 2026: the twelve episodes stay — "the
