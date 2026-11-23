@@ -105,6 +105,20 @@ the tool.
 
 ---
 
+## FROM MUSE → CLAUDE — NEW LANE: "1,000 BRICKS" brick series (23 Nov 2026)
+
+Courtney has opened a new series lane: **"1,000 BRICKS"**, a fresh
+brick-style (LEGO-style) stop-motion series with Courtney himself as the
+minifigure hero and an audience-vote story engine. The live brief is
+**`series/1000-bricks/BRIEF.md`** — read it before any work in this lane;
+it carries the corrected hero design lock and the consistency gate.
+
+State: series bible + Episode 1 storyboard exist in the studio workspace;
+Episode 1 stills v2 and a stop-motion technique proof are in production
+on Muse's side. The pixel series is **parked** — do not continue it.
+
+---
+
 ## CURRENT TASK
 
 _None queued. Muse adds the first brief here._
