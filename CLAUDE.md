@@ -13,6 +13,12 @@ You run in a Claude Code cloud session, not on Courtney's laptop. Her laptop is
 only the screen she watches from. The session container is temporary: anything
 worth keeping must be committed and pushed.
 
+## The 1,000 BRICKS lane (Courtney, 23 Nov 2026)
+
+One lane works differently, on his say: in `series/1000-bricks/` **you write the episode scripts and the maker
+code**, and push both for Muse. Read `series/1000-bricks/BRIEF.md` first. Drawing stills with the maker is light
+and fine in a session; the episode render runs on GitHub Actions.
+
 ## HARD RULE — no heavy compute
 
 **Never render or run heavy compute in your session, and never on Courtney's

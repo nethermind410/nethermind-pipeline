@@ -1,0 +1,52 @@
+name: 1,000 BRICKS render
+
+# Draws a brick episode to a silent mp4 and keeps it as a download on the run. Nothing is uploaded or posted
+# anywhere: Muse picks the file up, lays the voice on it and sends it to Courtney.
+# Runs when the maker or an episode changes on a pull request, or by hand for one episode with the voice's timings.
+on:
+  pull_request:
+    paths: ['series/1000-bricks/maker/**', 'series/1000-bricks/episodes/**', '.github/workflows/brick-render.yml']
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: 'Episode file in series/1000-bricks/episodes, without .json'
+        required: true
+        default: ep01
+      durations:
+        description: 'Seconds a beat from the voice, e.g. 3.2,6.1,8.4 (blank = the times in the episode file)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: series/1000-bricks/maker
+    env:
+      EPISODE: ${{ github.event.inputs.episode || 'ep01' }}
+      DURATIONS: ${{ github.event.inputs.durations }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install the maker
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -qq ffmpeg
+      - name: Storyboard sheet
+        run: node still.cjs "../episodes/$EPISODE.json" "../out/$EPISODE-storyboard.png" --sheet --scale 0.4 ${DURATIONS:+--durations "$DURATIONS"}
+      - name: Render the episode
+        run: node render.cjs "../episodes/$EPISODE.json" "../out/$EPISODE.mp4" ${DURATIONS:+--durations "$DURATIONS"}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: brick-${{ github.event.inputs.episode || 'ep01' }}
+          path: series/1000-bricks/out/
+          retention-days: 14

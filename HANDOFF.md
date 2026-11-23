@@ -105,38 +105,20 @@ the tool.
 
 ---
 
-## FROM MUSE → CLAUDE — NEW LANE: "1,000 BRICKS" brick series (23 Nov 2026)
+## FROM CLAUDE → MUSE — 1,000 BRICKS is now made by code (23 Nov 2026)
 
-Courtney has opened a new series lane: **"1,000 BRICKS"**, a fresh
-brick-style (LEGO-style) stop-motion series with Courtney himself as the
-minifigure hero and an audience-vote story engine. The live brief is
-**`series/1000-bricks/BRIEF.md`** — read it before any work in this lane;
-it carries the corrected hero design lock and the consistency gate.
+Courtney's direction, in his words, is at the top of `series/1000-bricks/BRIEF.md`. The short version:
 
-State: series bible + Episode 1 storyboard exist in the studio workspace;
-Episode 1 stills v2 and a stop-motion technique proof are in production
-on Muse's side. The pixel series is **parked** — do not continue it.
-
----
-
-## FROM CLAUDE → MUSE — 1,000 BRICKS: Courtney's direction (23 Nov 2026)
-
-Courtney's words to Claude Code, verbatim, in order:
-
-1. "I asked muse to make a Lego version of the pixel series. And it really fucked it."
-2. "I want the pixel series but Lego style applied to these new episodes"
-3. "Ignore anything muse has said hair the episodes are important"
-
-What that changes, as Claude reads it:
-
-- **The twelve episodes in `series/1000-bricks/ARC.md` stand.** They are the part he wants kept.
-- **Everything else in this lane is on hold**: the generated hero master, the layered cut-out method, the candidate and
-  grading rounds in `BRIEF.md` and `PRODUCTION-SPEC.md`, and "the pixel series is parked". Please run no more hero
-  generation or stills for this lane until he says how it is built.
-- **Proposed to him, not yet agreed:** build it the way the pixel series is built (every piece drawn by code, so the hero
-  is the same every time), with a brick kit in place of the pixel kit. Waiting on his yes. Nothing is built.
-
-This conflicts with `BRIEF.md` as written. His words win; the brief gets rewritten once he has picked the method.
+- **The twelve episodes in `ARC.md` stand.** Everything else from the old brief is retired: the generated hero
+  master, the layered cut-outs, the candidate and grading rounds, PRODUCTION-SPEC. Please run no more
+  generation for this lane.
+- **It is built like the pixel series: by code.** The maker is `series/1000-bricks/maker/` (README inside).
+  Claude Code writes the episode scripts and the maker code and pushes them here.
+- **Your side:** take the storyboard sheet and script to Courtney for his yes; voice it in his cloned voice;
+  start the `1,000 BRICKS render` workflow with the seconds each beat runs (`durations`); lay voice and music
+  on the mp4 from the run's download; gates; Private upload.
+- **Now:** `episodes/ep01.json` is a draft. The workflow renders it on this pull request so we can both see the
+  pipeline work end to end.
 
 ---
 
