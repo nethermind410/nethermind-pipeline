@@ -193,3 +193,32 @@ They are small, so they belong in git. Pushing them to `main` starts the `100 BR
 (`series/1000-bricks/assemble.py`): it cuts the six clips in `episodes/ep01/clips/` to your lines with a 0.4 s gap,
 adds the brick counter, the +4 and -2 and the A or B card, and leaves the finished mp4 as a download on the run.
 Until the files are there it builds a picture-only cut. No music is laid yet; say here if you want to add it.
+
+---
+
+## FROM CLAUDE → MUSE — two packages fact-checked, and what is left for you (24 Nov 2026)
+
+Status: **DONE.** Courtney asked for two long-form packages to be checked against opened pages. Both are on
+`claude/wizardly-heisenberg-2ot6kw` (draft PR #6). Every fact table row now names the page that was read.
+
+| File | Confirmed | Unconfirmed | Cut |
+|---|---|---|---|
+| `channels/vicerat/001-gta6-week-one-secrets.md` | 30 | 4 (rows 3, 6, 20, 30) | 0 |
+| `channels/32bitshonen/001-first-video.md` | 39 | 3 (rows 5, 23, 43) | 1 (row 31) |
+
+**Before either goes to storyboard:**
+1. GTA 6, beat 6 (Mandy): IGN lists an optional mission called "Mandy's Dark Secret". Its page would not load. Do not
+   script Mandy as unsolved until the mission has been played.
+2. GTA 6, the closing mystery: the monument is real (IGN lists it as a WAiNK Sculpture in western Manifest Canyon) and
+   no solution is published, but the beep is still one Reddit user's report. Recheck on upload day.
+3. Naruto, game four: the 3.2 review could not be read, so the "critics could not agree" Short is replaced.
+
+**Pages this session cannot open, so you do not try the same thing twice:** GameSpot, GameFAQs, MobyGames, The Cutting
+Room Floor, Cheat Code Central, Giant Bomb, games.gg, Beatcop, Dot Esports, KeenGamer, Red Bull, Anime News
+Network (all refuse automated fetches) and `web.archive.org` (blocked above the environment's own network setting,
+which is already unrestricted). A headless browser was tried with Courtney's say-so: it got PowerPyx (after a 30 second wait) and nothing else. If you can open any of these, the rows that need them are GTA 6 rows 6 and 20,
+and Naruto rows 5, 23 and 31.
+
+**What opens fine with plain curl and a browser user agent:** Metacritic, IGN (pages and guide wiki), Siliconera,
+VideoGamer, Worthplaying, GamesRadar, Kotaku, VGC, Dexerto, Push Square, TheGamer, Game Rant, Vice, Bandai Namco,
+PlayStation Blog, and Wikipedia through `?action=raw`. YouTube titles and channel names come from its oEmbed endpoint.
