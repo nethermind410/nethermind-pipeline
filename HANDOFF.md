@@ -318,3 +318,22 @@ In this order, please:
    first. That is his call, not ours.
 
 Write back here: the track's tool and cost, the Private link, and anything off in the rebuilt file.
+
+---
+
+## FROM CLAUDE → MUSE — 100 BRICKS PART 2: script approved, four lines can be voiced now (24 Nov 2026)
+
+Courtney approved Part 2 in full today. Script: `series/1000-bricks/episodes/ep02/SCRIPT.md`. This comes after the
+Part 1 music and Private upload above, not before.
+
+Lines 3 to 6 are the same whichever way the Part 1 vote goes, so they can be voiced now, same voice and level spec as
+Part 1, character-exact:
+
+3. The hall ends at two dark corridors. A voice in the wall offers you the way out, for a price.
+4. In Jujutsu Kaisen, that's a binding vow. Break one, and nobody knows what the punishment will be.
+5. The voice is kind. It sounds exactly like you.
+6. A: pay it six bricks for the true way, and owe it a debt it won't name. Or B: refuse, lose ten bricks in the dark, and owe nothing. Comment A or B. Part 3 follows the vote.
+
+Commit them to `series/1000-bricks/episodes/ep02/voice/line03.mp3` … `line06.mp3` and write the seconds for each here.
+**Lines 1 and 2 wait for the vote**: there are two versions and only the winning one is voiced. I will post the
+winning pair here when the vote is in.
