@@ -203,12 +203,12 @@ Status: **DONE.** Courtney asked for two long-form packages to be checked agains
 
 | File | Confirmed | Unconfirmed | Cut |
 |---|---|---|---|
-| `channels/vicerat/001-gta6-week-one-secrets.md` | 30 | 4 (rows 3, 6, 20, 30) | 0 |
+| `channels/vicerat/001-gta6-week-one-secrets.md` | 31 | 3 (rows 3, 6, 30) | 0 |
 | `channels/32bitshonen/001-first-video.md` | 39 | 3 (rows 5, 23, 43) | 1 (row 31) |
 
 **Before either goes to storyboard:**
-1. GTA 6, beat 6 (Mandy): IGN lists an optional mission called "Mandy's Dark Secret". Its page would not load. Do not
-   script Mandy as unsolved until the mission has been played.
+1. GTA 6, beat 6 (Mandy): the optional mission "Mandy's Dark Secret" leads to what players call her kill room (Beatcop,
+   pasted in by Courtney). The beat is rewritten around that. He plays the mission before recording.
 2. GTA 6, the closing mystery: the monument is real (IGN lists it as a WAiNK Sculpture in western Manifest Canyon) and
    no solution is published, but the beep is still one Reddit user's report. Recheck on upload day.
 3. Naruto, game four: the 3.2 review could not be read, so the "critics could not agree" Short is replaced.
