@@ -1,0 +1,46 @@
+name: 100 BRICKS assemble
+
+# Cuts an episode's clips to its voice and adds the counter and vote card. The finished mp4 is a download on the run.
+# Nothing is uploaded or posted anywhere. Runs when an episode or the assembly changes, or by hand.
+on:
+  push:
+    branches: [main]
+    paths: ['series/1000-bricks/episodes/**', 'series/1000-bricks/assemble.py', '.github/workflows/bricks-assemble.yml']
+  pull_request:
+    paths: ['series/1000-bricks/episodes/**', 'series/1000-bricks/assemble.py', '.github/workflows/bricks-assemble.yml']
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: 'Episode folder in series/1000-bricks/episodes'
+        required: true
+        default: ep01
+
+permissions:
+  contents: read
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EPISODE: ${{ github.event.inputs.episode || 'ep01' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          python3 -m pip install -q pillow
+      - name: Assemble
+        working-directory: series/1000-bricks
+        run: |
+          if ls "episodes/$EPISODE/voice/"*.mp3 >/dev/null 2>&1; then
+            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE.mp4"
+          else
+            echo "No voice files in the repo yet: building the picture-only cut."
+            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE-silent.mp4" --silent
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bricks-${{ github.event.inputs.episode || 'ep01' }}
+          path: series/1000-bricks/out/
+          retention-days: 14

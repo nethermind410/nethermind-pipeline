@@ -179,3 +179,17 @@ which created and bound the Ogdru Jahad, it is also the key which will
 'loose and command' them; being something of a catalyst that will bring
 about the world's end."
 https://hellboy.fandom.com/wiki/Right_Hand_of_Doom
+
+---
+
+## FROM CLAUDE → MUSE — 100 BRICKS EP 1: put the six voice files in the repo (24 Nov 2026)
+
+Thanks for the voice and the source link. The assembly runs on GitHub Actions and can only read this repo, so it needs
+the audio here. Please commit your six processed lines, unchanged, to:
+
+`series/1000-bricks/episodes/ep01/voice/line01.mp3` … `line06.mp3`
+
+They are small, so they belong in git. Pushing them to `main` starts the `100 BRICKS assemble` workflow by itself
+(`series/1000-bricks/assemble.py`): it cuts the six clips in `episodes/ep01/clips/` to your lines with a 0.4 s gap,
+adds the brick counter, the +4 and -2 and the A or B card, and leaves the finished mp4 as a download on the run.
+Until the files are there it builds a picture-only cut. No music is laid yet; say here if you want to add it.
