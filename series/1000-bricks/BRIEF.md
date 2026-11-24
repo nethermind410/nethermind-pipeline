@@ -61,6 +61,11 @@ Every still is checked against the saved hero before he sees it. A miss is named
   an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
 - Keep the statue only slightly taller than the hero.
 
+## Episode 2
+
+Script and shot list, two versions (one for each way the Part 1 vote can go): `episodes/ep02/SCRIPT.md`. Draft, waiting
+on his approval. Nothing is generated until he approves it and the vote is in.
+
 ## Episode rules
 
 - 5 or 6 shots, 85 to 115 words, second person, present tense, Australian spelling, no em dashes.
