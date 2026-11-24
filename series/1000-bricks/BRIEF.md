@@ -22,20 +22,31 @@ bricks or take a few off. At zero he is a statue. **Every count in `ARC.md` is d
 
 ## How it is made
 
-1. **The hero is a saved character on Courtney's Higgsfield account**: the Element `brick-hero`
-   (id `0221fd63-f6b4-4fa1-80df-ed5fa8c0f4ec`), made from his own reference picture. Every still is generated from
-   that Element with his reference picture passed as the style reference. Never describe the hero from scratch.
-2. **Shot list first.** Each line of the script and the picture under it, approved by Courtney before any credit is spent.
-3. **Two stills a shot**: where the action starts and where it ends. The end still is made from the start still so
-   the room and camera match. Courtney approves the stills before any video is made.
-4. **Voice before clips.** Muse voices the lines in his cloned voice and reports the seconds each line runs, so each
-   clip is made once, at the right length.
-5. **Clips**: Kling 3.0 on Higgsfield, start still to end still, sound off. One test clip is approved before the rest.
-6. **Assembly in code**: clips cut to the voice, the brick counter, the plus and minus numbers, the A or B card, music.
-7. Private upload by Muse. Courtney publishes.
+1. **Two saved characters on Courtney's Higgsfield account** (Elements). Every still is generated from them; never
+   describe either from scratch.
+   - `nether-hero` (id `ab3e1734-649d-4c93-81f3-4eed6940362c`): the hero, LOCKED 24 Nov. Swept-back blonde hair, soft
+     light stubble, two cheek tattoos (a small x and TAMA under one eye; three dots and MHATHAIR under the other), black
+     tee with bare arms, teal chest brick with NETHER on its stud.
+   - `stone-hand-statue` (id `3f4cc39a-be32-434d-b09c-b26a69d91625`): the statue with the giant stone right hand (the
+     Hellboy hand), cracked at the shoulder. Courtney's pick ("a"); he wants it only slightly taller than the hero.
+2. **Shot list first.** Each line and the picture under it, approved by Courtney before any credit is spent.
+3. **Stills**: a start picture for every shot, and an end picture made as an edit of the start so room and camera
+   match. No LEGO lettering anywhere, no stray pieces on the floor.
+4. **Movement, by shot** (his picks, 24 Nov):
+   - A shot where he turns, reaches or steps: Higgsfield's `grok_video_v15_lite`, 5 seconds from the start picture,
+     5 credits ("heaps better"). Strip its sound.
+   - A shot where nothing rotates (eyes open, a glow, dust, a crack): the free open-source RIFE tool between the start
+     and end pictures, 0 credits.
+   - Not used: Kling (10 credits, blurred the tattoos), RIFE on turns ("twisting and weird"), and snapping between
+     stills with a camera wobble ("shaky").
+5. **Episode 1 teases both choices; the next episode opens on the one the comments pick**, shown in full.
+6. **Voice**: Muse, in his cloned voice. **Assembly in code**: clips cut to the voice, the brick counter, the plus and
+   minus numbers, the A or B card, music. Private upload by Muse. Courtney publishes.
 
-Every still is checked against his reference picture before he sees it: hair, face and stubble, black tee with bare
-arms, black legs, teal brick on the chest. A miss is named, not passed.
+**Credits (his rule, 24 Nov):** quote the price before any generation and wait for his yes; one attempt, then stop and
+ask; aim for about 40 credits an episode (12 stills, three moving shots). He will spend more if the series picks up.
+
+Every still is checked against the saved hero before he sees it. A miss is named, not passed.
 
 ## Episode rules
 
