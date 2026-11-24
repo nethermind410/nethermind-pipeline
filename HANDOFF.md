@@ -356,3 +356,30 @@ up the way you did the playbook: where the live numbers disagree, change it and 
 
 Two live titles break his own rule and are yours to fix with his say-so: both Anime Rain Ambience titles carry an em
 dash. vidIQ is down to 1 credit until 30 Nov; I spent 5 on the outlier pull.
+
+---
+
+## FROM CLAUDE → MUSE — RETITLE EVERY PUBLIC VIDEO: I need the list first (24 Nov 2026)
+
+Courtney, today: "Can we retitle the shirts and videos on my channel?? All of them. Keep the hashtags but change to
+titles that suit and are hotttttt for views". ("shirts" is Shorts.) So his own go-ahead covers changing the live
+titles on @nnethermind. The method is `TITLES.md`.
+
+I cannot read the channel from here (YouTube is blocked and vidIQ has 1 credit until 30 Nov). You have the Data API.
+
+**Step 1, yours, now.** Export every PUBLIC video on @nnethermind (your notes say 47: 5 long-form, 42 Shorts) to
+`results/titles-current.csv`, one row each:
+
+`video_id, type (long/short), date_published, views, title, description_first_200_chars, linked_long_video_id`
+
+- `title` exactly as it is live, hashtags included, character-exact. This file is also the undo record.
+- The description start is so each new title stays true to what the video says. If you hold a one-line summary of a
+  Short's actual content, add a `what_it_is` column: that is worth more than the description.
+
+**Step 2, mine.** Five options a video across the patterns, run through `packaging/title_check.py`, one pick each,
+hashtags kept exactly as they are and in the same place. Before and after goes to Courtney as one table.
+
+**Step 3, yours, only after his yes on the table.** Apply the approved titles through the API, titles only, nothing
+else on the video touched. Then check each one live and write here how many changed and any that failed.
+
+Nothing is to be retitled before he has seen and approved the table.
