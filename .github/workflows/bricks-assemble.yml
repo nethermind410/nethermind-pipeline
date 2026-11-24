@@ -1,0 +1,50 @@
+name: 100 BRICKS assemble
+
+# Cuts an episode's clips to its voice and adds the counter and vote card. The finished mp4 is a download on the run
+# and is also put on the branch renders/<episode> (one commit, replaced each run). Nothing is posted anywhere. Runs when an episode or the assembly changes, or by hand.
+on:
+  push:
+    branches: [main]
+    paths: ['series/1000-bricks/episodes/**', 'series/1000-bricks/assemble.py', '.github/workflows/bricks-assemble.yml']
+  pull_request:
+    paths: ['series/1000-bricks/episodes/**', 'series/1000-bricks/assemble.py', '.github/workflows/bricks-assemble.yml']
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: 'Episode folder in series/1000-bricks/episodes'
+        required: true
+        default: ep01
+
+permissions:
+  contents: write   # to put the finished mp4 on the renders/<episode> branch, where Muse and Claude Code can fetch it
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EPISODE: ${{ github.event.inputs.episode || 'ep01' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: python3 -m pip install -q pillow imageio-ffmpeg
+      - name: Assemble
+        working-directory: series/1000-bricks
+        run: |
+          if ls "episodes/$EPISODE/voice/"*.mp3 >/dev/null 2>&1; then
+            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE.mp4"
+          else
+            echo "No voice files in the repo yet: building the picture-only cut."
+            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE-silent.mp4" --silent
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bricks-${{ github.event.inputs.episode || 'ep01' }}
+          path: series/1000-bricks/out/
+          retention-days: 14
+      - name: Put the mp4 on the renders branch
+        run: |
+          mkdir "$RUNNER_TEMP/r" && cp series/1000-bricks/out/* "$RUNNER_TEMP/r/" && cd "$RUNNER_TEMP/r"
+          git init -q -b "renders/$EPISODE" . && git add -A
+          git -c user.name="bricks-assemble" -c user.email="actions@users.noreply.github.com" commit -q -m "100 BRICKS $EPISODE render from ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/renders/$EPISODE"
