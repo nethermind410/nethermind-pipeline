@@ -30,7 +30,8 @@ Every rule below serves one of those three.
 ## Rules for every long-form
 
 1. **Title and thumbnail first.** Three title options and three thumbnail
-   concepts exist before the script does. No strong title, no video.
+   concepts exist before the script does. No strong title, no video. The title
+   method, patterns and gate are in `TITLES.md`.
 2. **The first 30 seconds pay off the title.** State the question, show the
    stakes, promise the answer. No intro, no channel greeting.
 3. **Every video belongs to a series and a playlist.** The end screen and the

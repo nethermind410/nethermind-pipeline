@@ -1,7 +1,8 @@
 # 100 BRICKS — Part 2: "The Kind Voice"
 
-Status: **DRAFT, waiting on Courtney's approval.** Nothing is generated and no credit is spent until he approves the
-lines and shot list, and the Part 1 vote is in. Written 24 Nov 2026 against `BRIEF.md` and `ARC.md` (Episode 2).
+Status: **APPROVED by Courtney, 24 Nov 2026** (lines and shot list, both versions; line 6 last: "Yes line 6 is good.").
+Waits on the Part 1 vote. Nothing is generated and no credit is spent until the vote is in and the price is quoted.
+Written against `BRIEF.md`, `ARC.md` (Episode 2) and `LEDGER.md`.
 
 Two versions, one for each way the Part 1 vote can go. Only shots 1 and 2 differ. Shots 3 to 6 are the same words in
 both, but the hero wears the stone hand in Version A and has bare arms in Version B, so no picture can be made early.
@@ -91,6 +92,4 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
 - Bigger swings across the series, and he can turn to stone early from Part 6: "Yes". That is why the voice's prices
   went from 4 and 3 to 6 and 10.
 
-## Still for Courtney
-
-- A yes to the full lines and shot list as they now read, including line 6 with the new prices (6 and a debt, or 10).
+- Line 6 with the new prices, and with it the whole script: "Yes line 6 is good."
