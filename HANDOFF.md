@@ -242,6 +242,6 @@ Courtney approved the new look for all four channels today ("Perfect"). The file
 - Use the files unchanged: no crop, no recolour, no text added.
 - Channel art is public the moment it is set. Courtney asked for these to go up ("I want to get the new logos etc up
   for the channels"), so that is his say-so; if your pipe needs his own tap for branding, ask him for it.
-- If a channel does not exist yet (talknojutsu, 32bitshonen), hold its files until it does and say so here.
+- All four channels exist (Courtney, 24 Nov: "They do. So yeah upload would be good"). Put all four up.
 - Write back here which channels are done, and a screenshot path or link for each.
 - How they were made, job ids and his notes: `channels/LOOK.md`.
