@@ -1,261 +1,63 @@
-# 1,000 BRICKS — live brief
+# 100 BRICKS — live brief
 
-The current brief for the brick-style series lane. Courtney's instruction
-(23 Nov 2026): "Make sure it's in the repo what we're doing." This file is
-the truth for this lane; if anything elsewhere disagrees, this file wins
-and the disagreement gets flagged in HANDOFF.md.
+The truth for this lane, rewritten 24 Nov 2026 on Courtney's direction. The earlier briefs (the generated hero master
+with candidate rounds, then a code-drawn maker) are retired and live only in git history. The series was called
+"1,000 BRICKS"; the folder keeps that name.
 
-## The series
+## His direction, verbatim
 
-**"1,000 BRICKS"** — a fresh brick-style (LEGO-style) animated series,
-starting from Episode 1. It is a **separate series** from the pixel series
-("The Nether"). The pixel series is **PARKED as of 23 Nov 2026 — do not
-continue it, do not build for it, do not revive it** unless Courtney says
-otherwise.
+- "Ignore anything muse has said hair the episodes are important" (23 Nov)
+- On the reference pictures he supplied: "This is what the character should look like okay" (23 Nov)
+- On the three test shots made from his saved character: "Okay!!! Great. Now can we work with that??" (23 Nov)
+- "thousands of bricks is way too much compared to the character??" then "100 bricks is good" (24 Nov)
+- "i dont want it to be a stale video that is just wasting credits. can we iron out all before generating" (24 Nov)
+- "muse will do voice yes" (24 Nov)
 
-Production rules for this lane:
+## What it is
 
-- **True stop-motion from single stills at 12fps** — digital layer-posing,
-  the way real brickfilms are made. **No image-to-video AI. Ever.**
-- **Stills before animation.** The look is proven and approved in stills
-  before a single frame moves.
-- **Storyboard agreed by Courtney before any build.** No generation runs
-  ahead of his agreement.
-- **The hero is a LOCKED ASSET — built once, never re-generated**
-  (Courtney, 23 Nov 2026: "Once we pick. You then make rules so it
-  stays like that"). The hero is built once as a layered asset from the
-  graded, Courtney-picked master and posed into scenes — the same
-  physical piece in every shot, like real stop-motion. Generation
-  draws rooms, props, statues and creatures only; it never draws the
-  hero again. If the asset is wrong, it is rebuilt once, re-graded,
-  re-picked and re-locked — bible first.
-- **THE MASTER IS PICKED AND LOCKED (Courtney, 23 Nov 2026).** His
-  words: "just use the third image… make sure that you can do that
-  every time the same." The master is
-  `stills/ep1-still-c-statue-arm-MASTER.webp` in the studio workspace
-  (the v9 candidate 3, Still C scene). **Same-every-time rules:**
-  (a) the hero in every frame of every episode is THIS asset —
-  decomposed into layers (`assets/hero/`) and posed; (b) the hero is
-  never re-generated, re-drawn or re-edited per shot or per episode;
-  (c) generation produces backgrounds, rooms, props, statues and
-  creatures ONLY, with the hero area left for the asset; (d) new
-  poses/angles are derived from the master asset's layers (the
-  stop-motion method), and any genuinely new hero view is built once
-  from the master, added to the asset, and reused; (e) loadout
-  changes (stone arm, red leg, etc.) are new layers ON this asset,
-  added bible-first; (f) the production spec's reference-master path
-  points at this MASTER file. All earlier masters/candidates are
-  superseded and are never hero references again.
-- **Nothing public without Courtney's tap.** Drafts and uploads are
-  Private by default; only Courtney publishes.
+One ongoing story in twelve episodes (`ARC.md`). Every episode ends on an A or B choice the comments vote on, and the
+next opens on what the vote cost. The hero wakes built from **100 bricks**; the count is on screen; choices add a few
+bricks or take a few off. At zero he is a statue. **Every count in `ARC.md` is divided by ten**: 100, 104, 100, 102,
+99, 94, 87, 80, 75, 84, 70, 64, then 3 or 0.
 
-## Story engine
+## How it is made
 
-Adapted from @saveo.house's interactive format ("You stole $10M"), rebuilt
-for this niche — not copied:
+1. **Two saved characters on Courtney's Higgsfield account** (Elements). Every still is generated from them; never
+   describe either from scratch.
+   - `nether-hero` (id `ab3e1734-649d-4c93-81f3-4eed6940362c`): the hero, LOCKED 24 Nov. Swept-back blonde hair, soft
+     light stubble, two cheek tattoos (a small x and TAMA under one eye; three dots and MHATHAIR under the other), black
+     tee with bare arms, teal chest brick with NETHER on its stud.
+   - `stone-hand-statue` (id `3f4cc39a-be32-434d-b09c-b26a69d91625`): the statue with the giant stone right hand (the
+     Hellboy hand), cracked at the shoulder. Courtney's pick ("a"); he wants it only slightly taller than the hero.
+2. **Shot list first.** Each line and the picture under it, approved by Courtney before any credit is spent.
+3. **Stills**: a start picture for every shot, and an end picture made as an edit of the start so room and camera
+   match. No LEGO lettering anywhere, no stray pieces on the floor.
+4. **Movement, by shot** (his picks, 24 Nov):
+   - A shot where he turns, reaches or steps: Higgsfield's `grok_video_v15_lite`, 5 seconds from the start picture,
+     5 credits ("heaps better"). Strip its sound.
+   - A shot where nothing rotates (eyes open, a glow, dust, a crack): the free open-source RIFE tool between the start
+     and end pictures, 0 credits.
+   - Not used: Kling (10 credits, blurred the tattoos), RIFE on turns ("twisting and weird"), and snapping between
+     stills with a camera wobble ("shaky").
+5. **Episode 1 teases both choices; the next episode opens on the one the comments pick**, shown in full.
+6. **Voice**: Muse, in his cloned voice. **Assembly in code**: clips cut to the voice, the brick counter, the plus and
+   minus numbers, the A or B card, music. Private upload by Muse. Courtney publishes.
 
-- **ONE continuing story.** Not standalone clips. Stakes and consequences
-  persist across episodes.
-- **One hero in every shot.**
-- **Every episode ends on an A-or-B choice that the audience votes on in
-  the comments.** The winning vote becomes canon, and the next episode
-  opens with its consequence — and shows the vote split.
-- **The brick economy runs both ways.** Choices cost bricks OR give bricks
-  back:
-  - **Bad pays fast** — loot, deals, cruelty: bricks now, plus hidden
-    debts (watchers, enemies, prices that come due later).
-  - **Good pays slow** — mercy, sacrifice, sharing: bricks cost today,
-    allies and payoffs episodes later.
-- The crowd splits into **saviours vs destroyers**, fighting over the hero
-  in the comments. Both camps are the engine.
+**Credits (his rule, 24 Nov):** quote the price before any generation and wait for his yes; one attempt, then stop and
+ask; aim for about 40 credits an episode (12 stills, three moving shots). He will spend more if the series picks up.
 
-Episode shape (~25s): last vote's consequence → the new room/creature →
-the price lands → A-or-B end card (vote in the comments).
+Every still is checked against the saved hero before he sees it. A miss is named, not passed.
 
-## Lore engine
+## Episode rules
 
-Manga and comic lore and stories are woven into the series — the lore is
-the machinery, not decoration:
-
-- **Every room and trap in the Nether runs on a lore mechanic from
-  manga/comics:** a vow that binds, a suit that wears you, a clock that
-  pays in years, a door that opens anywhere.
-- **The mechanic IS the dilemma, and it always carries a price in
-  bricks.** No room's lore is just flavour.
-- **The hero's lore knowledge is the content moat.** He — and Courtney —
-  knows how these mechanics work in their own stories, what they cost,
-  and where the trap inside them sits.
-- **Consequences of lore objects persist across episodes** — debts,
-  watchers, allies. A lore object used, taken, or refused in one episode
-  is still in play in later ones.
-- **Episode 1's loose arm plate is the first instance:** looting a
-  fallen hero's piece.
-
-**The loadout — the second ledger.** Choices attach lore pieces to the
-hero permanently and visibly. The brick count is one ledger; the loadout
-is the second: pieces gained, grafted, bound or lost persist in every
-later episode's stills, and a permanent piece is added to the hero lock
-text (bible first, then prompts). Canonical illustrations:
-
-1. **The stone arm** — Episode 1's loose arm plate becomes HIS arm
-   episodes later: a stone arm in the Hellboy / Right Hand of Doom vein
-   (the first brick still ever made for this world was the Hellboy
-   stone-arm door scene). It opens some doors and can't hold others.
-2. **The adapting spirit** — a JJK-flavoured room can bind a
-   Mahoraga-style adapting spirit/wheel to him: it adapts him to
-   whatever hurt him last, every adaptation costs bricks and visibly
-   changes his body, and the audience votes whether to let it adapt.
-
-## The hero — Courtney himself
-
-The hero is **Courtney as a minifigure**. The audience is not voting on a
-character; they are voting on what happens **to him**.
-
-**CORRECTED DESIGN LOCK (Courtney, 23 Nov 2026 — supersedes all earlier
-hero text anywhere, including the studio's series bible until it is
-updated to match):**
-
-- **Hair: short bleached-blonde hair SLICKED BACK, ON TOP OF THE HEAD
-  ONLY** — strands swept straight back flat, a smooth moulded top
-  piece, with a **low hairline sitting close above the brows**
-  (brought down by Courtney, 23 Nov 2026). **The sides of the head are
-  shaven bare — no hair on the sides at all** (a minifigure head has
-  no ears; nothing wraps around the sides), back short. **No afro, no
-  curls, no waves standing up, no volume, no fringe, no hair on the
-  sides.** Never long, never curly, never a high or receded hairline.
-  (Courtney, 23 Nov 2026: "Just have it shaven in the sides and only
-  hair on top — this character doesn't have ears, no need to have the
-  hairs going around ears that don't exist." The top-only shape
-  supersedes the full-head slicked-back piece: the v8 candidates' hair
-  wrapped down the sides of the head. Earlier history: slicked-back
-  superseded the buzz crop — the v5 master was rejected on hair that
-  read as a curly mini Afro, all three v6 candidates were rejected on
-  it again, and the v7 candidate was rejected by the independent
-  grading pass, its hair a pebbled, granular cap with length over the
-  ears.)
-- **No cape. No armour, no chest plate.** He is not a knight — he is a
-  regular dude trapped in this world: **plain dark t-shirt torso print,
-  plain dark legs.**
-- **The face is CLEAN — no face tattoos at all.** The cheek word tattoos
-  are REMOVED from the design (Courtney, 23 Nov 2026: the composited
-  prints looked stamped on and sat in the wrong place — if they can't be
-  locked in properly every time, they don't happen). No tattoos, text or
-  markings anywhere on the face; the old face-print overlay asset is
-  retired and must not be used. His jaw is clean too — no jawline
-  tattoos.
-- Pale blue-grey eyes; light brown printed stubble beard and moustache.
-- **Septum ring: SCRAPPED — there is none.** Removed from the design
-  entirely (Courtney, 23 Nov 2026: "I can't trust you to do the septum
-  piercings, scrap it."). No ring, no nose jewellery, no marking of
-  any kind on the nose — in the lock, in prompts, or on the figure.
-  The gate now checks its ABSENCE: a ring appearing in any still is a
-  reject. (Generation failed it in every version — v5's was upside
-  down; the v6 candidates rendered it doubled, hooked and blobbed.)
-- **One bright teal 1x1 brick set into the centre of his chest** — the
-  life counter. It is part of him, not clothing.
-
-The premise: he wakes in the Nether built from exactly **1,000 bricks**,
-and the count shows on screen. Every voted choice adds bricks to him or
-takes them off him — visibly, piece by piece. **At zero he becomes a
-statue** in the corridor, like the fallen heroes already standing there.
-**Reach the Door with bricks left and he gets out.** The story has a real
-ending either way, and the audience decides which one.
-
-Reference photos of Courtney (front + both profiles) live in the studio
-workspace at `studio/output/brick-series/reference/`.
-
-All generation and grading runs under PRODUCTION-SPEC.md — parameters are locked; changing them requires Courtney's words in the bible first.
-
-## Consistency gate (Courtney's rules, 23 Nov 2026 — in force from now)
-
-Why this exists, in Courtney's words: he picked up the v2 hair failure
-with his own eyes after it was reported as passed. He is not doing QA
-anymore. His watch is the publish decision, not QA.
-
-1. **ONE CANONICAL PROMPT.** The hero description lives in exactly one
-   place — the design lock in the studio's SERIES-BIBLE.md — and is
-   pasted character-for-character into every generation prompt. Never
-   reworded, shortened, or adapted per still. A lock change happens in
-   the bible first, in Courtney's words, and only then in prompts.
-2. **BINARY PER-FEATURE GATE.** A still is judged feature-by-feature
-   against the single MASTER — the locked hero asset (built once from
-   the Episode 1 Still C master candidate, graded and picked by
-   Courtney; for hair, figure and face) — one feature at a time: hair
-   SLICKED BACK ON TOP ONLY, short + straight, sides shaven bare
-   (strands swept straight back flat
-   against the head, smooth moulded top piece; no hair on the sides
-   at all — nothing wraps around the sides; no afro, no curls, no
-   waves standing up, no volume, no fringe) — judged on the hair
-   crop; hair colour bleached blonde; hairline
-   low (close above the brows, not high or receded); septum ring
-   ABSENT (no ring, no nose jewellery, no marking on the nose — the
-   piercing is scrapped, its presence = FAIL); face tattoos absent (no
-   tattoos, text or markings anywhere on the face); jaw tattoos
-   absent; cape absent; armour absent; outfit items; teal chest
-   brick present; proportions.
-   ANY single mismatch = FAIL. No holistic "looks consistent", no
-   set-level passes, no "family / close enough" grading.
-3. **MASTER-ANCHORED.** Every still is compared to the master, never to
-   sibling stills from the same batch.
-4. **CHECKLIST FROM THE BIBLE.** The gate checklist is Courtney's exact
-   phrases from the lock, read off the bible at gate time — not from
-   memory or interpretation.
-5. **COURTNEY'S WATCH IS THE PUBLISH DECISION, NOT QA.** A still that
-   reaches him has already passed every feature, or is labelled FAIL
-   with the failing feature named.
-6. **THE GENERATOR NEVER GRADES ITS OWN OUTPUT (Courtney's
-   instruction, 23 Nov 2026).** The generator never grades its own
-   output. Grading is a separate pass against Courtney's reference
-   photo and the master, judged on zoomed region crops (hair / nose /
-   chest), binary per feature, any single FAIL kills the image. No
-   whole-image glances, no set-level passes.
-
-## State at push time (23 Nov 2026)
-
-- Series bible + Episode 1 storyboard exist in the studio workspace
-  (`studio/output/brick-series/SERIES-BIBLE.md`,
-  `studio/output/brick-series/EP1-STORYBOARD.md`). The bible's hero lock
-  is being updated to the corrected design above.
-- **Hero master:** v5 self-graded "pass" was rejected by Courtney's
-  eyes (afro hair, upside-down ring); all three v6 candidates were
-  rejected by the independent grading pass (hair + ring failed on all
-  three). The septum ring is now scrapped. The **v7 candidate** (Still
-  C scene, no ring) was also **rejected by the independent grading
-  pass** — 9/11: its buzz-short hair rendered as a pebbled, granular
-  cap with length over the ears, and two small cheek dots crept back.
-  On Courtney's instruction the hair spec became **short slicked-back**
-  ("short blonde slicked back hair", "I don't want an Afro"), and
-  **v8 candidates** (Still C scene, slicked-back hair) were built —
-  but their hair wrapped down the sides of the head. On Courtney's
-  further instruction (23 Nov 2026: "Just have it shaven in the sides
-  and only hair on top — this character doesn't have ears"), the hair
-  is now **slicked back on TOP of the head only, sides shaven bare**,
-  and **v9 candidates** (Still C scene, top-only hair) were built.
-  **Courtney then picked v9 candidate 3 himself (23 Nov 2026)** —
-  "just use the third image… make sure that you can do that every
-  time the same" — ending the candidate rounds. It is locked as
-  `stills/ep1-still-c-statue-arm-MASTER.webp`, decomposed into the
-  layered hero asset under `assets/hero/` in the studio workspace,
-  and Episode 1 was built from that asset (see the episode's
-  BUILD-REPORT.md). The same-every-time rules in the production rules
-  above govern every episode from here.
-- A **stop-motion technique proof** (the Hellboy door scene, layer-posed
-  from the approved brick still) is also **in production on Muse's
-  side**. It is a technique test only, not an episode.
-- **Episode 1 beat:** he wakes in the corridor among the statues of
-  fallen heroes; the 1,000-brick counter appears. First choice — a fallen
-  statue has a loose arm plate:
-  - **A: take it** (+ bricks — but the statue's eyes open)
-  - **B: leave it** (the road costs bricks — and nothing follows him… yet)
+- 5 or 6 shots, 85 to 115 words, second person, present tense, Australian spelling, no em dashes.
+- Shot 1 is the hook, 12 words or fewer. From Part 2 it opens on the vote landing and what it cost.
+- Say once, plainly, which world the room's rule comes from. The lore fact comes from a source that was opened.
+- The picture shows what the words say. Something always moves. No two shots that look the same.
+- The last shot is the choice, and each option says what it costs in bricks.
+- Voice bans: mate, bastard, bloke, hype.
 
 ## Platform jobs
 
-- **Instagram = premiere home** for this series.
-- **YouTube = lore / long-form** (the bank; the funnel points there).
-- **TikTok = mirror.**
-- **NO browser automation on Courtney's Instagram. Ever.** Official
-  connector API only. Standing rule set 23 Nov 2026 after Muse's web
-  automation triggered Meta's "Automated account activity" warning and an
-  advertising restriction on his account. If the official route cannot do
-  something, the answer is "can't be done safely" — unsanctioned routes
-  are not a fallback.
+Instagram is the premiere home, YouTube the lore and long-form bank, TikTok the mirror. No browser automation on
+Courtney's Instagram, ever: the official connector only.

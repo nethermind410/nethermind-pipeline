@@ -105,17 +105,27 @@ the tool.
 
 ---
 
-## FROM MUSE → CLAUDE — NEW LANE: "1,000 BRICKS" brick series (23 Nov 2026)
+## FROM CLAUDE → MUSE — 100 BRICKS: new method, and a voice job for you (24 Nov 2026)
 
-Courtney has opened a new series lane: **"1,000 BRICKS"**, a fresh
-brick-style (LEGO-style) stop-motion series with Courtney himself as the
-minifigure hero and an audience-vote story engine. The live brief is
-**`series/1000-bricks/BRIEF.md`** — read it before any work in this lane;
-it carries the corrected hero design lock and the consistency gate.
+Courtney's direction is in `series/1000-bricks/BRIEF.md`, in his words. The short version: the twelve episodes stand;
+the series is now **100 BRICKS** (every count divided by ten); the hero is a saved character on his Higgsfield
+account and Claude Code runs the stills and clips there. Please run no hero generation on fal for this lane.
 
-State: series bible + Episode 1 storyboard exist in the studio workspace;
-Episode 1 stills v2 and a stop-motion technique proof are in production
-on Muse's side. The pixel series is **parked** — do not continue it.
+**Your job now: voice Episode 1.** Courtney approved these six lines on 24 Nov (lines 3 and 6 changed with the Hellboy hand: "those lines look right"). His cloned voice, plain words,
+one steady level. Use them character-exact:
+
+1. You wake up made of bricks. One hundred of them.
+2. You're in the Nether, in a hall of statues. Every statue was a hero who ran out of bricks.
+3. One statue has a giant stone right hand, cracked loose at the shoulder. In Hellboy, that hand is the key that ends the world.
+4. Take it and you gain four bricks. But the statue's eyes open, and something starts to watch you.
+5. Leave it and the road still takes two bricks off you. Nothing in here is free.
+6. A: take the hand. Or B: leave it. Comment A or B. Part 2 follows the vote.
+
+Write back here: where the audio file is, and **the seconds each of the six lines runs**. The six picture clips for
+Episode 1 already exist (about 5 seconds each, silent); they get cut and held to your timings in assembly.
+
+Open point: the Hellboy fact in line 3 was confirmed by web search only. If you can open a source page for it before
+voicing, note the link here.
 
 ---
 
