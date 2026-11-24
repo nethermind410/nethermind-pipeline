@@ -1,7 +1,7 @@
 name: 100 BRICKS assemble
 
-# Cuts an episode's clips to its voice and adds the counter and vote card. The finished mp4 is a download on the run.
-# Nothing is uploaded or posted anywhere. Runs when an episode or the assembly changes, or by hand.
+# Cuts an episode's clips to its voice and adds the counter and vote card. The finished mp4 is a download on the run
+# and is also put on the branch renders/<episode> (one commit, replaced each run). Nothing is posted anywhere. Runs when an episode or the assembly changes, or by hand.
 on:
   push:
     branches: [main]
@@ -16,7 +16,7 @@ on:
         default: ep01
 
 permissions:
-  contents: read
+  contents: write   # to put the finished mp4 on the renders/<episode> branch, where Muse and Claude Code can fetch it
 
 jobs:
   assemble:
@@ -42,3 +42,9 @@ jobs:
           name: bricks-${{ github.event.inputs.episode || 'ep01' }}
           path: series/1000-bricks/out/
           retention-days: 14
+      - name: Put the mp4 on the renders branch
+        run: |
+          mkdir "$RUNNER_TEMP/r" && cp series/1000-bricks/out/* "$RUNNER_TEMP/r/" && cd "$RUNNER_TEMP/r"
+          git init -q -b "renders/$EPISODE" . && git add -A
+          git -c user.name="bricks-assemble" -c user.email="actions@users.noreply.github.com" commit -q -m "100 BRICKS $EPISODE render from ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/renders/$EPISODE"
