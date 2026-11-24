@@ -10,15 +10,15 @@ both, but the hero wears the stone hand in Version A and has bare arms in Versio
 
 | # | Line (spoken, character-exact once approved) | Picture | Moves by |
 |---|---|---|---|
-| 1 | You took the hand. Four bricks up. Then the statue wakes. | The hero in the statue hall, the giant stone hand now fitted over his own right fist and forearm. He lifts it. Counter fills from 100 to 104, "+4" beside it. Behind him the statue's eyes light amber and it steps down off its plinth. | Clip (he lifts the hand, the statue steps down) |
+| 1 | You took the hand. Four bricks up. Then the statue wakes. | The hero in the statue hall, the giant stone hand worn over his own right fist and forearm like an oversized glove (his call, 24 Nov: "Worn"). He lifts it. Counter fills from 100 to 104, "+4" beside it. Behind him the statue's eyes light amber and it steps down off its plinth. | Clip (he lifts the hand, the statue steps down) |
 | 2 | It wants its hand back. It rips twelve bricks off you before you get away. Ninety-two. | The statue, its right arm ending at the cracked shoulder, grabs the hero with its left hand. Bricks tear off his shoulder and back and turn to grey dust. He pulls free and runs, still wearing the stone hand. Counter drops from 104 to 92, a big "-12" beside it. | Clip (the grab, he breaks away) |
 | 3 | The hall ends at two dark corridors. A voice in the wall offers you the way out, for a price. | The end of the hall: two black corridor mouths side by side. The hero walks up and stops between them. A seam in the wall between the two mouths lights amber. | Clip (he steps up) |
 | 4 | In Jujutsu Kaisen, that's a binding vow. Break one, and nobody knows what the punishment will be. | Close on the wall seam. A thin chain of amber light runs out of it and loops once round the hero's wrist. The chain tightens and glows. | Free (glow, chain tightens) |
 | 5 | The voice is kind. It sounds exactly like you. | Close on the hero's face beside the wall. The lit seam has the outline of his own profile, facing him. His eyes widen. | Free (eyes, seam brightens) |
-| 6 | A: pay it four bricks for the true way, and owe it a debt it won't name. Or B: refuse, lose three bricks in the dark, and owe nothing. Comment A or B. Part 3 follows the vote. | Wide, from behind the hero at the fork. The left corridor is now lit amber far down its length; the right stays black. He looks from one to the other. Vote card over the top. | Clip (he turns his head) |
+| 6 | A: pay it six bricks for the true way, and owe it a debt it won't name. Or B: refuse, lose ten bricks in the dark, and owe nothing. Comment A or B. Part 3 follows the vote. | Wide, from behind the hero at the fork. The left corridor is now lit amber far down its length; the right stays black. He looks from one to the other. Vote card over the top. | Clip (he turns his head) |
 
 Words: 111. The count goes 100, 104, then **92** after the statue's hit (his number, 24 Nov: "12 is good, put it in the script").
-Closes at **88** if A wins Part 2 (92 − 4), **89** if B wins (92 − 3).
+Closes at **86** if A wins Part 2 (92 − 6), **82** if B wins (92 − 10).
 
 Why the hit is there (his direction, 24 Nov): "Part 2 needs to have a penalty immediately if a is chosen." Taking the hand
 paid +4 and now costs 12, so he sits below the 98 he would have had by leaving it.
@@ -31,23 +31,23 @@ paid +4 and now costs 12, so he sits below the 98 he would have had by leaving i
 | 2 | Behind you, the statue's eyes stay shut. Nothing follows you. Not yet. | Past the hero's shoulder, back down the hall: the statue whole, stone hand still on it, eyes shut. A single crack creeps across one eyelid. | Free (crack spreads) |
 | 3 to 6 | Same four lines as Version A. | Same four pictures, with bare arms and no stone hand. | Same |
 
-Words: 106. Closes at **94** if A wins Part 2 (98 − 4), **95** if B wins (98 − 3).
+Words: 106. Closes at **92** if A wins Part 2 (98 − 6), **88** if B wins (98 − 10).
 
 ## Vote card (both versions)
 
 - Question: `the kind voice`
-- A: `pay it  -4 + a debt`
-- B: `refuse  -3`
+- A: `pay it  -6 + a debt`
+- B: `refuse  -10`
 
 ## Brick ledger
 
 | Part 1 vote | Opens | A: pay the voice | B: refuse |
 |---|---|---|---|
-| A, took the hand | 104, then 92 after the statue takes 12 | 88 (voice −3, road −1), **debt owed** | 89 (dark −2, road −1), no debt |
-| B, left it | 98 | 94, **debt owed** | 95, no debt |
+| A, took the hand | 104, then 92 after the statue takes 12 | 86 (voice −6), **debt owed** | 82 (dark −10), no debt |
+| B, left it | 98 | 92, **debt owed** | 88, no debt |
 
-The arc's planned path was 104 then 100. Version A now closes at 88, so **the arc's counts from Part 3 on no longer
-chain and must be reworked before Part 3 is written** (see "Bigger risk" below).
+These counts follow `../../LEDGER.md` (the reworked ledger, 24 Nov). Paying is cheaper now and leaves a debt the voice
+collects in Part 6; refusing costs more now and owes nothing.
 
 ## What carries forward (from `ARC.md`, Episode 2)
 
@@ -87,19 +87,10 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
 
 - The theme, "The Kind Voice" with the Jujutsu Kaisen binding vow: "the next theme is good".
 - The statue's hit in Version A, 12 bricks: "12 is good, put it in the script".
-- Not yet approved: the rest of the lines and the shot list as a whole, and the two questions below.
+- The hand is worn, not carried: "Worn".
+- Bigger swings across the series, and he can turn to stone early from Part 6: "Yes". That is why the voice's prices
+  went from 4 and 3 to 6 and 10.
 
-## Bigger risk (his note, 24 Nov; proposed, not decided)
+## Still for Courtney
 
-His words: "But -1 isn't a big penalty?? There's 100 bricks and 12 episodes or how ever many. But he can probably make
-it though with no risk". On the arc's numbers he ends on 64 and is never in danger. Proposed to him, waiting on his
-answer: choices cost 5 to 15, a greedy pick costs about three times its gain later, the road costs 3 to 5 a part, the
-count runs down to about 8 by Part 12, and he can turn to stone early from Part 6 on. Do not rework `ARC.md` until he
-answers.
-
-## Questions for Courtney
-
-1. **How he carries the hand (Version A).** I have it fitted over his own right fist and forearm, like an oversized
-   stone glove, since the arc grows it into the full arm later. The other way is him carrying it under his arm. Which?
-2. **The voice's prices.** Paying costs 4 and a debt; refusing costs 3 and no debt, so B may look like the easy pick.
-   If the bigger-risk numbers go ahead, these two prices get reworked with everything else.
+- A yes to the full lines and shot list as they now read, including line 6 with the new prices (6 and a debt, or 10).

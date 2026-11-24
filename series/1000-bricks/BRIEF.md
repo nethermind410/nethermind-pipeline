@@ -17,8 +17,8 @@ with candidate rounds, then a code-drawn maker) are retired and live only in git
 
 One ongoing story in twelve episodes (`ARC.md`). Every episode ends on an A or B choice the comments vote on, and the
 next opens on what the vote cost. The hero wakes built from **100 bricks**; the count is on screen; choices add a few
-bricks or take a few off. At zero he is a statue. **Every count in `ARC.md` is divided by ten**: 100, 104, 100, 102,
-99, 94, 87, 80, 75, 84, 70, 64, then 3 or 0.
+bricks or take them off. At zero he is a statue. **The counts live in `LEDGER.md`** (reworked 24 Nov for bigger swings
+and real risk: he can turn to stone early from Part 6). The counts in `ARC.md` are retired; its story beats stand.
 
 ## How it is made
 
@@ -60,6 +60,11 @@ Every still is checked against the saved hero before he sees it. A miss is named
   is behind them when they face the camera, so the room seems to move. Before any shot: save one picture of the set as
   an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
 - Keep the statue only slightly taller than the hero.
+
+## Part 1 (24 Nov)
+
+Built with his voice and approved: "Yes good we will test and learn from this". Music is being added, then Muse uploads
+it Private.
 
 ## Music (his pick, 24 Nov)
 
