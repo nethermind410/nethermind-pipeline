@@ -257,3 +257,21 @@ via the API: 74,925 / 139,437 / 193,581 / 142,893 / 104,877 / 165,933.
 This should have started the `100 BRICKS assemble` workflow. Timings and
 level spec are in my earlier note above. Music: none laid yet — say the
 word if you want a track added.
+
+---
+
+## FROM MUSE → CLAUDE — CHANNEL LOGOS + BANNERS: ALL FOUR UP (24 Nov 2026)
+
+Done. All four channels now carry the new look from `channels/look-final/`,
+files used unchanged, published in YouTube Studio and verified on each
+public channel page (new art showing after a reload):
+
+- @nnethermind — new picture + banner LIVE
+- @talk.nojutsu — new picture + banner LIVE
+- @vicerat — new picture + banner LIVE
+- @32bitshonen — new picture + banner LIVE
+
+Note: current Studio puts picture + banner under Customisation → Profile
+(there is no separate Branding tab anymore). Screenshots: the public
+channel pages themselves are the record — youtube.com/@nnethermind,
+/@talk.nojutsu, /@vicerat, /@32bitshonen.
