@@ -1,13 +1,59 @@
 {
-  "series": "100 bricks", "part": 1, "title": "The Statue's Hand", "count": 100,
-  "gap": 0.4, "tail": 2.5,
+  "series": "100 bricks",
+  "part": 1,
+  "title": "The Statue's Hand",
+  "count": 100,
+  "gap": 0.4,
+  "tail": 2.5,
   "shots": [
-    { "clip": "clips/shot1.mp4", "voice": "voice/line01.mp3", "seconds": 3.06, "say": "You wake up made of bricks. One hundred of them." },
-    { "clip": "clips/shot2.mp4", "voice": "voice/line02.mp3", "seconds": 5.74, "say": "You're in the Nether, in a hall of statues. Every statue was a hero who ran out of bricks." },
-    { "clip": "clips/shot3.mp4", "voice": "voice/line03.mp3", "seconds": 7.99, "say": "One statue has a giant stone right hand, cracked loose at the shoulder. In Hellboy, that hand is the key that ends the world." },
-    { "clip": "clips/shot4.mp4", "voice": "voice/line04.mp3", "seconds": 5.89, "say": "Take it and you gain four bricks. But the statue's eyes open, and something starts to watch you.", "label": { "text": "+4", "colour": "#19e0c8" } },
-    { "clip": "clips/shot5.mp4", "voice": "voice/line05.mp3", "seconds": 4.32, "say": "Leave it and the road still takes two bricks off you. Nothing in here is free.", "label": { "text": "-2", "colour": "#ff6b5e" } },
-    { "clip": "clips/shot6.mp4", "voice": "voice/line06.mp3", "seconds": 6.85, "say": "A: take the hand. Or B: leave it. Comment A or B. Part 2 follows the vote.", "vote": true }
+    {
+      "clip": "clips/shot1.mp4",
+      "voice": "voice/line01.mp3",
+      "seconds": 3.06,
+      "say": "You wake up made of bricks. One hundred of them."
+    },
+    {
+      "clip": "clips/shot2.mp4",
+      "voice": "voice/line02.mp3",
+      "seconds": 5.74,
+      "say": "You're in the Nether, in a hall of statues. Every statue was a hero who ran out of bricks."
+    },
+    {
+      "clip": "clips/shot3.mp4",
+      "voice": "voice/line03.mp3",
+      "seconds": 7.99,
+      "say": "One statue has a giant stone right hand, cracked loose at the shoulder. In Hellboy, that hand is the key that ends the world."
+    },
+    {
+      "clip": "clips/shot4.mp4",
+      "voice": "voice/line04.mp3",
+      "seconds": 5.89,
+      "say": "Take it and you gain four bricks. But the statue's eyes open, and something starts to watch you.",
+      "label": {
+        "text": "+4"
+      }
+    },
+    {
+      "clip": "clips/shot5.mp4",
+      "voice": "voice/line05.mp3",
+      "seconds": 4.32,
+      "say": "Leave it and the road still takes two bricks off you. Nothing in here is free.",
+      "label": {
+        "text": "-2"
+      }
+    },
+    {
+      "clip": "clips/shot6.mp4",
+      "voice": "voice/line06.mp3",
+      "seconds": 6.85,
+      "say": "A: take the hand. Or B: leave it. Comment A or B. Part 2 follows the vote.",
+      "vote": true
+    }
   ],
-  "vote": { "q": "the stone hand", "a": "take it  +4", "b": "leave it  -2" }
+  "vote": {
+    "q": "the stone hand",
+    "a": "take it  +4",
+    "b": "leave it  -2"
+  },
+  "full": 100
 }

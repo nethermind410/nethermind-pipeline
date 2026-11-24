@@ -12,8 +12,9 @@ import json, os, re, subprocess, sys, tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 W, H, FPS = 1080, 1920, 24
-FONTS = ['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf']
-TEAL, WHITE, INK = (25, 224, 200), (255, 255, 255), (5, 3, 10)
+FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts', 'PixelifySans-700.ttf')   # his pick (A), OFL, from the studio set
+# Torch gold: his pick (2). The colours come from the torchlight in the scene. No teal, no red.
+GOLD, GOLD_HI, AMBER, WHITE, INK = (255, 196, 64), (255, 232, 150), (255, 140, 40), (255, 255, 255), (8, 6, 14)
 try:                                   # a self-contained ffmpeg from pip, so the cloud run needs no system packages
     import imageio_ffmpeg; FF = imageio_ffmpeg.get_ffmpeg_exe()
 except ImportError:
@@ -21,30 +22,35 @@ except ImportError:
 
 
 def font(px):
-    for f in FONTS:
-        if os.path.exists(f): return ImageFont.truetype(f, px)
-    return ImageFont.load_default(px)      # Pillow's own built-in face, when the machine has no DejaVu
+    return ImageFont.truetype(FONT, px)
 
 
-def text(d, xy, s, px, fill, anchor='mm'):
-    f = font(px); x, y = xy
-    d.text((x + px // 14 + 1, y + px // 12 + 1), s, font=f, fill=(0, 0, 0, 200), anchor=anchor)     # a hard drop shadow, like a printed tile
-    d.text((x, y), s, font=f, fill=fill, anchor=anchor)
+def text(d, xy, s, px, fill, anchor='mm', sh=5):
+    d.text((xy[0] + sh, xy[1] + sh), s, font=font(px), fill=(0, 0, 0, 235), anchor=anchor)     # hard black edge: reads over any picture
+    d.text(xy, s, font=font(px), fill=fill, anchor=anchor)
 
 
 def overlay(ep, shot, path):
-    """One transparent 1080x1920 picture per shot: counter always, a number when the shot has one, the vote card on the last."""
+    """One transparent 1080x1920 picture per shot: the health bar always, a number when the shot has one, the vote card on the last."""
     im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    n = str(shot.get('count', ep['count'])); f = font(96); tw = d.textlength(n, font=f); x0 = (W - (72 + 26 + tw)) / 2
-    d.rounded_rectangle([x0 - 34, 118, x0 + 72 + 26 + tw + 34, 300], 22, fill=INK + (150,))
-    d.rectangle([x0, 150, x0 + 72, 222], fill=TEAL); d.rectangle([x0, 150, x0 + 72, 160], fill=(127, 245, 230)); d.rectangle([x0, 212, x0 + 72, 222], fill=(10, 154, 138))
-    d.ellipse([x0 + 16, 166, x0 + 56, 206], fill=(127, 245, 230)); d.ellipse([x0 + 18, 170, x0 + 54, 206], fill=TEAL)
-    text(d, (x0 + 72 + 26, 186), n, 96, WHITE, 'lm'); text(d, (W / 2, 262), 'bricks left', 34, (207, 198, 232))
-    if shot.get('label'): text(d, (W / 2, 470), shot['label']['text'], 190, shot['label'].get('colour', '#ffffff'))
+    n, full = shot.get('count', ep['count']), ep.get('full', 100); x0, y0, bw, bh = 150, 150, 700, 54
+    # health bar, like a game: brick icon, a bar of twenty segments that empties as bricks are lost, the number
+    d.rectangle([x0 - 78, y0 - 6, x0 - 14, y0 + bh + 6], fill=(0, 0, 0, 255)); d.rectangle([x0 - 72, y0, x0 - 20, y0 + bh], fill=GOLD)
+    d.rectangle([x0 - 72, y0, x0 - 20, y0 + 8], fill=GOLD_HI); d.ellipse([x0 - 60, y0 + 13, x0 - 32, y0 + 41], fill=GOLD_HI); d.ellipse([x0 - 58, y0 + 16, x0 - 34, y0 + 40], fill=GOLD)
+    d.rectangle([x0 - 6, y0 - 6, x0 + bw + 6, y0 + bh + 6], fill=(0, 0, 0, 255)); d.rectangle([x0, y0, x0 + bw, y0 + bh], fill=(38, 30, 52, 255))
+    w = bw * max(0, min(n, full)) / full
+    if w > 0: d.rectangle([x0, y0, x0 + w, y0 + bh], fill=GOLD); d.rectangle([x0, y0, x0 + w, y0 + 9], fill=GOLD_HI)
+    for k in range(1, 20): d.rectangle([x0 + bw * k / 20 - 2, y0, x0 + bw * k / 20 + 1, y0 + bh], fill=(0, 0, 0, 255))
+    text(d, (x0 + bw + 26, y0 + bh / 2), str(n), 68, WHITE, 'lm'); text(d, (x0 - 72, y0 + bh + 44), 'bricks', 42, WHITE, 'lm', 4)
+    if shot.get('label'):
+        t = shot['label']['text']; text(d, (W / 2, 520), t, 240, GOLD if t.startswith('+') else AMBER, 'mm', 9)
     if shot.get('vote'):
-        v = ep['vote']; d.rectangle([0, 1130, W, 1640], fill=INK + (185,))
-        text(d, (W / 2, 1200), v['q'], 60, WHITE); text(d, (W / 2, 1310), 'a:  ' + v['a'], 64, TEAL); text(d, (W / 2, 1410), 'b:  ' + v['b'], 64, (255, 107, 94))
-        text(d, (W / 2, 1520), 'comment a or b', 54, (255, 224, 138)); text(d, (W / 2, 1596), f"part {ep['part'] + 1} follows the vote", 34, (207, 198, 232))
+        v = ep['vote']; d.rectangle([0, 1150, W, 1650], fill=INK + (95,))            # see-through: the picture stays visible behind the card
+        text(d, (W / 2, 1225), v['q'], 72, WHITE)
+        for i, (k, s, col) in enumerate((('a', v['a'], GOLD), ('b', v['b'], AMBER))):
+            y = 1340 + i * 116; d.rectangle([150, y - 48, 246, y + 48], fill=(0, 0, 0, 255)); d.rectangle([156, y - 42, 240, y + 42], fill=col)
+            d.text((198, y - 2), k, font=font(70), fill=INK, anchor='mm'); text(d, (282, y), s, 74, WHITE, 'lm')
+        text(d, (W / 2, 1585), 'comment a or b', 60, WHITE)
     im.save(path)
 
 

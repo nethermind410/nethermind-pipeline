@@ -48,6 +48,19 @@ ask; aim for about 40 credits an episode (12 stills, three moving shots). He wil
 
 Every still is checked against the saved hero before he sees it. A miss is named, not passed.
 
+## On-screen look (his picks, 24 Nov)
+
+- Font: Pixelify Sans 700 (`fonts/`). Colours: torch gold and amber with white text. No teal, no red.
+- The brick count is a game health bar across the top: twenty segments that empty as bricks are lost, the number beside it.
+- The vote card is see-through, so the picture stays visible behind it.
+
+## Carry into Episode 2 (his notes on Episode 1)
+
+- **Lock the room.** In Episode 1 the wall sits behind the hero and statue in the side-on shots but the open corridor
+  is behind them when they face the camera, so the room seems to move. Before any shot: save one picture of the set as
+  an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
+- Keep the statue only slightly taller than the hero.
+
 ## Episode rules
 
 - 5 or 6 shots, 85 to 115 words, second person, present tense, Australian spelling, no em dashes.
