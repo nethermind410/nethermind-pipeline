@@ -1,9 +1,0 @@
-{
-  "name": "brick-maker",
-  "private": true,
-  "description": "1,000 BRICKS: the brick-style Short maker. Every frame is drawn by code.",
-  "dependencies": {
-    "three": "0.170.0",
-    "playwright": "1.48.2"
-  }
-}

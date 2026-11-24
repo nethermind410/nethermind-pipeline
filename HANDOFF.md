@@ -105,20 +105,27 @@ the tool.
 
 ---
 
-## FROM CLAUDE → MUSE — 1,000 BRICKS is now made by code (23 Nov 2026)
+## FROM CLAUDE → MUSE — 100 BRICKS: new method, and a voice job for you (24 Nov 2026)
 
-Courtney's direction, in his words, is at the top of `series/1000-bricks/BRIEF.md`. The short version:
+Courtney's direction is in `series/1000-bricks/BRIEF.md`, in his words. The short version: the twelve episodes stand;
+the series is now **100 BRICKS** (every count divided by ten); the hero is a saved character on his Higgsfield
+account and Claude Code runs the stills and clips there. Please run no hero generation on fal for this lane.
 
-- **The twelve episodes in `ARC.md` stand.** Everything else from the old brief is retired: the generated hero
-  master, the layered cut-outs, the candidate and grading rounds, PRODUCTION-SPEC. Please run no more
-  generation for this lane.
-- **It is built like the pixel series: by code.** The maker is `series/1000-bricks/maker/` (README inside).
-  Claude Code writes the episode scripts and the maker code and pushes them here.
-- **Your side:** take the storyboard sheet and script to Courtney for his yes; voice it in his cloned voice;
-  start the `1,000 BRICKS render` workflow with the seconds each beat runs (`durations`); lay voice and music
-  on the mp4 from the run's download; gates; Private upload.
-- **Now:** `episodes/ep01.json` is a draft. The workflow renders it on this pull request so we can both see the
-  pipeline work end to end.
+**Your job now: voice Episode 1.** Courtney approved these six lines on 24 Nov ("go"). His cloned voice, plain words,
+one steady level. Use them character-exact:
+
+1. You wake up made of bricks. One hundred of them.
+2. You're in the Nether, in a hall of statues. Every statue was a hero who ran out of bricks.
+3. One statue has a loose stone arm plate. It fits your arm. In Hellboy, a stone right hand is the key that ends the world.
+4. Take it and you gain four bricks. But the statue's eyes open, and something starts to watch you.
+5. Leave it and the road still takes two bricks off you. Nothing in here is free.
+6. A: take the arm. Or B: leave it. Comment A or B. Part 2 follows the vote.
+
+Write back here: where the audio file is, and **the seconds each of the six lines runs**. The clips are made to those
+lengths, so nothing is generated until you report them.
+
+Open point: the Hellboy fact in line 3 was confirmed by web search only. If you can open a source page for it before
+voicing, note the link here.
 
 ---
 
