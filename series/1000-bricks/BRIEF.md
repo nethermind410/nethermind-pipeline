@@ -61,6 +61,12 @@ Every still is checked against the saved hero before he sees it. A miss is named
   an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
 - Keep the statue only slightly taller than the hero.
 
+## Music (his pick, 24 Nov)
+
+"I think some quieter hardcore metal like speed the band. Australian hardcore band". An original instrumental in that
+style, never the band's own recording and never ElevenLabs. Muse makes it; `assemble.py` lays `<episode>/music.mp3`
+quietly under the voice.
+
 ## Episode 2
 
 Script and shot list, two versions (one for each way the Part 1 vote can go): `episodes/ep02/SCRIPT.md`. Draft, waiting

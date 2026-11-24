@@ -6,7 +6,8 @@ the A or B card on top. RUNS ON GITHUB ACTIONS (.github/workflows/bricks-assembl
 
 Reads <episode>/episode.json. Each shot runs for its voice line plus the gap; the last shot holds for the tail with the
 vote card up. A clip shorter than its slot is slowed by up to 20 percent, then its last frame is held; a longer one is
-cut. --silent builds the picture with no voice (used until the voice files are in the repo). No generation, no network.
+cut. If <episode>/music.mp3 is there (or the file named by "music" in episode.json) it is laid quietly under the voice, at
+"music_db" decibels (default -20). --silent builds the picture with no voice (used until the voice files are in the repo). No generation, no network.
 Prints one JSON line: {"ok":true,"seconds":S,"shots":N,"voice":true|false,"out":"..."}"""
 import json, os, re, subprocess, sys, tempfile
 from PIL import Image, ImageDraw, ImageFont
@@ -79,11 +80,20 @@ def main():
         for i, v in enumerate(voices):
             slot = dur(v) + ep['gap'] + (ep['tail'] if i == n - 1 else 0); ins += ['-i', v]
             fc.append(f'[{2 * n + i}:a]aresample=48000,apad,atrim=duration={slot:.3f}[a{i}]'); au.append(f'[a{i}]')
-        fc.append(''.join(au) + f'concat=n={n}:v=0:a=1[a]'); maps += ['-map', '[a]', '-c:a', 'aac', '-b:a', '192k']
+        music = os.path.join(root, ep.get('music', 'music.mp3'))
+        if os.path.exists(music):  # a quiet bed under the voice: looped to length, dipped while he speaks, faded at both ends
+            total = sum(dur(v) + ep['gap'] for v in voices) + ep['tail']; ins += ['-stream_loop', '-1', '-i', music]
+            fc.append(''.join(au) + f'concat=n={n}:v=0:a=1,asplit[vo][key]')
+            fc.append(f'[{3 * n}:a]aresample=48000,volume={ep.get("music_db", -20)}dB,atrim=duration={total:.3f},afade=t=in:d=0.5,'
+                      f'afade=t=out:st={total - 2:.3f}:d=2[m];[m][key]sidechaincompress=threshold=0.03:ratio=5:attack=20:release=500[md];'
+                      f'[vo][md]amix=inputs=2:normalize=0:duration=first[a]')
+        else:
+            fc.append(''.join(au) + f'concat=n={n}:v=0:a=1[a]')
+        maps += ['-map', '[a]', '-c:a', 'aac', '-b:a', '192k']
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     subprocess.check_call([FF, '-y', '-loglevel', 'error', *ins, '-filter_complex', ';'.join(fc), *maps, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
                            '-r', str(FPS), '-movflags', '+faststart', out])
-    print(json.dumps({'ok': True, 'seconds': round(dur(out), 2), 'shots': n, 'voice': have, 'out': os.path.abspath(out)}))
+    print(json.dumps({'ok': True, 'seconds': round(dur(out), 2), 'shots': n, 'voice': have, 'music': have and os.path.exists(os.path.join(root, ep.get('music', 'music.mp3'))), 'out': os.path.abspath(out)}))
 
 
 if __name__ == '__main__':
