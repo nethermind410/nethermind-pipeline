@@ -57,7 +57,7 @@ All character art comes from his own game capture or the real box art. Nothing g
 
 > Five Naruto Ultimate Ninja games came out on the PlayStation 2. America only got four.
 >
-> The fifth one skipped the US completely. It reached Europe in November 2009, and Australia a week later. By then the PS3 already had its own Naruto game.
+> The fifth one skipped the US completely. It reached Europe in November 2009, and Australia about a week later. By then the PS3 already had its own Naruto game.
 >
 > So did America miss the best one, or dodge the worst?
 >
@@ -77,7 +77,7 @@ About 85 words. No greeting, no channel intro. It pays off the title in the firs
 | 0:30-1:15 | One studio made all five: CyberConnect2. In Japan the series is called Narutimate Hero and it started in October 2003. The West did not get the first game until June 2006, so we were always years behind. | Timeline graphic: Japan dates on top, Western dates underneath, the gap shown as a bar. |
 | 1:15-2:45 | **Number 5 (draft): Naruto: Ultimate Ninja.** Japan 2003, North America 26 June 2006, Europe November 2006. It set the template. The US version turned Curse Mark Sasuke and Nine-Tails Naruto into their own picks. Critics liked it: 75 on Metacritic. It sits last only because every sequel added to it. | Own capture: a full round, a cinematic super with button prompts, the character select screen. Score card: 75. |
 | 2:45-4:15 | **Number 4 (draft): Ultimate Ninja 2.** Japan 30 September 2004, North America 12 June 2007. Nearly three years late. Metacritic 73, the lowest scored of the ones that have a score. Say plainly what it added over the first game from his own play. | Own capture: story mode, new characters. Date card showing the three-year gap. Score card: 73. |
-| 4:15-5:45 | **Number 3 (draft): Naruto Shippuden: Ultimate Ninja 4.** Japan 5 April 2007, North America 24 March 2009. The first one with the Shippuden cast. It has no Metacritic score at all, and the reviews that exist split hard: one gave it 7.7 out of 10, another 3.2 out of 5. Say that the critics did not agree and say where he lands. | Own capture: Shippuden Naruto, the adventure mode, a big-roster select screen. Two review cards side by side. |
+| 4:15-5:45 | **Number 3 (draft): Naruto Shippuden: Ultimate Ninja 4.** Japan 5 April 2007, North America 24 March 2009. The first one with the Shippuden cast. It has no Metacritic score at all, and the reviews that exist split hard: one gave it 7.7 out of 10, another gave it 3.2 and called it Fair (the scale for that 3.2 is not confirmed). Say that the critics did not agree and say where he lands. | Own capture: Shippuden Naruto, the adventure mode, a big-roster select screen. Two review cards side by side. |
 | 5:45-7:30 | **Number 2 (draft): Naruto Shippuden: Ultimate Ninja 5.** The one America never got. Japan 20 December 2007. Europe 27 November 2009. Australia 3 December 2009. A Namco Bandai America rep said it was a European release only. More than 60 characters and a partner assist system. Almost no reviews exist, so this spot rests on play, not scores. Answer the hook: did America miss out? | Own capture from the PAL disc: assist attacks, the select screen scrolling past 60 characters. Map graphic with North America crossed out. |
 | 7:30-9:15 | **Number 1 (draft): Naruto: Ultimate Ninja 3.** Japan 22 December 2005, North America 25 March 2008. Joint top Metacritic score, 75. A GamesRadar review counted 40 playable characters, nearly 60 missions and a new Summoning mode. Explain why it wins from play: what it does that the other four do not. | Own capture: summons, the free-roam village mode, a late-game fight. Score card: 75. Final ranking board fills in. |
 | 9:15-9:50 | Why this matters now. Naruto's anime turns 25 in 2027. TV Tokyo has said new Naruto games are coming with new partners. It has not said who, or what kind of game. So the studio that built all of this may not build the next one. That part is not known yet. | News headline cards (text only), the final ranking board held on screen. |
@@ -135,7 +135,7 @@ Status key. Nothing here is CONFIRMED, because no page could be opened in this s
 | 39 | Other creators have published Naruto and Dragon Ball PS2 ranking videos (titles seen in search results; views and channel sizes not seen). | UNCONFIRMED (B): direction evidence only | https://www.youtube.com/watch?v=buyy56_634E ; https://www.youtube.com/watch?v=VThBmjv4xg4 ; https://www.youtube.com/watch?v=qevbLOgo2ww |
 | 40 | In the 0:30 beat: the West got each PS2 game roughly two to three years after Japan. | UNCONFIRMED (A): this is arithmetic on rows 3, 4, 8, 9, 12, 13, 17, 18, 24, 25 | Same pages as those rows |
 
-**Totals: 0 CONFIRMED, 40 UNCONFIRMED** (20 at level A, 14 at level B, 6 at level C).
+**Totals: 0 CONFIRMED, 40 UNCONFIRMED** (22 at level A, 13 at level B, 5 at level C).
 
 ## Footage list
 
