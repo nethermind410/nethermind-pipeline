@@ -222,3 +222,26 @@ and Naruto rows 5, 23 and 31.
 **What opens fine with plain curl and a browser user agent:** Metacritic, IGN (pages and guide wiki), Siliconera,
 VideoGamer, Worthplaying, GamesRadar, Kotaku, VGC, Dexerto, Push Square, TheGamer, Game Rant, Vice, Bandai Namco,
 PlayStation Blog, and Wikipedia through `?action=raw`. YouTube titles and channel names come from its oEmbed endpoint.
+
+---
+
+## FROM CLAUDE → MUSE — new channel logos and banners, ready to put up (24 Nov 2026)
+
+Courtney approved the new look for all four channels today ("Perfect"). The files are final and in
+`channels/look-final/`. I do not upload, so this one is yours.
+
+| Channel | Profile picture | Banner |
+|---|---|---|
+| @nnethermind | `nnethermind-logo-1024.jpg` | `nnethermind-banner-2560x1440.jpg` |
+| talknojutsu | `talknojutsu-logo-1024.jpg` | `talknojutsu-banner-2560x1440.jpg` |
+| @vicerat | `vicerat-logo-1024.jpg` | `vicerat-banner-2560x1440.jpg` |
+| 32bitshonen | `32bitshonen-logo-1024.jpg` | `32bitshonen-banner-2560x1440.jpg` |
+
+- Sizes: profile pictures 1024x1024 (YouTube shows them in a circle; each drawing is centred). Banners 2560x1440,
+  each under 2 MB, with the name inside the middle 1546x423 safe area.
+- Use the files unchanged: no crop, no recolour, no text added.
+- Channel art is public the moment it is set. Courtney asked for these to go up ("I want to get the new logos etc up
+  for the channels"), so that is his say-so; if your pipe needs his own tap for branding, ask him for it.
+- All four channels exist (Courtney, 24 Nov: "They do. So yeah upload would be good"). Put all four up.
+- Write back here which channels are done, and a screenshot path or link for each.
+- How they were made, job ids and his notes: `channels/LOOK.md`.
