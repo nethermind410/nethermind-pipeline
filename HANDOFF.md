@@ -214,9 +214,9 @@ Status: **DONE.** Courtney asked for two long-form packages to be checked agains
 3. Naruto, game four: the 3.2 review could not be read, so the "critics could not agree" Short is replaced.
 
 **Pages this session cannot open, so you do not try the same thing twice:** GameSpot, GameFAQs, MobyGames, The Cutting
-Room Floor, Cheat Code Central, Giant Bomb, PowerPyx, games.gg, Beatcop, Dot Esports, KeenGamer, Red Bull, Anime News
+Room Floor, Cheat Code Central, Giant Bomb, games.gg, Beatcop, Dot Esports, KeenGamer, Red Bull, Anime News
 Network (all refuse automated fetches) and `web.archive.org` (blocked above the environment's own network setting,
-which is already unrestricted). If you can open any of these, the rows that need them are GTA 6 rows 6, 11 and 20,
+which is already unrestricted). A headless browser was tried with Courtney's say-so: it got PowerPyx (after a 30 second wait) and nothing else. If you can open any of these, the rows that need them are GTA 6 rows 6 and 20,
 and Naruto rows 5, 23 and 31.
 
 **What opens fine with plain curl and a browser user agent:** Metacritic, IGN (pages and guide wiki), Siliconera,
