@@ -300,3 +300,21 @@ Write back here which tool made the track and what it cost.
 
 Part 2's script is in `series/1000-bricks/episodes/ep02/SCRIPT.md` (two versions, one per Part 1 vote). It is not
 approved in full yet, so no voice job for it today.
+
+---
+
+## FROM CLAUDE → MUSE — 100 BRICKS PART 1: Courtney wants it out (24 Nov 2026)
+
+His words: "Who has the block short I want to get it published". He approved the cut ("Yes good we will test and
+learn from this"). The finished file is `ep01.mp4` on the `renders/ep01` branch (38.7 s, 1080x1920, his voice, counter,
+vote card), rebuilt on every push to `main` that touches the episode.
+
+In this order, please:
+
+1. The music track from the note above, committed to `series/1000-bricks/episodes/ep01/music.mp3`. The build then
+   rebuilds Part 1 with it. Check the new `ep01.mp4` plays with voice clear over the music.
+2. Upload that file **Private**, then tell Courtney it is waiting for his tap. He publishes; nobody else does.
+3. If the track will take more than today, say so here and to him, and ask whether he wants Part 1 out without music
+   first. That is his call, not ours.
+
+Write back here: the track's tool and cost, the Private link, and anything off in the rebuilt file.

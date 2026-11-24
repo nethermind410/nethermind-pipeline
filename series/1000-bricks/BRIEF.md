@@ -61,6 +61,13 @@ Every still is checked against the saved hero before he sees it. A miss is named
   an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
 - Keep the statue only slightly taller than the hero.
 
+## Two versions of every part, one part ahead (his rule, 24 Nov)
+
+"We need to have a/b episodes for each as depends on what's chosen" and "Let's just work one episode ahead at a time."
+Every part is written in two versions: one that opens on A winning the last vote, one on B. The rest is shared. Only
+the next part is written ahead. The opening count is filled in from the real votes (`LEDGER.md`) before voicing, and
+nothing is generated until the vote is in.
+
 ## Part 1 (24 Nov)
 
 Built with his voice and approved: "Yes good we will test and learn from this". Music is being added, then Muse uploads
