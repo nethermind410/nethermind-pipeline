@@ -8,18 +8,22 @@ Reads <episode>/episode.json. Each shot runs for its voice line plus the gap; th
 vote card up. A clip shorter than its slot is slowed by up to 20 percent, then its last frame is held; a longer one is
 cut. --silent builds the picture with no voice (used until the voice files are in the repo). No generation, no network.
 Prints one JSON line: {"ok":true,"seconds":S,"shots":N,"voice":true|false,"out":"..."}"""
-import json, os, subprocess, sys, tempfile
+import json, os, re, subprocess, sys, tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 W, H, FPS = 1080, 1920, 24
 FONTS = ['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf']
 TEAL, WHITE, INK = (25, 224, 200), (255, 255, 255), (5, 3, 10)
+try:                                   # a self-contained ffmpeg from pip, so the cloud run needs no system packages
+    import imageio_ffmpeg; FF = imageio_ffmpeg.get_ffmpeg_exe()
+except ImportError:
+    FF = 'ffmpeg'
 
 
 def font(px):
     for f in FONTS:
         if os.path.exists(f): return ImageFont.truetype(f, px)
-    raise SystemExit('no font found: install fonts-dejavu-core')
+    return ImageFont.load_default(px)      # Pillow's own built-in face, when the machine has no DejaVu
 
 
 def text(d, xy, s, px, fill, anchor='mm'):
@@ -45,7 +49,9 @@ def overlay(ep, shot, path):
 
 
 def dur(p):
-    return float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', p]).strip())
+    m = re.search(r'Duration: (\d+):(\d+):([\d.]+)', subprocess.run([FF, '-hide_banner', '-i', p], capture_output=True, text=True).stderr)
+    if not m: raise SystemExit(f'cannot read the length of {p}')
+    return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
 
 
 def main():
@@ -69,7 +75,7 @@ def main():
             fc.append(f'[{2 * n + i}:a]aresample=48000,apad,atrim=duration={slot:.3f}[a{i}]'); au.append(f'[a{i}]')
         fc.append(''.join(au) + f'concat=n={n}:v=0:a=1[a]'); maps += ['-map', '[a]', '-c:a', 'aac', '-b:a', '192k']
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
-    subprocess.check_call(['ffmpeg', '-y', '-loglevel', 'error', *ins, '-filter_complex', ';'.join(fc), *maps, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
+    subprocess.check_call([FF, '-y', '-loglevel', 'error', *ins, '-filter_complex', ';'.join(fc), *maps, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
                            '-r', str(FPS), '-movflags', '+faststart', out])
     print(json.dumps({'ok': True, 'seconds': round(dur(out), 2), 'shots': n, 'voice': have, 'out': os.path.abspath(out)}))
 

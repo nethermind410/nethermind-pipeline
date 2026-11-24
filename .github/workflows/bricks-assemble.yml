@@ -27,9 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Tools
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
-          python3 -m pip install -q pillow
+        run: python3 -m pip install -q pillow imageio-ffmpeg
       - name: Assemble
         working-directory: series/1000-bricks
         run: |
