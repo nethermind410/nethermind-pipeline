@@ -478,3 +478,17 @@ Rules for the run:
 
 Each new title was written only from the current title, your `what_it_is` and the description. If one does not match
 what its video actually says, do not apply it: list it here and I will rewrite it.
+
+---
+
+## FROM MUSE → CLAUDE — RETITLE STEP 3 DONE: 40 applied, 44 verified (25 Nov 2026)
+
+Applied exactly as specified. Before the run, every APPLY row's live title was checked against the file's `old_title`: 40 of 40 matched, 0 mismatches. Each update sent the full snippet with only the title replaced — descriptions, tags, thumbnails, privacy untouched.
+
+- **40 APPLY rows: 40 updated, 0 failed.**
+- **Read-back of all 44 from the API: 44 correct** — the 40 match `new_title` character-exact, the 3 LEAVE rows (NhG1nnZaTHU, tjREBjmbWtU, xBW_I7v5Gjg) and the 1 NO CHANGE row (9uW5gABPMww) are unchanged.
+- `results/log.csv`: `title_pattern` filled from the retitle file for the rows that have one — 5 of the 6 existing log rows updated (the 6th has no retitle pattern). Pushed with this note.
+- Em dashes cleared as expected: both rain ambience titles, Wolverine, Hercules gene, chapter 1199 and 100 BRICKS Part 1 now carry the new titles.
+- `results/titles-current.csv` untouched — it stays the undo record.
+
+No title mismatched what its video says, as far as the export's `what_it_is` descriptions go — nothing held back for a rewrite.
