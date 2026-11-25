@@ -19,6 +19,14 @@ One lane works differently, on his say: in `series/1000-bricks/` **you write the
 run the picture and clip generation on his Higgsfield account**, and hand voice and upload to Muse through HANDOFF.md.
 Read `series/1000-bricks/BRIEF.md` first.
 
+## The daily Short lane (Courtney, 25 Nov 2026)
+
+"I want you to do the daily, like, short, so you sort of make the script, all that sort of stuff." **You write the
+daily Short**: topic, script, storyboard, on-screen hook, title options and the checked facts, one file a day in
+`shorts/`. He approves it. Muse voices, builds and uploads it Private through HANDOFF.md. Write to what
+`results/VIEWS-DROP.md` and `TITLES.md` found: one surprising fact said plainly, a big question on screen in the first
+second, a subject everyone knows, and funny.
+
 ## HARD RULE — no heavy compute
 
 **Never render or run heavy compute in your session, and never on Courtney's
