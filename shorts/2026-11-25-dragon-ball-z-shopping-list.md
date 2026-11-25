@@ -94,6 +94,34 @@ description.
 On-screen words, added in the edit and nowhere else: the opening question, VEGETA to VEGETABLE (shot 3), SAIYA to
 YASAI (5), KAKAROT to CARROT (7), FRIEZA to FREEZER (8), BULMA to BLOOMERS (10), and the shopping list filling in.
 
+## Clip and panel mix (his rule, 25 Nov)
+
+Courtney: "make sure muse is applying the mix of panels and video clips". The studio rule is real clips and manga
+panels leading, with clips at 40 to 50 percent. This Short is set at half and half, and no more than two of the same
+kind in a row:
+
+| Shot | Kind | Note |
+|---|---|---|
+| 1 | Anime clip | Goku and Vegeta powering up |
+| 2 | Made picture, moving | The supermarket aisle |
+| 3 | Anime clip | Vegeta, arms crossed |
+| 4 | Manga panel | Vegeta's face, close. Push in so it is not a still |
+| 5 | Manga panel | The Saiyans in a line. Pan along it |
+| 6 | Edit graphic | The cut-outs drop into the bowl |
+| 7 | Manga panel | Goku in the dark. Slow push, eyes lit |
+| 8 | Anime clip | Goku roaring at Frieza |
+| 9 | Anime clip | The blast, then Goku walking out |
+| 10 | Manga panel | Vegeta and Bulma. Drift across, then the wardrobe door |
+| 11 | Anime clip | Kid Trunks and Bra |
+| 12 | Manga panel | The family frame. Push in |
+| 13 | Anime clips, then a manga panel | The hits are clips; the outfits are a panel |
+| 14 | Anime clip | Goku's grin |
+
+Seven shots are anime clips (1, 3, 8, 9, 11, 13, 14), six use manga panels (4, 5, 7, 10, 12, and the end of 13), two
+are made (2, 6). Every panel moves: a push, a pan or a drift. A panel held still breaks the "no static holds" rule.
+If a shot's clip or panel cannot be found, swap it for the other kind and keep the count near half; say which shots
+were swapped in the write-back.
+
 ## Title
 
 His angle, five options, all through `packaging/title_check.py`:
