@@ -56,6 +56,44 @@ Pictures: real Dragon Ball Z clips and manga panels lead, as the studio rules sa
 swaps, the shopping list that fills as the Short goes, and three props (the carrot, the salad bowl, the wardrobe
 door). No image repeats. Nothing holds still. Shot 4 shows only Vegeta's reaction.
 
+## Build sheet: what each shot must show (his rule, 25 Nov)
+
+Courtney: "Make sure that there are prompts for the images and videos. So on freezer I get Freiza not the feeezer."
+
+**The rule for this whole Short: the picture is always the CHARACTER. The food, the underwear and the appliance are
+only ever the words on screen.** When he says "freezer" the screen shows Frieza. When he says "vegetable" it shows
+Vegeta. When he says "carrot" it shows Goku. The joke is that these serious fighters have silly names, so they must
+look serious.
+
+For each shot: the real clip or panel to find first, and a prompt to use only if no real footage fits. Every
+generated picture starts with the same style line:
+
+> Vertical 9:16. 1990s Dragon Ball Z TV anime cel style, hand-painted background, bold ink outlines, flat cel
+> shading, film grain. No text, no captions, no logos, no watermark.
+
+Clips are 3 to 5 seconds. No episode numbers are given here because none were checked; find the moment by its
+description.
+
+| # | He says | MUST show | Real footage to find | Picture prompt (fallback) | Movement | Must NOT show |
+|---|---|---|---|---|---|---|
+| 1 | "...biggest names are on your shopping list." | Goku and Vegeta, both, powered up | Goku and Vegeta side by side charging up as Super Saiyans (Buu saga or Cell saga) | Goku and Vegeta standing side by side as Super Saiyans, golden auras blazing, fists clenched, rocky wasteland | Auras flare, hair whips, slow push in | Any food, any shop |
+| 2 | "Come walk the aisles." | An empty supermarket aisle, no characters | None; this one is made | A long supermarket aisle seen from a shopping trolley's point of view, shelves of vegetables on the left, freezers with glass doors on the right, bright ceiling lights, nobody in shot | Steady glide forward down the aisle | Any Dragon Ball character, any brand names |
+| 3 | "Start with Vegeta... the word vegetable." | **Vegeta**, the character, proud | Vegeta with arms crossed and a smirk, Saiyan armour (Saiyan or Namek saga) | Vegeta in blue Saiyan armour with white chest plate, arms crossed, chin up, arrogant smirk, low camera angle looking up at him, stormy sky | Slow push in on his face, cape of wind in his hair | A vegetable of any kind |
+| 4 | "Which used to mean something entirely different." | **Vegeta's face only** | A close-up of Vegeta giving a sideways glare | Extreme close-up of Vegeta's face, smirk gone, eyes sliding sideways toward the viewer, one eyebrow down | The smirk drops, the eyes slide to camera, hold | Anything else. No hospital, no wheelchair, no other person, no extra text |
+| 5 | "His whole race, the Saiyans... vegetables." | Several Saiyans in armour | Vegeta, Nappa and Raditz together, or the Saiyan army on Planet Vegeta (Bardock special) | Four Saiyan warriors in battle armour with monkey tails standing in a line, arms folded, red alien sky | Slow pan along the line | Vegetables, salad |
+| 6 | "Food for thought." | The same Saiyans, as cut-outs, dropping into a bowl | Made in the edit from shot 5's cut-outs | An empty wooden salad bowl seen from directly above on a plain dark table (the Saiyans are added in the edit) | Cut-outs drop in and the bowl wobbles | A salad already in the bowl |
+| 7 | "Carrots used to make me think I could see in the dark." | **Goku**, in darkness, eyes sharp | Goku in a night or cave scene, focused (early Z or original Dragon Ball) | Goku in his orange gi standing in near-total darkness, only his eyes and the edge of his face lit, alert | Eyes narrow, a slow turn of the head | A carrot as the main subject. One small carrot may drop in as a prop |
+| 8 | "Now all I see is Kakarot yelling at the freezer." | **Goku AND Frieza, the character**, face to face | Super Saiyan Goku screaming at final-form Frieza on Namek | Super Saiyan Goku, golden hair, shouting in fury, face to face with Frieza in his final form (small, white body, purple head and chest gems), green Namek sky breaking apart | Goku roars, aura bursts, Frieza glares back | **A freezer, a fridge, any kitchen appliance, ice.** The word FREEZER appears only as on-screen text over Frieza |
+| 9 | "Little fucker couldn't even put rabbit food on ice." | **Frieza attacking, then Goku unhurt** | Frieza firing a huge blast at Goku on Namek, then Goku emerging from the smoke | Final-form Frieza hurling a giant energy ball downward; then Super Saiyan Goku walking out of the smoke without a scratch | Blast lands, smoke, Goku steps out | Ice cubes, a rabbit, lettuce, a freezer |
+| 10 | "...throw a vegetable in a cupboard with Bulma?" | **Vegeta and Bulma**, the two characters, together | Vegeta and Bulma in the same frame at Capsule Corp | Vegeta, arms crossed and annoyed, standing beside Bulma, blue hair, hands on hips, inside a Capsule Corp room | She leans toward him, he looks away | Vegetables, underwear, food in a cupboard. The wardrobe door is added in the edit |
+| 11 | "Trunks and Bra, that's what." | **Kid Trunks and Bra (Bulla)**, the two children | Kid Trunks and little Bra together (end of Z or Dragon Ball Super) | Kid Trunks, lavender hair, and his little sister Bra, blue hair, standing side by side grinning | They pop into frame one beat apart | Swimming trunks, a bra, any clothing item on its own |
+| 12 | "That's a whole outfit and lunch." | The whole family: Vegeta, Bulma, Trunks, Bra | A Briefs family frame (Dragon Ball Super) | Vegeta, Bulma, kid Trunks and little Bra together like a family photo, Vegeta refusing to smile | Bulma pulls them in, Vegeta scowls | Food, clothes laid out |
+| 13 | "...never turn your nose up at a salad, and always be dressed for the occasion." | Saiyans hitting hard, then **Vegeta and Goku in ordinary clothes** | Two or three of the biggest Saiyan punches, then Vegeta in his pink shirt and Goku in a suit | Vegeta in a pink short-sleeved shirt and yellow trousers looking furious, beside Goku in an ill-fitting grey suit, grinning | Fast cuts on the hits, then a hold on the outfits | A salad, salad dressing, a bottle |
+| 14 | "Carrots are tough." | **Goku**, grinning | Goku's classic grin with a thumbs up | Goku in his orange gi grinning wide, thumbs up, blue sky | Thumb goes up, the list stamps on | A carrot |
+
+On-screen words, added in the edit and nowhere else: the opening question, VEGETA to VEGETABLE (shot 3), SAIYA to
+YASAI (5), KAKAROT to CARROT (7), FRIEZA to FREEZER (8), BULMA to BLOOMERS (10), and the shopping list filling in.
+
 ## Title
 
 His angle, five options, all through `packaging/title_check.py`:

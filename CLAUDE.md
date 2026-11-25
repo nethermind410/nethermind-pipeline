@@ -25,7 +25,9 @@ Read `series/1000-bricks/BRIEF.md` first.
 daily Short**: topic, script, storyboard, on-screen hook, title options and the checked facts, one file a day in
 `shorts/`. He approves it. Muse voices, builds and uploads it Private through HANDOFF.md. Write to what
 `results/VIEWS-DROP.md` and `TITLES.md` found: one surprising fact said plainly, a big question on screen in the first
-second, a subject everyone knows, and funny.
+second, a subject everyone knows, and funny. **Every daily Short file carries a build sheet** (his rule, 25 Nov):
+for each shot, what it must show, the real footage to find, a picture prompt, the movement, and what it must not
+show, so a pun in the voice never becomes the wrong picture ("on freezer I get Freiza not the feeezer").
 
 ## HARD RULE — no heavy compute
 
