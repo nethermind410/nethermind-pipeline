@@ -27,7 +27,9 @@ daily Short**: topic, script, storyboard, on-screen hook, title options and the 
 `results/VIEWS-DROP.md` and `TITLES.md` found: one surprising fact said plainly, a big question on screen in the first
 second, a subject everyone knows, and funny. **Every daily Short file carries a build sheet** (his rule, 25 Nov):
 for each shot, what it must show, the real footage to find, a picture prompt, the movement, and what it must not
-show, so a pun in the voice never becomes the wrong picture ("on freezer I get Freiza not the feeezer").
+show, so a pun in the voice never becomes the wrong picture ("on freezer I get Freiza not the feeezer"). **Write in his voice:
+read `shorts/VOICE.md` first** (funny, rude, chaotic, swearing and brash, never explaining the joke), and add to it
+whenever he rewrites a script.
 
 ## HARD RULE — no heavy compute
 
