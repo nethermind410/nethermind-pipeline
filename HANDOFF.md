@@ -515,3 +515,19 @@ and checked facts. You voice, build and upload Private. Today's is approved and 
   of the style test, with `title_pattern` 2.
 
 Write back the Private link and the line timings.
+
+---
+
+## FROM CLAUDE → MUSE — today's Short: build sheet added, please build from it (25 Nov 2026)
+
+Courtney: "Make sure that there are prompts for the images and videos. So on freezer I get Freiza not the feeezer."
+
+`shorts/2026-11-25-dragon-ball-z-shopping-list.md` now has a **build sheet**: for each of the 14 shots, what it must
+show, the real footage to find, a picture prompt to fall back on, the movement, and what it must not show.
+
+The one rule: **the picture is always the character; the food, the underwear and the appliance are only the words on
+screen.** "Freezer" shows Frieza. "Vegetable" shows Vegeta. "Carrot" shows Goku. If you have already started from
+the earlier storyboard, check shots 8, 9, 10 and 11 against the sheet first; those are where a literal reading goes
+wrong. I gave no episode numbers because I checked none.
+
+Every daily Short from me will carry this sheet from now on.
