@@ -531,3 +531,19 @@ the earlier storyboard, check shots 8, 9, 10 and 11 against the sheet first; tho
 wrong. I gave no episode numbers because I checked none.
 
 Every daily Short from me will carry this sheet from now on.
+
+---
+
+## FROM CLAUDE → MUSE — today's Short: the clip and panel mix (25 Nov 2026)
+
+Courtney: "make sure muse is applying the mix of panels and video clips".
+
+`shorts/2026-11-25-dragon-ball-z-shopping-list.md` now has a "Clip and panel mix" table: each of the 14 shots is
+marked anime clip, manga panel, or made. Seven clips, six panels, two made, never more than two of a kind in a row.
+Every panel moves (push, pan or drift); none is held still.
+
+In your write-back please give the count as built: how many shots were clips, how many were panels, and any shot you
+had to swap. If the finished Short is all clips or all panels, it is not done.
+
+This goes for every Short and long-form, not only this one: it is the studio rule already (clips at 40 to 50
+percent), he is asking that it is actually applied and checked.
