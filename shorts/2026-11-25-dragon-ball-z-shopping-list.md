@@ -18,26 +18,29 @@ done on the channel. And it is funny without needing a joke written for it: the 
 - "the script is all right, but then sort of add that sort of comical value into it ... what is funny about them sort
   of being these vegetables and like how strong they are ... and then at the end it's like, so always eat your veggies"
 
-Draft 2 below is written to both.
+- On the ending: "because you'll never know when a carrot comes in handy. You know, got to play on words and be a bit
+  of a pun." His ending line is used as he said it.
+
+Draft 3 below is written to all three.
 
 ## On screen in the first second
 
 `IS DRAGON BALL Z JUST A SHOPPING LIST?`
 
-## Script, draft 2 (his voice, spoken lines character-exact once approved)
+## Script, draft 3 (his voice, spoken lines character-exact once approved)
 
 | # | Time | Line | Picture |
 |---|---|---|---|
 | 1 | 0:00 | Dragon Ball Z's biggest names are on your shopping list. | Goku and Vegeta charging up side by side. The capitals question sits over them for the first second, then a paper shopping list unrolls down one side of the frame, empty. |
 | 2 | 0:04 | Vegeta, prince of all Saiyans, is named after the word vegetable. The proudest man in anime is a side dish. | Vegeta at his proudest, arms crossed. His name slides into VEGETABLE and "vegetables" is written onto the list. On "side dish" he is shrunk onto a small plate beside a steak. |
-| 3 | 0:12 | Saiyan is yasai, Japanese for vegetable, scrambled. So an entire warrior race is a salad. | A line-up of Saiyans in armour. SAIYA flips letter by letter into YASAI. On "salad" the line-up drops into a salad bowl. |
-| 4 | 0:19 | Goku's real name, Kakarot? Carrot. | Goku, deadly serious, mid power-up. KAKAROT becomes CARROT and "carrots" goes on the list. |
+| 3 | 0:12 | Saiyan is yasai, Japanese for vegetable, scrambled. So an entire warrior race is a salad, tossed across the universe. | A line-up of Saiyans in armour. SAIYA flips letter by letter into YASAI. On "salad" the line-up drops into a salad bowl. |
+| 4 | 0:19 | Goku's real name, Kakarot? Carrot. He's been rooting for Earth ever since. | Goku, deadly serious, mid power-up. KAKAROT becomes CARROT and "carrots" goes on the list. |
 | 5 | 0:22 | Bulma's family is all named after underwear. Bulma means bloomers. So a vegetable married her and they called the kids Trunks and Bra. | Bulma, confident; BULMA becomes BLOOMERS. Then Vegeta with the two kids, each name popping up over each one a beat apart. "undies" goes on the list. |
-| 6 | 0:32 | And Frieza, the tyrant who wiped out the Saiyans? Freezer. A whole planet of vegetables, destroyed by a freezer. | Frieza at his most menacing; FRIEZA becomes FREEZER. Then the Saiyan planet exploding, with a freezer door slamming shut over it. |
-| 7 | 0:40 | Then one carrot went blond and beat him. | Goku's first Super Saiyan moment, hair turning gold, then the hit that ends Frieza. |
-| 8 | 0:43 | So always eat your veggies. | Goku grinning with a mountain of food. The shopping list, now full, stamps onto the screen. |
+| 6 | 0:32 | And Frieza, the tyrant who wiped out the Saiyans? Freezer. A whole planet of vegetables, put on ice by a freezer. | Frieza at his most menacing; FRIEZA becomes FREEZER. Then the Saiyan planet exploding, with a freezer door slamming shut over it. |
+| 7 | 0:40 | Then one carrot went blond and roasted him. | Goku's first Super Saiyan moment, hair turning gold, then the hit that ends Frieza. |
+| 8 | 0:43 | So always eat your veggies, because you'll never know when a carrot comes in handy. | Goku grinning with a mountain of food. The shopping list, now full, stamps onto the screen. |
 
-105 words. About 40 to 45 seconds at the pace of his 100 BRICKS read.
+126 words. About 47 seconds at the pace of his 100 BRICKS read.
 
 Pictures: real Dragon Ball Z clips and manga panels lead, as the studio rules say. The added graphics are the name
 swaps, the shopping list that fills as the Short goes, and three props (the plate, the salad bowl, the freezer door).
@@ -77,7 +80,7 @@ Wikipedia gives Akira Toriyama's own book, Dragon Ball Tenkaichi Densetsu (Shuei
 That book was not opened. Line 5 uses "Bra", her Japanese name; the English dub says Bulla. Line 7 is the one soft
 spot: the pages say Goku fought Frieza and that Frieza was defeated, not in one sentence that Goku beat him.
 
-"Side dish", "salad" and "always eat your veggies" are jokes, not facts.
+"Side dish", "salad, tossed", "rooting", "put on ice", "roasted" and the ending are jokes and puns, not facts.
 
 ## Checks
 
