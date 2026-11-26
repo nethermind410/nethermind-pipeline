@@ -1,7 +1,8 @@
 # 100 BRICKS — Part 2: "The Kind Voice"
 
 Status: **APPROVED by Courtney, 24 Nov 2026** (lines and shot list, both versions; line 6 last: "Yes line 6 is good.").
-Waits on the Part 1 vote. Nothing is generated and no credit is spent until the vote is in and the price is quoted.
+**Version A is the one being made (his call, 26 Nov): "let's just say that the comments picked an" (A, take the hand).**
+Version B is not made. No credit is spent until the price is quoted and he says yes.
 Written against `BRIEF.md`, `ARC.md` (Episode 2) and `LEDGER.md`.
 
 Two versions, one for each way the Part 1 vote can go. Only shots 1 and 2 differ. Shots 3 to 6 are the same words in
