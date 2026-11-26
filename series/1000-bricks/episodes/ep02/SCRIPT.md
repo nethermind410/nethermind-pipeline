@@ -132,3 +132,24 @@ is the one the clip starts from. 22 credits: the edit 2, four clips at 5. Part 2
 | 6 | grok lite | `40823bd7-874c-4983-bf6e-665badb8725e` | Head turns to the lit corridor, then the dark one. Line 6 runs 14 s, so the clip plays forward and back (`"loop"` in `episode.json`). |
 
 The cut is built by the `100 BRICKS assemble` workflow (picture-only until Muse's lines 1 and 2 are in `voice/`).
+
+## The arm redo (26 Nov)
+
+His notes on the first cut: "The figure walks up with 2 arms. Almost merges with my character then has one arm. The
+stone arm isn't the same as the first episode." The arm had been described in words and came back three ways.
+
+- **Arm, locked**: prop Element `a78d76df-d438-42bd-8be1-063f59e6e47a` (media `3e963e04-78d8-4f58-b130-080740538aaf`,
+  a crop with no face). Front reference job `a6db187d-1c33-489f-8aa6-cd2906df6c41` (its face drifted: never use it for
+  the face). Back reference job `55be0236-7f76-44f5-9bf4-3be250fcb0d6`.
+- First redo of the four stills as edits naming "his right arm": one right of four, 8 credits. From behind, "right"
+  flips and the model had no back view. Second redo named the arm by its side of the picture, with the back view.
+
+| Shot | Job id now | Check against Part 1's arm |
+|---|---|---|
+| 1 | `17f55e8f-2eb7-4599-b975-8c5d47af1ab7` | Giant fist with rock forearm joined to it. |
+| 2 | `f9e5bf8d-e9bb-4579-9682-cb66764991ae` | Right: whole rock arm from the shoulder. |
+| 3 | `d9687bb4-aba0-4d9f-a018-5f166e4e2447` | Thicker, but the fist is still smaller than Part 1's. |
+| 6 | `be5d6acf-eb1c-49c8-b92a-002df4694e63` | Thick rock arm. The figure came back larger in frame, legs black. |
+
+Credits on this redo so far: 2 + 2 (reference and its chest fix) + 8 + 2 + 6 = 20. Balance 71.64. The four clips are
+not remade yet and wait on his yes (20).
