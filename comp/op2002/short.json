@@ -1,0 +1,326 @@
+{
+ "title": "One Piece Was Supposed to End in 2002 #shorts #onepiece #anime",
+ "voice": "voice.mp3",
+ "music": "music.mp3",
+ "music_db": -24,
+ "fps": 30,
+ "font": "../fonts/Anton-Regular.ttf",
+ "hook": {
+  "text": "WAS ONE PIECE MEANT TO END IN 2002?",
+  "until": 3.0
+ },
+ "shots": [
+  {
+   "img": "img/01.jpg",
+   "start": 0,
+   "end": 3.0,
+   "speech": [
+    0.05,
+    2.76
+   ],
+   "say": "One Piece was supposed to end in 2002.",
+   "x": [
+    0.27,
+    0.36
+   ],
+   "zoom": [
+    1.0,
+    1.08
+   ]
+  },
+  {
+   "img": "img/02.jpg",
+   "start": 3.0,
+   "end": 4.5,
+   "speech": [
+    3.24,
+    4.18
+   ],
+   "say": "Grab a life jacket.",
+   "x": [
+    0.5,
+    0.5
+   ],
+   "zoom": [
+    1.0,
+    1.14
+   ]
+  },
+  {
+   "img": "img/03.jpg",
+   "start": 4.5,
+   "end": 7.7,
+   "speech": [
+    4.8,
+    7.47
+   ],
+   "say": "Oda had the ending drawn up before most of us could swim.",
+   "x": [
+    0.58,
+    0.38
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/04.jpg",
+   "start": 7.7,
+   "end": 10.4,
+   "speech": [
+    7.95,
+    10.07
+   ],
+   "say": "Five years, he said, there and back.",
+   "x": [
+    0.5,
+    0.5
+   ],
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "stamp": "5 YEARS"
+  },
+  {
+   "img": "img/05.jpg",
+   "start": 10.4,
+   "end": 14.75,
+   "speech": [
+    10.77,
+    14.45
+   ],
+   "say": "That boat left in 1997 and nobody's seen a jetty since.",
+   "x": [
+    0.3,
+    0.62
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ],
+   "stamp": "1997"
+  },
+  {
+   "img": "img/06.jpg",
+   "start": 14.75,
+   "end": 18.6,
+   "speech": [
+    15.06,
+    18.35
+   ],
+   "say": "In 2018 he swore we were eighty percent of the way across.",
+   "x": [
+    0.34,
+    0.62
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ],
+   "stamp": "2018: 80% DONE"
+  },
+  {
+   "img": "img/07.jpg",
+   "start": 18.6,
+   "end": 21.9,
+   "speech": [
+    18.86,
+    21.65
+   ],
+   "say": "Eight years on, the only thing we've crossed is our fingers.",
+   "x": [
+    0.34,
+    0.6
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/08.jpg",
+   "start": 21.9,
+   "end": 25.5,
+   "speech": [
+    22.18,
+    25.32
+   ],
+   "say": "My old man's idea of a short trip was \"just up the road\".",
+   "x": [
+    0.4,
+    0.7
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/09.jpg",
+   "start": 25.5,
+   "end": 29.1,
+   "speech": [
+    25.72,
+    28.79
+   ],
+   "say": "Three hours later you're eating servo pies in another state.",
+   "x": [
+    0.5,
+    0.5
+   ],
+   "zoom": [
+    1.12,
+    1.0
+   ]
+  },
+  {
+   "img": "img/10.jpg",
+   "start": 29.1,
+   "end": 31.5,
+   "speech": [
+    29.43,
+    31.23
+   ],
+   "say": "Oda is my old man with a pen.",
+   "x": [
+    0.34,
+    0.66
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/11.jpg",
+   "start": 31.5,
+   "end": 34.1,
+   "speech": [
+    31.71,
+    33.91
+   ],
+   "say": "Luffy's been at sea twenty-nine years.",
+   "x": [
+    0.3,
+    0.6
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ],
+   "stamp": "29 YEARS AT SEA"
+  },
+  {
+   "img": "img/12.jpg",
+   "start": 34.1,
+   "end": 38.5,
+   "speech": [
+    34.26,
+    38.19
+   ],
+   "say": "Kid can stretch his arm across an island and still can't reach the fucking last chapter.",
+   "x": [
+    0.74,
+    0.3
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/13.jpg",
+   "start": 38.5,
+   "end": 42.3,
+   "speech": [
+    38.78,
+    42.13
+   ],
+   "say": "Then 2019 rolls round and Oda says five more years.",
+   "x": [
+    0.42,
+    0.42
+   ],
+   "zoom": [
+    1.0,
+    1.18
+   ],
+   "stamp": "2019: 5 MORE YEARS"
+  },
+  {
+   "img": "img/14.jpg",
+   "start": 42.3,
+   "end": 43.4,
+   "speech": [
+    42.49,
+    43.24
+   ],
+   "say": "Same five.",
+   "x": [
+    0.25,
+    0.72
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/15.jpg",
+   "start": 43.4,
+   "end": 45.8,
+   "speech": [
+    43.62,
+    45.51
+   ],
+   "say": "He just flipped the hourglass and kept rowing.",
+   "x": [
+    0.5,
+    0.72
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/16.jpg",
+   "start": 45.8,
+   "end": 50.4,
+   "speech": [
+    46.04,
+    50.17
+   ],
+   "say": "So if a pirate tells you it's a quick trip, bring a jumper and tell your mum you love her.",
+   "x": [
+    0.4,
+    0.7
+   ],
+   "zoom": [
+    1.02,
+    1.02
+   ]
+  },
+  {
+   "img": "img/17.jpg",
+   "start": 50.4,
+   "end": 53.6,
+   "speech": [
+    50.59,
+    52.9
+   ],
+   "say": "Land ho. Any decade now.",
+   "x": [
+    0.42,
+    0.58
+   ],
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "stamp": "115 VOLUMES. STILL GOING."
+  }
+ ]
+}

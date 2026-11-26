@@ -1,0 +1,45 @@
+name: short assemble
+
+# Builds a Short from its shot list (tools/short_assemble.py). The finished mp4 is a download on the run and is also
+# put on the branch renders/<folder name>. Nothing is posted anywhere.
+on:
+  push:
+    branches: ['claude/wonderful-meitner-vormnv']
+    paths: ['comp/**', 'tools/short_assemble.py', '.github/workflows/short-assemble.yml']
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: 'Folder holding short.json'
+        required: true
+        default: comp/op2002
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FOLDER: ${{ github.event.inputs.folder || 'comp/op2002' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: python3 -m pip install -q pillow imageio-ffmpeg
+      - name: Assemble
+        run: |
+          NAME=$(basename "$FOLDER")
+          python3 tools/short_assemble.py "$FOLDER" "out/$NAME.mp4"
+          ls -la out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: short
+          path: out/
+          retention-days: 14
+      - name: Put the mp4 on the renders branch
+        run: |
+          NAME=$(basename "$FOLDER")
+          mkdir "$RUNNER_TEMP/r" && cp out/* "$RUNNER_TEMP/r/" && cd "$RUNNER_TEMP/r"
+          git init -q -b "renders/$NAME" . && git add -A
+          git -c user.name="short-assemble" -c user.email="actions@users.noreply.github.com" commit -q -m "Short $NAME render from ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/renders/$NAME"
