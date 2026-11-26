@@ -562,3 +562,133 @@ Please voice the last two, same voice and level spec, character-exact:
 
 Commit them to `series/1000-bricks/episodes/ep02/voice/line01.mp3` and `line02.mp3`, and write the seconds for all six
 lines here. The pictures and clips are mine and wait on his yes to the price. Nothing uploads until he has seen the cut.
+
+## FROM MUSE → CLAUDE — DBZ SHOPPING LIST: CORRECTION — v1 rejected, test-A VOID, final build is v8 (26 Nov 2026)
+
+This section supersedes the DBZ build report Muse staged on 25 Nov (never pushed) and the "log it as test-A" suggestion in your 25 Nov sections. The true final state:
+
+- **v1 (RnQxXF7LGmg, uploaded Private 25 Nov) was REJECTED by Courtney on its visuals** — generated list graphics, circle-cropped heads, poor-quality over-zoomed clips. It was deleted. Do not treat it as a delivered build.
+- **The style test's test-A entry is VOID.** This video is not a live test-A data point; the six-day style test needs re-planning, and its test-A slot does not stand.
+- Rebuilds followed under Courtney's rules (fresh sources only, no generated images, no reused assets, voice re-done per line in the 160–180 wpm band with no atempo, captions held a minimum 1.2s, the shopping list rebuilt as a real paper list). The v5, v6 and v7 uploads (6hRaAi-FFg0, 1nVhLiLZE_E, -2T7-Qh2p9g) were each deleted as the next version verified in.
+- **Final build is v8**: the opening shot was rebuilt to the cover standard (question over sky, Goku's face fully clear), audio bit-identical to the approved voice. **Uploaded Private as poexUAmeWWY** — https://youtu.be/poexUAmeWWY — title exact: "Dragon Ball Z's Biggest Names Are on Your Shopping List #shorts #dragonball #anime", 50.4s, 1080×1920.
+- The approved question cover (dbz-cover-v2, built with the locked cover system exactly like the other Shorts' covers) is set as its Studio thumbnail.
+- Courtney publishes. Analytics will be read from the daily sweep when they land — read them as a v8 result, not as test-A.
+
+
+## FROM MUSE → CLAUDE — STILLS REQUEST: "Thank You for 50 Subs" (26 Nov 2026)
+
+# STILLS REQUEST — "Thank You for 50 Subs" (100 BRICKS mascot Short)
+
+**Status: QUEUED**
+**From: Muse → Claude (Higgsfield lane)**
+**Date: 26 Nov 2026**
+
+Ready to be staged into `HANDOFF.md` (FROM MUSE → CLAUDE) as the open
+task. Full production package: `studio/output/brick-series/thank-you-50/PACK.md`
+in the studio workspace.
+
+---
+
+## Task
+
+Five fresh key stills for a milestone Short — the brick hero's first job
+as channel mascot (Courtney promoted him, 26 Nov 2026). Storyboard
+approved by Courtney 26 Nov 2026. These are **stills for a new video,
+not an episode** — no vote, no A-or-B card, no brick-count change to the
+series ledger.
+
+**Lane rules, unchanged:**
+- The hero is a saved character on Courtney's Higgsfield account and
+  Claude Code runs the stills there. **No hero generation on fal for
+  this lane.**
+- **The hero is never generated.** He is the locked asset (below),
+  posed into generated scenes. Generation draws the set, props and
+  backgrounds ONLY, with the hero area left for the asset.
+- True stop-motion from single stills at 12fps, digital layer-posing.
+  **No image-to-video AI.**
+- **Fresh stills for this video — no reuse of episode stills** (sets,
+  plates or frames from Episodes 1–2 do not carry over).
+
+## The hero — locked asset, do not redesign
+
+Master: `studio/output/brick-series/stills/ep1-still-c-statue-arm-MASTER.webp`
+(picked and locked by Courtney, 23 Nov 2026), layered asset under
+`studio/output/brick-series/assets/hero/`. Design lock = the corrected
+lock in `series/1000-bricks/BRIEF.md`, in force exactly as written:
+
+- Hair: short bleached-blonde, **slicked back on TOP of the head only**,
+  sides shaven bare, low hairline close above the brows. No afro, no
+  curls, no volume, no fringe, no hair on the sides.
+- Face CLEAN: no face tattoos, no jaw tattoos, no markings anywhere on
+  the face.
+- **Septum ring: NONE.** Scrapped — its presence in any still is a
+  reject.
+- Pale blue-grey eyes; light brown printed stubble beard and moustache.
+- Plain dark t-shirt torso print, plain dark legs. No cape, no armour,
+  no chest plate.
+- One bright teal 1x1 brick in the centre of his chest.
+
+## Stills requested (1080×1920, one key still per shot)
+
+**Still 1 — "The 50".** Open plaza in the Nether (fresh build — dark
+brick ground, warm torchlight; the series' world, open sky of the
+plaza, NOT the episode corridor). A wall of exactly 50 bricks stacked
+into the shape of a "50", complete, filling the upper frame. Hero
+(asset, posed) standing front-on centre-lower frame, looking straight
+at camera. His face must be clear of the brick "50" — this still is
+also the video's cover.
+
+**Still 2 — "The build".** Same plaza. The "50" wall part-built (about
+two-thirds), a loose pile of bricks lower-left, a small ladder built
+from bricks against the wall. Hero posed mid-build: both hands placing
+a brick on the wall, partway up the ladder. (Animation pose variants —
+bend-pick, lift, climb — get derived from this set build at the
+animation stage.)
+
+**Still 3 — "The last brick".** Same plaza and wall, now one brick
+short — a single visible gap at the top of the "0". One loose brick on
+the ground. Hero posed holding that brick in both hands at his chest,
+head up, looking at camera.
+
+**Still 4 — "THANK YOU".** The completed "50" wall behind. In front of
+it, a long flat base plate with the words THANK YOU built from bricks,
+complete, across the lower third — letters clear of the bottom caption
+zone. Hero posed standing beside the plate, one hand resting on its
+edge, looking at camera.
+
+**Still 5 — "The road".** Same plaza turned to the distance: on the
+horizon, a barely-started "100" — a low base row of bricks outlining
+the digits, nothing more. Hero posed in the foreground holding one
+loose brick one-handed, body turned away, head turned back toward
+camera. Composition geography matches Still 1 so the video loops.
+
+## Gate — before anything comes back
+
+Every still is graded **feature-by-feature against the MASTER** (never
+against sibling stills): hair slicked back on top only / sides shaven
+bare / bleached blonde / low hairline / septum ring ABSENT / face
+tattoos absent / jaw tattoos absent / cape absent / armour absent /
+teal chest brick present / proportions. **ANY single mismatch = FAIL.**
+The generator never grades its own output — grading is a separate pass
+on zoomed region crops (hair / nose / chest), checklist read off the
+BRIEF lock, not from memory. A still that comes back has passed every
+feature, or is labelled FAIL with the failing feature named.
+
+## Deliverables
+
+- The five stills, saved to
+  `studio/output/brick-series/thank-you-50/stills/` in the studio
+  workspace, named `ty50-still-1.webp` … `ty50-still-5.webp`.
+- Gate result per still (pass, or FAIL + the failing feature), written
+  in this task's Result block.
+
+## Notes
+
+- Voice lines are Courtney's to dictate and are NOT part of this task;
+  stills do not wait on them (the board is approved and the timings
+  flex to the voice at build).
+- Questions go in this task's Notes. No guessing past a gap.
+
+## Result
+
+_(Claude writes here: file paths + gate results, then sets DONE.)_
