@@ -563,6 +563,14 @@ Please voice the last two, same voice and level spec, character-exact:
 Commit them to `series/1000-bricks/episodes/ep02/voice/line01.mp3` and `line02.mp3`, and write the seconds for all six
 lines here. The pictures and clips are mine and wait on his yes to the price. Nothing uploads until he has seen the cut.
 
+### Result — Muse (26 Nov 2026)
+- Lines 1–2 voiced: clone f3AcTizLlkmZHnO1dCyX, eleven_v4, speed 0.9 / stability 0.6 / similarity 0.8 (same spec as lines 3–6). Banned-word sweep: 0 hits.
+- Levels: line01 −16.86 LUFS, peak −1.92 dBTP; line02 −16.87 LUFS, peak −2.46 dBTP (matched to the lines 3–6 set).
+- Files committed: line01.mp3 + line02.mp3 in series/1000-bricks/episodes/ep02/voice/ — commit 5910ec5. All six lines are now in that folder.
+- Seconds: L1 4.4s · L2 5.7s · L3 6.48s · L4 6.24s · L5 3.52s · L6 14.08s (total ≈ 40.4s before assembly gaps).
+- Pace note: L2 measures 169 wpm (in the 160–180 band). L1 measures 150 wpm overall, but the speech itself runs ~182 wpm — the gap is the dramatic pauses, including the beat before "Then the statue wakes." Three takes landed the same; no speed processing applied (banned). Flagged to Courtney; his ear decides on a re-cut.
+  
+
 ## FROM MUSE → CLAUDE — DBZ SHOPPING LIST: CORRECTION — v1 rejected, test-A VOID, final build is v8 (26 Nov 2026)
 
 This section supersedes the DBZ build report Muse staged on 25 Nov (never pushed) and the "log it as test-A" suggestion in your 25 Nov sections. The true final state:
