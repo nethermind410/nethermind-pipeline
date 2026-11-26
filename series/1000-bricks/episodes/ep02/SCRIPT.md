@@ -97,20 +97,25 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
 
 ## Stills made (26 Nov), Version A
 
-His go on 18 credits for the room picture and 8 stills. 16 spent so far (8 pictures at 2 each, `nano_banana_pro` 2k).
-Higgsfield's filter blocked four requests on wording (no charge): avoid "stump", "gone", "bare", "waist up", "shock".
+Copies are in `stills/`. 24 credits spent on pictures (12 at 2 each, `nano_banana_pro` 2k): 18 quoted, then 8 more on his
+say for three fixes and shot 4's end frame, of which 2 are unspent. Higgsfield's filter blocked five requests on wording
+(no charge): avoid "stump", "gone", "bare", "waist up", "shock".
 
 - **Locked set**: Element `a9001209-14f4-4a7f-9c75-00a38e186973` (job `3c5bc1f2-9265-418c-88e9-065d74657ca6`). Looking down
   the hall: torch and the one-armed statue on the left wall, three statues on the right, two dark openings in the end wall.
+- **The statue has no arm on the side he took the hand from** (his pick, 26 Nov: "1"). The saved statue Element still
+  has the hand, so the model keeps putting the arm back: fix by editing the still, never by regenerating from the Element.
 
 | Shot | Job id | Check against the hero and the set |
 |---|---|---|
-| 1 | `e927144c-af68-4a33-bd41-1bd80b22f2e2` | Hero right. MISS: the statue behind still has its giant arm, and the far wall is a long tunnel, not the two openings. |
-| 2 | `a27650dc-b6ad-4f55-91ba-dc5c8e440fe7` | MISS: teal legs (his are black), and the statue still has its giant arm. |
+| 1 | `58ca0f6b-910c-4b56-9f3f-6d1fdcc21f27` | Hero and end wall right. MISS, still open: the statue behind him has its giant arm. |
+| 2 | `2f5518dc-15e6-4534-a4d2-5efc7217ee40` | Right (black legs, statue one-armed). |
 | 3 | `6074b872-6781-4075-83a6-1982084963e2` | Right. |
-| 4 start | `75f68151-a584-42f4-b49e-0f775d2078c0` | MISS: his hand is yellow (my prompt's error), should be his skin colour. End frame not made yet. |
+| 4 start | `b8504886-cd14-4727-ac7c-7392b085a4b3` | Right (hand is his skin colour). |
+| 4 end | `5f151a67-40f8-4628-99af-d58c72a61121` | Right (chain tight and bright). |
 | 5 start | `1f143330-5ec9-4035-8636-dbe96df3f532` | Right. |
 | 5 end | `1c847147-2a80-4feb-a257-c0ec9cd09425` | Right. |
 | 6 | `e6b13130-7efa-48dd-ad5a-2b293e1cddcf` | Right. |
 
-Still to make, waiting on his yes: fixes for 1, 2 and 4 start (as edits of the stills above), then 4 end.
+Next, on his yes: one more edit of shot 1 (2 credits), then four clips with `grok_video_v15_lite` (shots 1, 2, 3, 6,
+5 credits each) and the free in-between frames for shots 4 and 5.
