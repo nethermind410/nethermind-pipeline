@@ -6,7 +6,7 @@ the A or B card on top. RUNS ON GITHUB ACTIONS (.github/workflows/bricks-assembl
 
 Reads <episode>/episode.json. Each shot runs for its voice line plus the gap; the last shot holds for the tail with the
 vote card up. A clip shorter than its slot is slowed by up to 20 percent, then its last frame is held; a longer one is
-cut. A shot marked "loop" whose line runs much longer than its clip plays forward then backward instead of freezing. If <episode>/music.mp3 is there (or the file named by "music" in episode.json) it is laid quietly under the voice, at
+cut. A shot marked "loop" whose line runs much longer than its clip plays forward then backward instead of freezing. "cut": N uses only the first N seconds of a clip. If <episode>/music.mp3 is there (or the file named by "music" in episode.json) it is laid quietly under the voice, at
 "music_db" decibels (default -20). --silent builds the picture with no voice (used until the voice files are in the repo). No generation, no network.
 Prints one JSON line: {"ok":true,"seconds":S,"shots":N,"voice":true|false,"out":"..."}"""
 import json, os, re, subprocess, sys, tempfile
@@ -70,9 +70,10 @@ def main():
     tmp = tempfile.mkdtemp(); ins, fc, vs, au = [], [], [], []
     for i, s in enumerate(shots):
         clip = os.path.join(root, s['clip']); slot = (dur(voices[i]) if have else s['seconds']) + ep['gap'] + (ep['tail'] if i == len(shots) - 1 else 0)
-        c = dur(clip); k = min(1.2, max(1.0, slot / c)); ov = os.path.join(tmp, f'ov{i}.png'); overlay(ep, s, ov)
+        c = min(dur(clip), s.get('cut', 1e9)); k = min(1.2, max(1.0, slot / c)); ov = os.path.join(tmp, f'ov{i}.png'); overlay(ep, s, ov)
         ins += ['-i', clip, '-loop', '1', '-t', f'{slot:.3f}', '-i', ov]
         src = f'[{2 * i}:v]fps={FPS},scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H}'
+        if s.get('cut'): src += f',trim=duration={c:.3f},setpts=PTS-STARTPTS'   # use only the first part of the clip
         if s.get('loop') and slot > c * 1.2 + 0.5:   # a line much longer than its clip: play it forward, back, forward, back, so nothing freezes
             k = min(1.2, max(1.0, slot / (4 * c)))
             src += f',split=4[p{i}a][p{i}b][p{i}c][p{i}d];[p{i}b]reverse[p{i}e];[p{i}d]reverse[p{i}f];[p{i}a][p{i}e][p{i}c][p{i}f]concat=n=4:v=1:a=0'

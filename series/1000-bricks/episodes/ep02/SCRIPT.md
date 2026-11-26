@@ -153,3 +153,17 @@ stone arm isn't the same as the first episode." The arm had been described in wo
 
 Credits on this redo so far: 2 + 2 (reference and its chest fix) + 8 + 2 + 6 = 20. Balance 71.64. The four clips are
 not remade yet and wait on his yes (20).
+
+## Clips remade (26 Nov), on his "1"
+
+20 credits, four clips from the redone stills. Balance after: 51.64. Each checked at one frame a second.
+
+| Shot | Job id | Check |
+|---|---|---|
+| 1 | `8d4192e5-0f06-48dd-9f94-25e1e8e22ad3` | He stays put with the fist; the statue stays small by the wall, eyes glow, head turns. It does not step down, and from 1 s it shows an arm on the side that was empty. No walk, no merge. |
+| 2 | `b9ac47b1-96ab-4aa1-8ce5-cb55107a7c8d` | Grab and struggle right until 2.3 s. MISS after that: as he turns to run the stone arm disappears. `episode.json` uses only the first 2.3 s (`"cut"`), played forward and back, so the run is not shown. |
+| 3 | `dbc85ab4-6fdf-4b4c-b523-3c35d3e3be9d` | Right. One stone arm throughout. |
+| 6 | `7e439a4e-10ce-4f5a-887a-35a1aaf7781b` | Right. One stone arm throughout, only the head moves. |
+
+Lesson for the brief's prompt rules: a figure that turns away from the camera mid-clip loses what it carries. Keep the
+figure facing one way for the whole clip.

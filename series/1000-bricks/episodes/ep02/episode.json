@@ -25,7 +25,9 @@
       "label": {
         "text": "-12"
       },
-      "say": "It wants its hand back. It rips twelve bricks off you before you get away. Ninety-two."
+      "say": "It wants its hand back. It rips twelve bricks off you before you get away. Ninety-two.",
+      "cut": 2.3,
+      "loop": true
     },
     {
       "clip": "clips/shot3.mp4",
