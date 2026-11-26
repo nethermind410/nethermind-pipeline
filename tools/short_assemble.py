@@ -117,7 +117,7 @@ def main():
         cmd += ['-stream_loop', '-1', '-i', music, '-filter_complex',
                 f'[1:a]aresample=48000,apad,atrim=duration={total:.3f},asplit[vo][key];[2:a]aresample=48000,volume={sp.get("music_db", -24)}dB,'
                 f'atrim=duration={total:.3f},afade=t=in:d=0.4,afade=t=out:st={total - 1.5:.3f}:d=1.5[m];'
-                f'[m][key]sidechaincompress=threshold=0.03:ratio=5:attack=20:release=500[md];[vo][md]amix=inputs=2:normalize=0:duration=first[a]',
+                f'[m][key]sidechaincompress=threshold=0.05:ratio=3:attack=20:release=350[md];[vo][md]amix=inputs=2:normalize=0:duration=first[a]',
                 '-map', '0:v', '-map', '[a]']
     else:
         cmd += ['-filter_complex', f'[1:a]aresample=48000,apad,atrim=duration={total:.3f}[a]', '-map', '0:v', '-map', '[a]']
