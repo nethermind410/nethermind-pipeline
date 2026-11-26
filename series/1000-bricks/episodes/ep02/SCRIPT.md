@@ -94,3 +94,23 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
   went from 4 and 3 to 6 and 10.
 
 - Line 6 with the new prices, and with it the whole script: "Yes line 6 is good."
+
+## Stills made (26 Nov), Version A
+
+His go on 18 credits for the room picture and 8 stills. 16 spent so far (8 pictures at 2 each, `nano_banana_pro` 2k).
+Higgsfield's filter blocked four requests on wording (no charge): avoid "stump", "gone", "bare", "waist up", "shock".
+
+- **Locked set**: Element `a9001209-14f4-4a7f-9c75-00a38e186973` (job `3c5bc1f2-9265-418c-88e9-065d74657ca6`). Looking down
+  the hall: torch and the one-armed statue on the left wall, three statues on the right, two dark openings in the end wall.
+
+| Shot | Job id | Check against the hero and the set |
+|---|---|---|
+| 1 | `e927144c-af68-4a33-bd41-1bd80b22f2e2` | Hero right. MISS: the statue behind still has its giant arm, and the far wall is a long tunnel, not the two openings. |
+| 2 | `a27650dc-b6ad-4f55-91ba-dc5c8e440fe7` | MISS: teal legs (his are black), and the statue still has its giant arm. |
+| 3 | `6074b872-6781-4075-83a6-1982084963e2` | Right. |
+| 4 start | `75f68151-a584-42f4-b49e-0f775d2078c0` | MISS: his hand is yellow (my prompt's error), should be his skin colour. End frame not made yet. |
+| 5 start | `1f143330-5ec9-4035-8636-dbe96df3f532` | Right. |
+| 5 end | `1c847147-2a80-4feb-a257-c0ec9cd09425` | Right. |
+| 6 | `e6b13130-7efa-48dd-ad5a-2b293e1cddcf` | Right. |
+
+Still to make, waiting on his yes: fixes for 1, 2 and 4 start (as edits of the stills above), then 4 end.
