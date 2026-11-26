@@ -1,0 +1,62 @@
+{
+  "series": "100 bricks",
+  "part": 2,
+  "title": "The Kind Voice",
+  "count": 92,
+  "gap": 0.4,
+  "tail": 2.5,
+  "full": 100,
+  "shots": [
+    {
+      "clip": "clips/shot1.mp4",
+      "voice": "voice/line01.mp3",
+      "seconds": 4.0,
+      "count": 104,
+      "label": {
+        "text": "+4"
+      },
+      "say": "You took the hand. Four bricks up. Then the statue wakes."
+    },
+    {
+      "clip": "clips/shot2.mp4",
+      "voice": "voice/line02.mp3",
+      "seconds": 6.5,
+      "count": 92,
+      "label": {
+        "text": "-12"
+      },
+      "say": "It wants its hand back. It rips twelve bricks off you before you get away. Ninety-two."
+    },
+    {
+      "clip": "clips/shot3.mp4",
+      "voice": "voice/line03.mp3",
+      "seconds": 6.53,
+      "say": "The hall ends at two dark corridors. A voice in the wall offers you the way out, for a price."
+    },
+    {
+      "clip": "clips/shot4.mp4",
+      "voice": "voice/line04.mp3",
+      "seconds": 6.27,
+      "say": "In Jujutsu Kaisen, that's a binding vow. Break one, and nobody knows what the punishment will be."
+    },
+    {
+      "clip": "clips/shot5.mp4",
+      "voice": "voice/line05.mp3",
+      "seconds": 3.55,
+      "say": "The voice is kind. It sounds exactly like you."
+    },
+    {
+      "clip": "clips/shot6.mp4",
+      "voice": "voice/line06.mp3",
+      "seconds": 14.11,
+      "vote": true,
+      "loop": true,
+      "say": "A: pay it six bricks for the true way, and owe it a debt it won't name. Or B: refuse, lose ten bricks in the dark, and owe nothing. Comment A or B. Part 3 follows the vote."
+    }
+  ],
+  "vote": {
+    "q": "the kind voice",
+    "a": "pay it  -6 + a debt",
+    "b": "refuse  -10"
+  }
+}

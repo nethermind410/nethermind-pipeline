@@ -117,5 +117,18 @@ say for three fixes and shot 4's end frame. Balance after: 113.64. Higgsfield's 
 | 5 end | `1c847147-2a80-4feb-a257-c0ec9cd09425` | Right. |
 | 6 | `e6b13130-7efa-48dd-ad5a-2b293e1cddcf` | Right. |
 
-Next, on his yes: one more edit of shot 1 (2 credits), then four clips with `grok_video_v15_lite` (shots 1, 2, 3, 6,
-5 credits each) and the free in-between frames for shots 4 and 5.
+## Clips made (26 Nov), on his "22 go"
+
+Shot 1 was edited once more (job `995f1413-7827-4e37-946d-1a97b4dfb55d`, statue now has no giant arm) and that picture
+is the one the clip starts from. 22 credits: the edit 2, four clips at 5. Part 2 total 46. Balance after: 91.64.
+
+| Shot | Made by | Job id | Check |
+|---|---|---|---|
+| 1 | grok lite | `a3cacfe3-a5b3-41b0-bf85-62a8dafd9d70` | He lifts the hand, the statue steps down and comes up behind him. MISS: while it walks the statue shows two thin arms. |
+| 2 | grok lite | `9fc83106-eb6a-472e-bebb-bc95a55b0467` | The grab, bricks fall, he breaks free and runs to the corridors. Statue one-armed throughout. |
+| 3 | grok lite | `0f7e1133-3297-42dc-8a39-9c705143e19b` | He walks up, the seam brightens. |
+| 4 | RIFE, free | from the two stills | Chain pulls tight and glows. One smeared frame as the chain changes shape. |
+| 5 | RIFE, free | from the two stills | Eye widens, the profile in the wall brightens. |
+| 6 | grok lite | `40823bd7-874c-4983-bf6e-665badb8725e` | Head turns to the lit corridor, then the dark one. Line 6 runs 14 s, so the clip plays forward and back (`"loop"` in `episode.json`). |
+
+The cut is built by the `100 BRICKS assemble` workflow (picture-only until Muse's lines 1 and 2 are in `voice/`).
