@@ -98,7 +98,7 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
 ## Stills made (26 Nov), Version A
 
 Copies are in `stills/`. 24 credits spent on pictures (12 at 2 each, `nano_banana_pro` 2k): 18 quoted, then 8 more on his
-say for three fixes and shot 4's end frame, of which 2 are unspent. Higgsfield's filter blocked five requests on wording
+say for three fixes and shot 4's end frame. Balance after: 113.64. Higgsfield's filter blocked five requests on wording
 (no charge): avoid "stump", "gone", "bare", "waist up", "shock".
 
 - **Locked set**: Element `a9001209-14f4-4a7f-9c75-00a38e186973` (job `3c5bc1f2-9265-418c-88e9-065d74657ca6`). Looking down
