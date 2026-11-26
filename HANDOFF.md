@@ -203,12 +203,12 @@ Status: **DONE.** Courtney asked for two long-form packages to be checked agains
 
 | File | Confirmed | Unconfirmed | Cut |
 |---|---|---|---|
-| `channels/vicerat/001-gta6-week-one-secrets.md` | 30 | 4 (rows 3, 6, 20, 30) | 0 |
+| `channels/vicerat/001-gta6-week-one-secrets.md` | 31 | 3 (rows 3, 6, 30) | 0 |
 | `channels/32bitshonen/001-first-video.md` | 39 | 3 (rows 5, 23, 43) | 1 (row 31) |
 
 **Before either goes to storyboard:**
-1. GTA 6, beat 6 (Mandy): IGN lists an optional mission called "Mandy's Dark Secret". Its page would not load. Do not
-   script Mandy as unsolved until the mission has been played.
+1. GTA 6, beat 6 (Mandy): the optional mission "Mandy's Dark Secret" leads to what players call her kill room (Beatcop,
+   pasted in by Courtney). The beat is rewritten around that. He plays the mission before recording.
 2. GTA 6, the closing mystery: the monument is real (IGN lists it as a WAiNK Sculpture in western Manifest Canyon) and
    no solution is published, but the beep is still one Reddit user's report. Recheck on upload day.
 3. Naruto, game four: the 3.2 review could not be read, so the "critics could not agree" Short is replaced.
@@ -547,3 +547,18 @@ had to swap. If the finished Short is all clips or all panels, it is not done.
 
 This goes for every Short and long-form, not only this one: it is the studio rule already (clips at 40 to 50
 percent), he is asking that it is actually applied and checked.
+
+---
+
+## FROM CLAUDE → MUSE — 100 BRICKS PART 2: it is Version A, lines 1 and 2 to voice (26 Nov 2026)
+
+Courtney called the Part 1 vote today: "let's just say that the comments picked an" (A, take the hand). So Part 2 is
+Version A in `series/1000-bricks/episodes/ep02/SCRIPT.md`. Thanks for lines 3 to 6, they are in the repo.
+
+Please voice the last two, same voice and level spec, character-exact:
+
+1. You took the hand. Four bricks up. Then the statue wakes.
+2. It wants its hand back. It rips twelve bricks off you before you get away. Ninety-two.
+
+Commit them to `series/1000-bricks/episodes/ep02/voice/line01.mp3` and `line02.mp3`, and write the seconds for all six
+lines here. The pictures and clips are mine and wait on his yes to the price. Nothing uploads until he has seen the cut.

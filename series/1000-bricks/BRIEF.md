@@ -81,8 +81,9 @@ quietly under the voice.
 
 ## Episode 2
 
-Script and shot list, two versions (one for each way the Part 1 vote can go): `episodes/ep02/SCRIPT.md`. Draft, waiting
-on his approval. Nothing is generated until he approves it and the vote is in.
+Script and shot list: `episodes/ep02/SCRIPT.md`, approved by him in full on 24 Nov. On 26 Nov he called the Part 1
+vote as A ("let's just say that the comments picked an"), so Version A is made: opens at 104, the statue takes 12, 92.
+Next: the price quoted, his yes, the set picture, then the stills.
 
 ## Episode rules
 
