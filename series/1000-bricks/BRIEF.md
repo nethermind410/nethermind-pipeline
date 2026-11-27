@@ -61,6 +61,26 @@ Every still is checked against the saved hero before he sees it. A miss is named
   an Element (statue, wall and corridor in fixed places) and film every shot from the same side of it.
 - Keep the statue only slightly taller than the hero.
 
+## Prompt rules, so credits are not spent twice (his rule, 26 Nov)
+
+"I need you to make sure you're prompts don't allow for those changes, as it's wasting credits I can't afford." Part 2
+spent 30 extra credits because the stone arm was described in words (three different arms came back) and a clip was
+left free to invent a walk (the statue grew a second arm and nearly merged with him).
+
+1. **Anything seen in more than one shot is a saved Element before the first still.** The hero, the hero wearing a
+   new piece of kit, a statue in a changed state, the room. One reference picture, his approval, then save it. Never
+   describe a recurring thing in words.
+2. **A change to a saved thing is a new Element**, made once. The statue without its arm is not "the statue Element
+   minus the arm" in a prompt: the model puts the arm back.
+3. **A fix is an edit of the still**, with "keep everything identical" and the one change named. Never a regeneration.
+4. **A still is checked against the last part's stills, side by side, before he sees it**: same arm, same legs, same
+   room. A miss is named, not passed.
+5. **A clip prompt allows one thing to move and says where it stops.** Nothing walks toward the camera or toward
+   another figure. Name what must not change (arm count, the stone arm's size, the face, the lettering) and what must
+   not move. If a shot needs two things moving, it is two shots.
+6. **A clip is checked frame by frame at one frame a second before he sees it**, and a miss is named with the frame.
+7. **Words the Higgsfield filter blocks** (no charge, but a wasted turn): stump, gone, bare, waist up, shock.
+
 ## Two versions of every part, one part ahead (his rule, 24 Nov)
 
 "We need to have a/b episodes for each as depends on what's chosen" and "Let's just work one episode ahead at a time."

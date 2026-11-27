@@ -21,30 +21,46 @@ permissions:
 jobs:
   assemble:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
-      EPISODE: ${{ github.event.inputs.episode || 'ep01' }}
+      PICKED: ${{ github.event.inputs.episode }}
+      BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Tools
         run: python3 -m pip install -q pillow imageio-ffmpeg
       - name: Assemble
         working-directory: series/1000-bricks
         run: |
-          if ls "episodes/$EPISODE/voice/"*.mp3 >/dev/null 2>&1; then
-            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE.mp4"
-          else
-            echo "No voice files in the repo yet: building the picture-only cut."
-            python3 assemble.py "episodes/$EPISODE" "out/$EPISODE-silent.mp4" --silent
+          # Which episodes: the one picked by hand, else the ones this push or pull request changed, else all of them.
+          EPS="$PICKED"
+          if [ -z "$EPS" ] && [ -n "$BASE" ] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            EPS=$(git diff --name-only "$BASE" HEAD | sed -n 's#^series/1000-bricks/episodes/\([^/]*\)/.*#\1#p' | sort -u)
           fi
+          [ -z "$EPS" ] && EPS=$(ls episodes)
+          for E in $EPS; do
+            [ -f "episodes/$E/episode.json" ] || continue
+            # Voiced only when every line named in episode.json is in the repo; until then the picture-only cut.
+            if python3 -c "import json,os,sys; r='episodes/$E'; sys.exit(0 if all(os.path.exists(os.path.join(r,s['voice'])) for s in json.load(open(r+'/episode.json'))['shots']) else 1)"; then
+              python3 assemble.py "episodes/$E" "out/$E/$E.mp4"
+            else
+              echo "$E: not every voice line is in the repo yet, building the picture-only cut."
+              python3 assemble.py "episodes/$E" "out/$E/$E-silent.mp4" --silent
+            fi
+          done
       - uses: actions/upload-artifact@v4
         with:
-          name: bricks-${{ github.event.inputs.episode || 'ep01' }}
+          name: bricks-render
           path: series/1000-bricks/out/
           retention-days: 14
-      - name: Put the mp4 on the renders branch
+      - name: Put each mp4 on its renders branch
         run: |
-          mkdir "$RUNNER_TEMP/r" && cp series/1000-bricks/out/* "$RUNNER_TEMP/r/" && cd "$RUNNER_TEMP/r"
-          git init -q -b "renders/$EPISODE" . && git add -A
-          git -c user.name="bricks-assemble" -c user.email="actions@users.noreply.github.com" commit -q -m "100 BRICKS $EPISODE render from ${GITHUB_SHA::7}"
-          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/renders/$EPISODE"
+          for D in series/1000-bricks/out/*/; do
+            E=$(basename "$D"); R="$RUNNER_TEMP/r-$E"; mkdir "$R" && cp "$D"* "$R/" && cd "$R"
+            git init -q -b "renders/$E" . && git add -A
+            git -c user.name="bricks-assemble" -c user.email="actions@users.noreply.github.com" commit -q -m "100 BRICKS $E render from ${GITHUB_SHA::7}"
+            git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:refs/heads/renders/$E"
+            cd "$GITHUB_WORKSPACE"
+          done

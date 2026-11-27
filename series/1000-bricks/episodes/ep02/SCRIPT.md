@@ -94,3 +94,76 @@ The Jujutsu Kaisen wiki page would not open from this session (the host is block
   went from 4 and 3 to 6 and 10.
 
 - Line 6 with the new prices, and with it the whole script: "Yes line 6 is good."
+
+## Stills made (26 Nov), Version A
+
+Copies are in `stills/`. 24 credits spent on pictures (12 at 2 each, `nano_banana_pro` 2k): 18 quoted, then 8 more on his
+say for three fixes and shot 4's end frame. Balance after: 113.64. Higgsfield's filter blocked five requests on wording
+(no charge): avoid "stump", "gone", "bare", "waist up", "shock".
+
+- **Locked set**: Element `a9001209-14f4-4a7f-9c75-00a38e186973` (job `3c5bc1f2-9265-418c-88e9-065d74657ca6`). Looking down
+  the hall: torch and the one-armed statue on the left wall, three statues on the right, two dark openings in the end wall.
+- **The statue has no arm on the side he took the hand from** (his pick, 26 Nov: "1"). The saved statue Element still
+  has the hand, so the model keeps putting the arm back: fix by editing the still, never by regenerating from the Element.
+
+| Shot | Job id | Check against the hero and the set |
+|---|---|---|
+| 1 | `58ca0f6b-910c-4b56-9f3f-6d1fdcc21f27` | Hero and end wall right. MISS, still open: the statue behind him has its giant arm. |
+| 2 | `2f5518dc-15e6-4534-a4d2-5efc7217ee40` | Right (black legs, statue one-armed). |
+| 3 | `6074b872-6781-4075-83a6-1982084963e2` | Right. |
+| 4 start | `b8504886-cd14-4727-ac7c-7392b085a4b3` | Right (hand is his skin colour). |
+| 4 end | `5f151a67-40f8-4628-99af-d58c72a61121` | Right (chain tight and bright). |
+| 5 start | `1f143330-5ec9-4035-8636-dbe96df3f532` | Right. |
+| 5 end | `1c847147-2a80-4feb-a257-c0ec9cd09425` | Right. |
+| 6 | `e6b13130-7efa-48dd-ad5a-2b293e1cddcf` | Right. |
+
+## Clips made (26 Nov), on his "22 go"
+
+Shot 1 was edited once more (job `995f1413-7827-4e37-946d-1a97b4dfb55d`, statue now has no giant arm) and that picture
+is the one the clip starts from. 22 credits: the edit 2, four clips at 5. Part 2 total 46. Balance after: 91.64.
+
+| Shot | Made by | Job id | Check |
+|---|---|---|---|
+| 1 | grok lite | `a3cacfe3-a5b3-41b0-bf85-62a8dafd9d70` | He lifts the hand, the statue steps down and comes up behind him. MISS: while it walks the statue shows two thin arms. |
+| 2 | grok lite | `9fc83106-eb6a-472e-bebb-bc95a55b0467` | The grab, bricks fall, he breaks free and runs to the corridors. Statue one-armed throughout. |
+| 3 | grok lite | `0f7e1133-3297-42dc-8a39-9c705143e19b` | He walks up, the seam brightens. |
+| 4 | RIFE, free | from the two stills | Chain pulls tight and glows. One smeared frame as the chain changes shape. |
+| 5 | RIFE, free | from the two stills | Eye widens, the profile in the wall brightens. |
+| 6 | grok lite | `40823bd7-874c-4983-bf6e-665badb8725e` | Head turns to the lit corridor, then the dark one. Line 6 runs 14 s, so the clip plays forward and back (`"loop"` in `episode.json`). |
+
+The cut is built by the `100 BRICKS assemble` workflow (picture-only until Muse's lines 1 and 2 are in `voice/`).
+
+## The arm redo (26 Nov)
+
+His notes on the first cut: "The figure walks up with 2 arms. Almost merges with my character then has one arm. The
+stone arm isn't the same as the first episode." The arm had been described in words and came back three ways.
+
+- **Arm, locked**: prop Element `a78d76df-d438-42bd-8be1-063f59e6e47a` (media `3e963e04-78d8-4f58-b130-080740538aaf`,
+  a crop with no face). Front reference job `a6db187d-1c33-489f-8aa6-cd2906df6c41` (its face drifted: never use it for
+  the face). Back reference job `55be0236-7f76-44f5-9bf4-3be250fcb0d6`.
+- First redo of the four stills as edits naming "his right arm": one right of four, 8 credits. From behind, "right"
+  flips and the model had no back view. Second redo named the arm by its side of the picture, with the back view.
+
+| Shot | Job id now | Check against Part 1's arm |
+|---|---|---|
+| 1 | `17f55e8f-2eb7-4599-b975-8c5d47af1ab7` | Giant fist with rock forearm joined to it. |
+| 2 | `f9e5bf8d-e9bb-4579-9682-cb66764991ae` | Right: whole rock arm from the shoulder. |
+| 3 | `d9687bb4-aba0-4d9f-a018-5f166e4e2447` | Thicker, but the fist is still smaller than Part 1's. |
+| 6 | `be5d6acf-eb1c-49c8-b92a-002df4694e63` | Thick rock arm. The figure came back larger in frame, legs black. |
+
+Credits on this redo so far: 2 + 2 (reference and its chest fix) + 8 + 2 + 6 = 20. Balance 71.64. The four clips are
+not remade yet and wait on his yes (20).
+
+## Clips remade (26 Nov), on his "1"
+
+20 credits, four clips from the redone stills. Balance after: 51.64. Each checked at one frame a second.
+
+| Shot | Job id | Check |
+|---|---|---|
+| 1 | `8d4192e5-0f06-48dd-9f94-25e1e8e22ad3` | He stays put with the fist; the statue stays small by the wall, eyes glow, head turns. It does not step down, and from 1 s it shows an arm on the side that was empty. No walk, no merge. |
+| 2 | `b9ac47b1-96ab-4aa1-8ce5-cb55107a7c8d` | Grab and struggle right until 2.3 s. MISS after that: as he turns to run the stone arm disappears. `episode.json` uses only the first 2.3 s (`"cut"`), played forward and back, so the run is not shown. |
+| 3 | `dbc85ab4-6fdf-4b4c-b523-3c35d3e3be9d` | Right. One stone arm throughout. |
+| 6 | `7e439a4e-10ce-4f5a-887a-35a1aaf7781b` | Right. One stone arm throughout, only the head moves. |
+
+Lesson for the brief's prompt rules: a figure that turns away from the camera mid-clip loses what it carries. Keep the
+figure facing one way for the whole clip.
