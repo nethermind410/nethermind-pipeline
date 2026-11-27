@@ -27,16 +27,17 @@ he gets asked.
 
 ## Script: DRAFT in his voice (`shorts/VOICE.md`)
 
-His to rough up. If he rewrites a line, his words are used character-exact.
+His to rough up. If he rewrites a line, his words are used character-exact. Line 2's ending is his pick (27 Nov):
+he asked "huh??" at "Not Naruto. In Naruto." and chose "Naruto lost Naruto."
 
 1. Naruto's dad is getting his own anime. And Studio Pierrot isn't even involved.
-2. It started with a vote. The whole cast, the whole world picking a favourite, and first place went to his dad. Not Naruto. In Naruto.
+2. It started with a vote. The whole cast, the whole world picking a favourite, and first place went to his dad. Naruto lost Naruto.
 3. So Kishimoto drew Minato his own one-off. He saves Kushina, he invents the Rasengan. Hell of a first date.
 4. Then a non-profit mob of fans called Galactic Republic stuck their hands up and said, we'll animate that.
 5. I can't get three friends to agree on dinner. These legends are animating a whole Naruto prequel and not making a fucking cent.
 6. So vote in everything, and if your old man's more popular than you, cop it. Believe it.
 
-115 words, about 40 seconds at his pace. One thing from his own life (line 5), one wink (line 3), one swear, a useless
+114 words, about 40 seconds at his pace. One thing from his own life (line 5), one wink (line 3), one swear, a useless
 moral and a two-word button. No banned words, no em dashes.
 
 ## Storyboard
@@ -47,7 +48,7 @@ moral and a two-word button. No banned words, no em dashes.
 | 2 | 0:03 | And Studio Pierrot isn't even involved. | The fan trailer's Minato, full frame. A small label: "fan-made, not official". |
 | 3 | 0:06 | It started with a vote. The whole cast, the whole world picking a favourite, | A fast run of Naruto faces, one after another, a vote counter spinning. |
 | 4 | 0:11 | and first place went to his dad. | Minato lands on a "1st" podium card. |
-| 5 | 0:13 | Not Naruto. In Naruto. | Naruto, deadpan, staring at the camera. |
+| 5 | 0:13 | Naruto lost Naruto. | Naruto, deadpan, staring at the camera. |
 | 6 | 0:16 | So Kishimoto drew Minato his own one-off. | The one-shot's title page, pushed in. |
 | 7 | 0:19 | He saves Kushina, he invents the Rasengan. | Panel: Minato reaching Kushina. Then panel: the first Rasengan in his palm. |
 | 8 | 0:22 | Hell of a first date. | Kushina's face, close, red hair. |
@@ -69,7 +70,7 @@ pass fan footage off as official, and never the other way round.
 | 2 | "And Studio Pierrot isn't even involved." | The fan trailer's own Minato | Galactic Republic's trailer (3 March 2024), a clean Minato frame | None. If the trailer cannot be used, hold shot 1 and put the label on | The trailer's own motion | A Pierrot logo. Official footage with the "fan-made" label on it |
 | 3 | "...the whole cast, the whole world picking a favourite," | Many Naruto characters, fast | Quick cuts of eight to ten well-known faces (anime) | None; use real frames | A cut every four or five frames, counter spinning | Any one face long enough to look like the winner |
 | 4 | "and first place went to his dad." | Minato as the winner | The official NARUTOP99 result art if it can be found; else Minato from shot 1 on a podium card made in the edit | A plain gold "1st" podium card (Minato is added in the edit) | Card drops in, small bounce | A vote number. None was confirmed |
-| 5 | "Not Naruto. In Naruto." | Naruto, flat face | Naruto's blank or unimpressed stare (anime) | Naruto Uzumaki, orange jacket, flat unimpressed stare straight at the viewer | Hold with a slow push | Minato |
+| 5 | "Naruto lost Naruto." | Naruto, flat face | Naruto's blank or unimpressed stare (anime) | Naruto Uzumaki, orange jacket, flat unimpressed stare straight at the viewer | Hold with a slow push | Minato |
 | 6 | "So Kishimoto drew Minato his own one-off." | The one-shot's title page | Title page of "Naruto: The Whorl Within the Spiral" (manga) | None | Push in | The fan trailer |
 | 7 | "He saves Kushina, he invents the Rasengan." | Minato with Kushina, then the Rasengan | Two panels from the one-shot | None | Drift across the first, snap to the second | Naruto's Rasengan from the main series |
 | 8 | "Hell of a first date." | Kushina's face only | A close panel of Kushina from the one-shot | None | Slow push | Anything romantic beyond her face. The line does the work |
