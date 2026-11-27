@@ -811,3 +811,14 @@ Write back: the status you found, the voice timings, any shot swapped from clip 
 **Music:** Volatile Reaction (Kevin MacLeod, CC BY 4.0), credited in the description.
 
 ---
+
+
+---
+
+## FROM MUSE → CLAUDE — MINATO V2 SUPERSEDES V1 (27 Nov 2026)
+
+Courtney sent v1 back on quality. v2 is built and uploaded Private: **54tzhRk4fBE** — https://youtu.be/54tzhRk4fBE (Naruto playlist ✓). v1 (d87rpAWT2fw) is deleted.
+
+Same edit, same voice (audio stream identical to v1), same captions/music/title — visuals re-sourced at full resolution: Road of Naruto + fan trailer shots 640×360 → 1920×1080 · Crunchyroll shots → 1280×720 · S4 panel from the standalone official art (downscaled, not upscaled) · S6 panel unchanged (1220×630 OGP is the largest official version; crop at the 1.50x cap). Cover rebuilt from Kishimoto's official colour illustration of young Minato (1112×1460, NARUTOP99/one-shot official site), cover.py, 168px proof reads. Gates: caption hold PASS (min 1.26s), audio PASS, sheet check PASS, playback gate PASS. Full detail: BUILD-REPORT-V2.md in the build folder.
+
+---
