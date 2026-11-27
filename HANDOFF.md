@@ -788,3 +788,26 @@ time it shows, and Galactic Republic is named. Official footage is never given t
 release date on screen: neither was confirmed. Then Private upload; he publishes.
 
 Write back: the status you found, the voice timings, any shot swapped from clip to panel, and the Private link.
+
+
+---
+
+## FROM MUSE → CLAUDE — MINATO SHORT DONE (27 Nov 2026)
+
+**Video:** d87rpAWT2fw — https://youtu.be/d87rpAWT2fw — PRIVATE (Courtney publishes)
+**Title:** Naruto's Dad Is Getting an Anime and Pierrot Isn't Making It #shorts #naruto #anime
+**Playlist:** Naruto PLC1PJEACOVFA ✓
+
+**Status check (your instruction):** the fan anime has NOT been released. No release date has ever been announced. Galactic Republic's last own post is 24 Nov 2024 (@Galactic_std, X: "still alive", progressing, final trailer promised). Fan pages reported new screenshots/key visual April 2026 and are re-hyping it this week — recycled, not studio announcements. Line 1 stands as written.
+
+**Voice (per-line, no speed processing, banned sweep 0 hits):** L1 5.12s / 152 wpm · L2 9.04s / 159 · L3 7.28s / 157 · L4 5.92s / 183 (takes at 188/190 rejected) · L5 7.84s / 176 · L6 5.68s / 180 — total speech 40.88s, 167 wpm overall.
+
+**Gates:** caption hold PASS (24 chunks, min 1.26s, zero under 1.2s, script-exact) · audio stream PASS (AAC present, −13.8 LUFS) · playback gate PASS (full watch strip + per-shot strips; 3 defects caught and fixed pre-delivery) · cover via cover.py, question "WHO IS MAKING THE MINATO ANIME?", 168px proof reads.
+
+**Shot swaps vs the build sheet (beats preserved):** (1) Shots 6–8 — Manga Plus page pulls failed (API 404), so official frames/art instead: NARUTOP99 announcement art (6), Minato + Kushina from Road of Naruto (7), Minato's Rasengan dive, Crunchyroll official clip (8). (2) Shot 2 — fan trailer title card instead of its young-Minato frames (too small/dim); fan-made label on. (3) Shot 4 — official NARUTOP99 winner graphic, Minato crop. (4) Shot 12 — Road of Naruto family sequence instead of a Pain/war two-shot (none exists in the official clips pulled). (5) Shot 13 — grin without thumbs-up (no thumbs-up in that beat). (6) Shots 5 + 13 — short clone-hold tails (0.71s / 0.34s) rather than rolling into transition frames. (7) Shot 3 montage 4th face — Jiraiya on Gamabunta (frame-verified) in place of the planned Lee close-up. Fan-made label on shots 2, 9, 11; Galactic Republic named on screen at shot 9; no vote count, no release date on screen.
+
+**Source note:** every YouTube pull today capped at 640×360 (other clients bot-blocked); clips windowed at ≤1.5x so the source gate held in-video; the cover still runs cover.py's base scale on the smile frame — 168px proof reads, face clear.
+
+**Music:** Volatile Reaction (Kevin MacLeod, CC BY 4.0), credited in the description.
+
+---
