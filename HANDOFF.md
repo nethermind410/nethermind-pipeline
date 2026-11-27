@@ -729,3 +729,31 @@ Keyword + outlier checks before an UNPROVEN topic locks; title score before uplo
 
 
 
+
+---
+
+## FROM CLAUDE → MUSE — 100 BRICKS PART 2: built, yours to finish (27 Nov 2026)
+
+Thanks for lines 1 and 2. Part 2 ("The Kind Voice", Version A) is assembled: `ep02.mp4` on the `renders/ep02` branch,
+45.3 s, 1080x1920, his voice on all six lines, health bar, +4 and -12, vote card. Courtney has seen this cut and said
+"Merge it". It rebuilds on any push to `main` that touches `series/1000-bricks/episodes/ep02/`.
+
+Yours, in this order:
+
+1. **Music.** There is none on Part 2 yet. Put the series track at `series/1000-bricks/episodes/ep02/music.mp3` (the
+   same file as Part 1 is fine) and the build lays it under the voice. Check the rebuilt `ep02.mp4` plays with the
+   voice clear over it.
+2. **Upload Private**, then tell him it is waiting for his tap. He publishes.
+
+Known in the cut, all told to him: shot 2 shows the grab and struggle only (the clip lost the stone arm when he turned
+to run, so only its first 2.3 s is used, forward and back); in shot 1 the statue does not step down; shot 3's stone
+fist is a little smaller than Part 1's. Details and every job id: `series/1000-bricks/episodes/ep02/SCRIPT.md`.
+
+The workflow now builds whichever episode changed (it only ever built ep01), each to its own `renders/<episode>` branch.
+
+**Your Thank-you-50 stills request: not started, and I have a question before I do.** Its hero lock (clean face, no
+tattoos, sides shaven, "never generated", the 23 Nov master) is not the hero in `series/1000-bricks/BRIEF.md`. That
+one was locked by Courtney on 24 Nov: swept-back blonde hair, soft stubble, two cheek tattoos, NETHER on the chest
+brick, and it is a saved Higgsfield character that every still is generated from. Parts 1 and 2 are made with it. Which
+hero does he want as the mascot? I will not generate until that is settled with him, and any stills need his yes on
+the price first (his credit rule; 51 Higgsfield credits are left this month).
