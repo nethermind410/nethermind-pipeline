@@ -1,6 +1,6 @@
 # Daily Short, 27 Nov 2026: Naruto's dad is getting an anime, and fans are making it
 
-Status: **DRAFT, waiting on Courtney.** Nothing goes to Muse until he approves or rewrites it.
+Status: **APPROVED by Courtney, 27 Nov 2026 ("Good to go"). With Muse for voice, build and Private upload.**
 
 Written by Claude Code on his word (27 Nov): "Where's the script? Don't we do the scripts here and then you send it to
 Muse?" Muse's slate had this as "Minato news Short ... the adaptation is fan-made; frame it as a fan project".
@@ -25,9 +25,9 @@ he gets asked.
 
 `WHO IS MAKING THE MINATO ANIME?`
 
-## Script: DRAFT in his voice (`shorts/VOICE.md`)
+## Script: FINAL, approved by Courtney 27 Nov
 
-His to rough up. If he rewrites a line, his words are used character-exact. Line 2's ending is his pick (27 Nov):
+**Voice these lines character-exact.** Line 2's ending is his pick (27 Nov):
 he asked "huh??" at "Not Naruto. In Naruto." and chose "Naruto lost Naruto."
 
 1. Naruto's dad is getting his own anime. And Studio Pierrot isn't even involved.

@@ -757,3 +757,34 @@ one was locked by Courtney on 24 Nov: swept-back blonde hair, soft stubble, two 
 brick, and it is a saved Higgsfield character that every still is generated from. Parts 1 and 2 are made with it. Which
 hero does he want as the mascot? I will not generate until that is settled with him, and any stills need his yes on
 the price first (his credit rule; 51 Higgsfield credits are left this month).
+
+---
+
+## FROM CLAUDE → MUSE — TODAY'S SHORT, approved: the Minato fan anime (27 Nov 2026)
+
+Courtney approved today's daily Short ("Good to go"). Everything is in `shorts/2026-11-27-minato-fan-anime.md`:
+script, 13-shot storyboard, build sheet, clip and panel mix, title options, facts table. This is the Minato Short from
+your slate; it no longer waits on a raw take from him.
+
+**Voice, character-exact, his cloned voice, your usual level spec:**
+
+1. Naruto's dad is getting his own anime. And Studio Pierrot isn't even involved.
+2. It started with a vote. The whole cast, the whole world picking a favourite, and first place went to his dad. Naruto lost Naruto.
+3. So Kishimoto drew Minato his own one-off. He saves Kushina, he invents the Rasengan. Hell of a first date.
+4. Then a non-profit mob of fans called Galactic Republic stuck their hands up and said, we'll animate that.
+5. I can't get three friends to agree on dinner. These legends are animating a whole Naruto prequel and not making a fucking cent.
+6. So vote in everything, and if your old man's more popular than you, cop it. Believe it.
+
+On screen in the first second: `WHO IS MAKING THE MINATO ANIME?`
+Title pick: `Naruto's Dad Is Getting an Anime and Pierrot Isn't Making It #shorts #naruto #anime` (his call if he changes it).
+
+**Do this first, before voicing:** open Galactic Republic Studio's own X or YouTube page and read the latest post.
+Every page I could open is from November 2024 (trailer 3 March 2024, no release date, still working). I could not
+confirm where the project stands today. If the fan anime has been released, stop and tell Courtney: line 1 should say
+so, and that is his line to change. Write here what the page says and its date.
+
+**Build notes:** follow the build sheet. Fan trailer footage is labelled "fan-made, not official" on screen every
+time it shows, and Galactic Republic is named. Official footage is never given that label. No vote count and no
+release date on screen: neither was confirmed. Then Private upload; he publishes.
+
+Write back: the status you found, the voice timings, any shot swapped from clip to panel, and the Private link.
