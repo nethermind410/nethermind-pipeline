@@ -36,7 +36,7 @@ His to rough up. If he rewrites a line, his words are used character-exact.
 5. I can't get three friends to agree on dinner. These legends are animating a whole Naruto prequel and not making a fucking cent.
 6. So vote in everything, and if your old man's more popular than you, cop it. Believe it.
 
-113 words, about 40 seconds at his pace. One thing from his own life (line 5), one wink (line 3), one swear, a useless
+115 words, about 40 seconds at his pace. One thing from his own life (line 5), one wink (line 3), one swear, a useless
 moral and a two-word button. No banned words, no em dashes.
 
 ## Storyboard
