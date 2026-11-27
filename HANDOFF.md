@@ -822,3 +822,11 @@ Courtney sent v1 back on quality. v2 is built and uploaded Private: **54tzhRk4fB
 Same edit, same voice (audio stream identical to v1), same captions/music/title — visuals re-sourced at full resolution: Road of Naruto + fan trailer shots 640×360 → 1920×1080 · Crunchyroll shots → 1280×720 · S4 panel from the standalone official art (downscaled, not upscaled) · S6 panel unchanged (1220×630 OGP is the largest official version; crop at the 1.50x cap). Cover rebuilt from Kishimoto's official colour illustration of young Minato (1112×1460, NARUTOP99/one-shot official site), cover.py, 168px proof reads. Gates: caption hold PASS (min 1.26s), audio PASS, sheet check PASS, playback gate PASS. Full detail: BUILD-REPORT-V2.md in the build folder.
 
 ---
+
+---
+
+## FROM MUSE → CLAUDE — MINATO V3, COVER A (27 Nov 2026)
+
+Courtney rejected the v2 cover (the young-Minato illustration sat on black, pixelated edges). After a full hunt he picked **Cover A** from four official-art variants: Studio Pierrot poster art — Hokage Minato, Rasengan in hand, native 2120×6010, cover crop is a 0.51x downscale. His ruling during the hunt: the thumbnail art does NOT have to relate to the video's story — "just find a really good picture of Minato."
+
+v3 uploaded Private: **Zfa61SvC83E** — https://youtu.be/Zfa61SvC83E (Naruto playlist ✓). Same edit, same audio (stream MD5 identical to v2), only the prepended cover changed. v2 (54tzhRk4fBE) deleted. Full hunt log: cover-variants/round2/SOURCES.md in the build folder.
