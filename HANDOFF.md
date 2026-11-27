@@ -700,3 +700,32 @@ feature, or is labelled FAIL with the failing feature named.
 ## Result
 
 _(Claude writes here: file paths + gate results, then sets DONE.)_
+
+## Studio state — 27 Nov 2026 (from Muse, Studio chat)
+
+### The plan (set 26 Nov, from the full channel analysis + deep research)
+The whole mix, every week: daily standalone viral Shorts (plain-fact format) + series episodes (100 BRICKS, Anime vs Real Life) pulling people in; one long-form single-question essay a week as the hours engine, packaging and hold fixed first (question cover, strongest claim first, proof withheld to the end); every piece chains to the next (playlists, end screens, Related Video links on cut-down Shorts). Nothing rides on one format. Post 5–9pm Sydney. Conversion is the tracked bottleneck: the channel converts 0.49 subs per 1,000 views; benchmark median is 1.91; the Monday review reports the 28-day rate. Evidence outranks scores: real performance beats formula scores, always.
+
+### vidIQ is wired into the pipeline (Courtney's direction, 26 Nov)
+Keyword + outlier checks before an UNPROVEN topic locks; title score before upload (logged, never overrides Courtney's verbatim title); thumbnail score alongside the five cover gates. Balance: 6 add-on credits left; renewable pool resets 30 Nov 2026. Any single call over 10 credits gets its cost stated to Courtney first. vidIQ scripts are draft inputs only — never voiced as-is (the voice-only rule stands).
+
+### Today's slate state
+- Minato news Short is UP NEXT — waiting on Courtney's raw take (the adaptation is fan-made; frame it as a fan project).
+- Untrainable Organs flagship — script draft done, waiting on Courtney's voice pass. It ships as one chained series with its five standalones: Beerus, Luffy/Nika, Naruto's organs vs Luffy, Moon Knight, Beyond Birthday.
+- 100 BRICKS Part 2 — voice complete (commit 5910ec5); assembly is Claude's job.
+- Thank-you-50 — the stills request already queued in this file still stands; also waiting on Courtney's lines for shots 2–4.
+
+### Evidence logged 27 Nov
+- "One Piece Was Supposed to End in 2002" Short: 1,010 views in 13 hours, 64.2% stayed — channel record on a real sample.
+- Chip packet Short: settled at 49.6% stayed, 66% average viewed.
+- Six recent Shorts: ~2,900 views, 0 comments / 0 shares / 0 confirmed subs — conversion is the bottleneck, hold is not.
+
+
+
+
+
+
+
+
+
+
